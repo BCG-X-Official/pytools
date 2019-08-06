@@ -17,7 +17,7 @@ Utilities for text rendering
 import logging
 from typing import *
 
-from gamma import ListLike, MatrixLike
+from gamma.common import ListLike, MatrixLike
 
 TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 

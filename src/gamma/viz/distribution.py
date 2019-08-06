@@ -23,10 +23,9 @@ from typing import *
 
 import numpy as np
 import pandas as pd
+from gamma.common import ListLike
 from matplotlib.axes import Axes
 from matplotlib.pyplot import gca
-
-from gamma import ListLike
 
 __all__ = ["plot_ecdf"]
 
