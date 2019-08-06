@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/alpha-gamma.iml" filepath="$PROJECT_DIR$/.idea/alpha-gamma.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/gamma-common.iml" filepath="$PROJECT_DIR$/.idea/gamma-common.iml" />
     </modules>
   </component>
