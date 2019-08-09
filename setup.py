@@ -105,7 +105,7 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=["gamma.viz", "gamma.viz.dendrogram"],
+    packages=["gamma.viz"],
     package_dir={"": "src"},
     namespace_packages=["gamma"],
     # Specify which Python versions you support. In contrast to the
