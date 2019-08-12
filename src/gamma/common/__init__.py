@@ -16,6 +16,7 @@ Global definitions of basic types and functions for use across all gamma librari
 """
 
 import logging
+import warnings
 from functools import wraps
 from typing import *
 
@@ -50,9 +51,10 @@ def deprecated(message: str):
             """
             message_header = f"Call to deprecated function {func.__name__}"
             if message is None:
-                log.warning(message_header)
+                warnings.warn(message_header, DeprecationWarning)
             else:
-                log.warning(f"{message_header}: {message}")
+                warnings.warn(f"{message_header}: {message}", DeprecationWarning)
+
             return func(*args, **kwargs)
 
         return new_func
