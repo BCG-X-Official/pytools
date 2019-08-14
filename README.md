@@ -6,8 +6,10 @@ GAMMA visualization tools.
 The pip-project `gamma-viz` can be installed using:
 - `pip install git+ssh://git@git.sourceai.io/alpha/gamma-viz.git#egg=gamma.viz`
  (*latest version*)
- - `pip install git+ssh://git@git.sourceai.io/alpha/gamma-viz.git@[VERSION-TAG]#egg=gamma.viz`
- (*specific version -  currently not available*)
+ - Check [this page](./../../releases) for available releases and use 
+ `pip install git+ssh://git@git.sourceai.io/alpha/gamma-viz.git@[VERSION-TAG]#egg=gamma.viz`
+ to install a specific version. E.g. to install `v1.0.0` use:
+ `pip install git+ssh://git@git.sourceai.io/alpha/gamma-viz.git@v1.0.0#egg=gamma.viz`
 
 Ensure that you have set up a working SSH key on git.sourceai.io!
 
