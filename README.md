@@ -16,10 +16,11 @@ Currently this project contains:
 The pip-project `gamma-common` can be installed using:
 - `pip install git+ssh://git@git.sourceai.io/alpha/gamma-common.git#egg=gamma.common`
  (*latest version*)
- - `pip install git+ssh://git@git.sourceai.io/alpha/gamma-common
- .git@[VERSION-TAG]#egg=gamma.common`
- (*specific version -  currently not available*)
-
+ - Check [this page](/releases) for available releases and use 
+ `pip install git+ssh://git@git.sourceai.io/alpha/gamma-common.git@[VERSION-TAG]#egg=gamma.common`
+ to install a specific version. E.g. to install `v1.0.0` use:
+ `pip install git+ssh://git@git.sourceai.io/alpha/gamma-common.git@v1.0.0#egg=gamma.common`
+ 
 Ensure that you have set up a working SSH key on git.sourceai.io!
 
 # Documentation
