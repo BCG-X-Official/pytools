@@ -33,14 +33,11 @@ MatrixLike = Union[
 ]
 
 
-def deprecated(message: str):
+def deprecated(function: Callable = None, *, message: str = None):
     """
     Decorator to mark functions as deprecated.
 
     It will result in a warning being logged when the function is used.
-
-    :return: decorator; the decorated functions logs a warning message saying it is
-      deprecated
     """
 
     def _deprecated_inner(func: callable) -> callable:
@@ -59,4 +56,7 @@ def deprecated(message: str):
 
         return new_func
 
-    return _deprecated_inner
+    if function is None:
+        return _deprecated_inner
+    else:
+        return _deprecated_inner(function)

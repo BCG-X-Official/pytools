@@ -4,16 +4,21 @@ from gamma.common import deprecated
 
 
 def test_deprecated() -> None:
-    @deprecated(message=None)
-    def f() -> None:
+    @deprecated
+    def _f() -> None:
         pass
 
-    with pytest.warns(expected_warning=DeprecationWarning):
-        f()
+    with pytest.warns(
+        expected_warning=DeprecationWarning, match="Call to deprecated function _f"
+    ):
+        _f()
 
     @deprecated(message="test message")
-    def g() -> None:
+    def _g() -> None:
         pass
 
-    with pytest.warns(expected_warning=DeprecationWarning):
-        g()
+    with pytest.warns(
+        expected_warning=DeprecationWarning,
+        match="Call to deprecated function _g: test message",
+    ):
+        _g()
