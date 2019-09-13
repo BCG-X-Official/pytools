@@ -103,10 +103,14 @@ class CharacterMatrix:
                     line[pos] = char
 
 
+_ALIGNMENT_OPTIONS = ["<", "^", ">"]
+
+
 def format_table(
     headings: ListLike[str],
     data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence]],
     formats: Optional[ListLike[Optional[str]]] = None,
+    alignment: Optional[ListLike[Optional[str]]] = None,
 ) -> str:
     """
     Print a formatted text table
@@ -114,6 +118,8 @@ def format_table(
     :param data: the table data, as a 2D list-like organised as a list of rows
     :param formats: formatting strings for data in each row (optional); \
         uses `str()` conversion for any formatting strings stated as `None`
+    :param alignment: text alignment for each column (optional); use `"<"` to align
+        left, `"="` to center, `">"` to align right (defaults to left alignment)
     :return: the formatted table as a multi-line string
     """
     n_columns = len(headings)
@@ -123,11 +129,27 @@ def format_table(
     elif len(formats) != n_columns:
         raise ValueError("arg formats must have the same length as arg headings")
 
+    if alignment is None:
+        alignment = ["<"] * n_columns
+    elif len(alignment) != n_columns:
+        raise ValueError("arg alignment must have the same length as arg headings")
+    elif not all(align in _ALIGNMENT_OPTIONS for align in alignment):
+        raise ValueError(
+            f"arg alignment must only contain alignment options "
+            f'{", ".join(_ALIGNMENT_OPTIONS)}'
+        )
+
     def _formatted(item: Any, format_string: str) -> str:
         if format_string is None:
             return str(item)
         else:
             return f"{item:{format_string}}"
+
+    def _iterate_row_data() -> Iterable[ListLike]:
+        if isinstance(data, pd.DataFrame):
+            return (row for _, row in data.iterrows())
+        else:
+            return iter(data)
 
     def _make_row(items: ListLike):
         if len(items) != n_columns:
@@ -139,28 +161,40 @@ def format_table(
             for item, format_string in zip(items, formats)
         ]
 
-    rows = [_make_row(items) for items in data]
+    body_rows = [_make_row(items) for items in _iterate_row_data()]
 
     column_widths = [
         max(column_lengths)
         for column_lengths in zip(
-            *((len(item) for item in row) for row in (headings, *rows))
+            *(
+                (len(item) for item in row)
+                for row in (
+                    headings,
+                    *[_make_row(items) for items in _iterate_row_data()],
+                )
+            )
         )
     ]
 
     dividers = ["-" * column_width for column_width in column_widths]
 
-    return "\n".join(
-        (
-            *(
-                " ".join(
-                    (
-                        f"{item:{column_width}s}"
-                        for item, column_width in zip(row, column_widths)
+    def _format_rows(rows: List[List[str]], align: bool):
+        return (
+            " ".join(
+                (
+                    f'{item:{align_char if align else ""}{column_width}s}'
+                    for item, align_char, column_width in zip(
+                        row, alignment, column_widths
                     )
                 )
-                for row in (headings, dividers, *rows)
-            ),
+            )
+            for row in rows
+        )
+
+    return "\n".join(
+        (
+            *(_format_rows(rows=[headings, dividers], align=False)),
+            *(_format_rows(rows=body_rows, align=True)),
             "",
         )
     )
