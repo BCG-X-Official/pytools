@@ -17,7 +17,10 @@ Utilities for text rendering
 import logging
 from typing import *
 
-from gamma.common import ListLike, MatrixLike
+import numpy as np
+import pandas as pd
+
+from gamma.common import ListLike
 
 TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
@@ -102,7 +105,7 @@ class CharacterMatrix:
 
 def format_table(
     headings: ListLike[str],
-    data: MatrixLike,
+    data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence]],
     formats: Optional[ListLike[Optional[str]]] = None,
 ) -> str:
     """
