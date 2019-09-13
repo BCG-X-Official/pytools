@@ -27,10 +27,31 @@ log = logging.getLogger(__name__)
 
 # noinspection PyShadowingBuiltins
 _T = TypeVar("_T")
-ListLike = Union[np.ndarray, pd.Series, Sequence[_T]]
-MatrixLike = Union[
-    np.ndarray, pd.Series, pd.DataFrame, Sequence[Union[_T, Sequence[_T]]]
-]
+ListLike = Union[np.ndarray, pd.Series, pd.Index, Iterable[_T]]
+
+
+def is_list_like(obj: Any) -> bool:
+    """
+    Check if the object is list-like.
+
+    Objects that are considered list-like are for example Python
+    lists, tuples, sets, NumPy arrays, and Pandas Series.
+
+    Strings and datetime objects, however, are not considered list-like.
+
+    :param obj The object to check
+    :return `True` if `obj` has list-like properties
+    """
+
+    return (
+        isinstance(obj, Iterable)
+        # we do not count strings/unicode/bytes as list-like
+        # also exclude Pandas data frames and panels, as iterating them will yield the
+        # column index
+        and not isinstance(obj, (str, bytes, pd.DataFrame, pd.Panel))
+        # exclude zero-dimensional numpy arrays, effectively scalars
+        and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
+    )
 
 
 def deprecated(function: Callable = None, *, message: str = None):
