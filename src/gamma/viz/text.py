@@ -176,11 +176,11 @@ def format_table(
         )
     ]
 
-    dividers = ["-" * column_width for column_width in column_widths]
+    dividers = ["=" * column_width for column_width in column_widths]
 
     def _format_rows(rows: List[List[str]], align: bool):
         return (
-            " ".join(
+            "  ".join(
                 (
                     f'{item:{align_char if align else ""}{column_width}s}'
                     for item, align_char, column_width in zip(
