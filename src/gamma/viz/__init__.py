@@ -12,7 +12,8 @@
 #
 
 """
-MVC-based classes for drawing charts.
+The Gamma visualization library, providing MVC-based classes for rendering data in
+different styles, e.g., as charts or plain text.
 """
 import logging
 import sys
@@ -126,7 +127,10 @@ class MatplotStyle(ChartStyle, ABC):
         return self._ax
 
     def drawing_start(self, title: str) -> None:
-        """Draw the title of the chart."""
+        """
+        Called once by the drawer when starting to draw a new chart.
+        :param title: the title of the chart
+        """
         self.ax.set_title(label=title)
 
     def text_size(
