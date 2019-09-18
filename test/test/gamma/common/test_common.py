@@ -1,3 +1,7 @@
+"""
+Basic test cases for the `gamma.common` module
+"""
+# noinspection PyPackageRequirements
 import pytest
 
 from gamma.common import deprecated
