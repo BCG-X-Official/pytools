@@ -48,14 +48,14 @@ class CharacterMatrix:
         """
         The height of this matrix.
 
-        Same as ``len(self)``.
+        Same as `len(self)`.
         """
         return len(self._matrix)
 
     @property
     def n_columns(self) -> int:
         """
-        The height of this matrix.
+        The width of this matrix.
         """
         return self._n_columns
 
@@ -108,14 +108,15 @@ _ALIGNMENT_OPTIONS = ["<", "^", ">"]
 
 def format_table(
     headings: ListLike[str],
-    data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence]],
+    data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence[Any]]],
     formats: Optional[ListLike[Optional[str]]] = None,
     alignment: Optional[ListLike[Optional[str]]] = None,
 ) -> str:
     """
     Print a formatted text table
+
     :param headings: the table headings
-    :param data: the table data, as a 2D list-like organised as a list of rows
+    :param data: the table data, as a list-like with shape `[n_rows, n_columns]`
     :param formats: formatting strings for data in each row (optional); \
         uses `str()` conversion for any formatting strings stated as `None`
     :param alignment: text alignment for each column (optional); use `"<"` to align
