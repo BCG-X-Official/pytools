@@ -183,6 +183,8 @@ class TextStyle(ChartStyle, ABC):
     """
 
     def __init__(self, out: TextIO = None, width: int = 80) -> None:
+        super().__init__()
+
         if width <= 0:
             raise ValueError(
                 f"arg width expected to be positive integer but is {width}"
