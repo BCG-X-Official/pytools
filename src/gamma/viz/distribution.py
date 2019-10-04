@@ -23,9 +23,10 @@ from typing import *
 
 import numpy as np
 import pandas as pd
-from gamma.common import ListLike
 from matplotlib.axes import Axes
 from matplotlib.pyplot import gca
+
+from gamma.common import ListLike
 
 __all__ = ["plot_ecdf"]
 
@@ -172,18 +173,37 @@ def plot_ecdf(
       :meth:`matplotlib.axes.Axes.plot`
     """
 
+    def _iqr_annotation(multiple: float) -> str:
+        return f"(> {multiple:.3g} * IQR)"
+
     if ax is None:
         ax = gca()
 
     e: _Ecdf = _ecdf(data, iqr_multiple=iqr_multiple, iqr_multiple_far=iqr_multiple_far)
     matplotlib_kwargs = {"marker": ".", "linestyle": "none", **kwargs}
-    ax.plot(e.inliers.x, e.inliers.y, color=color_non_outlier, **matplotlib_kwargs)
-    ax.plot(e.outliers.x, e.outliers.y, color=color_outlier, **matplotlib_kwargs)
     ax.plot(
-        e.far_outliers.x, e.far_outliers.y, color=color_far_outlier, **matplotlib_kwargs
+        e.inliers.x,
+        e.inliers.y,
+        color=color_non_outlier,
+        label="inlier",
+        **matplotlib_kwargs,
+    )
+    ax.plot(
+        e.outliers.x,
+        e.outliers.y,
+        color=color_outlier,
+        label=f"outlier {_iqr_annotation(multiple=iqr_multiple)}",
+        **matplotlib_kwargs,
+    )
+    ax.plot(
+        e.far_outliers.x,
+        e.far_outliers.y,
+        color=color_far_outlier,
+        label=f"far outlier {_iqr_annotation(multiple=iqr_multiple_far)}",
+        **matplotlib_kwargs,
     )
 
-    # add plot title and labels
+    # add plot title, axis labels, and legend
     if hasattr(data, "name"):
         ax.set_title(f"ECDF: {data.name}")
         ax.set_xlabel(data.name)
@@ -191,3 +211,4 @@ def plot_ecdf(
         ax.set_title(f"ECDF")
         ax.set_xlabel("value")
     ax.set_ylabel("count")
+    ax.legend()
