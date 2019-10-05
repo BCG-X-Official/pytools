@@ -20,7 +20,7 @@ from typing import *
 
 import numpy as np
 
-from gamma.viz import ChartDrawer
+from gamma.viz import Drawer
 from gamma.viz.dendrogram._linkage import BaseNode, LinkageTree
 from gamma.viz.dendrogram._style import DendrogramStyle
 
@@ -32,7 +32,7 @@ class _SubtreeInfo(NamedTuple):
     weight: float
 
 
-class DendrogramDrawer(ChartDrawer[LinkageTree, DendrogramStyle]):
+class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
     Class to draw a `LinkageTree` as a dendrogram.
 

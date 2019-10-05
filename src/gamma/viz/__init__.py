@@ -32,15 +32,15 @@ T_Style = TypeVar("T_Style", bound="ChartStyle")
 
 
 #
-# controller: class ChartDrawer
+# controller: class Drawer
 #
 
 
-class ChartDrawer(Generic[T_Model, T_Style], ABC):
+class Drawer(Generic[T_Model, T_Style], ABC):
     """
-    Base class for chart drawers.
+    Base class for drawers.
 
-    Implementations must define a :meth:`~ChartDrawer._draw` method.
+    Subclasses must implement a :meth:`~Drawer._draw` method.
 
     :param title: title of the chart
     :param model: the model containing the underlying data represented by the chart
