@@ -43,7 +43,7 @@ from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import Formatter
 
-from gamma.viz import ChartStyle, MatplotStyle, RgbaColor, TextStyle
+from gamma.viz import DrawStyle, MatplotStyle, RgbaColor, TextStyle
 from gamma.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ class _PercentageFormatter(Formatter):
         return f"{x * 100.0:.0f}%"
 
 
-class DendrogramStyle(ChartStyle, ABC):
+class DendrogramStyle(DrawStyle, ABC):
     """
     Base class for dendrogram drawing styles.
 
@@ -68,11 +68,7 @@ class DendrogramStyle(ChartStyle, ABC):
     """
 
     def __init__(self) -> None:
-        self._max_distance = None
-
-    def set_max_distance(self, max_distance: float) -> None:
-        """Set the maximum distance to be rendered on the distance axis"""
-        self._max_distance = max_distance
+        super().__init__()
 
     @abstractmethod
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
@@ -84,11 +80,12 @@ class DendrogramStyle(ChartStyle, ABC):
 
     @abstractmethod
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float
+        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
         """
         Draw a leaf of the linkage tree.
 
+        :param tree_height:
         :param bottom: the x coordinate of the child node
         :param top: the x coordinate of the parent node
         :param leaf: the index of the leaf where the link leg should be drawn (may be a
@@ -106,6 +103,7 @@ class DendrogramStyle(ChartStyle, ABC):
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        tree_height: float,
     ) -> None:
         """
         Draw a connector between two child nodes and their parent node.
@@ -116,6 +114,7 @@ class DendrogramStyle(ChartStyle, ABC):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
+        :param tree_height: the total height of the tree
         """
         pass
 
@@ -186,12 +185,18 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
             else 1 - math.log(weight) / math.log(self._min_weight)
         )
 
+    def drawing_finalize(self) -> None:
+        """
+        Finalize the chart.
+        """
+        pass
+
 
 class DendrogramLineStyle(DendrogramMatplotStyle):
     """The classical dendrogram style, as a coloured tree diagram."""
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float
+        self, bottom: float, top: float, leaf: float, weight: float, tree_height
     ) -> None:
         """
         Draw a horizontal link in the dendrogram between a node and one of its children.
@@ -199,6 +204,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         See :func:`~yieldengine.dendrogram.DendrogramStyle.draw_link_leg` for the
         documentation of the abstract method.
 
+        :param tree_height:
         :param bottom: the x coordinate of the child node
         :param top: the x coordinate of the parent node
         :param leaf: the index of the first leaf in the current sub-tree
@@ -214,6 +220,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        tree_height: float,
     ) -> None:
         """
         Draw a vertical link between two sibling nodes and the outgoing vertical line.
@@ -227,6 +234,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
+        :param tree_height: the total height of the tree
         """
         self._draw_line(
             x1=bottom,
@@ -241,6 +249,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
             top=top,
             leaf=(first_leaf + (n_leaves_left + n_leaves_right - 1) / 2),
             weight=weight,
+            tree_height=0,
         )
 
     def _draw_line(
@@ -267,10 +276,9 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         """
         super().drawing_start(title=title)
         self.ax.margins(0, 0)
-        self.ax.set_xlim(0, 1)
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: int, weight: float
+        self, bottom: float, top: float, leaf: int, weight: float, tree_height: float
     ) -> None:
         """
         Draw a horizontal box in the dendrogram for a leaf.
@@ -278,6 +286,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         See :func:`~yieldengine.dendrogram.DendrogramStyle.draw_link_leg` for the
         documentation of the abstract method.
 
+        :param tree_height:
         :param bottom: the x coordinate of the child node
         :param top: the x coordinate of the parent node
         :param leaf: the index of the first leaf in the current sub-tree
@@ -293,6 +302,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        tree_height: float,
     ) -> None:
         """
         Draw a link between a node and its two children as a box.
@@ -306,6 +316,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
+        :param tree_height: the total height of the tree        
         """
         self._draw_hbar(
             x=bottom,
@@ -371,7 +382,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         label_width: Optional[int] = None,
         max_height: int = 100,
     ) -> None:
-        super().__init__(out, width)
+        super().__init__(out=out, width=width)
         if max_height <= 0:
             raise ValueError(
                 f"arg max_height={max_height} expected to be a positive integer"
@@ -388,6 +399,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
             if label_width is None
             else label_width
         )
+        self._dendrogram_right = width - self._dendrogram_left
         self._char_matrix = None
         self._n_labels = None
 
@@ -429,11 +441,12 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         return self._dendrogram_left - 5
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float
+        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
         """
         Draw a horizontal link in the dendrogram between a node and one of its children.
 
+        :param tree_height:
         :param bottom: the x coordinate of the child node
         :param top: the x coordinate of the parent node
         :param leaf: the index of the first leaf in the current sub-tree
@@ -449,7 +462,8 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
 
         # draw the link leg in the character matrix
         self._char_matrix[
-            line_y + is_in_between_line, self._x_pos(bottom) : self._x_pos(top)
+            line_y + is_in_between_line,
+            self._x_pos(bottom, tree_height) : self._x_pos(top, tree_height),
         ] = ("_" if is_in_between_line else "-")
 
         # if we're in a leaf, we can draw the weight next to he label
@@ -466,6 +480,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        tree_height: float,
     ) -> None:
         """
         Draw a vertical link between two sibling nodes and the outgoing vertical line.
@@ -479,6 +494,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
+        :param tree_height: the total height of the tree
         """
 
         y1 = first_leaf + n_leaves_left // 2
@@ -489,16 +505,15 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
             top=top,
             leaf=(first_leaf - 0.5) + (n_leaves_left + n_leaves_right) / 2,
             weight=weight,
+            tree_height=tree_height,
         )
 
-        x = self._x_pos(bottom)
+        x = self._x_pos(bottom, tree_height)
         matrix = self._char_matrix
         if y2 - y1 > 1:
             matrix[(y1 + 1) : y2, x] = "|"
         matrix[y1, x] = "/"
         matrix[y2, x] = "\\"
 
-    def _x_pos(self, h: float) -> int:
-        return self._dendrogram_left + int(
-            (self.width - self._dendrogram_left) * h / self._max_distance
-        )
+    def _x_pos(self, h: float, h_max: float) -> int:
+        return self._dendrogram_left + int((self._dendrogram_right - 1) * h / h_max)

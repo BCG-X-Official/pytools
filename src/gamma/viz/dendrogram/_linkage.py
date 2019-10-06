@@ -153,7 +153,7 @@ class LeafNode(BaseNode):
 
 class LinkageTree:
     """
-    Wrapper around a SciPy linkage matrix.
+    A traversable tree derived from a SciPy linkage matrix.
 
     :param scipy_linkage_matrix: linkage matrix from SciPy
     :param leaf_labels: labels of the leaves
@@ -171,6 +171,7 @@ class LinkageTree:
         scipy_linkage_matrix: np.ndarray,
         leaf_labels: Iterable[str],
         leaf_weights: Iterable[float],
+        max_distance: Optional[float] = None,
     ) -> None:
         # one row of the linkage matrix is a quadruple:
         # (
@@ -199,10 +200,11 @@ class LinkageTree:
 
         if any(not (0.0 <= weight <= 1.0) for weight in leaf_weights):
             raise ValueError(
-                "not all values in arg leaf_weights are between 0.0 and 1.0"
+                "all values in arg leaf_weights are required to be in the range "
+                "from 0.0 to 1.0"
             )
 
-        self._nodes = [
+        self._nodes: List[BaseNode] = [
             *[
                 LeafNode(index=index, label=label, weight=weight)
                 for index, (label, weight) in enumerate(zip(leaf_labels, leaf_weights))
@@ -218,6 +220,16 @@ class LinkageTree:
             ],
         ]
 
+        root_children_distance = self._nodes[-1].children_distance
+        if max_distance is None:
+            max_distance = root_children_distance
+        elif max_distance < root_children_distance:
+            raise ValueError(
+                f"arg max_distance={max_distance} must be equal to or greater than "
+                f"the maximum distance (= {root_children_distance}) in the linkage tree"
+            )
+        self._max_distance = max_distance
+
     @property
     def root(self) -> BaseNode:
         """
@@ -226,6 +238,14 @@ class LinkageTree:
         It is the cluster containing all other clusters.
         """
         return self._nodes[-1]
+
+    @property
+    def max_distance(self) -> float:
+        """
+        The maximum possible distance in the linkage tree; this determines the height of
+        the tree to be drawn
+        """
+        return self._max_distance
 
     def children(self, node: BaseNode) -> Optional[Tuple[BaseNode, BaseNode]]:
         """Return the children of the node.
