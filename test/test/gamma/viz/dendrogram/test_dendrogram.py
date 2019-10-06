@@ -13,7 +13,7 @@ import numpy as np
 import pytest
 
 # noinspection PyPackageRequirements
-from scipy.cluster.hierarchy import linkage
+import scipy.cluster.hierarchy as hc
 
 from gamma.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle, LinkageTree
 
@@ -21,43 +21,50 @@ log = logging.getLogger(__name__)
 
 
 @pytest.fixture
-def linkage_tree() -> LinkageTree:
-    """Create a linkage tree for drawing tests."""
+def linkage_matrix() -> np.ndarray:
+    """Create a linkage matrix."""
     x = np.array([[i] for i in [2, 8, 0, 4, 1, 9, 9, 0]])
+    return hc.linkage(x)
+
+
+@pytest.fixture
+def linkage_tree(linkage_matrix: np.ndarray) -> LinkageTree:
+    """Create a linkage tree for drawing tests."""
     return LinkageTree(
-        scipy_linkage_matrix=linkage(x),
+        scipy_linkage_matrix=linkage_matrix,
         leaf_labels=list("ABCDEFGH"),
         leaf_weights=[(w + 1) / 36 for w in range(8)],
     )
 
 
-def test_dendrogram_drawer_text(linkage_tree: LinkageTree) -> None:
-    checksum_dendrogram_report = "aa90a5bd6ba5750a44c3718854f1ac83"
+def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
+    checksum_dendrogram_report = "8c87f24324a8e7221b8685e9e8fff897"
+    leaf_labels = list("ABCDEFGH")
+    leaf_weights = [(w + 1) / 36 for w in range(8)]
 
     with pytest.raises(ValueError) as value_error:
-        DendrogramDrawer(
-            title="Test", linkage=linkage_tree, style=DendrogramReportStyle()
+        LinkageTree(
+            scipy_linkage_matrix=linkage_matrix,
+            leaf_labels=leaf_labels,
+            leaf_weights=leaf_weights,
+            max_distance=1,
         )
     assert value_error.value.args == (
-        "arg max_distance=1.0 must be equal to or greater than arg "
-        "linkage.root.children_distance=4.0",
+        "arg max_distance=1 must be equal to or greater than the maximum distance "
+        "(= 4.0) in the linkage tree",
+    )
+
+    linkage_tree = LinkageTree(
+        scipy_linkage_matrix=linkage_matrix,
+        leaf_labels=list("ABCDEFGH"),
+        leaf_weights=[(w + 1) / 36 for w in range(8)],
     )
 
     with StringIO() as out:
-
-        dd = DendrogramDrawer(
-            title="Test",
-            linkage=linkage_tree,
-            style=DendrogramReportStyle(out=out),
-            max_distance=10.0,
-        )
-
-        dd.draw()
-
+        dd = DendrogramDrawer(style=DendrogramReportStyle(out=out))
+        dd.draw(data=linkage_tree, title="Test")
         report_str = str(out.getvalue())
-
         log.debug(f"\n{report_str}")
-
         assert (
             hashlib.md5(str(report_str).encode("utf-8")).hexdigest()
         ) == checksum_dendrogram_report

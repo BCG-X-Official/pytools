@@ -38,101 +38,84 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
 
     The class has one public method `~self.draw` which draws the dendrogram.
 
-    :param title: the title of the plot
-    :param linkage: the `LinkageTree` to draw
     :param style: the `DendrogramStyle` used to draw
-    :param max_distance: the maximum value on the distance axis (default: 1.0)
     """
 
-    def __init__(
-        self,
-        linkage: LinkageTree,
-        style: DendrogramStyle,
-        title: str,
-        max_distance: float = 1.0,
-    ):
-        super().__init__(model=linkage, style=style, title=title)
+    def __init__(self, style: DendrogramStyle):
+        super().__init__(style=style)
 
-        if max_distance < linkage.root.children_distance:
-            raise ValueError(
-                f"arg max_distance={max_distance} must be equal to or greater than "
-                f"arg linkage.root.children_distance={linkage.root.children_distance}"
-            )
-        self._max_distance = max_distance
+    def _draw(self, data: LinkageTree) -> None:
+        # draw the linkage tree
 
-        self._node_weight = node_weight = np.zeros(len(linkage), float)
+        node_weight = np.zeros(len(data), float)
 
-        def calculate_weights(n: BaseNode) -> (float, int):
+        def _calculate_weights(n: BaseNode) -> (float, int):
             """calculate the weight of a node and number of leaves under it"""
             if n.is_leaf:
                 weight = n.weight
                 n_leaves = 1
             else:
-                l, r = linkage.children(n)
-                lw, ln = calculate_weights(l)
-                rw, rn = calculate_weights(r)
+                l, r = data.children(n)
+                lw, ln = _calculate_weights(l)
+                rw, rn = _calculate_weights(r)
                 weight = lw + rw
                 n_leaves = ln + rn
             node_weight[n.index] = weight / n_leaves
             return weight, n_leaves
 
-        calculate_weights(linkage.root)
+        def _draw_node(node: BaseNode, y: int, width: float) -> _SubtreeInfo:
+            """
+            Recursively draw the part of the dendrogram under a node.
 
-    def _draw(self) -> None:
-        """Draw the linkage tree."""
-        self.style.set_max_distance(self._max_distance)
-        tree_info = self._draw_node(
-            node=self._model.root, y=0, width_relative=self._max_distance
-        )
+            :param node: the node to be drawn
+            :param y: the value determining the position of the node with respect to the
+              leaves of the tree
+            :param width: width difference in the tree covered by the node
+            :return info: `_SubtreeInfo` which contains weights and labels
+            """
+            if node.is_leaf:
+                self.style.draw_link_leg(
+                    bottom=0.0,
+                    top=width,
+                    leaf=y,
+                    weight=node.weight,
+                    tree_height=data.max_distance,
+                )
+
+                return _SubtreeInfo(labels=[node.label], weight=node.weight)
+
+            else:
+                child_left, child_right = data.children(node=node)
+                if node_weight[child_left.index] > node_weight[child_right.index]:
+                    child_left, child_right = child_right, child_left
+
+                info_left = _draw_node(
+                    node=child_left, y=y, width=node.children_distance
+                )
+                info_right = _draw_node(
+                    node=child_right,
+                    y=y + len(info_left.labels),
+                    width=node.children_distance,
+                )
+
+                info = _SubtreeInfo(
+                    labels=info_left.labels + info_right.labels,
+                    weight=info_left.weight + info_right.weight,
+                )
+
+                self.style.draw_link_connector(
+                    bottom=node.children_distance,
+                    top=width,
+                    first_leaf=y,
+                    n_leaves_left=len(info_left.labels),
+                    n_leaves_right=len(info_right.labels),
+                    weight=info.weight,
+                    tree_height=data.max_distance,
+                )
+
+                return info
+
+        _calculate_weights(data.root)
+
+        tree_info = _draw_node(node=data.root, y=0, width=data.max_distance)
         self.style.draw_leaf_labels(tree_info.labels)
-
-    def _draw_node(self, node: BaseNode, y: int, width_relative: float) -> _SubtreeInfo:
-        """
-        Recursively draw the part of the dendrogram under a node.
-
-        :param node: the node to be drawn
-        :param y: the value determining the position of the node with respect to the
-          leaves of the tree
-        :param width_relative: float between 0 and 1, the relative height in the tree
-          of the node: the root has maximal width_relative 1
-        :return info: `_SubtreeInfo` which contains weights and labels
-        """
-        if node.is_leaf:
-            self.style.draw_link_leg(
-                bottom=0.0, top=width_relative, leaf=y, weight=node.weight
-            )
-
-            return _SubtreeInfo(labels=[node.label], weight=node.weight)
-
-        else:
-            child_left, child_right = self._model.children(node=node)
-            if (
-                self._node_weight[child_left.index]
-                > self._node_weight[child_right.index]
-            ):
-                child_left, child_right = child_right, child_left
-
-            info_left = self._draw_node(
-                node=child_left, y=y, width_relative=node.children_distance
-            )
-            info_right = self._draw_node(
-                node=child_right,
-                y=y + len(info_left.labels),
-                width_relative=node.children_distance,
-            )
-
-            info = _SubtreeInfo(
-                labels=info_left.labels + info_right.labels,
-                weight=info_left.weight + info_right.weight,
-            )
-
-            self.style.draw_link_connector(
-                bottom=node.children_distance,
-                top=width_relative,
-                first_leaf=y,
-                n_leaves_left=len(info_left.labels),
-                n_leaves_right=len(info_right.labels),
-                weight=info.weight,
-            )
-
-            return info

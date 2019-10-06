@@ -18,6 +18,7 @@ different styles, e.g., as charts or plain text.
 import logging
 import sys
 from abc import ABC, abstractmethod
+from threading import Lock
 from typing import *
 from typing import TextIO
 
@@ -28,7 +29,7 @@ from matplotlib.axes import Axes
 log = logging.getLogger(__name__)
 
 T_Model = TypeVar("T_Model")
-T_Style = TypeVar("T_Style", bound="ChartStyle")
+T_Style = TypeVar("T_Style", bound="DrawStyle")
 
 
 #
@@ -42,53 +43,50 @@ class Drawer(Generic[T_Model, T_Style], ABC):
 
     Subclasses must implement a :meth:`~Drawer._draw` method.
 
-    :param title: title of the chart
-    :param model: the model containing the underlying data represented by the chart
     :param style: the style of the chart
     """
 
-    def __init__(self, model: T_Model, style: T_Style, title: str) -> None:
-        self._model = model
+    def __init__(self, style: T_Style) -> None:
         self._style = style
-        self._title = title
-
-    @property
-    def title(self) -> str:
-        """Title of the chart."""
-        return self._title
-
-    @property
-    def model(self) -> T_Model:
-        """The model holding the data to plot."""
-        return self._model
 
     @property
     def style(self) -> T_Style:
-        """Style used for drawing the chart."""
+        """The drawing style used by this drawer."""
         return self._style
 
-    def draw(self) -> None:
-        """Draw the chart."""
-        self.style.drawing_start(self._title)
-        self._draw()
-        self.style.drawing_finalize()
+    def draw(self, data: T_Model, title: str) -> None:
+        """
+        Draw the chart.
+        :param data: the data to draw
+        :param title: the title of the chart
+        """
+        style = self.style
+        # noinspection PyProtectedMember
+        with style._lock:
+            style.drawing_start(title)
+            self._draw(data)
+            style.drawing_finalize()
 
     @abstractmethod
-    def _draw(self) -> None:
+    def _draw(self, data: T_Model) -> None:
         pass
 
 
 #
-# view: class ChartStyle
+# view: class DrawStyle
 #
 
 
-class ChartStyle(ABC):
+class DrawStyle(ABC):
     """
     Base class for a drawer style.
 
-    Implementations must define :meth:`~ChartStyle.draw_title`.
+    Implementations must define :meth:`~DrawStyle.draw_title`.
     """
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self._lock = Lock()
 
     @abstractmethod
     def drawing_start(self, title: str) -> None:
@@ -98,24 +96,23 @@ class ChartStyle(ABC):
         """
         pass
 
+    @abstractmethod
     def drawing_finalize(self) -> None:
         """
         Finalize the chart.
-
-        Does nothing by default, can optionally be overloaded
         """
         pass
 
 
-class MatplotStyle(ChartStyle, ABC):
+class MatplotStyle(DrawStyle, ABC):
     """Matplotlib drawer style.
 
-    Implementations must define :meth:`~ChartStyle.draw_title`.
+    Implementations must define :meth:`~DrawStyle.draw_title`.
     :param ax: optional axes object to draw on; if ``Null`` use pyplot's current axes
     """
 
-    def __init__(self, ax: Optional[Axes] = None) -> None:
-        super().__init__()
+    def __init__(self, ax: Optional[Axes] = None, **kwargs) -> None:
+        super().__init__(**kwargs)
         self._ax = ax = plt.gca() if ax is None else ax
         self._renderer = ax.figure.canvas.get_renderer()
 
@@ -173,7 +170,7 @@ class MatplotStyle(ChartStyle, ABC):
         return abs(x1 - x0), abs(y1 - y0)
 
 
-class TextStyle(ChartStyle, ABC):
+class TextStyle(DrawStyle, ABC):
     """
     Plain text drawing style.
 
@@ -182,8 +179,8 @@ class TextStyle(ChartStyle, ABC):
       `None` is passed (defaults to `None`)
     """
 
-    def __init__(self, out: TextIO = None, width: int = 80) -> None:
-        super().__init__()
+    def __init__(self, out: TextIO = None, width: int = 80, **kwargs) -> None:
+        super().__init__(**kwargs)
 
         if width <= 0:
             raise ValueError(
