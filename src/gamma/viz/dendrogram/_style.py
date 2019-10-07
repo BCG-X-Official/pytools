@@ -516,4 +516,6 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         matrix[y2, x] = "\\"
 
     def _x_pos(self, h: float, h_max: float) -> int:
-        return self._dendrogram_left + int((self._dendrogram_right - 1) * h / h_max)
+        # calculate the horizontal position in the character grid,
+        # ensuring that h=h_max still yields a position inside the grid (factor 0.99999)
+        return self._dendrogram_left + int(self._dendrogram_right * h / h_max * 0.99999)

@@ -41,13 +41,26 @@ class Drawer(Generic[T_Model, T_Style], ABC):
     """
     Base class for drawers.
 
-    Subclasses must implement a :meth:`~Drawer._draw` method.
-
-    :param style: the style of the chart
+    :param style: the style of the chart; either as a :class:`~gamma.viz.DrawStyle` \
+        instance, or as the name of a default style. Permissible names include \
+        "matplot" for a style supporting Matplotlib, and "text" if text rendering is \
+        supported (default: `"matplot"`)
     """
 
-    def __init__(self, style: T_Style) -> None:
-        self._style = style
+    def __init__(self, style: Union[T_Style, str] = "matplot") -> None:
+        if isinstance(style, str):
+            try:
+                # get the named style from the style dict, and instantiate it
+                self._style: T_Style = self._get_style_dict()[style]()
+            except KeyError:
+                raise KeyError(f"Unknown named style: {style}")
+        elif isinstance(style, DrawStyle):
+            self._style = style
+        else:
+            raise TypeError(
+                "arg style expected to be a string, or an instance of class "
+                f"{DrawStyle.__name__}"
+            )
 
     @property
     def style(self) -> T_Style:
@@ -61,11 +74,20 @@ class Drawer(Generic[T_Model, T_Style], ABC):
         :param title: the title of the chart
         """
         style = self.style
+        # styles might hold some drawing context, so make sure we are thread safe
         # noinspection PyProtectedMember
         with style._lock:
             style.drawing_start(title)
             self._draw(data)
             style.drawing_finalize()
+
+    @classmethod
+    @abstractmethod
+    def _get_style_dict(cls) -> Mapping[str, Type[T_Style]]:
+        """
+        Get a mapping from names to style classes.
+        """
+        pass
 
     @abstractmethod
     def _draw(self, data: T_Model) -> None:
@@ -80,8 +102,6 @@ class Drawer(Generic[T_Model, T_Style], ABC):
 class DrawStyle(ABC):
     """
     Base class for a drawer style.
-
-    Implementations must define :meth:`~DrawStyle.draw_title`.
     """
 
     def __init__(self, **kwargs) -> None:
