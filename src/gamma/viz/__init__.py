@@ -53,7 +53,6 @@ class DrawStyle(ABC):
         """
         pass
 
-    @abstractmethod
     def drawing_finalize(self) -> None:
         """
         Finalize the chart.
@@ -86,6 +85,9 @@ class MatplotStyle(DrawStyle, ABC):
         :param title: the title of the chart
         """
         self.ax.set_title(label=title)
+
+    def drawing_finalize(self) -> None:
+        pass
 
     def text_size(
         self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
