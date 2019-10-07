@@ -67,12 +67,15 @@ def deprecated(function: Callable = None, *, message: str = None):
             """
             Function wrapper
             """
-            message_header = f"Call to deprecated function {func.__name__}"
+            message_header = (
+                f"Call to deprecated {type(func).__name__} {func.__qualname__}"
+            )
             if message is None:
-                warnings.warn(message_header, DeprecationWarning)
+                warnings.warn(message_header, FutureWarning, stacklevel=2)
             else:
-                warnings.warn(f"{message_header}: {message}", DeprecationWarning)
-
+                warnings.warn(
+                    f"{message_header}: {message}", FutureWarning, stacklevel=2
+                )
             return func(*args, **kwargs)
 
         return new_func
