@@ -144,12 +144,12 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
         self._cm = None
         self._cb = None
 
-    def drawing_start(self, title: str) -> None:
+    def _drawing_start(self, title: str) -> None:
         """
         Called once by the drawer when starting to draw a new dendrogram.
         :param title: the title of the dendrogram
         """
-        super().drawing_start(title=title)
+        super()._drawing_start(title=title)
 
         self.ax.ticklabel_format(axis="x", scilimits=(-3, 3))
 
@@ -184,7 +184,6 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
             if weight <= self._min_weight
             else 1 - math.log(weight) / math.log(self._min_weight)
         )
-
 
 
 class DendrogramLineStyle(DendrogramMatplotStyle):
@@ -264,12 +263,12 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
     def __init__(self, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
         super().__init__(ax=ax, min_weight=min_weight)
 
-    def drawing_start(self, title: str) -> None:
+    def _drawing_start(self, title: str) -> None:
         """
         Called once by the drawer when starting to draw a new dendrogram.
         :param title: the title of the dendrogram
         """
-        super().drawing_start(title=title)
+        super()._drawing_start(title=title)
         self.ax.margins(0, 0)
 
     def draw_link_leg(
@@ -398,17 +397,17 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._char_matrix = None
         self._n_labels = None
 
-    def drawing_start(self, title: str) -> None:
+    def _drawing_start(self, title: str) -> None:
         """Write the title."""
         self.out.write(f"{title:*^{self.width}s}\n")
         self._char_matrix = CharacterMatrix(
             n_rows=self._max_height, n_columns=self.width
         )
 
-    def drawing_finalize(self) -> None:
+    def _drawing_finalize(self) -> None:
         """Finalize writing the text."""
         try:
-            super().drawing_finalize()
+            super()._drawing_finalize()
             for row in reversed(range(self._n_labels + 1)):
                 self.out.write(f"{self._char_matrix[row, :]}\n")
         finally:
