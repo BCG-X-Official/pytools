@@ -64,7 +64,7 @@ class MatplotStyle(DrawStyle, ABC):
     """Matplotlib drawer style.
 
     Implementations must define :meth:`~DrawStyle.draw_title`.
-    :param ax: optional axes object to draw on; if ``Null`` use pyplot's current axes
+    :param ax: optional axes object to draw on; if `Null` use pyplot's current axes
     """
 
     def __init__(self, ax: Optional[Axes] = None, **kwargs) -> None:
@@ -168,8 +168,8 @@ class TextStyle(DrawStyle, ABC):
 #
 
 # type variables
-_T_Model = TypeVar("T_Model")
-_T_Style = TypeVar("T_Style", bound=DrawStyle)
+_T_Model = TypeVar("_T_Model")
+_T_Style = TypeVar("_T_Style", bound=DrawStyle)
 
 
 class Drawer(Generic[_T_Model, _T_Style], ABC):
