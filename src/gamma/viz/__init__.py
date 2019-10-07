@@ -28,71 +28,8 @@ from matplotlib.axes import Axes
 
 log = logging.getLogger(__name__)
 
-T_Model = TypeVar("T_Model")
-T_Style = TypeVar("T_Style", bound="DrawStyle")
-
-
-#
-# controller: class Drawer
-#
-
-
-class Drawer(Generic[T_Model, T_Style], ABC):
-    """
-    Base class for drawers.
-
-    :param style: the style of the chart; either as a :class:`~gamma.viz.DrawStyle` \
-        instance, or as the name of a default style. Permissible names include \
-        "matplot" for a style supporting Matplotlib, and "text" if text rendering is \
-        supported (default: `"matplot"`)
-    """
-
-    def __init__(self, style: Union[T_Style, str] = "matplot") -> None:
-        if isinstance(style, str):
-            try:
-                # get the named style from the style dict, and instantiate it
-                self._style: T_Style = self._get_style_dict()[style]()
-            except KeyError:
-                raise KeyError(f"Unknown named style: {style}")
-        elif isinstance(style, DrawStyle):
-            self._style = style
-        else:
-            raise TypeError(
-                "arg style expected to be a string, or an instance of class "
-                f"{DrawStyle.__name__}"
-            )
-
-    @property
-    def style(self) -> T_Style:
-        """The drawing style used by this drawer."""
-        return self._style
-
-    def draw(self, data: T_Model, title: str) -> None:
-        """
-        Draw the chart.
-        :param data: the data to draw
-        :param title: the title of the chart
-        """
-        style = self.style
-        # styles might hold some drawing context, so make sure we are thread safe
-        # noinspection PyProtectedMember
-        with style._lock:
-            style.drawing_start(title)
-            self._draw(data)
-            style.drawing_finalize()
-
-    @classmethod
-    @abstractmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[T_Style]]:
-        """
-        Get a mapping from names to style classes.
-        """
-        pass
-
-    @abstractmethod
-    def _draw(self, data: T_Model) -> None:
-        pass
-
+# Rgba color class for use in  MatplotStyles
+RgbaColor = Tuple[float, float, float, float]
 
 #
 # view: class DrawStyle
@@ -225,7 +162,66 @@ class TextStyle(DrawStyle, ABC):
 
 
 #
-# Rgba color class for use in  MatplotStyles
+# controller: class Drawer
 #
 
-RgbaColor = Tuple[float, float, float, float]
+# type variables
+_T_Model = TypeVar("T_Model")
+_T_Style = TypeVar("T_Style", bound=DrawStyle)
+
+
+class Drawer(Generic[_T_Model, _T_Style], ABC):
+    """
+    Base class for drawers.
+
+    :param style: the style of the chart; either as a :class:`~gamma.viz.DrawStyle` \
+        instance, or as the name of a default style. Permissible names include \
+        "matplot" for a style supporting Matplotlib, and "text" if text rendering is \
+        supported (default: `"matplot"`)
+    """
+
+    def __init__(self, style: Union[_T_Style, str] = "matplot") -> None:
+        if isinstance(style, str):
+            try:
+                # get the named style from the style dict, and instantiate it
+                self._style: _T_Style = self._get_style_dict()[style]()
+            except KeyError:
+                raise KeyError(f"Unknown named style: {style}")
+        elif isinstance(style, DrawStyle):
+            self._style = style
+        else:
+            raise TypeError(
+                "arg style expected to be a string, or an instance of class "
+                f"{DrawStyle.__name__}"
+            )
+
+    @property
+    def style(self) -> _T_Style:
+        """The drawing style used by this drawer."""
+        return self._style
+
+    def draw(self, data: _T_Model, title: str) -> None:
+        """
+        Draw the chart.
+        :param data: the data to draw
+        :param title: the title of the chart
+        """
+        style = self.style
+        # styles might hold some drawing context, so make sure we are thread safe
+        # noinspection PyProtectedMember
+        with style._lock:
+            style.drawing_start(title)
+            self._draw(data)
+            style.drawing_finalize()
+
+    @classmethod
+    @abstractmethod
+    def _get_style_dict(cls) -> Mapping[str, Type[_T_Style]]:
+        """
+        Get a mapping from names to style classes.
+        """
+        pass
+
+    @abstractmethod
+    def _draw(self, data: _T_Model) -> None:
+        pass
