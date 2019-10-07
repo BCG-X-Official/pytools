@@ -22,7 +22,11 @@ import numpy as np
 
 from gamma.viz import Drawer
 from gamma.viz.dendrogram._linkage import BaseNode, LinkageTree
-from gamma.viz.dendrogram._style import DendrogramStyle
+from gamma.viz.dendrogram._style import (
+    DendrogramHeatmapStyle,
+    DendrogramReportStyle,
+    DendrogramStyle,
+)
 
 log = logging.getLogger(__name__)
 
@@ -36,13 +40,22 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
     Class to draw a `LinkageTree` as a dendrogram.
 
-    The class has one public method `~self.draw` which draws the dendrogram.
+    The class has a public method :meth:`~.draw` which draws the dendrogram.
 
-    :param style: the `DendrogramStyle` used to draw
+    :param style: the style of the dendrogram; either as a
+        :class:`~gamma.viz.dendrogram.DendrogramStyle` instance, or as the name of a \
+        default style. Permissible names include "matplot" for a style supporting \
+        Matplotlib, and "text" for a text-only plot to stdout (default: `"matplot"`)
     """
 
-    def __init__(self, style: DendrogramStyle):
+    def __init__(self, style: Union[DendrogramStyle, str] = "matplot") -> None:
         super().__init__(style=style)
+
+    _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
+
+    @classmethod
+    def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
+        return DendrogramDrawer._STYLES
 
     def _draw(self, data: LinkageTree) -> None:
         # draw the linkage tree
