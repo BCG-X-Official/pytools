@@ -94,8 +94,8 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         self._color_outlier = color_outlier
         self._color_far_outlier = color_far_outlier
 
-    def drawing_start(self, title: str) -> None:
-        super().drawing_start(title=title)
+    def _drawing_start(self, title: str) -> None:
+        super()._drawing_start(title=title)
 
     def _draw_ecdf(
         self, ecdf: _Ecdf, x_label: str, iqr_multiple: float, iqr_multiple_far: float
@@ -188,6 +188,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
     def _draw(self, data: ListLike[float]) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")
+        # noinspection PyProtectedMember
         self.style._draw_ecdf(
             ecdf=ecdf,
             x_label=x_label,

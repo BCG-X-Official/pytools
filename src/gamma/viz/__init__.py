@@ -46,14 +46,14 @@ class DrawStyle(ABC):
         self._lock = Lock()
 
     @abstractmethod
-    def drawing_start(self, title: str) -> None:
+    def _drawing_start(self, title: str) -> None:
         """
         Start drawing a new chart.
         :title: the chart title
         """
         pass
 
-    def drawing_finalize(self) -> None:
+    def _drawing_finalize(self) -> None:
         """
         Finalize the chart.
         """
@@ -79,14 +79,14 @@ class MatplotStyle(DrawStyle, ABC):
         """
         return self._ax
 
-    def drawing_start(self, title: str) -> None:
+    def _drawing_start(self, title: str) -> None:
         """
         Called once by the drawer when starting to draw a new chart.
         :param title: the title of the chart
         """
         self.ax.set_title(label=title)
 
-    def drawing_finalize(self) -> None:
+    def _drawing_finalize(self) -> None:
         pass
 
     def text_size(
@@ -212,9 +212,11 @@ class Drawer(Generic[_T_Model, _T_Style], ABC):
         # styles might hold some drawing context, so make sure we are thread safe
         # noinspection PyProtectedMember
         with style._lock:
-            style.drawing_start(title)
+            # noinspection PyProtectedMember
+            style._drawing_start(title)
             self._draw(data)
-            style.drawing_finalize()
+            # noinspection PyProtectedMember
+            style._drawing_finalize()
 
     @classmethod
     @abstractmethod
