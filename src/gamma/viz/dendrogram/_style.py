@@ -185,11 +185,6 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
             else 1 - math.log(weight) / math.log(self._min_weight)
         )
 
-    def drawing_finalize(self) -> None:
-        """
-        Finalize the chart.
-        """
-        pass
 
 
 class DendrogramLineStyle(DendrogramMatplotStyle):
