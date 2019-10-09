@@ -4,7 +4,6 @@ import rsa
 from gamma.common import licensing
 from gamma.common.licensing import (
     LICENSEE_ENV,
-    LICENSE_KEY_ENV,
     LICENSE_KEY_SIG_ENV,
     retrieve_license,
     safe_dumps,
@@ -23,11 +22,14 @@ def test_valid_license() -> None:
     licensing.check_license()
     assert LICENSED_FOR == "UNLICENSED"
     (pubkey, privkey) = rsa.newkeys(512)
+
+    licensing.LICENSE_KEY = safe_dumps(pubkey)
+
     client = "bcg client"
     signature = rsa.sign(client.encode("ASCII"), privkey, "SHA-1")
 
     # activate the test-license through the environment
-    os.environ[LICENSE_KEY_ENV] = safe_dumps(pubkey)
+    # os.environ[LICENSE_KEY_ENV] = safe_dumps(pubkey)
     os.environ[LICENSE_KEY_SIG_ENV] = safe_dumps(signature)
     os.environ[LICENSEE_ENV] = client
 
