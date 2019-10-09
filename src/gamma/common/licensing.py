@@ -1,3 +1,6 @@
+"""
+License checking for gamma packages.
+"""
 import base64
 import logging
 import os
@@ -62,7 +65,7 @@ def check_license() -> str:
         or not var_in_env(LICENSEE_ENV)
         or not var_in_env(LICENSE_KEY_ENV)
     ):
-        warnings.warn(message=WARNING_MESSAGE, category=UserWarning)
+        warnings.warn(message=WARNING_MESSAGE, category=UserWarning, stacklevel=2)
     else:
         rsa_public_key, rsa_sig_hash, client_name = retrieve_license()
 
