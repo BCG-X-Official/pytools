@@ -14,7 +14,17 @@ from rsa import PublicKey
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-LICENSE_KEY_ENV = "GAMMA_ALPHA_KEY"
+LICENSE_KEY = """gANjcnNhLmtleQpQdWJsaWNLZXkKcQApgXEBiwECAABJ2G9TBoEQgz4BclMzK4VJ0glO6ae9Fcto
+9EIzJxLCfkavTrOqgP9fim8h7ihH+KwI9m3EcV/JLm/0IP/lLVQQE/h2CmbGGZ1RXqrx/SnbLtCk
+eD15fn9V6cdV8COei+iW/RynyvisOlUO9ruwt72XJFlhbU6tD8MFLcJM3DHxiv3A1mQxUo/1N8bP
+4wp2SBNjjtJTX8M4PAhV90nyQhL0aeD8fcuCzIQ0cRUQjgpPtAhL6Nhsgw3r9Zcp1ICwSrwjeIbA
+5sSRdIBCHokLBUyc+WtolzNxfodgRzc7/4XJc8Yheosw+eYWTcTJIQX4a/45Kv3iKnO9/J0xGfYd
+myHS3sJX6E2QMb5Kf0I3IlNlBkzbfm5zJyTw9nunbNorHr2c1YXk9BudhjN5/AH01jnkZ/5hIRbd
+JlpXJ8sAqYrHIcPlw8gT3PcykrOQ5R9PJfy4fk3HQb1Mb+Qj8Nwc/MWrgJElaiHReTrYWvbqQlP6
+TrwVR/L4U9VgSifHmB3AsGe0//42Vzmh7kFYnQ2JnZQDdtk/tu4t/dp+Qtcf0z/86rdj1Om8hsVG
+OEYMsNqF3iTbFQSHN8deQU0cKy2rbW3ex8xbREQJKmVV1814Alzhtdc0AFV55p8NPJ93cjdR1yqa
+AcZNdYQo+G/1qdCScv132osYXYXjkXrMZts3VaPupwBKAQABAIZxAmIu"""
+
 LICENSE_KEY_SIG_ENV = "GAMMA_ALPHA_LICENSE_SIGNATURE"
 LICENSEE_ENV = "GAMMA_ALPHA_LICENSEE"
 
@@ -52,7 +62,7 @@ def safe_dumps(obj: Any) -> str:
 def retrieve_license() -> Tuple[PublicKey, str, str]:
     """ Retrieves the license from the environment."""
     return (
-        safe_load(os.environ[LICENSE_KEY_ENV]),
+        safe_load(LICENSE_KEY),
         safe_load(os.environ[LICENSE_KEY_SIG_ENV]),
         os.environ[LICENSEE_ENV],
     )
@@ -60,11 +70,7 @@ def retrieve_license() -> Tuple[PublicKey, str, str]:
 
 def check_license() -> str:
     """ Checks if library is licensed and if so, returns licensee name in clear-text."""
-    if (
-        not var_in_env(LICENSE_KEY_SIG_ENV)
-        or not var_in_env(LICENSEE_ENV)
-        or not var_in_env(LICENSE_KEY_ENV)
-    ):
+    if not var_in_env(LICENSE_KEY_SIG_ENV) or not var_in_env(LICENSEE_ENV):
         warnings.warn(message=WARNING_MESSAGE, category=UserWarning, stacklevel=2)
     else:
         rsa_public_key, rsa_sig_hash, client_name = retrieve_license()
@@ -77,7 +83,7 @@ def check_license() -> str:
             raise EnvironmentError(
                 f"Supplied license for client {client_name} is invalid!"
                 f"Please check ENV variables: "
-                f"{LICENSE_KEY_ENV},{LICENSE_KEY_SIG_ENV},{LICENSEE_ENV}"
+                f"{LICENSE_KEY_SIG_ENV} and {LICENSEE_ENV}"
             )
         else:
             global LICENSED_FOR
