@@ -59,7 +59,7 @@ def retrieve_license() -> Tuple[PublicKey, str, str]:
 
 
 def check_license() -> str:
-    """ Checks if library is licensed and if-so, returns licensee name in clear-text."""
+    """ Checks if library is licensed and if so, returns licensee name in clear-text."""
     if (
         not var_in_env(LICENSE_KEY_SIG_ENV)
         or not var_in_env(LICENSEE_ENV)
