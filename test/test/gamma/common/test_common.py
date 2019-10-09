@@ -13,7 +13,8 @@ def test_deprecated() -> None:
         pass
 
     with pytest.warns(
-        expected_warning=DeprecationWarning, match="Call to deprecated function _f"
+        expected_warning=FutureWarning,
+        match="Call to deprecated function test_deprecated.<locals>._f",
     ):
         _f()
 
@@ -22,7 +23,7 @@ def test_deprecated() -> None:
         pass
 
     with pytest.warns(
-        expected_warning=DeprecationWarning,
-        match="Call to deprecated function _g: test message",
+        expected_warning=FutureWarning,
+        match="Call to deprecated function test_deprecated.<locals>._g: test message",
     ):
         _g()
