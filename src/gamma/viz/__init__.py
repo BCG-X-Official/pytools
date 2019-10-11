@@ -172,7 +172,7 @@ _T_Model = TypeVar("_T_Model")
 _T_Style = TypeVar("_T_Style", bound=DrawStyle)
 
 
-class Drawer(Generic[_T_Model, _T_Style], ABC):
+class Drawer(ABC, Generic[_T_Model, _T_Style]):
     """
     Base class for drawers.
 
