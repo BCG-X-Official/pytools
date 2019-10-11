@@ -124,7 +124,7 @@ setup(
         "pandas>=0.24,<0.25",
         "numpy>=1.16,<1.17",
         "matplotlib>=3.0.0,<3.1.0",
-        "gamma-common @ git+ssh://git@git.sourceai.io/alpha/gamma-common.git@v1.0.0#egg=gamma.common",
+        "gamma-common @ git+ssh://git@git.sourceai.io/BCG/gamma-common.git@1.0.0#egg=gamma.common",
     ],
     dependency_links=[],
     # Optional
