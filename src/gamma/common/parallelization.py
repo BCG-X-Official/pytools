@@ -1,12 +1,15 @@
+"""
+Parallelization support based on the `joblib` package.
+"""
 import logging
 from typing import *
 
-from joblib import delayed, Parallel
+import joblib
 
 log = logging.getLogger(__name__)
 
-_T_Args = TypeVar("_T_Args")
-_T_Return = TypeVar("_T_Return")
+# noinspection PyShadowingBuiltins
+_T = TypeVar("_T")
 
 
 class ParallelizableMixin:
@@ -28,8 +31,8 @@ class ParallelizableMixin:
         self.shared_memory = shared_memory
         self.verbose = verbose
 
-    def _parallel(self) -> Parallel:
-        return Parallel(
+    def _parallel(self) -> joblib.Parallel:
+        return joblib.Parallel(
             n_jobs=self.n_jobs,
             require="sharedmem" if self.shared_memory else None,
             verbose=self.verbose,
@@ -37,6 +40,6 @@ class ParallelizableMixin:
 
     @staticmethod
     def _delayed(
-        function: Callable[_T_Args, _T_Return]
-    ) -> Callable[_T_Args, Tuple[Callable[_T_Args, _T_Return], List, Mapping]]:
-        return delayed(function)
+        function: Callable[..., _T]
+    ) -> Callable[..., Tuple[Callable[..., _T], List, Mapping]]:
+        return joblib.delayed(function)
