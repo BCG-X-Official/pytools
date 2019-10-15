@@ -5,7 +5,8 @@ from joblib import delayed, Parallel
 
 log = logging.getLogger(__name__)
 
-_T = TypeVar("_T")
+_T_Args = TypeVar("_T_Args")
+_T_Return = TypeVar("_T_Return")
 
 
 class ParallelizableMixin:
@@ -34,5 +35,8 @@ class ParallelizableMixin:
             verbose=self.verbose,
         )
 
-    def _delayed(self, function: Callable[..., _T]) -> Callable[..., _T]:
+    @staticmethod
+    def _delayed(
+        function: Callable[_T_Args, _T_Return]
+    ) -> Callable[_T_Args, Tuple[Callable[_T_Args, _T_Return], List, Mapping]]:
         return delayed(function)
