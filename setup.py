@@ -1,6 +1,9 @@
+"""
+Pip package definition
+"""
 from os import path
 
-from setuptools import setup, find_namespace_packages
+from setuptools import find_namespace_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -30,7 +33,7 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="GAMMA Visualizations",
+    description="Visualization framework supporting multiple output styles",
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
