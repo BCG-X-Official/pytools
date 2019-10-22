@@ -20,8 +20,6 @@ from typing import *
 import numpy as np
 import pandas as pd
 
-from gamma.common import ListLike
-
 TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
 log = logging.getLogger(__name__)
@@ -107,10 +105,10 @@ _ALIGNMENT_OPTIONS = ["<", "^", ">"]
 
 
 def format_table(
-    headings: ListLike[str],
+    headings: Sequence[str],
     data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence[Any]]],
-    formats: Optional[ListLike[Optional[str]]] = None,
-    alignment: Optional[ListLike[Optional[str]]] = None,
+    formats: Optional[Sequence[Optional[str]]] = None,
+    alignment: Optional[Sequence[Optional[str]]] = None,
 ) -> str:
     """
     Print a formatted text table
@@ -146,13 +144,13 @@ def format_table(
         else:
             return f"{item:{format_string}}"
 
-    def _iterate_row_data() -> Iterable[ListLike]:
+    def _iterate_row_data() -> Iterable[Sequence]:
         if isinstance(data, pd.DataFrame):
             return (row for _, row in data.iterrows())
         else:
             return iter(data)
 
-    def _make_row(items: ListLike):
+    def _make_row(items: Sequence):
         if len(items) != n_columns:
             raise ValueError(
                 "rows in data matrix must have the same length as arg headings"
