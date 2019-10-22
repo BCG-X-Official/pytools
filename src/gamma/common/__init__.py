@@ -25,29 +25,34 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
-# noinspection PyShadowingBuiltins
-_T = TypeVar("_T")
-ListLike = Union[np.ndarray, pd.Series, pd.Index, Iterable[_T]]
-
 
 def is_list_like(obj: Any) -> bool:
     """
     Check if the object is list-like.
 
-    Objects that are considered list-like are for example Python
-    lists, tuples, sets, NumPy arrays, and Pandas Series.
+    Objects that are considered list-like when they implement methods `len` and
+    `__getitem__`. These include, for example, lists, tuples, sets, NumPy arrays, and
+    Pandas series and indices.
 
-    Strings and datetime objects, however, are not considered list-like.
+    As an exception, the following types are not considered list-like despite
+    implementing the methods above:
+
+    - `str`
+    - `bytes`
+    - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
+        iterating a data frame yields the values of the column index, while numeric \
+        indices access columns as series
+    - :class:`pandas.Panel`: similar behaviour as for data frames
+    - :class:`numpy.ndarray` instances with 0 dimensions
+
 
     :param obj The object to check
     :return `True` if `obj` has list-like properties
     """
 
     return (
-        isinstance(obj, Iterable)
-        # we do not count strings/unicode/bytes as list-like
-        # also exclude Pandas data frames and panels, as iterating them will yield the
-        # column index
+        hasattr(obj, "__len__")
+        and hasattr(obj, "__getitem__")
         and not isinstance(obj, (str, bytes, pd.DataFrame, pd.Panel))
         # exclude zero-dimensional numpy arrays, effectively scalars
         and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
