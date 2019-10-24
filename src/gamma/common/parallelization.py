@@ -8,8 +8,7 @@ import joblib
 
 log = logging.getLogger(__name__)
 
-# noinspection PyShadowingBuiltins
-_T = TypeVar("_T")
+T = TypeVar("T")
 
 
 class ParallelizableMixin:
@@ -58,6 +57,6 @@ class ParallelizableMixin:
 
     @staticmethod
     def _delayed(
-        function: Callable[..., _T]
-    ) -> Callable[..., Tuple[Callable[..., _T], List, Mapping]]:
+        function: Callable[..., T]
+    ) -> Callable[..., Tuple[Callable[..., T], List, Mapping]]:
         return joblib.delayed(function)
