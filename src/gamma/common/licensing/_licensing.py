@@ -1,6 +1,7 @@
 """
-License checking for gamma packages.
+Core implementation of :mod:`gamma.common.licensing`
 """
+
 import base64
 import logging
 import os
@@ -12,7 +13,17 @@ import rsa
 from rsa import PublicKey
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+
+#
+# exported names
+#
+
+__all__ = ["check_license"]
+
+
+#
+# Constants
+#
 
 LICENSE_KEY = """gANjcnNhLmtleQpQdWJsaWNLZXkKcQApgXEBiwECAABJ2G9TBoEQgz4BclMzK4VJ0glO6ae9Fcto
 9EIzJxLCfkavTrOqgP9fim8h7ihH+KwI9m3EcV/JLm/0IP/lLVQQE/h2CmbGGZ1RXqrx/SnbLtCk
@@ -44,6 +55,11 @@ Please direct any queries to any of:
 LICENSED_FOR = "UNLICENSED"
 
 
+#
+# local helper functions
+#
+
+
 def var_in_env(var: str) -> bool:
     """ Checks if a variable is in the environment and not empty. """
     return var in os.environ and os.environ[var].strip() != ""
@@ -66,6 +82,11 @@ def retrieve_license() -> Tuple[PublicKey, str, str]:
         safe_load(os.environ[LICENSE_KEY_SIG_ENV]),
         os.environ[LICENSEE_ENV],
     )
+
+
+#
+# main function
+#
 
 
 def check_license() -> str:
