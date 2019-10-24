@@ -168,11 +168,11 @@ class TextStyle(DrawStyle, ABC):
 #
 
 # type variables
-_T_Model = TypeVar("_T_Model")
-_T_Style = TypeVar("_T_Style", bound=DrawStyle)
+T_Model = TypeVar("T_Model")
+T_Style = TypeVar("T_Style", bound=DrawStyle)
 
 
-class Drawer(ABC, Generic[_T_Model, _T_Style]):
+class Drawer(ABC, Generic[T_Model, T_Style]):
     """
     Base class for drawers.
 
@@ -182,11 +182,11 @@ class Drawer(ABC, Generic[_T_Model, _T_Style]):
         supported (default: `"matplot"`)
     """
 
-    def __init__(self, style: Union[_T_Style, str] = "matplot") -> None:
+    def __init__(self, style: Union[T_Style, str] = "matplot") -> None:
         if isinstance(style, str):
             try:
                 # get the named style from the style dict, and instantiate it
-                self._style: _T_Style = self._get_style_dict()[style]()
+                self._style: T_Style = self._get_style_dict()[style]()
             except KeyError:
                 raise KeyError(f"Unknown named style: {style}")
         elif isinstance(style, DrawStyle):
@@ -198,11 +198,11 @@ class Drawer(ABC, Generic[_T_Model, _T_Style]):
             )
 
     @property
-    def style(self) -> _T_Style:
+    def style(self) -> T_Style:
         """The drawing style used by this drawer."""
         return self._style
 
-    def draw(self, data: _T_Model, title: str) -> None:
+    def draw(self, data: T_Model, title: str) -> None:
         """
         Draw the chart.
         :param data: the data to draw
@@ -220,12 +220,12 @@ class Drawer(ABC, Generic[_T_Model, _T_Style]):
 
     @classmethod
     @abstractmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[_T_Style]]:
+    def _get_style_dict(cls) -> Mapping[str, Type[T_Style]]:
         """
         Get a mapping from names to style classes.
         """
         pass
 
     @abstractmethod
-    def _draw(self, data: _T_Model) -> None:
+    def _draw(self, data: T_Model) -> None:
         pass

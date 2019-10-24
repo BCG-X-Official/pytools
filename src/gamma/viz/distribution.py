@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from gamma.viz import _T_Model, _T_Style, Drawer, DrawStyle, MatplotStyle
+from gamma.viz import T_Model, T_Style, Drawer, DrawStyle, MatplotStyle
 
 __all__ = ["ECDFMatplotStyle", "ECDFDrawer"]
 
@@ -145,7 +145,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
 
     def __init__(
         self,
-        style: Union[_T_Style, str] = "matplot",
+        style: Union[T_Style, str] = "matplot",
         iqr_multiple: Optional[float] = DEFAULT_IQR_MULTIPLE,
         iqr_multiple_far: Optional[float] = DEFAULT_IQR_MULTIPLE_FAR,
     ) -> None:
@@ -166,7 +166,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         self._iqr_multiple = iqr_multiple
         self._iqr_multiple_far = iqr_multiple_far
 
-    def draw(self, data: _T_Model, title: Optional[str] = None) -> None:
+    def draw(self, data: T_Model, title: Optional[str] = None) -> None:
         """
         Draw the chart.
         :param data: the data to draw
