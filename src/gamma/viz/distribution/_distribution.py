@@ -1,21 +1,5 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
-Plotting of distributions for exploratory data visualization
-
-:meth:`plot_ecdf` plots empirical cumulative plots of numerical columns of a a list
-like data (:class:`pandas.Series`, numerical list, etc).
+Core implementation of :mod:`gamma.viz.distribution`
 """
 
 import logging
@@ -26,9 +10,9 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from gamma.viz import T_Model, T_Style, Drawer, DrawStyle, MatplotStyle
+from gamma.viz import Drawer, DrawStyle, MatplotStyle
 
-__all__ = ["ECDFMatplotStyle", "ECDFDrawer"]
+__all__ = ["ECDFStyle", "ECDFMatplotStyle", "ECDFDrawer"]
 
 log = logging.getLogger(__name__)
 
@@ -145,7 +129,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
 
     def __init__(
         self,
-        style: Union[T_Style, str] = "matplot",
+        style: Union[ECDFStyle, str] = "matplot",
         iqr_multiple: Optional[float] = DEFAULT_IQR_MULTIPLE,
         iqr_multiple_far: Optional[float] = DEFAULT_IQR_MULTIPLE_FAR,
     ) -> None:
@@ -166,7 +150,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         self._iqr_multiple = iqr_multiple
         self._iqr_multiple_far = iqr_multiple_far
 
-    def draw(self, data: T_Model, title: Optional[str] = None) -> None:
+    def draw(self, data: Sequence[float], title: Optional[str] = None) -> None:
         """
         Draw the chart.
         :param data: the data to draw

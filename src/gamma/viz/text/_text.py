@@ -1,18 +1,5 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
-Utilities for text rendering
+Core implementation of :mod:`gamma.viz.distribution`
 """
 import logging
 from typing import *
@@ -20,9 +7,11 @@ from typing import *
 import numpy as np
 import pandas as pd
 
-TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
-
 log = logging.getLogger(__name__)
+
+__all__ = ["TextCoordinates", "CharacterMatrix", "format_table"]
+
+TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
 
 class CharacterMatrix:
