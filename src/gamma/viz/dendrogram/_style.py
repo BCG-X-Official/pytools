@@ -1,16 +1,3 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
 Dendrogram styles.
 
@@ -47,6 +34,14 @@ from gamma.viz import DrawStyle, MatplotStyle, RgbaColor, TextStyle
 from gamma.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
+
+__all__ = [
+    "DendrogramHeatmapStyle",
+    "DendrogramLineStyle",
+    "DendrogramReportStyle",
+    "DendrogramStyle",
+]
+
 
 _COLOR_BLACK = "black"
 _COLOR_WHITE = "white"

@@ -1,16 +1,3 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
 The Gamma visualization library, providing MVC-based classes for rendering data in
 different styles, e.g., as charts or plain text.
@@ -28,8 +15,11 @@ from matplotlib.axes import Axes
 
 log = logging.getLogger(__name__)
 
+__all__ = ["Drawer", "DrawStyle", "MatplotStyle", "TextStyle", "RgbaColor"]
+
 # Rgba color class for use in  MatplotStyles
 RgbaColor = Tuple[float, float, float, float]
+
 
 #
 # view: class DrawStyle
