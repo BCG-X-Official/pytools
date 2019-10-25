@@ -26,7 +26,6 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from gamma.common import ListLike
 from gamma.viz import _T_Model, _T_Style, Drawer, DrawStyle, MatplotStyle
 
 __all__ = ["ECDFMatplotStyle", "ECDFDrawer"]
@@ -46,8 +45,8 @@ class _XYSeries(NamedTuple):
     separate lists of the same length.
     """
 
-    x: ListLike[float]
-    y: ListLike[float]
+    x: Sequence[float]
+    y: Sequence[float]
 
 
 class _Ecdf(NamedTuple):
@@ -127,7 +126,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         ax.legend()
 
 
-class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
+class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs).
 
@@ -185,7 +184,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
     def _get_style_dict(cls) -> Mapping[str, Type[ECDFStyle]]:
         return ECDFDrawer._STYLES
 
-    def _draw(self, data: ListLike[float]) -> None:
+    def _draw(self, data: Sequence[float]) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")
         # noinspection PyProtectedMember
@@ -196,7 +195,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
             iqr_multiple_far=self._iqr_multiple_far,
         )
 
-    def _ecdf(self, data: ListLike[float]) -> _Ecdf:
+    def _ecdf(self, data: Sequence[float]) -> _Ecdf:
         """
         Compute ECDF for scalar values.
 
