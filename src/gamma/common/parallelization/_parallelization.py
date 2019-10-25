@@ -38,7 +38,7 @@ class ParallelizableMixin:
         self,
         *,
         n_jobs: Optional[int] = None,
-        shared_memory: bool = False,
+        shared_memory: Optional[bool] = None,
         pre_dispatch: Optional[Union[str, int]] = None,
         verbose: Optional[int] = None,
         **kwargs,
