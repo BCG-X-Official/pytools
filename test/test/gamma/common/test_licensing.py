@@ -23,14 +23,14 @@ def clear_environment() -> None:
 def test_no_license_warns(clear_environment) -> None:
     with pytest.warns(expected_warning=UserWarning):
         # have to ensure it's not cached already
-        licensing.check_license()
+        licensing.check_license(__package__)
 
 
 def test_valid_license(clear_environment, monkeypatch) -> None:
-    from gamma.common.licensing._licensing import LICENSED_FOR
+    from gamma.common.licensing._licensing import licensee
 
-    licensing.check_license()
-    assert LICENSED_FOR == "UNLICENSED"
+    licensing.check_license(__package__)
+    assert licensee == "UNLICENSED"
     (pubkey, privkey) = rsa.newkeys(512)
 
     client = "bcg client"
@@ -53,9 +53,9 @@ def test_valid_license(clear_environment, monkeypatch) -> None:
     assert ret_key == pubkey
     assert ret_sig == signature
 
-    licensing.check_license()
+    licensing.check_license(__package__)
 
     # noinspection PyProtectedMember
-    from gamma.common.licensing._licensing import LICENSED_FOR
+    from gamma.common.licensing._licensing import licensee
 
-    assert LICENSED_FOR == client
+    assert licensee == client
