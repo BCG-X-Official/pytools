@@ -52,7 +52,8 @@ Please direct any queries to any of:
 - Florent Martin
 """
 
-LICENSED_FOR = "UNLICENSED"
+licensee = "UNLICENSED"
+warning_shown = False
 
 
 #
@@ -89,10 +90,18 @@ def retrieve_license() -> Tuple[PublicKey, str, str]:
 #
 
 
-def check_license() -> str:
+def check_license(package: str) -> str:
     """ Checks if library is licensed and if so, returns licensee name in clear-text."""
     if not var_in_env(LICENSE_KEY_SIG_ENV) or not var_in_env(LICENSEE_ENV):
-        warnings.warn(message=WARNING_MESSAGE, category=UserWarning, stacklevel=2)
+        global warning_shown
+        if not warning_shown:
+            warnings.warn(message=WARNING_MESSAGE, category=UserWarning, stacklevel=2)
+            warning_shown = True
+        warnings.warn(
+            message=f"No license in place for package {package}.",
+            category=UserWarning,
+            stacklevel=2,
+        )
     else:
         rsa_public_key, rsa_sig_hash, client_name = retrieve_license()
 
@@ -102,13 +111,13 @@ def check_license() -> str:
 
         if not license_verified:
             raise EnvironmentError(
-                f"Supplied license for client {client_name} is invalid!"
-                f"Please check ENV variables: "
+                f"Supplied license for client {client_name} is invalid. "
+                f"Please check environment variables "
                 f"{LICENSE_KEY_SIG_ENV} and {LICENSEE_ENV}"
             )
         else:
-            global LICENSED_FOR
-            LICENSED_FOR = client_name
-            logger.info(f"alpha library successfully licensed for: {LICENSED_FOR}")
+            global licensee
+            licensee = client_name
+            logger.info(f"alpha package {package} successfully licensed to: {licensee}")
 
-    return LICENSED_FOR
+    return licensee
