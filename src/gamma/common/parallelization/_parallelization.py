@@ -30,8 +30,7 @@ T = TypeVar("T")
 
 class ParallelizableMixin:
     """
-    Mix-in class indicating the ability to parallelize one or more operations using
-    joblib.
+    Mix-in class that supports parallelizing one or more operations using joblib.
     """
 
     def __init__(
