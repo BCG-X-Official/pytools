@@ -113,16 +113,6 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs).
-
-    :param style: the style of the chart; either as a \
-        :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
-        default style. Permissible names include "matplot" for a style supporting \
-        Matplotlib (default: `"matplot"`).
-    :param iqr_multiple: iqr multiple to determine outliers. If `None`, then no \
-        outliers and far outliers are computed (default: 1.5).
-    :param iqr_multiple_far: iqr multiple to determine far outliers. If `None`, then \
-        no far outliers are computed. Should be greater than `iqr_multiple` when both \
-        are defined (default: 3.0).
     """
 
     _STYLES = {"matplot": ECDFMatplotStyle}
@@ -132,7 +122,20 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         style: Union[ECDFStyle, str] = "matplot",
         iqr_multiple: Optional[float] = DEFAULT_IQR_MULTIPLE,
         iqr_multiple_far: Optional[float] = DEFAULT_IQR_MULTIPLE_FAR,
+        hide_far_outliers: Optional[bool] = False,
     ) -> None:
+        """
+        :param style: the style of the chart; either as a \
+            :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
+            default style. Permissible names include "matplot" for a style supporting \
+            Matplotlib (default: `"matplot"`).
+        :param iqr_multiple: iqr multiple to determine outliers. If `None`, then no \
+            outliers and far outliers are computed (default: 1.5).
+        :param iqr_multiple_far: iqr multiple to determine far outliers. If `None`, then \
+            no far outliers are computed. Should be greater than `iqr_multiple` when both \
+            are defined (default: 3.0).
+        :param hide_far_outliers: if `True`, do not plot far outliers (default: `False`)
+        """
         super().__init__(style=style)
 
         if iqr_multiple_far:
@@ -149,6 +152,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
 
         self._iqr_multiple = iqr_multiple
         self._iqr_multiple_far = iqr_multiple_far
+        self._hide_far_outliers = hide_far_outliers
 
     def draw(self, data: Sequence[float], title: Optional[str] = None) -> None:
         """
@@ -242,5 +246,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         return _Ecdf(
             _XYSeries(x[inlier_mask], y[inlier_mask]),
             _XYSeries(x[outlier_mask], y[outlier_mask]),
-            _XYSeries(x[far_out_mask], y[far_out_mask]),
+            _XYSeries([], [])
+            if self._hide_far_outliers
+            else _XYSeries(x[far_out_mask], y[far_out_mask]),
         )
