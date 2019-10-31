@@ -12,6 +12,7 @@ from typing import TextIO
 import matplotlib.pyplot as plt
 from matplotlib import text as mt
 from matplotlib.axes import Axes
+from matplotlib.backend_bases import RendererBase
 
 log = logging.getLogger(__name__)
 
@@ -59,25 +60,29 @@ class MatplotStyle(DrawStyle, ABC):
 
     def __init__(self, ax: Optional[Axes] = None, **kwargs) -> None:
         super().__init__(**kwargs)
-        self._ax = ax = plt.gca() if ax is None else ax
-        self._renderer = ax.figure.canvas.get_renderer()
+        self._ax = ax
+        self._renderer: Optional[RendererBase] = None
 
     @property
     def ax(self) -> Axes:
         """
         The matplot :class:`~matplotlib.axes.Axes` object to draw the chart in.
         """
-        return self._ax
+        ax = self._ax
+        return plt.gca() if ax is None else ax
 
     def _drawing_start(self, title: str) -> None:
         """
         Called once by the drawer when starting to draw a new chart.
         :param title: the title of the chart
         """
-        self.ax.set_title(label=title)
+        ax = self.ax
+        self._renderer = ax.figure.canvas.get_renderer()
+        ax.set_title(label=title)
 
     def _drawing_finalize(self) -> None:
-        pass
+        if self._ax is None:
+            plt.show()
 
     def text_size(
         self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
