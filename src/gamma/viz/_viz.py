@@ -69,20 +69,30 @@ class MatplotStyle(DrawStyle, ABC):
         The matplot :class:`~matplotlib.axes.Axes` object to draw the chart in.
         """
         ax = self._ax
-        return plt.gca() if ax is None else ax
+        if ax is None:
+            ax = self._ax = plt.gca()
+        return ax
+
+    @property
+    def renderer(self) -> RendererBase:
+        """
+        The renderer used by this style's :class:`~matplotlib.axes.Axes` object
+        (see :attr:`.ax`)
+        """
+        renderer = self._renderer
+        if renderer is None:
+            self._renderer = renderer = self.ax.figure.canvas.get_renderer()
+        return renderer
 
     def _drawing_start(self, title: str) -> None:
         """
         Called once by the drawer when starting to draw a new chart.
         :param title: the title of the chart
         """
-        ax = self.ax
-        self._renderer = ax.figure.canvas.get_renderer()
-        ax.set_title(label=title)
+        self.ax.set_title(label=title)
 
     def _drawing_finalize(self) -> None:
-        if self._ax is None:
-            plt.show()
+        pass
 
     def text_size(
         self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
