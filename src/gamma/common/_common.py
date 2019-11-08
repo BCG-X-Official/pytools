@@ -77,5 +77,12 @@ def deprecated(function: Callable = None, *, message: str = None):
 
     if function is None:
         return _deprecated_inner
-    else:
+    elif callable(function):
         return _deprecated_inner(function)
+    elif isinstance(function, str):
+        raise ValueError(
+            "Deprecation message not provided as a keyword argument. "
+            'Usage: @deprecated(message="...")'
+        )
+    else:
+        raise ValueError("Deprecated object must be callable")
