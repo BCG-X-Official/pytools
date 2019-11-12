@@ -27,8 +27,8 @@ def is_list_like(obj: Any) -> bool:
     - `str`
     - `bytes`
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
-        iterating a data frame yields the values of the column index, while numeric \
-        indices access columns as series
+        iterating a data frame yields the values of the column index, while the length \
+        of a data frame is its number of rows
     - :class:`pandas.Panel`: similar behaviour as for data frames
     - :class:`numpy.ndarray` instances with 0 dimensions
 
