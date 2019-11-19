@@ -32,16 +32,6 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     The class has a public method :meth:`~.draw` which draws the dendrogram.
     """
 
-    def __init__(self, style: Union[DendrogramStyle, str] = "matplot") -> None:
-        """
-        :param style: the style of the dendrogram; either as a
-            :class:`~gamma.viz.dendrogram.DendrogramStyle` instance, or as the name of \
-            a default style. Permissible names include "matplot" for a style \
-            supporting Matplotlib, and "text" for a text-only plot to stdout \
-            (default: `"matplot"`)
-        """
-        super().__init__(style=style)
-
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
 
     @classmethod
