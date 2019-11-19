@@ -23,7 +23,12 @@ class DrawStyle(ABC):
     """
 
     def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+        super().__init__()
+        if len(kwargs) > 0:
+            raise KeyError(
+                f'unknown argument{"s" if len(kwargs) > 1 else ""}: '
+                f'{", ". join(kwargs.keys())}'
+            )
         self._lock = Lock()
 
     @abstractmethod

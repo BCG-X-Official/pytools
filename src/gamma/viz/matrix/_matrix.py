@@ -8,7 +8,7 @@ from typing import *
 
 import pandas as pd
 from matplotlib.axes import Axes, mticker
-from matplotlib.colors import Normalize
+from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter
 
 from gamma.viz import ColorbarMatplotStyle, Drawer, DrawStyle, TextStyle
@@ -43,12 +43,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     def __init__(
         self,
         *,
-        normalize: Optional[Normalize] = None,
-        ax: Optional[Axes] = None,
+        max_ticks: Optional[Tuple[float, float]] = None,
+        colormap_normalize: Optional[Normalize] = None,
+        colormap: Optional[Union[str, Colormap]] = None,
         colorbar_label: Optional[str] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        max_ticks: Optional[Tuple[float, float]] = None,
+        ax: Optional[Axes] = None,
         **kwargs,
     ):
         """
@@ -56,11 +57,15 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             `None` to determine number of labels automatically (default: `None`)
         """
         super().__init__(
-            colorbar_normalize=normalize if normalize is not None else Normalize(),
-            ax=ax,
+            colormap_normalize=colormap_normalize
+            if colormap_normalize is not None
+            else Normalize(),
+            colormap=colormap,
             colorbar_label=colorbar_label,
             colorbar_major_formatter=colorbar_major_formatter,
             colorbar_minor_formatter=colorbar_minor_formatter,
+            ax=ax,
+            **kwargs,
         )
 
         if max_ticks is not None and not (
@@ -71,14 +76,16 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             )
         self.max_ticks = max_ticks
 
+    __init__.__doc__ += ColorbarMatplotStyle.__init__.__doc__
+
     # noinspection PyMissingOrEmptyDocstring
     def draw_matrix(self, matrix: pd.DataFrame) -> None:
-        self.normalize.autoscale_None(matrix.values)
+        self.colormap_normalize.autoscale_None(matrix.values)
         ax = self.ax
         ax.imshow(
             matrix.values,
             cmap=self.colormap,
-            norm=self.normalize,
+            norm=self.colormap_normalize,
             origin="upper",
             interpolation="nearest",
             aspect="equal",

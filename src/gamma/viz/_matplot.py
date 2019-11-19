@@ -131,7 +131,7 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
     def __init__(
         self,
         *,
-        colorbar_normalize: Normalize,
+        colormap_normalize: Normalize,
         colormap: Optional[Union[str, Colormap]] = None,
         colorbar_label: Optional[str] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
@@ -140,7 +140,7 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         **kwargs,
     ):
         """
-        :param colorbar_normalize: the :class:`~matplotlib.colors.Normalize` object \
+        :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object \
             that maps values to color indices
         :param colormap: the color map to use; either a name or a \
             :class:`~matplotlib.colors.Colorbar` instance (default: ``"plasma"``). \
@@ -154,7 +154,7 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         """
         super().__init__(ax=ax, **kwargs)
 
-        self.normalize = colorbar_normalize
+        self.colormap_normalize = colormap_normalize
         if isinstance(colormap, Colormap):
             self.colormap = colormap
         else:
@@ -176,7 +176,7 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         self.colorbar = ColorbarBase(
             cax,
             cmap=self.colormap,
-            norm=self.normalize,
+            norm=self.colormap_normalize,
             label="" if self.colorbar_label is None else self.colorbar_label,
             orientation="vertical",
         )
@@ -200,4 +200,4 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         #     if weight <= self._min_weight
         #     else 1 - math.log(weight) / math.log(self._min_weight)
         # )
-        return self.colormap(self.normalize(z))
+        return self.colormap(self.colormap_normalize(z))
