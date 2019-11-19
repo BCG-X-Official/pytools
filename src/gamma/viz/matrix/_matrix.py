@@ -6,8 +6,10 @@ import logging
 from abc import ABC, abstractmethod
 from typing import *
 
+import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes, mticker
+from matplotlib.axis import Axis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter
 
@@ -43,7 +45,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     def __init__(
         self,
         *,
-        max_ticks: Optional[Tuple[float, float]] = None,
+        max_ticks: Optional[Tuple[int, int]] = None,
         colormap_normalize: Optional[Normalize] = None,
         colormap: Optional[Union[str, Colormap]] = None,
         colorbar_label: Optional[str] = None,
@@ -80,7 +82,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
     # noinspection PyMissingOrEmptyDocstring
     def draw_matrix(self, matrix: pd.DataFrame) -> None:
-        ax = self.ax
+
+        ax: Axes = self.ax
         ax.imshow(
             matrix.values,
             cmap=self.colormap,
@@ -91,31 +94,43 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         )
 
         # determine if a number of labels has been configured for this style
-        n_ticks = self.max_ticks
-        if n_ticks is None:
-            x_bins = y_bins = None
+        max_ticks = self.max_ticks
+        if max_ticks is None:
+            max_x_ticks = max_y_ticks = None
         else:
-            x_bins, y_bins = n_ticks
+            max_x_ticks, max_y_ticks = max_ticks
+
+        # rotate x labels if they are categorical
+        if not matrix.columns.is_numeric():
+            ax.tick_params(axis="x", labelrotation=45)
 
         # set the number of x and y ticks
-        ax.xaxis.set_major_locator(
-            mticker.MaxNLocator(
-                nbins=x_bins if x_bins is not None else "auto",
-                steps=[1, 2, 5, 10],
-                integer=True,
-                prune="lower",
+
+        def _set_ticks(index: pd.Index, max_bins: int, axis: Axis):
+            # determine number of bins
+            if max_bins is not None:
+                n_bins = max_bins
+            elif index.is_numeric():
+                n_bins = "auto"
+            else:
+                n_bins = len(index)
+
+            locator = mticker.MaxNLocator(
+                nbins=n_bins, steps=[1, 2, 5, 10], integer=True, prune="upper"
             )
-        )
-        ax.yaxis.set_major_locator(
-            mticker.MaxNLocator(
-                nbins=y_bins if y_bins is not None else "auto",
-                steps=[1, 2, 5, 10],
-                integer=True,
-                prune="lower",
-            )
-        )
-        ax.set_xticklabels(matrix.columns)
-        ax.set_yticklabels(matrix.index)
+            axis.set_major_locator(locator)
+
+            tick_locations: np.ndarray = axis.get_ticklocs()
+            if len(index) > len(tick_locations):
+                # we can plot only selected tick labels: look up labels for the
+                # visible tick indices
+                axis.set_ticklabels(index[tick_locations.astype(int)])
+            else:
+                # we can plot all tick labels
+                axis.set_ticklabels(index.values)
+
+        _set_ticks(index=matrix.columns, max_bins=max_x_ticks, axis=ax.xaxis)
+        _set_ticks(index=matrix.index, max_bins=max_y_ticks, axis=ax.yaxis)
 
     draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
 
