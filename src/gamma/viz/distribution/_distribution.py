@@ -68,6 +68,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
     def __init__(
         self,
+        *,
         ax: Optional[Axes] = None,
         color_outlier: str = DEFAULT_COLOR_OUTLIER,
         color_far_outlier: str = DEFAULT_COLOR_FAR_OUTLIER,
