@@ -41,7 +41,7 @@ class MatplotStyle(DrawStyle, ABC):
 
     def __init__(self, *, ax: Optional[Axes] = None, **kwargs) -> None:
         """
-        :param ax: optional axes object to draw on; if `Null` use pyplot's current axes
+        :param ax: optional axes object to draw on; if `Null`, use pyplot's current axes
         """
         super().__init__(**kwargs)
         self._ax = ax

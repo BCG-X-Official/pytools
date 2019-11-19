@@ -35,6 +35,7 @@ log = logging.getLogger(__name__)
 __all__ = [
     "DendrogramHeatmapStyle",
     "DendrogramLineStyle",
+    "DendrogramMatplotStyle",
     "DendrogramReportStyle",
     "DendrogramStyle",
 ]
@@ -119,9 +120,8 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
     _PERCENTAGE_FORMATTER = _PercentageFormatter()
 
     def __init__(self, *, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
-        f"""
-        {MatplotStyle.__init__.__doc__}
-        :param min_weight: the min weight on the feature importance color scale, must \
+        """
+        :param min_weight: the min weight on the feature importance color scale; must \
             be greater than 0 and smaller than 1 (default: 0.01)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
@@ -133,6 +133,8 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
             major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
             minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
+
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
     def _drawing_start(self, title: str) -> None:
         """
