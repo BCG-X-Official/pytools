@@ -7,15 +7,18 @@ from abc import ABC
 from typing import *
 
 import matplotlib.pyplot as plt
-from matplotlib import text as mt
+from matplotlib import cm, text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
+from matplotlib.colorbar import ColorbarBase, make_axes
+from matplotlib.colors import Normalize
+from matplotlib.ticker import Formatter
 
 from ._viz import DrawStyle
 
 log = logging.getLogger(__name__)
 
-__all__ = ["MatplotStyle", "RgbaColor"]
+__all__ = ["ColorbarMatplotStyle", "MatplotStyle", "RgbaColor"]
 
 #
 # Type definitions
@@ -24,17 +27,22 @@ __all__ = ["MatplotStyle", "RgbaColor"]
 # Rgba color class for use in  MatplotStyles
 RgbaColor = Tuple[float, float, float, float]
 
+
 #
 # Class definitions
 #
+
+
 class MatplotStyle(DrawStyle, ABC):
     """Matplotlib drawer style.
 
     Implementations must define :meth:`~DrawStyle.draw_title`.
-    :param ax: optional axes object to draw on; if `Null` use pyplot's current axes
     """
 
-    def __init__(self, ax: Optional[Axes] = None, **kwargs) -> None:
+    def __init__(self, *, ax: Optional[Axes] = None, **kwargs) -> None:
+        """
+        :param ax: optional axes object to draw on; if `Null` use pyplot's current axes
+        """
         super().__init__(**kwargs)
         self._ax = ax
         self._renderer: Optional[RendererBase] = None
@@ -108,3 +116,61 @@ class MatplotStyle(DrawStyle, ABC):
         (x0, y0), (x1, y1) = ax.transData.inverted().transform(extent)
 
         return abs(x1 - x0), abs(y1 - y0)
+
+
+class ColorbarMatplotStyle(MatplotStyle, ABC):
+    """
+    Matplot style with added support for a color bar.
+
+    THe associated plot uses a color gradient to indicate a scalar value,
+    and the color bar acts as the legend for this color gradient.
+    """
+
+    def __init__(
+        self,
+        *,
+        normalize: Normalize,
+        ax: Optional[Axes] = None,
+        major_formatter: Optional[Formatter] = None,
+        minor_formatter: Optional[Formatter] = None,
+        **kwargs,
+    ):
+        super().__init__(ax=ax, **kwargs)
+
+        self._normalize = normalize
+        self._major_formatter = major_formatter
+        self._minor_formatter = minor_formatter
+
+        self._cm = None
+        self._cb = None
+
+    def _drawing_start(self, title: str) -> None:
+        super()._drawing_start(title=title)
+
+        cax, _ = make_axes(self.ax)
+        self._cm = cm.get_cmap(name="plasma", lut=256)
+        self._cb = ColorbarBase(
+            cax,
+            cmap=self._cm,
+            norm=self._normalize,
+            label="feature importance",
+            orientation="vertical",
+        )
+
+        cax.yaxis.set_minor_formatter(self._minor_formatter)
+        cax.yaxis.set_major_formatter(self._major_formatter)
+
+    def color(self, z: float) -> RgbaColor:
+        """
+        Return the color associated with a given scalar, based on the normalization
+        defined for this style
+
+        :param z: the scalar to be color-encoded
+        :return: the color as a RGBA tuple
+        """
+        # return self._cm(
+        #     0
+        #     if weight <= self._min_weight
+        #     else 1 - math.log(weight) / math.log(self._min_weight)
+        # )
+        return self._cm(self._normalize(z))

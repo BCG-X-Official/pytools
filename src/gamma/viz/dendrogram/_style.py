@@ -19,18 +19,15 @@ inclusion in text reports.
 """
 
 import logging
-import math
 from abc import ABC, abstractmethod
 from typing import *
 from typing import TextIO
 
-from matplotlib import cm
 from matplotlib.axes import Axes
-from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import LogNorm
 from matplotlib.ticker import Formatter
 
-from gamma.viz import DrawStyle, MatplotStyle, RgbaColor, TextStyle
+from gamma.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle, TextStyle
 from gamma.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
@@ -41,7 +38,6 @@ __all__ = [
     "DendrogramReportStyle",
     "DendrogramStyle",
 ]
-
 
 _COLOR_BLACK = "black"
 _COLOR_WHITE = "white"
@@ -61,9 +57,6 @@ class DendrogramStyle(DrawStyle, ABC):
     Implementations must define `draw_leaf_labels`, `draw_title`, `draw_link_leg` \
     and `draw_link_connector`.
     """
-
-    def __init__(self) -> None:
-        super().__init__()
 
     @abstractmethod
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
@@ -114,30 +107,32 @@ class DendrogramStyle(DrawStyle, ABC):
         pass
 
 
-class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
+class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
     """
     Base class for Matplotlib styles for dendrogram.
 
     Provide basic support for plotting a color legend for feature importance,
     and providing the `Axes` object for plotting the actual dendrogram including
     tick marks for the feature distance axis.
-
-    :param ax: :class:`matplotlib.axes.Axes` object to draw on
-    :param min_weight: the min weight on the feature importance color scale, must be \
-                       greater than 0 and smaller than 1 (default: 0.01)
     """
 
     _PERCENTAGE_FORMATTER = _PercentageFormatter()
 
-    def __init__(self, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
-        super().__init__(ax=ax)
-
+    def __init__(self, *, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
+        f"""
+        {MatplotStyle.__init__.__doc__}
+        :param min_weight: the min weight on the feature importance color scale, must \
+            be greater than 0 and smaller than 1 (default: 0.01)
+        """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
-        self._min_weight = min_weight
 
-        self._cm = None
-        self._cb = None
+        super().__init__(
+            ax=ax,
+            normalize=LogNorm(min_weight, 1),
+            major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+        )
 
     def _drawing_start(self, title: str) -> None:
         """
@@ -148,41 +143,17 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
 
         self.ax.ticklabel_format(axis="x", scilimits=(-3, 3))
 
-        cax, _ = make_axes(self.ax)
-        self._cm = cm.get_cmap(name="plasma", lut=256)
-        self._cb = ColorbarBase(
-            cax,
-            cmap=self._cm,
-            norm=LogNorm(self._min_weight, 1),
-            label="feature importance",
-            orientation="vertical",
-        )
-
-        cax.yaxis.set_minor_formatter(DendrogramMatplotStyle._PERCENTAGE_FORMATTER)
-        cax.yaxis.set_major_formatter(DendrogramMatplotStyle._PERCENTAGE_FORMATTER)
-
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
         """Draw leaf labels on the dendrogram."""
         y_axis = self.ax.yaxis
         y_axis.set_ticks(ticks=range(len(labels)))
         y_axis.set_ticklabels(ticklabels=labels)
 
-    def color(self, weight: float) -> RgbaColor:
-        """
-        Return the color associated to the feature weight (= importance).
-
-        :param weight: the weight
-        :return: the color as a RGBA tuple
-        """
-        return self._cm(
-            0
-            if weight <= self._min_weight
-            else 1 - math.log(weight) / math.log(self._min_weight)
-        )
-
 
 class DendrogramLineStyle(DendrogramMatplotStyle):
-    """The classical dendrogram style, as a coloured tree diagram."""
+    """
+    Plot dendrograms in the classical style, as a coloured tree diagram.
+    """
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: float, weight: float, tree_height
@@ -250,13 +221,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
 class DendrogramHeatmapStyle(DendrogramMatplotStyle):
     """
     Plot dendrograms with a heat map style.
-
-    :param ax: a matplotlib `Axes`
-    :param min_weight: the min weight in the color bar
     """
-
-    def __init__(self, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
-        super().__init__(ax=ax, min_weight=min_weight)
 
     def _drawing_start(self, title: str) -> None:
         """
