@@ -11,7 +11,7 @@ from matplotlib import cm, text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Normalize
+from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter
 
 from ._viz import DrawStyle
@@ -122,35 +122,57 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
     """
     Matplot style with added support for a color bar.
 
-    THe associated plot uses a color gradient to indicate a scalar value,
+    The associated plot uses a color gradient to indicate a scalar value,
     and the color bar acts as the legend for this color gradient.
     """
+
+    DEFAULT_COLORMAP = "plasma"
 
     def __init__(
         self,
         *,
-        normalize: Normalize,
-        ax: Optional[Axes] = None,
+        colorbar_normalize: Normalize,
+        colormap: Optional[Union[str, Colormap]] = None,
         colorbar_label: Optional[str] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
+        ax: Optional[Axes] = None,
         **kwargs,
     ):
+        """
+        :param colorbar_normalize: the :class:`~matplotlib.colors.Normalize` object \
+            that maps values to color indices
+        :param colormap: the color map to use; either a name or a \
+            :class:`~matplotlib.colors.Colorbar` instance (default: ``"plasma"``). \
+            For an overview of named colormaps, see \
+            `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_
+        :param colorbar_label: test to use as the label for the color bar (optional)
+        :param colorbar_major_formatter: major tick formatter for the color bar \
+            (optional)
+        :param colorbar_minor_formatter: minor tick formatter for the color bar \
+            (optional)
+        """
         super().__init__(ax=ax, **kwargs)
 
-        self.normalize = normalize
+        self.normalize = colorbar_normalize
+        if isinstance(colormap, Colormap):
+            self.colormap = colormap
+        else:
+            if colormap is None:
+                colormap = ColorbarMatplotStyle.DEFAULT_COLORMAP
+            self.colormap = cm.get_cmap(name=colormap)
         self.colorbar_label = colorbar_label
         self.colorbar_major_formatter = colorbar_major_formatter
         self.colorbar_minor_formatter = colorbar_minor_formatter
 
-        self.colormap = None
         self.colorbar = None
+
+    __init__.__doc__ += MatplotStyle.__init__.__doc__
 
     def _drawing_start(self, title: str) -> None:
         super()._drawing_start(title=title)
 
         cax, _ = make_axes(self.ax)
-        self.colormap = cm.get_cmap(name="plasma", lut=256)
         self.colorbar = ColorbarBase(
             cax,
             cmap=self.colormap,
