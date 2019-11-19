@@ -33,6 +33,12 @@ class TextStyle(DrawStyle, ABC):
         self._out = sys.stdout if out is None else out
         self._width = width
 
+    def _drawing_start(self, title: str) -> None:
+        """
+        Write the title to :attr:`.out`.
+        """
+        print(title, file=self.out)
+
     @property
     def out(self) -> TextIO:
         """

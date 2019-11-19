@@ -130,8 +130,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
         super().__init__(
             ax=ax,
             normalize=LogNorm(min_weight, 1),
-            major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
-            minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_label="feature importance",
+            colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
