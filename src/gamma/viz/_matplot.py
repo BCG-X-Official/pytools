@@ -169,8 +169,8 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
 
     __init__.__doc__ += MatplotStyle.__init__.__doc__
 
-    def _drawing_start(self, title: str) -> None:
-        super()._drawing_start(title=title)
+    def _drawing_finalize(self) -> None:
+        super()._drawing_finalize()
 
         cax, _ = make_axes(self.ax)
         self.colorbar = ColorbarBase(
