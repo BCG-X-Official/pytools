@@ -30,7 +30,7 @@ class DrawStyle(ABC):
     def _drawing_start(self, title: str) -> None:
         """
         Start drawing a new chart.
-        :title: the chart title
+        :param title: the chart title
         """
         pass
 
@@ -53,14 +53,15 @@ T_Style = TypeVar("T_Style", bound=DrawStyle)
 class Drawer(ABC, Generic[T_Model, T_Style]):
     """
     Base class for drawers.
-
-    :param style: the style of the chart; either as a :class:`~gamma.viz.DrawStyle` \
-        instance, or as the name of a default style. Permissible names include \
-        "matplot" for a style supporting Matplotlib, and "text" if text rendering is \
-        supported (default: `"matplot"`)
     """
 
     def __init__(self, style: Union[T_Style, str] = "matplot") -> None:
+        """
+        :param style: the style of the chart; either as a
+            :class:`~gamma.viz.DrawStyle` instance, or as the name of a default style. \
+            Permissible names include "matplot" for a style supporting Matplotlib, and \
+            "text" if text rendering is supported (default: `"matplot"`)
+        """
         if isinstance(style, str):
             try:
                 # get the named style from the style dict, and instantiate it
