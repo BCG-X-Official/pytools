@@ -80,7 +80,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
     # noinspection PyMissingOrEmptyDocstring
     def draw_matrix(self, matrix: pd.DataFrame) -> None:
-        self.colormap_normalize.autoscale_None(matrix.values)
         ax = self.ax
         ax.imshow(
             matrix.values,
