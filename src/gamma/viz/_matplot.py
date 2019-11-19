@@ -131,34 +131,39 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         *,
         normalize: Normalize,
         ax: Optional[Axes] = None,
-        major_formatter: Optional[Formatter] = None,
-        minor_formatter: Optional[Formatter] = None,
+        colorbar_label: Optional[str] = None,
+        colorbar_major_formatter: Optional[Formatter] = None,
+        colorbar_minor_formatter: Optional[Formatter] = None,
         **kwargs,
     ):
         super().__init__(ax=ax, **kwargs)
 
-        self._normalize = normalize
-        self._major_formatter = major_formatter
-        self._minor_formatter = minor_formatter
+        self.normalize = normalize
+        self.colorbar_label = colorbar_label
+        self.colorbar_major_formatter = colorbar_major_formatter
+        self.colorbar_minor_formatter = colorbar_minor_formatter
 
-        self._cm = None
-        self._cb = None
+        self.colormap = None
+        self.colorbar = None
 
     def _drawing_start(self, title: str) -> None:
         super()._drawing_start(title=title)
 
         cax, _ = make_axes(self.ax)
-        self._cm = cm.get_cmap(name="plasma", lut=256)
-        self._cb = ColorbarBase(
+        self.colormap = cm.get_cmap(name="plasma", lut=256)
+        self.colorbar = ColorbarBase(
             cax,
-            cmap=self._cm,
-            norm=self._normalize,
-            label="feature importance",
+            cmap=self.colormap,
+            norm=self.normalize,
+            label="" if self.colorbar_label is None else self.colorbar_label,
             orientation="vertical",
         )
 
-        cax.yaxis.set_minor_formatter(self._minor_formatter)
-        cax.yaxis.set_major_formatter(self._major_formatter)
+        if self.colorbar_major_formatter is not None:
+            cax.yaxis.set_major_formatter(self.colorbar_major_formatter)
+
+        if self.colorbar_minor_formatter is not None:
+            cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
 
     def color(self, z: float) -> RgbaColor:
         """
@@ -173,4 +178,4 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         #     if weight <= self._min_weight
         #     else 1 - math.log(weight) / math.log(self._min_weight)
         # )
-        return self._cm(self._normalize(z))
+        return self.colormap(self.normalize(z))
