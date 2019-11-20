@@ -66,7 +66,7 @@ class MatplotStyle(DrawStyle, ABC):
         """
         renderer = self._renderer
         if renderer is None:
-            self._renderer = renderer = get_renderer(self.ax.figure.canvas)
+            self._renderer = renderer = get_renderer(self.ax.figure)
         return renderer
 
     def _drawing_start(self, title: str) -> None:
