@@ -116,7 +116,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                 n_bins = len(index)
 
             locator = mticker.MaxNLocator(
-                nbins=n_bins, steps=[1, 2, 5, 10], integer=True, prune="upper"
+                nbins=n_bins, steps=[1, 2, 5, 10], integer=True, prune="both"
             )
             axis.set_major_locator(locator)
 
