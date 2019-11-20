@@ -5,7 +5,7 @@ The dendrogram styles are given as a parameter to a
 :class:`~gamma.viz.DendrogramDrawer` and determine the style of the
 plot.
 
-:class:`~DendrogramMatplotStyle` is a an abstract base class for styles using
+:class:`~BaseDendrogramMatplotStyle` is a an abstract base class for styles using
 matplotlib.
 
 :class:`~DendrogramLineStyle` renders dendrogram trees in the classical style as a line
@@ -33,9 +33,9 @@ from gamma.viz.text import CharacterMatrix
 log = logging.getLogger(__name__)
 
 __all__ = [
+    "BaseDendrogramMatplotStyle",
     "DendrogramHeatmapStyle",
     "DendrogramLineStyle",
-    "DendrogramMatplotStyle",
     "DendrogramReportStyle",
     "DendrogramStyle",
 ]
@@ -108,7 +108,7 @@ class DendrogramStyle(DrawStyle, ABC):
         pass
 
 
-class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
+class BaseDendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
     """
     Base class for Matplotlib styles for dendrogram.
 
@@ -138,20 +138,20 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
             colormap=colormap,
             colormap_normalize=LogNorm(min_weight, 1),
             colorbar_label="feature importance",
-            colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
-            colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_major_formatter=BaseDendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_minor_formatter=BaseDendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def _drawing_start(self, title: str) -> None:
-        """
-        Called once by the drawer when starting to draw a new dendrogram.
-        :param title: the title of the dendrogram
-        """
-        super()._drawing_start(title=title)
+    def _drawing_finalize(self) -> None:
+        super()._drawing_finalize()
 
-        self.ax.ticklabel_format(axis="x", scilimits=(-3, 3))
+        # configure the axes
+        ax = self.ax
+        ax.set_xlabel("feature distance")
+        ax.set_ylabel("feature")
+        ax.ticklabel_format(axis="x", scilimits=(-3, 3))
 
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
         """Draw leaf labels on the dendrogram."""
@@ -160,7 +160,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
         y_axis.set_ticklabels(ticklabels=labels)
 
 
-class DendrogramLineStyle(DendrogramMatplotStyle):
+class DendrogramLineStyle(BaseDendrogramMatplotStyle):
     """
     Plot dendrograms in the classical style, as a coloured tree diagram.
     """
@@ -228,7 +228,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         self.ax.plot((x1, x2), (y1, y2), color=self.color(weight))
 
 
-class DendrogramHeatmapStyle(DendrogramMatplotStyle):
+class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
     """
     Plot dendrograms with a heat map style.
     """
