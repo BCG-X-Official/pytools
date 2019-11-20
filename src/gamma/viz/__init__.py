@@ -9,9 +9,3 @@ from ._text import *
 from ._viz import *
 
 _licensing.check_license(__package__)
-
-__all__ = [
-    member
-    for member in [*_viz.__all__, *_text.__all__, *_matplot.__all__]
-    if not member.startswith("Base")
-]
