@@ -24,7 +24,7 @@ from typing import *
 from typing import TextIO
 
 from matplotlib.axes import Axes
-from matplotlib.colors import LogNorm
+from matplotlib.colors import Colormap, LogNorm
 from matplotlib.ticker import Formatter
 
 from gamma.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle, TextStyle
@@ -119,7 +119,13 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
 
     _PERCENTAGE_FORMATTER = _PercentageFormatter()
 
-    def __init__(self, *, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
+    def __init__(
+        self,
+        *,
+        ax: Optional[Axes] = None,
+        min_weight: float = 0.01,
+        colormap: Optional[Union[str, Colormap]] = None,
+    ) -> None:
         """
         :param min_weight: the min weight on the feature importance color scale; must \
             be greater than 0 and smaller than 1 (default: 0.01)
@@ -129,6 +135,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
 
         super().__init__(
             ax=ax,
+            colormap=colormap,
             colormap_normalize=LogNorm(min_weight, 1),
             colorbar_label="feature importance",
             colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
