@@ -131,21 +131,23 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
     def __init__(
         self,
         *,
-        colormap_normalize: Normalize,
+        ax: Optional[Axes] = None,
         colormap: Optional[Union[str, Colormap]] = None,
+        colormap_normalize: Normalize = None,
         colorbar_label: Optional[str] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        ax: Optional[Axes] = None,
         **kwargs,
     ):
         """
-        :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object \
-            that maps values to color indices
         :param colormap: the color map to use; either a name or a \
             :class:`~matplotlib.colors.Colorbar` instance (default: ``"plasma"``). \
-            For an overview of named colormaps, see \
+            For an overview of named color maps, see \
             `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_
+        :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object \
+            that maps values to color indices; if ``None``, use a plain linear \
+            :class:`~matplotlib.colors.Normalize` object with autoscaling \
+            (default: ``None``)
         :param colorbar_label: test to use as the label for the color bar (optional)
         :param colorbar_major_formatter: major tick formatter for the color bar \
             (optional)
@@ -154,20 +156,22 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         """
         super().__init__(ax=ax, **kwargs)
 
-        self.colormap_normalize = colormap_normalize
         if isinstance(colormap, Colormap):
             self.colormap = colormap
         else:
             if colormap is None:
                 colormap = ColorbarMatplotStyle.DEFAULT_COLORMAP
             self.colormap = cm.get_cmap(name=colormap)
+        self.colormap_normalize = (
+            Normalize() if colormap_normalize is None else colormap_normalize
+        )
         self.colorbar_label = colorbar_label
         self.colorbar_major_formatter = colorbar_major_formatter
         self.colorbar_minor_formatter = colorbar_minor_formatter
 
         self.colorbar = None
 
-    __init__.__doc__ += MatplotStyle.__init__.__doc__
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
     def _drawing_finalize(self) -> None:
         super()._drawing_finalize()
