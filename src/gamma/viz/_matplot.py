@@ -13,6 +13,7 @@ from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import Normalize
 from matplotlib.ticker import Formatter
+from matplotlib.tight_layout import get_renderer
 
 from ._viz import DrawStyle
 
@@ -65,7 +66,7 @@ class MatplotStyle(DrawStyle, ABC):
         """
         renderer = self._renderer
         if renderer is None:
-            self._renderer = renderer = self.ax.figure.canvas.get_renderer()
+            self._renderer = renderer = get_renderer(self.ax.figure.canvas)
         return renderer
 
     def _drawing_start(self, title: str) -> None:
