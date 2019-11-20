@@ -129,9 +129,10 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
 
         super().__init__(
             ax=ax,
-            normalize=LogNorm(min_weight, 1),
-            major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
-            minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colormap_normalize=LogNorm(min_weight, 1),
+            colorbar_label="feature importance",
+            colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
@@ -360,7 +361,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._n_labels = None
 
     def _drawing_start(self, title: str) -> None:
-        """Write the title."""
+        # write the title
         self.out.write(f"{title:*^{self.width}s}\n")
         self._char_matrix = CharacterMatrix(
             n_rows=self._max_height, n_columns=self.width

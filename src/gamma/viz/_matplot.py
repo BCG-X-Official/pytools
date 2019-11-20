@@ -11,7 +11,7 @@ from matplotlib import cm, text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Normalize
+from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
@@ -123,43 +123,70 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
     """
     Matplot style with added support for a color bar.
 
-    THe associated plot uses a color gradient to indicate a scalar value,
+    The associated plot uses a color gradient to indicate a scalar value,
     and the color bar acts as the legend for this color gradient.
     """
+
+    DEFAULT_COLORMAP = "plasma"
 
     def __init__(
         self,
         *,
-        normalize: Normalize,
+        colormap_normalize: Normalize,
+        colormap: Optional[Union[str, Colormap]] = None,
+        colorbar_label: Optional[str] = None,
+        colorbar_major_formatter: Optional[Formatter] = None,
+        colorbar_minor_formatter: Optional[Formatter] = None,
         ax: Optional[Axes] = None,
-        major_formatter: Optional[Formatter] = None,
-        minor_formatter: Optional[Formatter] = None,
         **kwargs,
     ):
+        """
+        :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object \
+            that maps values to color indices
+        :param colormap: the color map to use; either a name or a \
+            :class:`~matplotlib.colors.Colorbar` instance (default: ``"plasma"``). \
+            For an overview of named colormaps, see \
+            `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_
+        :param colorbar_label: test to use as the label for the color bar (optional)
+        :param colorbar_major_formatter: major tick formatter for the color bar \
+            (optional)
+        :param colorbar_minor_formatter: minor tick formatter for the color bar \
+            (optional)
+        """
         super().__init__(ax=ax, **kwargs)
 
-        self._normalize = normalize
-        self._major_formatter = major_formatter
-        self._minor_formatter = minor_formatter
+        self.colormap_normalize = colormap_normalize
+        if isinstance(colormap, Colormap):
+            self.colormap = colormap
+        else:
+            if colormap is None:
+                colormap = ColorbarMatplotStyle.DEFAULT_COLORMAP
+            self.colormap = cm.get_cmap(name=colormap)
+        self.colorbar_label = colorbar_label
+        self.colorbar_major_formatter = colorbar_major_formatter
+        self.colorbar_minor_formatter = colorbar_minor_formatter
 
-        self._cm = None
-        self._cb = None
+        self.colorbar = None
 
-    def _drawing_start(self, title: str) -> None:
-        super()._drawing_start(title=title)
+    __init__.__doc__ += MatplotStyle.__init__.__doc__
+
+    def _drawing_finalize(self) -> None:
+        super()._drawing_finalize()
 
         cax, _ = make_axes(self.ax)
-        self._cm = cm.get_cmap(name="plasma", lut=256)
-        self._cb = ColorbarBase(
+        self.colorbar = ColorbarBase(
             cax,
-            cmap=self._cm,
-            norm=self._normalize,
-            label="feature importance",
+            cmap=self.colormap,
+            norm=self.colormap_normalize,
+            label="" if self.colorbar_label is None else self.colorbar_label,
             orientation="vertical",
         )
 
-        cax.yaxis.set_minor_formatter(self._minor_formatter)
-        cax.yaxis.set_major_formatter(self._major_formatter)
+        if self.colorbar_major_formatter is not None:
+            cax.yaxis.set_major_formatter(self.colorbar_major_formatter)
+
+        if self.colorbar_minor_formatter is not None:
+            cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
 
     def color(self, z: float) -> RgbaColor:
         """
@@ -174,4 +201,4 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         #     if weight <= self._min_weight
         #     else 1 - math.log(weight) / math.log(self._min_weight)
         # )
-        return self._cm(self._normalize(z))
+        return self.colormap(self.colormap_normalize(z))
