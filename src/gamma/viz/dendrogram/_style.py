@@ -27,7 +27,13 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 from matplotlib.ticker import Formatter
 
-from gamma.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle, TextStyle
+from gamma.viz import (
+    ColorbarMatplotStyle,
+    DrawStyle,
+    MatplotStyle,
+    RGBA_WHITE,
+    TextStyle,
+)
 from gamma.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
@@ -40,8 +46,10 @@ __all__ = [
     "DendrogramStyle",
 ]
 
-_COLOR_BLACK = "black"
-_COLOR_WHITE = "white"
+
+#
+# Classes
+#
 
 
 class _PercentageFormatter(Formatter):
@@ -225,7 +233,7 @@ class DendrogramLineStyle(BaseDendrogramMatplotStyle):
     def _draw_line(
         self, x1: float, x2: float, y1: float, y2: float, weight: float
     ) -> None:
-        self.ax.plot((x1, x2), (y1, y2), color=self.color(weight))
+        self.ax.plot((x1, x2), (y1, y2), color=self.value_color(weight))
 
 
 class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
@@ -300,7 +308,7 @@ class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
         :param h: the height of the box
         :param weight: the weight used to compute the color of the box
         """
-        fill_color = self.color(weight)
+        fill_color = self.value_color(weight)
 
         self.ax.barh(
             y=[y - 0.5],
@@ -309,7 +317,7 @@ class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
             left=[x],
             align="edge",
             color=fill_color,
-            edgecolor=_COLOR_WHITE,
+            edgecolor=RGBA_WHITE,
             linewidth=1,
         )
 
@@ -325,10 +333,13 @@ class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
         text_width, _ = self.text_size(text=label, x=x_text, y=y_text)
 
         if text_width <= w:
-            fill_luminance = sum(fill_color[:3]) / 3
-            text_color = _COLOR_WHITE if fill_luminance < 0.5 else _COLOR_BLACK
             self.ax.text(
-                x_text, y_text, label, ha="center", va="center", color=text_color
+                x_text,
+                y_text,
+                label,
+                ha="center",
+                va="center",
+                color=self.text_contrast_color(fill_color),
             )
 
 
