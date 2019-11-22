@@ -13,6 +13,7 @@ from matplotlib.axis import Axis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
+from gamma.common.typing import Function
 from gamma.viz import ColorbarMatplotStyle, Drawer, DrawStyle, RGBA_WHITE, TextStyle
 
 log = logging.getLogger(__name__)
@@ -57,17 +58,19 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
-        cell_format: Union[str, Formatter] = None,
+        cell_format: Union[str, Formatter, Function] = None,
         **kwargs,
     ):
         """
         :param max_ticks: the maximum number of ticks to put on the x and y axis; \
             `None` to determine number of labels automatically (default: `None`)
-        :param cell_format: optional string format or \
+        :param cell_format: optional string format, function, or \
             :class:`~matplotlib.ticker.Formatter` for annotating each matrix cell with \
             its value, if sufficient space is available; don't annotate cells if no \
             formatter is provided. String format should be a new-style python format \
-            string, e.g., :code:`{:.3g}`
+            string, e.g., :code:`{:.3g}`. Function must take one positional argument \
+            which is the value to be formatted, e.g., \
+            :code:`lambda x: f"{x * 100:.3g}%"`
         """
         super().__init__(
             colormap_normalize=colormap_normalize
@@ -89,7 +92,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             )
         self.max_ticks = max_ticks
         if isinstance(cell_format, str):
-            self.cell_format = FuncFormatter(lambda x, _: cell_format.format(x))
+            self.cell_format = FuncFormatter(func=lambda x, _: cell_format.format(x))
+        elif isinstance(cell_format, Function):
+            self.cell_format = FuncFormatter(func=lambda x, _: cell_format(x))
         else:
             self.cell_format = cell_format
 
