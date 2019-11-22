@@ -11,7 +11,7 @@ from matplotlib import cm, text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Colormap, Normalize
+from matplotlib.colors import Colormap, Normalize, to_rgba
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
@@ -19,15 +19,28 @@ from ._viz import DrawStyle
 
 log = logging.getLogger(__name__)
 
-__all__ = ["ColorbarMatplotStyle", "MatplotStyle", "RgbaColor"]
+__all__ = [
+    "ColorbarMatplotStyle",
+    "MatplotStyle",
+    "RGBA_BLACK",
+    "RGBA_WHITE",
+    "RgbaColor",
+]
 
 #
 # Type definitions
 #
 
-# Rgba color class for use in  MatplotStyles
+# Rgba color type for use in  MatplotStyles
 RgbaColor = Tuple[float, float, float, float]
 
+#
+# Constants
+#
+
+# color constants
+RGBA_BLACK: RgbaColor = to_rgba("black")
+RGBA_WHITE: RgbaColor = to_rgba("white")
 
 #
 # Class definitions
@@ -111,12 +124,28 @@ class MatplotStyle(DrawStyle, ABC):
         fig = ax.figure
 
         extent = mt.Text(x, y, text, figure=fig, **kwargs).get_window_extent(
-            fig.canvas.get_renderer()
+            self.renderer
         )
 
         (x0, y0), (x1, y1) = ax.transData.inverted().transform(extent)
 
         return abs(x1 - x0), abs(y1 - y0)
+
+    @staticmethod
+    def text_contrast_color(bg_color: RgbaColor) -> RgbaColor:
+        """
+        Return a text color that maximises contrast with the given background color.
+
+        Returns while for background luminance < 50%, and black otherwise. The alpha
+        channel of the background color is ignored, and the text color is returned as
+        fully opaque.
+
+        :param bg_color: RGBA encoded colour for the background
+        :return: the contrasting text color
+        """
+        fill_luminance = sum(bg_color[:3]) / 3
+        text_color = RGBA_WHITE if fill_luminance < 0.5 else RGBA_BLACK
+        return text_color
 
 
 class ColorbarMatplotStyle(MatplotStyle, ABC):
@@ -166,6 +195,11 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize
         )
+        if colorbar_minor_formatter is not None and colorbar_major_formatter is None:
+            raise ValueError(
+                "arg colorbar_minor_formatter defined without defining "
+                "arg colorbar_major_formatter"
+            )
         self.colorbar_label = colorbar_label
         self.colorbar_major_formatter = colorbar_major_formatter
         self.colorbar_minor_formatter = colorbar_minor_formatter
@@ -192,7 +226,7 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
 
-    def color(self, z: float) -> RgbaColor:
+    def value_color(self, z: float) -> RgbaColor:
         """
         Return the color associated with a given scalar, based on the normalization
         defined for this style
