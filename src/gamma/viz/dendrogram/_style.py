@@ -25,12 +25,12 @@ from typing import TextIO
 
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
-from matplotlib.ticker import Formatter
 
 from gamma.viz import (
     ColorbarMatplotStyle,
     DrawStyle,
     MatplotStyle,
+    PercentageFormatter,
     RGBA_WHITE,
     TextStyle,
 )
@@ -50,13 +50,6 @@ __all__ = [
 #
 # Classes
 #
-
-
-class _PercentageFormatter(Formatter):
-    """Format percentage."""
-
-    def __call__(self, x, pos=None) -> str:
-        return f"{x * 100.0:.0f}%"
 
 
 class DendrogramStyle(DrawStyle, ABC):
@@ -125,7 +118,7 @@ class BaseDendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
     tick marks for the feature distance axis.
     """
 
-    _PERCENTAGE_FORMATTER = _PercentageFormatter()
+    _PERCENTAGE_FORMATTER = PercentageFormatter()
 
     def __init__(
         self,
