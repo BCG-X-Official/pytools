@@ -14,7 +14,14 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from gamma.common.typing import Function
-from gamma.viz import ColorbarMatplotStyle, Drawer, DrawStyle, RGBA_WHITE, TextStyle
+from gamma.viz import (
+    ColorbarMatplotStyle,
+    Drawer,
+    DrawStyle,
+    PercentageFormatter,
+    RGBA_WHITE,
+    TextStyle,
+)
 
 log = logging.getLogger(__name__)
 
@@ -22,7 +29,7 @@ __all__ = ["MatrixDrawer", "MatrixMatplotStyle", "MatrixReportStyle", "MatrixSty
 
 
 #
-# Classes
+# Style classes
 #
 
 
@@ -68,9 +75,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             :class:`~matplotlib.ticker.Formatter` for annotating each matrix cell with \
             its value, if sufficient space is available; don't annotate cells if no \
             formatter is provided. String format should be a new-style python format \
-            string, e.g., :code:`{:.3g}`. Function must take one positional argument \
+            string, e.g., ``{:.3g}``. Function must take one positional argument \
             which is the value to be formatted, e.g., \
-            :code:`lambda x: f"{x * 100:.3g}%"`
+            ``lambda x: f"{x * 100:.3g}%"``
         """
         super().__init__(
             colormap_normalize=colormap_normalize
@@ -205,6 +212,35 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
 
 
+class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
+    """
+    A matrix plot where all values are percentages.
+
+    Annotates matrix cells with percentage values.
+    """
+
+    def __init__(
+        self,
+        *,
+        ax: Optional[Axes] = None,
+        colormap_normalize: Optional[Normalize] = None,
+        colormap: Optional[Union[str, Colormap]] = None,
+        colorbar_label: Optional[str] = None,
+        max_ticks: Optional[Tuple[int, int]] = None,
+        **kwargs,
+    ):
+        super().__init__(
+            ax=ax,
+            colormap_normalize=colormap_normalize,
+            colormap=colormap,
+            colorbar_label=colorbar_label,
+            max_ticks=max_ticks,
+            colorbar_major_formatter=PercentageFormatter(),
+            cell_format=lambda x: f"{x * 100:.{2 if abs(x) < 1 else 3}g}%",
+            **kwargs,
+        )
+
+
 class MatrixReportStyle(MatrixStyle, TextStyle):
     """
     Text report style for matrices.
@@ -217,12 +253,29 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
     draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
 
 
+#
+# Drawer classes
+#
+
+
 class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     """
     Drawer for matrices of numerical values.
+
+    Comes with three pre-defined styles:
+    - ``matplot``: matplotlib plot of the matrix using a default \
+        :class:`gamma.viz.matrix.MatrixMatplotStyle`
+    - ``matplot-percentage``: matplotlib plot of matrix with percentage annotations, \
+        using a default :class:`gamma.viz.matrix.PercentageMatrixMatplotStyle`
+    - ``text``: print the matrix to stdout, using a default \
+        :class:`gamma.viz.matrix.MatrixReportStyle`
     """
 
-    _STYLES = {"matplot": MatrixMatplotStyle, "text": MatrixReportStyle}
+    _STYLES = {
+        "matplot": MatrixMatplotStyle,
+        "matplot-percentage": PercentageMatrixMatplotStyle,
+        "text": MatrixReportStyle,
+    }
 
     @classmethod
     def _get_style_dict(cls) -> Mapping[str, Type[MatrixStyle]]:
