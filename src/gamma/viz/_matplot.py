@@ -25,6 +25,7 @@ __all__ = [
     "RGBA_BLACK",
     "RGBA_WHITE",
     "RgbaColor",
+    "PercentageFormatter",
 ]
 
 #
@@ -240,3 +241,22 @@ class ColorbarMatplotStyle(MatplotStyle, ABC):
         #     else 1 - math.log(weight) / math.log(self._min_weight)
         # )
         return self.colormap(self.colormap_normalize(z))
+
+
+class PercentageFormatter(Formatter):
+    """
+    Formats floats as a percentages with 3 digits precision, omitting trailing zeros.
+
+    Formatting examples:
+
+    - ``0.0`` is formatted as ``0%``
+    - ``0.1`` is formatted as ``10%``
+    - ``1.0`` is formatted as ``100%``
+    - ``0.01555`` is formatted as ``1.56%``
+    - ``0.01555`` is formatted as ``1.56%``
+    - ``0.1555`` is formatted as ``15.6%``
+    - ``1.555`` is formatted as ``156%``
+    """
+
+    def __call__(self, x, pos=None) -> str:
+        return f"{x * 100.0:.3g}%"
