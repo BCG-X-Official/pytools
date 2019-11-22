@@ -81,6 +81,13 @@ class Drawer(ABC, Generic[T_Model, T_Style]):
                 f"{DrawStyle.__name__}"
             )
 
+    @classmethod
+    def get_named_styles(cls) -> FrozenSet[str]:
+        """
+        The names of all named styles recognized by this drawer's initializer.
+        """
+        return cast(FrozenSet, cls._get_style_dict().keys())
+
     @property
     def style(self) -> T_Style:
         """The drawing style used by this drawer."""
