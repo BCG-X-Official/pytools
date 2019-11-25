@@ -1,6 +1,9 @@
+"""
+Pip package definition
+"""
 from os import path
 
-from setuptools import setup
+from setuptools import find_namespace_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -30,7 +33,10 @@ setup(
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description="Top level project for BCG GAMMA Python projects",  # Optional
+    description=(
+        "Common utility functions, classes, and definitions used across "
+        "Gamma's ALPHA suite"
+    ),
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
@@ -105,7 +111,7 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=["gamma.common"],
+    packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
     namespace_packages=["gamma"],
     # Specify which Python versions you support. In contrast to the
@@ -120,7 +126,12 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=["pandas>=0.24,<0.25", "numpy>=1.16,<1.17", "rsa>=4.0.0,<4.1.0"],
+    install_requires=[
+        "joblib>=0.13,<0.14",
+        "pandas>=0.24,<0.25",
+        "numpy>=1.16,<1.17",
+        "rsa>=4.0.0,<4.1.0",
+    ],
     # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
