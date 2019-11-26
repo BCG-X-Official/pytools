@@ -1,16 +1,3 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
 Dendrogram styles.
 
@@ -18,7 +5,7 @@ The dendrogram styles are given as a parameter to a
 :class:`~gamma.viz.DendrogramDrawer` and determine the style of the
 plot.
 
-:class:`~DendrogramMatplotStyle` is a an abstract base class for styles using
+:class:`~BaseDendrogramMatplotStyle` is a an abstract base class for styles using
 matplotlib.
 
 :class:`~DendrogramLineStyle` renders dendrogram trees in the classical style as a line
@@ -32,31 +19,37 @@ inclusion in text reports.
 """
 
 import logging
-import math
 from abc import ABC, abstractmethod
 from typing import *
 from typing import TextIO
 
-from matplotlib import cm
 from matplotlib.axes import Axes
-from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import LogNorm
-from matplotlib.ticker import Formatter
+from matplotlib.colors import Colormap, LogNorm
 
-from gamma.viz import DrawStyle, MatplotStyle, RgbaColor, TextStyle
+from gamma.viz import (
+    ColorbarMatplotStyle,
+    DrawStyle,
+    MatplotStyle,
+    PercentageFormatter,
+    RGBA_WHITE,
+    TextStyle,
+)
 from gamma.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
 
-_COLOR_BLACK = "black"
-_COLOR_WHITE = "white"
+__all__ = [
+    "BaseDendrogramMatplotStyle",
+    "DendrogramHeatmapStyle",
+    "DendrogramLineStyle",
+    "DendrogramReportStyle",
+    "DendrogramStyle",
+]
 
 
-class _PercentageFormatter(Formatter):
-    """Format percentage."""
-
-    def __call__(self, x, pos=None) -> str:
-        return f"{x * 100.0:.0f}%"
+#
+# Classes
+#
 
 
 class DendrogramStyle(DrawStyle, ABC):
@@ -66,9 +59,6 @@ class DendrogramStyle(DrawStyle, ABC):
     Implementations must define `draw_leaf_labels`, `draw_title`, `draw_link_leg` \
     and `draw_link_connector`.
     """
-
-    def __init__(self) -> None:
-        super().__init__()
 
     @abstractmethod
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
@@ -119,52 +109,50 @@ class DendrogramStyle(DrawStyle, ABC):
         pass
 
 
-class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
+class BaseDendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
     """
     Base class for Matplotlib styles for dendrogram.
 
     Provide basic support for plotting a color legend for feature importance,
     and providing the `Axes` object for plotting the actual dendrogram including
     tick marks for the feature distance axis.
-
-    :param ax: :class:`matplotlib.axes.Axes` object to draw on
-    :param min_weight: the min weight on the feature importance color scale, must be \
-                       greater than 0 and smaller than 1 (default: 0.01)
     """
 
-    _PERCENTAGE_FORMATTER = _PercentageFormatter()
+    _PERCENTAGE_FORMATTER = PercentageFormatter()
 
-    def __init__(self, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
-        super().__init__(ax=ax)
-
+    def __init__(
+        self,
+        *,
+        ax: Optional[Axes] = None,
+        min_weight: float = 0.01,
+        colormap: Optional[Union[str, Colormap]] = None,
+    ) -> None:
+        """
+        :param min_weight: the min weight on the feature importance color scale; must \
+            be greater than 0 and smaller than 1 (default: 0.01)
+        """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
-        self._min_weight = min_weight
 
-        self._cm = None
-        self._cb = None
-
-    def _drawing_start(self, title: str) -> None:
-        """
-        Called once by the drawer when starting to draw a new dendrogram.
-        :param title: the title of the dendrogram
-        """
-        super()._drawing_start(title=title)
-
-        self.ax.ticklabel_format(axis="x", scilimits=(-3, 3))
-
-        cax, _ = make_axes(self.ax)
-        self._cm = cm.get_cmap(name="plasma", lut=256)
-        self._cb = ColorbarBase(
-            cax,
-            cmap=self._cm,
-            norm=LogNorm(self._min_weight, 1),
-            label="feature importance",
-            orientation="vertical",
+        super().__init__(
+            ax=ax,
+            colormap=colormap,
+            colormap_normalize=LogNorm(min_weight, 1),
+            colorbar_label="feature importance",
+            colorbar_major_formatter=BaseDendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_minor_formatter=BaseDendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
 
-        cax.yaxis.set_minor_formatter(DendrogramMatplotStyle._PERCENTAGE_FORMATTER)
-        cax.yaxis.set_major_formatter(DendrogramMatplotStyle._PERCENTAGE_FORMATTER)
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
+
+    def _drawing_finalize(self) -> None:
+        super()._drawing_finalize()
+
+        # configure the axes
+        ax = self.ax
+        ax.set_xlabel("feature distance")
+        ax.set_ylabel("feature")
+        ax.ticklabel_format(axis="x", scilimits=(-3, 3))
 
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
         """Draw leaf labels on the dendrogram."""
@@ -172,22 +160,11 @@ class DendrogramMatplotStyle(MatplotStyle, DendrogramStyle, ABC):
         y_axis.set_ticks(ticks=range(len(labels)))
         y_axis.set_ticklabels(ticklabels=labels)
 
-    def color(self, weight: float) -> RgbaColor:
-        """
-        Return the color associated to the feature weight (= importance).
 
-        :param weight: the weight
-        :return: the color as a RGBA tuple
-        """
-        return self._cm(
-            0
-            if weight <= self._min_weight
-            else 1 - math.log(weight) / math.log(self._min_weight)
-        )
-
-
-class DendrogramLineStyle(DendrogramMatplotStyle):
-    """The classical dendrogram style, as a coloured tree diagram."""
+class DendrogramLineStyle(BaseDendrogramMatplotStyle):
+    """
+    Plot dendrograms in the classical style, as a coloured tree diagram.
+    """
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: float, weight: float, tree_height
@@ -249,19 +226,13 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
     def _draw_line(
         self, x1: float, x2: float, y1: float, y2: float, weight: float
     ) -> None:
-        self.ax.plot((x1, x2), (y1, y2), color=self.color(weight))
+        self.ax.plot((x1, x2), (y1, y2), color=self.value_color(weight))
 
 
-class DendrogramHeatmapStyle(DendrogramMatplotStyle):
+class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
     """
     Plot dendrograms with a heat map style.
-
-    :param ax: a matplotlib `Axes`
-    :param min_weight: the min weight in the color bar
     """
-
-    def __init__(self, ax: Optional[Axes] = None, min_weight: float = 0.01) -> None:
-        super().__init__(ax=ax, min_weight=min_weight)
 
     def _drawing_start(self, title: str) -> None:
         """
@@ -330,7 +301,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         :param h: the height of the box
         :param weight: the weight used to compute the color of the box
         """
-        fill_color = self.color(weight)
+        fill_color = self.value_color(weight)
 
         self.ax.barh(
             y=[y - 0.5],
@@ -339,7 +310,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
             left=[x],
             align="edge",
             color=fill_color,
-            edgecolor=_COLOR_WHITE,
+            edgecolor=RGBA_WHITE,
             linewidth=1,
         )
 
@@ -355,10 +326,13 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         text_width, _ = self.text_size(text=label, x=x_text, y=y_text)
 
         if text_width <= w:
-            fill_luminance = sum(fill_color[:3]) / 3
-            text_color = _COLOR_WHITE if fill_luminance < 0.5 else _COLOR_BLACK
             self.ax.text(
-                x_text, y_text, label, ha="center", va="center", color=text_color
+                x_text,
+                y_text,
+                label,
+                ha="center",
+                va="center",
+                color=self.text_contrast_color(fill_color),
             )
 
 
@@ -398,7 +372,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._n_labels = None
 
     def _drawing_start(self, title: str) -> None:
-        """Write the title."""
+        # write the title
         self.out.write(f"{title:*^{self.width}s}\n")
         self._char_matrix = CharacterMatrix(
             n_rows=self._max_height, n_columns=self.width
