@@ -1,21 +1,5 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
-Plotting of distributions for exploratory data visualization
-
-:meth:`plot_ecdf` plots empirical cumulative plots of numerical columns of a a list
-like data (:class:`pandas.Series`, numerical list, etc).
+Core implementation of :mod:`gamma.viz.distribution`
 """
 
 import logging
@@ -26,10 +10,9 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from gamma.common import ListLike
-from gamma.viz import _T_Model, _T_Style, Drawer, DrawStyle, MatplotStyle
+from gamma.viz import Drawer, DrawStyle, MatplotStyle
 
-__all__ = ["ECDFMatplotStyle", "ECDFDrawer"]
+__all__ = ["ECDFStyle", "ECDFMatplotStyle", "ECDFDrawer"]
 
 log = logging.getLogger(__name__)
 
@@ -46,8 +29,8 @@ class _XYSeries(NamedTuple):
     separate lists of the same length.
     """
 
-    x: ListLike[float]
-    y: ListLike[float]
+    x: Sequence[float]
+    y: Sequence[float]
 
 
 class _Ecdf(NamedTuple):
@@ -85,6 +68,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
     def __init__(
         self,
+        *,
         ax: Optional[Axes] = None,
         color_outlier: str = DEFAULT_COLOR_OUTLIER,
         color_far_outlier: str = DEFAULT_COLOR_FAR_OUTLIER,
@@ -127,29 +111,32 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         ax.legend()
 
 
-class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
+class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs).
-
-    :param style: the style of the chart; either as a \
-        :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
-        default style. Permissible names include "matplot" for a style supporting \
-        Matplotlib (default: `"matplot"`).
-    :param iqr_multiple: iqr multiple to determine outliers. If `None`, then no \
-        outliers and far outliers are computed (default: 1.5).
-    :param iqr_multiple_far: iqr multiple to determine far outliers. If `None`, then \
-        no far outliers are computed. Should be greater than `iqr_multiple` when both \
-        are defined (default: 3.0).
     """
 
     _STYLES = {"matplot": ECDFMatplotStyle}
 
     def __init__(
         self,
-        style: Union[_T_Style, str] = "matplot",
+        style: Union[ECDFStyle, str] = "matplot",
         iqr_multiple: Optional[float] = DEFAULT_IQR_MULTIPLE,
         iqr_multiple_far: Optional[float] = DEFAULT_IQR_MULTIPLE_FAR,
+        hide_far_outliers: Optional[bool] = False,
     ) -> None:
+        """
+        :param style: the style of the chart; either as a \
+            :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
+            default style. Permissible names include "matplot" for a style supporting \
+            Matplotlib (default: `"matplot"`).
+        :param iqr_multiple: iqr multiple to determine outliers. If `None`, then no \
+            outliers and far outliers are computed (default: 1.5).
+        :param iqr_multiple_far: iqr multiple to determine far outliers. If `None`, then \
+            no far outliers are computed. Should be greater than `iqr_multiple` when both \
+            are defined (default: 3.0).
+        :param hide_far_outliers: if `True`, do not plot far outliers (default: `False`)
+        """
         super().__init__(style=style)
 
         if iqr_multiple_far:
@@ -166,8 +153,9 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
 
         self._iqr_multiple = iqr_multiple
         self._iqr_multiple_far = iqr_multiple_far
+        self._hide_far_outliers = hide_far_outliers
 
-    def draw(self, data: _T_Model, title: Optional[str] = None) -> None:
+    def draw(self, data: Sequence[float], title: Optional[str] = None) -> None:
         """
         Draw the chart.
         :param data: the data to draw
@@ -185,7 +173,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
     def _get_style_dict(cls) -> Mapping[str, Type[ECDFStyle]]:
         return ECDFDrawer._STYLES
 
-    def _draw(self, data: ListLike[float]) -> None:
+    def _draw(self, data: Sequence[float]) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")
         # noinspection PyProtectedMember
@@ -196,7 +184,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
             iqr_multiple_far=self._iqr_multiple_far,
         )
 
-    def _ecdf(self, data: ListLike[float]) -> _Ecdf:
+    def _ecdf(self, data: Sequence[float]) -> _Ecdf:
         """
         Compute ECDF for scalar values.
 
@@ -259,5 +247,7 @@ class ECDFDrawer(Drawer[ListLike[float], ECDFStyle]):
         return _Ecdf(
             _XYSeries(x[inlier_mask], y[inlier_mask]),
             _XYSeries(x[outlier_mask], y[outlier_mask]),
-            _XYSeries(x[far_out_mask], y[far_out_mask]),
+            _XYSeries([], [])
+            if self._hide_far_outliers
+            else _XYSeries(x[far_out_mask], y[far_out_mask]),
         )

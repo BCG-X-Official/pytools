@@ -1,16 +1,3 @@
-#
-# NOT FOR CLIENT USE!
-#
-# This is a pre-release library under development. Handling of IP rights is still
-# being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-# ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-#
-# Please direct any queries to any of:
-# - Jan Ittner
-# - Jörg Schneider
-# - Florent Martin
-#
-
 """
 Drawing dendrograms
 """
@@ -30,6 +17,8 @@ from gamma.viz.dendrogram._style import (
 
 log = logging.getLogger(__name__)
 
+__all__ = ["DendrogramDrawer"]
+
 
 class _SubtreeInfo(NamedTuple):
     labels: List[str]
@@ -41,15 +30,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     Class to draw a `LinkageTree` as a dendrogram.
 
     The class has a public method :meth:`~.draw` which draws the dendrogram.
-
-    :param style: the style of the dendrogram; either as a
-        :class:`~gamma.viz.dendrogram.DendrogramStyle` instance, or as the name of a \
-        default style. Permissible names include "matplot" for a style supporting \
-        Matplotlib, and "text" for a text-only plot to stdout (default: `"matplot"`)
     """
-
-    def __init__(self, style: Union[DendrogramStyle, str] = "matplot") -> None:
-        super().__init__(style=style)
 
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
 
