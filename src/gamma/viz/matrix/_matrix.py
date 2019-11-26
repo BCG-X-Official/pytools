@@ -132,12 +132,11 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             max_x_ticks, max_y_ticks = max_ticks
 
         # rotate x labels if they are categorical
-        if not matrix.columns.is_numeric():
-            ax.tick_params(axis="x", labelrotation=45)
+        tick_params = {False: {}, True: dict(rotation=45, ha="right")}
 
-        # set the number of x and y ticks
+        def _set_ticks(index: pd.Index, max_bins: int, axis: Axis, rotate: bool):
+            # set the x and y ticks
 
-        def _set_ticks(index: pd.Index, max_bins: int, axis: Axis):
             # determine number of bins
             if max_bins is not None:
                 n_bins = max_bins
@@ -155,13 +154,22 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             if len(index) > len(tick_locations):
                 # we can plot only selected tick labels: look up labels for the
                 # visible tick indices
-                axis.set_ticklabels(index[tick_locations.astype(int)])
+                labels = index[tick_locations.astype(int)]
             else:
                 # we can plot all tick labels
-                axis.set_ticklabels(index.values)
+                labels = index.values
 
-        _set_ticks(index=matrix.columns, max_bins=max_x_ticks, axis=ax.xaxis)
-        _set_ticks(index=matrix.index, max_bins=max_y_ticks, axis=ax.yaxis)
+            axis.set_ticklabels(labels, **tick_params[rotate])
+
+        _set_ticks(
+            index=matrix.columns,
+            max_bins=max_x_ticks,
+            axis=ax.xaxis,
+            rotate=not matrix.columns.is_numeric(),
+        )
+        _set_ticks(
+            index=matrix.index, max_bins=max_y_ticks, axis=ax.yaxis, rotate=False
+        )
 
         # get the matrix size
         n_rows = data.shape[0]
