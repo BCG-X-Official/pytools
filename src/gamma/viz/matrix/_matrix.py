@@ -77,8 +77,20 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             formatter is provided. String format should be a new-style python format \
             string, e.g., ``{:.3g}``. Function must take one positional argument \
             which is the value to be formatted, e.g., \
-            ``lambda x: f"{x * 100:.3g}%"``
+            ``lambda x: f"{x * 100:.3g}%"``. \
+            If no colorbar major formatter is specified, the cell format is also used \
+            for this.
         """
+        if isinstance(cell_format, str):
+            cell_formatter = FuncFormatter(func=lambda x, _: cell_format.format(x))
+        elif isinstance(cell_format, Function):
+            cell_formatter = FuncFormatter(func=lambda x, _: cell_format(x))
+        else:
+            cell_formatter = cell_format
+
+        if colorbar_major_formatter is None:
+            colorbar_major_formatter = cell_formatter
+
         super().__init__(
             colormap_normalize=colormap_normalize
             if colormap_normalize is not None
@@ -97,13 +109,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             raise ValueError(
                 f"arg n_labels={max_ticks} expected to be a tuple of size 2"
             )
-        self.max_ticks = max_ticks
-        if isinstance(cell_format, str):
-            self.cell_format = FuncFormatter(func=lambda x, _: cell_format.format(x))
-        elif isinstance(cell_format, Function):
-            self.cell_format = FuncFormatter(func=lambda x, _: cell_format(x))
-        else:
-            self.cell_format = cell_format
+        self._max_ticks = max_ticks
+        self._cell_formatter = cell_formatter
 
     __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
 
@@ -125,7 +132,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         )
 
         # determine if a number of labels has been configured for this style
-        max_ticks = self.max_ticks
+        max_ticks = self._max_ticks
         if max_ticks is None:
             max_x_ticks = max_y_ticks = None
         else:
@@ -176,14 +183,14 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         n_columns = data.shape[1]
 
         # only draw labels if minimal height/width is available
-        if self.cell_format is not None and all(
+        if self._cell_formatter is not None and all(
             size <= 1 for size in self.text_size("0")
         ):
             # draw the axis to ensure we'll get correct coordinates
             ax.draw(self.renderer)
 
             # get the cell formatter as a local field
-            cell_formatter = self.cell_format
+            cell_formatter = self._cell_formatter
 
             # render the text for every box where the text fits
             for y in range(n_rows):
@@ -214,7 +221,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # create a white grid using minor tick positions
         ax.set_xticks(np.arange(n_columns + 1) - 0.5, minor=True)
         ax.set_yticks(np.arange(n_rows + 1) - 0.5, minor=True)
-        ax.grid(which="minor", color=RGBA_WHITE, linestyle="-", linewidth=1)
+        ax.grid(which="minor", color=RGBA_WHITE, linestyle="-", linewidth=2)
         ax.tick_params(which="minor", bottom=False, left=False)
 
     draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
