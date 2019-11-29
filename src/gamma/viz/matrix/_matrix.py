@@ -282,7 +282,7 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     Comes with three pre-defined styles:
     - ``matplot``: matplotlib plot of the matrix using a default \
         :class:`gamma.viz.matrix.MatrixMatplotStyle`
-    - ``matplot-percentage``: matplotlib plot of matrix with percentage annotations, \
+    - ``matplot%``: matplotlib plot of matrix with percentage annotations, \
         using a default :class:`gamma.viz.matrix.PercentageMatrixMatplotStyle`
     - ``text``: print the matrix to stdout, using a default \
         :class:`gamma.viz.matrix.MatrixReportStyle`
@@ -290,7 +290,7 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
 
     _STYLES = {
         "matplot": MatrixMatplotStyle,
-        "matplot-percentage": PercentageMatrixMatplotStyle,
+        "matplot%": PercentageMatrixMatplotStyle,
         "text": MatrixReportStyle,
     }
 
