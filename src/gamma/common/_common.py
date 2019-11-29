@@ -12,6 +12,8 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
+__all__ = ["is_list_like", "deprecated"]
+
 
 def is_list_like(obj: Any) -> bool:
     """
