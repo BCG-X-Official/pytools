@@ -244,7 +244,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             colorbar_label=colorbar_label,
             max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
-            cell_format=lambda x: f"{x * 100:.{2 if abs(x) < 1 else 3}g}%",
+            cell_format=lambda x: f"{x * 100:.{2 if abs(round(x, 2)) < 1 else 3}g}%",
             **kwargs,
         )
 
