@@ -25,7 +25,13 @@ from gamma.viz import (
 
 log = logging.getLogger(__name__)
 
-__all__ = ["MatrixDrawer", "MatrixMatplotStyle", "MatrixReportStyle", "MatrixStyle"]
+__all__ = [
+    "MatrixDrawer",
+    "MatrixMatplotStyle",
+    "MatrixReportStyle",
+    "MatrixStyle",
+    "PercentageMatrixMatplotStyle",
+]
 
 
 #
@@ -244,6 +250,17 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         max_ticks: Optional[Tuple[int, int]] = None,
         **kwargs,
     ):
+        if any(
+            field in kwargs
+            for field in [
+                "colorbar_major_formatter",
+                "colorbar_minor_formatter",
+                "cell_format",
+            ]
+        ):
+            raise ValueError(
+                f"arg cell_format is not supported by class {type(self).__name__}"
+            )
         super().__init__(
             ax=ax,
             colormap_normalize=colormap_normalize,
@@ -251,9 +268,10 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             colorbar_label=colorbar_label,
             max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
-            cell_format=lambda x: f"{x * 100:.2g}%"
+            colorbar_minor_formatter=None,
+            cell_format=lambda x: f"{x * 100:.2g}"
             if abs(np.round(x, 2)) < 1.0
-            else f"{np.round(x * 100):.3g}%",
+            else f"{np.round(x * 100):.3g}",
             **kwargs,
         )
 
