@@ -34,10 +34,10 @@ class FittableMixin(ABC, Generic[T_Data]):
     """
 
     @abstractmethod
-    def fit(self: T_Self, x: T_Data, **fit_params) -> T_Self:
+    def fit(self: T_Self, _x: T_Data, **fit_params) -> T_Self:
         """
         Fit this object to the given data
-        :param x: the data to fit this object to
+        :param _x: the data to fit this object to
         :param fit_params: optional fitting parameters
         :return: self
         """
