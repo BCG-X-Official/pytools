@@ -111,7 +111,8 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=find_namespace_packages(where="src"),
+    packages=["gamma.common"],
+    namespace_packages=["gamma"],
     package_dir={"": "src"},
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
