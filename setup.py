@@ -120,7 +120,6 @@ setup(
         "gamma.common.parallelization",
         "gamma.common.licensing",
     ],
-    namespace_packages=["gamma"],
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. If you
