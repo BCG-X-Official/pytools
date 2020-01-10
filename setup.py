@@ -3,7 +3,7 @@ Pip package definition
 """
 from os import path
 
-from setuptools import setup, find_packages
+from setuptools import find_namespace_packages, setup
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -111,15 +111,9 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
+    packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
-    packages=[
-        "gamma",
-        "gamma.common",
-        "gamma.common.fit",
-        "gamma.common.typing",
-        "gamma.common.parallelization",
-        "gamma.common.licensing",
-    ],
+    namespace_packages=["gamma"],
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. If you
