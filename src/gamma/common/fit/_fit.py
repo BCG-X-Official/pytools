@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["FittableMixin"]
+__all__ = ["FittableMixin", "T_Self"]
 
 
 #
@@ -21,6 +21,9 @@ __all__ = ["FittableMixin"]
 
 
 T_Self = TypeVar("T_Self")
+#: Type variable representing ``self`` in :meth:`~gamma.common.fit.FittableMixin`
+#: and its subclasses
+
 T_Data = TypeVar("T_Data")
 
 #
