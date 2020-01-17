@@ -123,7 +123,7 @@ def check_license(package_name: str) -> str:
 
     global licensee
 
-    if True or not var_in_env(LICENSE_KEY_SIG_ENV) or not var_in_env(LICENSEE_ENV):
+    if not var_in_env(LICENSE_KEY_SIG_ENV) or not var_in_env(LICENSEE_ENV):
 
         print_license_warning(package_name=package_name)
 
