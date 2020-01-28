@@ -6,7 +6,7 @@ import base64
 import logging
 import os
 import pickle
-import warnings
+import sys
 from typing import Any, Tuple
 
 import rsa
@@ -25,36 +25,36 @@ __all__ = ["check_license"]
 # Constants
 #
 
-LICENSE_KEY = """gANjcnNhLmtleQpQdWJsaWNLZXkKcQApgXEBiwECAABJ2G9TBoEQgz4BclMzK4VJ0glO6ae9Fcto
-9EIzJxLCfkavTrOqgP9fim8h7ihH+KwI9m3EcV/JLm/0IP/lLVQQE/h2CmbGGZ1RXqrx/SnbLtCk
-eD15fn9V6cdV8COei+iW/RynyvisOlUO9ruwt72XJFlhbU6tD8MFLcJM3DHxiv3A1mQxUo/1N8bP
-4wp2SBNjjtJTX8M4PAhV90nyQhL0aeD8fcuCzIQ0cRUQjgpPtAhL6Nhsgw3r9Zcp1ICwSrwjeIbA
-5sSRdIBCHokLBUyc+WtolzNxfodgRzc7/4XJc8Yheosw+eYWTcTJIQX4a/45Kv3iKnO9/J0xGfYd
-myHS3sJX6E2QMb5Kf0I3IlNlBkzbfm5zJyTw9nunbNorHr2c1YXk9BudhjN5/AH01jnkZ/5hIRbd
-JlpXJ8sAqYrHIcPlw8gT3PcykrOQ5R9PJfy4fk3HQb1Mb+Qj8Nwc/MWrgJElaiHReTrYWvbqQlP6
-TrwVR/L4U9VgSifHmB3AsGe0//42Vzmh7kFYnQ2JnZQDdtk/tu4t/dp+Qtcf0z/86rdj1Om8hsVG
-OEYMsNqF3iTbFQSHN8deQU0cKy2rbW3ex8xbREQJKmVV1814Alzhtdc0AFV55p8NPJ93cjdR1yqa
-AcZNdYQo+G/1qdCScv132osYXYXjkXrMZts3VaPupwBKAQABAIZxAmIu"""
+# noinspection SpellCheckingInspection
+LICENSE_KEY = (
+    "gANjcnNhLmtleQpQdWJsaWNLZXkKcQApgXEBiwECAABJ2G9TBoEQgz4BclMzK4VJ0glO6ae9Fcto\n"
+    "9EIzJxLCfkavTrOqgP9fim8h7ihH+KwI9m3EcV/JLm/0IP/lLVQQE/h2CmbGGZ1RXqrx/SnbLtCk\n"
+    "eD15fn9V6cdV8COei+iW/RynyvisOlUO9ruwt72XJFlhbU6tD8MFLcJM3DHxiv3A1mQxUo/1N8bP\n"
+    "4wp2SBNjjtJTX8M4PAhV90nyQhL0aeD8fcuCzIQ0cRUQjgpPtAhL6Nhsgw3r9Zcp1ICwSrwjeIbA\n"
+    "5sSRdIBCHokLBUyc+WtolzNxfodgRzc7/4XJc8Yheosw+eYWTcTJIQX4a/45Kv3iKnO9/J0xGfYd\n"
+    "myHS3sJX6E2QMb5Kf0I3IlNlBkzbfm5zJyTw9nunbNorHr2c1YXk9BudhjN5/AH01jnkZ/5hIRbd\n"
+    "JlpXJ8sAqYrHIcPlw8gT3PcykrOQ5R9PJfy4fk3HQb1Mb+Qj8Nwc/MWrgJElaiHReTrYWvbqQlP6\n"
+    "TrwVR/L4U9VgSifHmB3AsGe0//42Vzmh7kFYnQ2JnZQDdtk/tu4t/dp+Qtcf0z/86rdj1Om8hsVG\n"
+    "OEYMsNqF3iTbFQSHN8deQU0cKy2rbW3ex8xbREQJKmVV1814Alzhtdc0AFV55p8NPJ93cjdR1yqa\n"
+    "AcZNdYQo+G/1qdCScv132osYXYXjkXrMZts3VaPupwBKAQABAIZxAmIu"
+)
 
 LICENSE_KEY_SIG_ENV = "GAMMA_ALPHA_LICENSE_SIGNATURE"
 LICENSEE_ENV = "GAMMA_ALPHA_LICENSEE"
 
-WARNING_MESSAGE = """
-NOT FOR CLIENT USE!
-
-This is a early release library under development. Handling of IP rights is still
-being investigated. To avoid causing any potential IP disputes or issues, DO NOT USE
-ANY OF THIS CODE ON A CLIENT PROJECT, not even in modified form.
-
-Please direct any queries to any of:
-- Jan Ittner
-- Jörg Schneider
-- Florent Martin
-"""
+WARNING_MESSAGE = "No license in place for package {}"
+WARNING_MESSAGE_LONG = (
+    "\n"
+    "Modules from the ALPHA suite need to be licensed for use with BCG clients.\n"
+    "This is a simple process and comes at no charge to the client.\n"
+    "The ALPHA team will issue a license key that will silence this warning.\n"
+    "Please contact Jörg Schneider or Jan Ittner for support.\n"
+    "\n"
+    f"{WARNING_MESSAGE}"
+)
 
 licensee = "UNLICENSED"
-warning_shown = False
-
+checked_packages = set()
 
 #
 # local helper functions
@@ -85,24 +85,48 @@ def retrieve_license() -> Tuple[PublicKey, str, str]:
     )
 
 
+def print_license_warning(package_name) -> None:
+    """
+    Issue a license warning for the given package.
+    Warn only once per package.
+    The first warning is more verbose than warnings for subsequent packages.
+    :param package_name: name of the unlicensed package
+    """
+
+    if package_name not in checked_packages:
+
+        if len(checked_packages) == 0:
+            # first time round our warning message will be more verbose ...
+            message = WARNING_MESSAGE_LONG
+        else:
+            # ... followed by brief messages for subsequent unlicensed packages
+            message = WARNING_MESSAGE
+
+        checked_packages.add(package_name)
+
+        print(message.format(package_name), file=sys.stderr)
+
+
 #
 # main function
 #
 
 
-def check_license(package: str) -> str:
-    """ Checks if library is licensed and if so, returns licensee name in clear-text."""
+def check_license(package_name: str) -> str:
+    """
+    Check if library is licensed and if so, returns licensee name in clear-text
+    :param package_name: name of the package to license
+    :return: the name of the licensee
+    """
+
+    global licensee
+
     if not var_in_env(LICENSE_KEY_SIG_ENV) or not var_in_env(LICENSEE_ENV):
-        global warning_shown
-        if not warning_shown:
-            warnings.warn(message=WARNING_MESSAGE, category=UserWarning, stacklevel=2)
-            warning_shown = True
-        warnings.warn(
-            message=f"No license in place for package {package}.",
-            category=UserWarning,
-            stacklevel=2,
-        )
+
+        print_license_warning(package_name=package_name)
+
     else:
+
         rsa_public_key, rsa_sig_hash, client_name = retrieve_license()
 
         license_verified = rsa.verify(
@@ -110,14 +134,20 @@ def check_license(package: str) -> str:
         )
 
         if not license_verified:
+
+            print_license_warning(package_name=package_name)
+
             raise EnvironmentError(
                 f"Supplied license for client {client_name} is invalid. "
                 f"Please check environment variables "
                 f"{LICENSE_KEY_SIG_ENV} and {LICENSEE_ENV}"
             )
+
         else:
-            global licensee
+
             licensee = client_name
-            logger.info(f"alpha package {package} successfully licensed to: {licensee}")
+            logger.info(
+                f"alpha package {package_name} successfully licensed to: {licensee}"
+            )
 
     return licensee
