@@ -7,7 +7,6 @@ import logging
 import os
 import pickle
 import sys
-from threading import Lock
 from typing import Any, Tuple
 
 import rsa
@@ -26,6 +25,7 @@ __all__ = ["check_license"]
 # Constants
 #
 
+# noinspection SpellCheckingInspection
 LICENSE_KEY = (
     "gANjcnNhLmtleQpQdWJsaWNLZXkKcQApgXEBiwECAABJ2G9TBoEQgz4BclMzK4VJ0glO6ae9Fcto\n"
     "9EIzJxLCfkavTrOqgP9fim8h7ihH+KwI9m3EcV/JLm/0IP/lLVQQE/h2CmbGGZ1RXqrx/SnbLtCk\n"
@@ -55,7 +55,6 @@ WARNING_MESSAGE_LONG = (
 
 licensee = "UNLICENSED"
 checked_packages = set()
-lock = Lock()
 
 #
 # local helper functions
@@ -94,19 +93,18 @@ def print_license_warning(package_name) -> None:
     :param package_name: name of the unlicensed package
     """
 
-    with lock:
-        if package_name not in checked_packages:
+    if package_name not in checked_packages:
 
-            if len(checked_packages) == 0:
-                # first time round our warning message will be more verbose ...
-                message = WARNING_MESSAGE_LONG
-            else:
-                # ... followed by brief messages for subsequent unlicensed packages
-                message = WARNING_MESSAGE
+        if len(checked_packages) == 0:
+            # first time round our warning message will be more verbose ...
+            message = WARNING_MESSAGE_LONG
+        else:
+            # ... followed by brief messages for subsequent unlicensed packages
+            message = WARNING_MESSAGE
 
-            checked_packages.add(package_name)
+        checked_packages.add(package_name)
 
-            print(message.format(package_name), file=sys.stderr)
+        print(message.format(package_name), file=sys.stderr)
 
 
 #
