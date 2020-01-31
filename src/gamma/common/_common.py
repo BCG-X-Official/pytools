@@ -12,7 +12,7 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
-__all__ = ["is_list_like", "deprecated"]
+__all__ = ["is_list_like", "deprecated", "deprecation_warning"]
 
 
 def is_list_like(obj: Any) -> bool:
@@ -88,3 +88,15 @@ def deprecated(function: Callable = None, *, message: str = None):
         )
     else:
         raise ValueError("Deprecated object must be callable")
+
+
+def deprecation_warning(message: str, stacklevel: int = 1) -> None:
+    """
+    Issue a deprecation warning.
+
+    :param message: the warning message
+    :param stacklevel: stack level relative to caller for emitting the context of the \
+        warning (default: 1)
+    :return:
+    """
+    warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
