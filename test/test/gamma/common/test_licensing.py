@@ -20,7 +20,8 @@ def clear_environment() -> None:
     yield
 
 
-def test_no_license_warns(clear_environment) -> None:
+def test_no_license_warns(clear_environment, monkeypatch) -> None:
+    monkeypatch.setattr(licensing._licensing, name="warning_shown", value=False)
     with pytest.warns(expected_warning=UserWarning):
         # have to ensure it's not cached already
         licensing.check_license(__package__)
