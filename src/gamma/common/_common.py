@@ -99,4 +99,6 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
         warning (default: 1)
     :return:
     """
+    if stacklevel < 1:
+        raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
