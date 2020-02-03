@@ -20,10 +20,15 @@ def clear_environment() -> None:
     yield
 
 
-def test_no_license_warns(clear_environment) -> None:
-    with pytest.warns(expected_warning=UserWarning):
-        # have to ensure it's not cached already
-        licensing.check_license(__package__)
+def test_no_license_warns(clear_environment, monkeypatch, capsys) -> None:
+    # have to ensure it's not cached already
+    monkeypatch.setattr(licensing._licensing, name="checked_packages", value=set())
+    licensing.check_license(__package__)
+
+    # test output to stderr:
+    captured = capsys.readouterr()
+    long = licensing._licensing.WARNING_MESSAGE_LONG
+    assert long.format(__package__) in captured.err
 
 
 def test_valid_license(clear_environment, monkeypatch) -> None:
