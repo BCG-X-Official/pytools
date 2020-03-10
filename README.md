@@ -3,16 +3,17 @@
 GAMMA visualization tools.
 
 # Installation
-The pip-project `gamma-viz` can be installed using:
-- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-viz.git#egg=gamma.viz`
- (*latest version*)
- - Check [this page](./../../releases) for available releases and use 
- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-viz.git@[VERSION-TAG]#egg=gamma.viz`
- to install a specific version. E.g. to install `1.0.0` use:
- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-viz.git@1.0.0#egg=gamma.viz`
+Latest stable conda package `gamma-viz` can be installed using:
+`conda install -c https://machine-1511619-alpha:bcggamma2019@artifactory.gamma.bcg.com/artifactory/api/conda/local-conda-1511619-alpha-01 gamma-viz`
 
-Ensure that you have set up a working SSH key on git.sourceai.io!
-
+Or add the alpha channel and this package to your `environment.yml`:
+```
+channels:
+  - conda-forge
+  - https://machine-1511619-alpha:bcggamma2019@artifactory.gamma.bcg.com/artifactory/api/conda/local-conda-1511619-alpha-01
+dependencies:
+  - gamma-viz
+```
 # Documentation
 Documentation for all of alpha's Python projects is available at: 
 https://git.sourceai.io/pages/alpha/alpha/
