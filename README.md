@@ -6,23 +6,18 @@ Designed to contain solely
 minimalistic artifacts for reuse, which *do not fit better* in any of the
 specific projects.
 
-Currently this project contains:
-
-- `gamma.common.ListLike`
-- `gamma.common.MatrixLike`
-- `gamma.common.deprecated`
-
 # Installation
-The pip-project `gamma-common` can be installed using:
-- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-common.git#egg=gamma.common`
- (*latest version*)
- - Check [this page](./../../releases) for available releases and use 
- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-common.git@[VERSION-TAG]#egg=gamma.common`
- to install a specific version. E.g. to install `1.0.0` use:
- `pip install git+ssh://git@git.sourceai.io/BCG/gamma-common.git@1.0.0#egg=gamma.common`
- 
-Ensure that you have set up a working SSH key on git.sourceai.io!
+Latest stable conda package `gamma-common` can be installed using:
+`conda install -c https://machine-1511619-alpha:bcggamma2019@artifactory.gamma.bcg.com/artifactory/api/conda/local-conda-1511619-alpha-01 gamma-common`
 
+Or add the alpha channel and this package to your `environment.yml`:
+```
+channels:
+  - conda-forge
+  - https://machine-1511619-alpha:bcggamma2019@artifactory.gamma.bcg.com/artifactory/api/conda/local-conda-1511619-alpha-01
+dependencies:
+  - gamma-common
+```
 # Documentation
 Documentation for all of alpha's Python projects is available at: 
 https://git.sourceai.io/pages/alpha/alpha/
