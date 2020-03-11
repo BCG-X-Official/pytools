@@ -45,10 +45,9 @@ LICENSEE_ENV = "GAMMA_ALPHA_LICENSEE"
 WARNING_MESSAGE = "No license in place for package {}"
 WARNING_MESSAGE_LONG = (
     "\n"
-    "Modules from the ALPHA suite need to be licensed for use with BCG clients.\n"
-    "This is a simple process and comes at no charge to the client.\n"
-    "The ALPHA team will issue a license key that will silence this warning.\n"
-    "Please contact Jörg Schneider or Jan Ittner for support.\n"
+    "ALPHA (c) 2019, 2020 Boston Consulting Group\n"
+    "Modules from the ALPHA suite need to be licensed for commercial use.\n"
+    "Please contact the ALPHA team for support with this.\n"
     "\n"
     f"{WARNING_MESSAGE}"
 )
