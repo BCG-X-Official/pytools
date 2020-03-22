@@ -3,7 +3,7 @@ Core implementation of :mod:`gamma.viz.distribution`
 """
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 
 import numpy as np
@@ -44,7 +44,7 @@ class _Ecdf(NamedTuple):
     far_outliers: _XYSeries
 
 
-class ECDFStyle(DrawStyle, ABC):
+class ECDFStyle(DrawStyle, metaclass=ABCMeta):
     """
     The base drawing style for ECDFs
     """

@@ -4,7 +4,7 @@ Text styles for the Gamma visualization library
 
 import logging
 import sys
-from abc import ABC
+from abc import ABCMeta
 from typing import TextIO
 
 from ._viz import DrawStyle
@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 __all__ = ["TextStyle"]
 
 
-class TextStyle(DrawStyle, ABC):
+class TextStyle(DrawStyle, metaclass=ABCMeta):
     """
     Plain text drawing style.
 
