@@ -19,7 +19,7 @@ inclusion in text reports.
 """
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 from typing import TextIO
 
@@ -52,7 +52,7 @@ __all__ = [
 #
 
 
-class DendrogramStyle(DrawStyle, ABC):
+class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
     """
     Base class for dendrogram drawing styles.
 
@@ -109,7 +109,9 @@ class DendrogramStyle(DrawStyle, ABC):
         pass
 
 
-class BaseDendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, ABC):
+class BaseDendrogramMatplotStyle(
+    DendrogramStyle, ColorbarMatplotStyle, metaclass=ABCMeta
+):
     """
     Base class for Matplotlib styles for dendrogram.
 
