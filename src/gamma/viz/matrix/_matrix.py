@@ -3,7 +3,7 @@ Core implementation of :mod:`gamma.viz.matrix`
 """
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 
 import numpy as np
@@ -39,7 +39,7 @@ __all__ = [
 #
 
 
-class MatrixStyle(DrawStyle, ABC):
+class MatrixStyle(DrawStyle, metaclass=ABCMeta):
     """
     Base class for matrix drawer styles.
     """

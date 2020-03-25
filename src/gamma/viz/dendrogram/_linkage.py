@@ -7,7 +7,7 @@ Linkage Tree.
 :class:`LinkageTree`. Both these classes inherit from :class:`BaseNode`.
 """
 
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 
 import numpy as np
@@ -15,7 +15,7 @@ import numpy as np
 __all__ = ["BaseNode", "LinkageNode", "LeafNode", "LinkageTree"]
 
 
-class BaseNode(ABC):
+class BaseNode(metaclass=ABCMeta):
     """
     BaseNode of a :class:`LinkageTree`.
 

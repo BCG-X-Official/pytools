@@ -3,7 +3,7 @@ The Gamma visualization library, providing MVC-based classes for rendering data 
 different styles, e.g., as charts or plain text.
 """
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from threading import Lock
 from typing import *
 
@@ -17,7 +17,7 @@ __all__ = ["Drawer", "DrawStyle"]
 #
 
 
-class DrawStyle(ABC):
+class DrawStyle(metaclass=ABCMeta):
     """
     Base class for a drawer style.
     """
@@ -55,7 +55,7 @@ T_Model = TypeVar("T_Model")
 T_Style = TypeVar("T_Style", bound=DrawStyle)
 
 
-class Drawer(ABC, Generic[T_Model, T_Style]):
+class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     """
     Base class for drawers.
     """
