@@ -3,7 +3,7 @@ Matplot styles for the Gamma visualization library
 """
 
 import logging
-from abc import ABC
+from abc import ABCMeta
 from typing import *
 
 import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ RGBA_WHITE: RgbaColor = to_rgba("white")
 #
 
 
-class MatplotStyle(DrawStyle, ABC):
+class MatplotStyle(DrawStyle, metaclass=ABCMeta):
     """Matplotlib drawer style.
 
     Implementations must define :meth:`~DrawStyle.draw_title`.
@@ -149,7 +149,7 @@ class MatplotStyle(DrawStyle, ABC):
         return text_color
 
 
-class ColorbarMatplotStyle(MatplotStyle, ABC):
+class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     """
     Matplot style with added support for a color bar.
 
