@@ -2,7 +2,7 @@
 Core implementation of :mod:`gamma.common.fit`
 """
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ T_Data = TypeVar("T_Data")
 #
 
 
-class FittableMixin(ABC, Generic[T_Data]):
+class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     """
     Mix-in class that supports fitting the object to data.
     """
