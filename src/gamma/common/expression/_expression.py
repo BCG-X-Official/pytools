@@ -25,7 +25,7 @@ __all__ = [
 ]
 
 INDENT_WIDTH = 4
-MAX_LINE_LENGTH = 15
+MAX_LINE_LENGTH = 80
 
 __OPERATOR_PRECEDENCE_ORDER = (
     {"."},
@@ -538,7 +538,7 @@ def main() -> None:
         (Literal(1) | Literal(2)) >> Literal("x") % Identifier("x"),
         abc=-Literal(5),
     )
-    rep = str(e)
+    rep = str(e + e + e - e * e)
     print(len(rep))
     print(len(e.representation()))
     print(f'"{rep}"')
