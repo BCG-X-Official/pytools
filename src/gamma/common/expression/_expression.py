@@ -89,6 +89,7 @@ class ExpressionRepresentation:
             expression
         :param suffix: the end of the expression
         """
+
         self.prefix = prefix
         self.infix = infix
         self.infix_leading_space = infix_leading_space
@@ -187,63 +188,44 @@ class ExpressionRepresentation:
 
         inner = self.inner
         if inner:
+
+            last_idx = len(inner) - 1
             infix = self.infix
-            if infix:
-                if self.infix_leading_space:
-                    len_infix = len(infix) + 1
-                    result.extend(
-                        inner[0]._to_lines(
-                            indent=inner_indent,
-                            leading_space=leading_space,
-                            trailing_space=0 if len(inner) > 1 else trailing_space,
-                        )
+
+            if self.infix_leading_space:
+                len_infix = len(infix) + 1
+                for idx, inner_representation in enumerate(inner):
+                    lines = inner_representation._to_lines(
+                        indent=inner_indent,
+                        leading_space=leading_space if idx == 0 else len_infix,
+                        trailing_space=(trailing_space if idx == last_idx else 0),
                     )
-                    for inner_representation in inner[1:]:
-                        lines = inner_representation._to_lines(
-                            indent=inner_indent,
-                            leading_space=len_infix,
-                            trailing_space=(
-                                trailing_space
-                                if inner_representation is inner[-1]
-                                else 0
-                            ),
+                    if idx != 0:
+                        # prepend infix to first line,
+                        # except we're in the first representation
+                        lines[0] = IndentedLine(
+                            indent=inner_indent, text=f"{infix} {lines[0].text}"
                         )
-                        result.append(
-                            IndentedLine(
-                                indent=inner_indent, text=f"{infix} {lines[0].text}"
-                            )
-                        )
-                        result.extend(lines[1:])
-                else:
-                    len_infix = len(infix)
-                    for inner_representation in inner[:-1]:
-                        lines = inner_representation._to_lines(
-                            indent=inner_indent,
-                            leading_space=(
-                                leading_space if inner_representation is inner[0] else 0
-                            ),
-                            trailing_space=len_infix,
-                        )
-                        result.extend(lines[:-1])
-                        result.append(
-                            IndentedLine(
-                                indent=inner_indent, text=f"{lines[-1].text}{infix}"
-                            )
-                        )
-                    result.extend(
-                        inner[-1]._to_lines(
-                            indent=inner_indent,
-                            leading_space=leading_space if len(inner) == 1 else 0,
-                            trailing_space=trailing_space,
-                        )
-                    )
+
+                    result.extend(lines)
             else:
-                result.extend(
-                    itertools.chain.from_iterable(
-                        inner_representation._to_lines(indent=inner_indent)
-                        for inner_representation in inner
+                len_infix = len(infix)
+                for idx, inner_representation in enumerate(inner):
+                    lines = inner_representation._to_lines(
+                        indent=inner_indent,
+                        leading_space=(leading_space if idx == 0 else 0),
+                        trailing_space=len_infix if idx < last_idx else trailing_space,
                     )
-                )
+
+                    if idx != last_idx:
+                        # append infix to last line,
+                        # except we're in the last representation
+                        lines[-1] = IndentedLine(
+                            indent=inner_indent, text=f"{lines[-1].text}{infix}"
+                        )
+
+                    result.extend(lines)
+
         if self.suffix:
             result.append(IndentedLine(indent=indent, text=self.suffix))
         return result
@@ -498,7 +480,6 @@ class Enumeration(Expression):
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
-        elements = self.elements
         return ExpressionRepresentation(
             prefix=self.delimiter_left,
             inner=tuple(
