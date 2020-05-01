@@ -4,14 +4,17 @@ strings; useful for generating representations of complex Python objects.
 """
 from __future__ import annotations
 
+import itertools
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
+from typing import List
 
 log = logging.getLogger(__name__)
 
 __all__ = [
-    "IndentedText",
+    "IndentedLine",
+    "ExpressionRepresentation",
     "Expression",
     "Literal",
     "Identifier",
@@ -21,6 +24,8 @@ __all__ = [
     "Function",
 ]
 
+INDENT_WIDTH = 4
+MAX_LINE_LENGTH = 15
 
 __OPERATOR_PRECEDENCE_ORDER = (
     {"."},
@@ -52,7 +57,7 @@ OPERATOR_PRECEDENCE = {
 MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 
-class IndentedText(NamedTuple):
+class IndentedLine(NamedTuple):
     """
     An indented line of text
     """
@@ -61,30 +66,237 @@ class IndentedText(NamedTuple):
     text: str
 
 
+class ExpressionRepresentation:
+    """
+    A hierarchical string representation of an expression
+    """
+
+    def __init__(
+        self,
+        prefix: str = "",
+        *,
+        infix: str = "",
+        infix_leading_space: bool = True,
+        inner: Tuple[ExpressionRepresentation, ...] = (),
+        suffix: str = "",
+    ):
+        """
+        :param prefix: the start of the expression
+        :param infix: separator for subexpressions nested inside the expression
+        :param infix_leading_space: if `True`, the infix operator has spaces on both \
+            sides, otherwise has a space only on the right
+        :param inner: list of representations of the subexpressions nested inside the \
+            expression
+        :param suffix: the end of the expression
+        """
+        self.prefix = prefix
+        self.infix = infix
+        self.infix_leading_space = infix_leading_space
+        self.inner = inner
+        self.suffix = suffix
+        infix_length = len(infix) + (2 if infix_leading_space else 1)
+        self.__len = (
+            len(prefix)
+            + sum(len(inner_representation) for inner_representation in inner)
+            + max(len(inner) - 1, 0) * infix_length
+            + len(suffix)
+        )
+
+    def with_wrapper(self, prefix: str, suffix: str) -> ExpressionRepresentation:
+        """
+        Construct a copy of this representation with a new prefix and suffix
+        :param prefix: the new prefix
+        :param suffix: the new suffix
+        :return: the new representation
+        """
+        return ExpressionRepresentation(
+            prefix=prefix,
+            infix=self.infix,
+            infix_leading_space=self.infix_leading_space,
+            inner=self.inner,
+            suffix=suffix,
+        )
+
+    def _to_lines(
+        self, indent: int = 0, leading_space: int = 0, trailing_space: int = 0
+    ) -> List[IndentedLine]:
+        """
+        Convert this representation to as few lines as possible without exceeding
+        maximum line length
+        :param indent: global indent of this expression
+        :param leading_space: leading space to reserve in first line
+        :param trailing_space: trailing space to reserve in last line
+        :return: resulting lines
+        """
+        log.warning(
+            (
+                self._to_single_line(),
+                indent * INDENT_WIDTH,
+                leading_space,
+                len(self),
+                trailing_space,
+            )
+        )
+
+        if (
+            leading_space + len(self) + indent * INDENT_WIDTH + trailing_space
+            > MAX_LINE_LENGTH
+        ):
+            return self._to_multiple_lines(
+                indent=indent,
+                leading_space=leading_space,
+                trailing_space=trailing_space,
+            )
+        else:
+            return [IndentedLine(indent=indent, text=self._to_single_line())]
+
+    def _to_single_line(self) -> str:
+        """
+        Convert this representation to a single-line string
+        :return: the resulting string
+        """
+        if self.infix:
+            if self.infix_leading_space:
+                infix = f" {self.infix} "
+            else:
+                infix = f"{self.infix} "
+        else:
+            infix = ""
+        inner = infix.join(
+            subexpression_representation._to_single_line()
+            for subexpression_representation in self.inner
+        )
+        return f"{self.prefix}{inner}{self.suffix}"
+
+    def _to_multiple_lines(
+        self, indent: int, leading_space: int, trailing_space: int
+    ) -> List[IndentedLine]:
+        """
+        Convert this representation to multiple lines
+        :param indent: global indent of this expression
+        :param leading_space: leading space to reserve in first line
+        :param trailing_space: trailing space to reserve in last line
+        :return: resulting lines
+        """
+        result: List[IndentedLine] = []
+        if self.prefix:
+            result.append(IndentedLine(indent=indent, text=self.prefix))
+            inner_indent = indent + 1
+        else:
+            inner_indent = indent
+
+        inner = self.inner
+        if inner:
+            infix = self.infix
+            if infix:
+                if self.infix_leading_space:
+                    len_infix = len(infix) + 1
+                    result.extend(
+                        inner[0]._to_lines(
+                            indent=inner_indent,
+                            leading_space=leading_space,
+                            trailing_space=0 if len(inner) > 1 else trailing_space,
+                        )
+                    )
+                    for inner_representation in inner[1:]:
+                        lines = inner_representation._to_lines(
+                            indent=inner_indent,
+                            leading_space=len_infix,
+                            trailing_space=(
+                                trailing_space
+                                if inner_representation is inner[-1]
+                                else 0
+                            ),
+                        )
+                        result.append(
+                            IndentedLine(
+                                indent=inner_indent, text=f"{infix} {lines[0].text}"
+                            )
+                        )
+                        result.extend(lines[1:])
+                else:
+                    len_infix = len(infix)
+                    for inner_representation in inner[:-1]:
+                        lines = inner_representation._to_lines(
+                            indent=inner_indent,
+                            leading_space=(
+                                leading_space if inner_representation is inner[0] else 0
+                            ),
+                            trailing_space=len_infix,
+                        )
+                        result.extend(lines[:-1])
+                        result.append(
+                            IndentedLine(
+                                indent=inner_indent, text=f"{lines[-1].text}{infix}"
+                            )
+                        )
+                    result.extend(
+                        inner[-1]._to_lines(
+                            indent=inner_indent,
+                            leading_space=leading_space if len(inner) == 1 else 0,
+                            trailing_space=trailing_space,
+                        )
+                    )
+            else:
+                result.extend(
+                    itertools.chain.from_iterable(
+                        inner_representation._to_lines(indent=inner_indent)
+                        for inner_representation in inner
+                    )
+                )
+        if self.suffix:
+            result.append(IndentedLine(indent=indent, text=self.suffix))
+        return result
+
+    def __str__(self) -> str:
+        multiline = True
+
+        def _spacing(indent: int) -> str:
+            return " " * (INDENT_WIDTH * indent)
+
+        lines: List[IndentedLine] = self._to_lines()
+        if multiline:
+            return "\n".join(f"{_spacing(indent)}{text}" for indent, text in lines)
+        else:
+            if len(lines) == 1:
+                return lines[0].text
+            else:
+                return "".join(
+                    f"{text} " if indent == next_indent else text
+                    for (indent, text), next_indent in itertools.zip_longest(
+                        lines, (indent for indent, _ in lines[1:])
+                    )
+                )
+
+    def __len__(self) -> int:
+        return self.__len
+
+
 class Expression(metaclass=ABCMeta):
     """
     A nested expression
     """
 
     @abstractmethod
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
+    def representation(self) -> ExpressionRepresentation:
         """
-        Generate all elements of this expression
-        :param indent: the outermost indentation level of the expression
-        :return: the number of characters in the expression, excluding indentation
+        Return a nested text representation of this expression
         """
         pass
 
-    def _walk_subexpression(
-        self, parent_indent: int, subexpression: Expression
-    ) -> Generator[IndentedText, None, int]:
+    def _subexpression_representation(
+        self, subexpression: Expression
+    ) -> ExpressionRepresentation:
+        subexpression_representation = subexpression.representation()
         if subexpression.precedence() >= self.precedence():
-            yield IndentedText(indent=parent_indent, text="(")
-            len_subexpression = yield from subexpression.walk(indent=parent_indent + 1)
-            yield IndentedText(indent=parent_indent, text=")")
-            return len_subexpression + 2
+            if subexpression_representation.prefix:
+                return ExpressionRepresentation(
+                    prefix="(", inner=(subexpression_representation,), suffix=")"
+                )
+            else:
+                return subexpression_representation.with_wrapper(prefix="(", suffix=")")
         else:
-            return (yield from subexpression.walk(indent=parent_indent))
+            return subexpression_representation
 
     def precedence(self) -> int:
         """
@@ -94,7 +306,7 @@ class Expression(metaclass=ABCMeta):
         return -1
 
     def __repr__(self) -> str:
-        return "\n".join(" " * element.indent + element.text for element in self.walk())
+        return str(self.representation())
 
     def __add__(self, other: Expression) -> Operation:
         return Operation("+", (self, other))
@@ -156,12 +368,10 @@ class Literal(Expression):
         self.value = value
 
     # noinspection PyMissingOrEmptyDocstring
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
-        text = repr(self.value)
-        yield IndentedText(indent=indent, text=text)
-        return len(text)
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(repr(self.value))
 
-    walk.__doc__ = Expression.walk.__doc__
+    representation.__doc__ = Expression.representation.__doc__
 
 
 class Identifier(Expression):
@@ -178,11 +388,10 @@ class Identifier(Expression):
         return Function(name=self.name, *args, **kwargs)
 
     # noinspection PyMissingOrEmptyDocstring
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
-        yield IndentedText(indent=indent, text=self.name)
-        return len(self.name)
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(self.name)
 
-    walk.__doc__ = Expression.walk.__doc__
+    representation.__doc__ = Expression.representation.__doc__
 
 
 class BaseOperation(Expression, metaclass=ABCMeta):
@@ -228,24 +437,16 @@ class Operation(BaseOperation):
     precedence.__doc__ = Expression.precedence.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
-        subexpressions = self.subexpressions
-        if len(subexpressions) == 1:
-            return (yield from subexpressions[0].walk(indent=indent))
-        else:
-            not_first = False
-            length = 0
-            for subexpression in subexpressions:
-                if not_first:
-                    yield IndentedText(indent=indent, text=self.operator)
-                    length += 2 + len(self.operator)  # count spaces left and right
-                not_first = True
-                length += yield from self._walk_subexpression(
-                    parent_indent=indent, subexpression=subexpression
-                )
-            return length
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(
+            infix=self.operator,
+            inner=tuple(
+                self._subexpression_representation(subexpression=subexpression)
+                for subexpression in self.subexpressions
+            ),
+        )
 
-    walk.__doc__ = Expression.walk.__doc__
+    representation.__doc__ = Expression.representation.__doc__
 
 
 class UnaryOperation(BaseOperation):
@@ -267,15 +468,13 @@ class UnaryOperation(BaseOperation):
     precedence.__doc__ = Expression.precedence.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
-        yield IndentedText(indent=indent, text=self.operator)
-        return len(self.operator) + (
-            yield from self._walk_subexpression(
-                parent_indent=indent, subexpression=self.subexpression
-            )
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(
+            prefix=self.operator,
+            inner=(self._subexpression_representation(self.subexpression),),
         )
 
-    walk.__doc__ = Expression.walk.__doc__
+    representation.__doc__ = Expression.representation.__doc__
 
 
 class Enumeration(Expression):
@@ -298,26 +497,19 @@ class Enumeration(Expression):
         self.elements = elements
 
     # noinspection PyMissingOrEmptyDocstring
-    def walk(self, indent: int = 0) -> Generator[IndentedText, None, int]:
-        length = len(self.delimiter_left) + len(self.delimiter_right)
-        yield IndentedText(indent=indent, text=self.delimiter_left)
+    def representation(self) -> ExpressionRepresentation:
         elements = self.elements
-        if elements:
-            elements_indent = indent + 1
-            length += yield from self._walk_subexpression(
-                parent_indent=elements_indent, subexpression=elements[0]
-            )
-            for element in elements[1:]:
-                yield IndentedText(indent=elements_indent, text=", ")
-                length += 2 + (
-                    yield from self._walk_subexpression(
-                        parent_indent=elements_indent, subexpression=element
-                    )
-                )
-        yield IndentedText(indent=indent, text=self.delimiter_right)
-        return length
+        return ExpressionRepresentation(
+            prefix=self.delimiter_left,
+            inner=tuple(
+                self._subexpression_representation(element) for element in self.elements
+            ),
+            infix=",",
+            infix_leading_space=False,
+            suffix=self.delimiter_right,
+        )
 
-    walk.__doc__ = Expression.walk.__doc__
+    representation.__doc__ = Expression.representation.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
@@ -365,7 +557,10 @@ def main() -> None:
         (Literal(1) | Literal(2)) >> Literal("x") % Identifier("x"),
         abc=-Literal(5),
     )
-    print(e)
+    rep = str(e)
+    print(len(rep))
+    print(len(e.representation()))
+    print(f'"{rep}"')
 
 
 if __name__ == "__main__":
