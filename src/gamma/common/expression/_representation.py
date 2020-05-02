@@ -57,7 +57,9 @@ class ExpressionRepresentation:
         self.infix_keep_with_left = infix_keep_with_left
         self.inner = inner
         self.suffix = suffix
-        infix_length = len(infix) + (1 if infix_keep_with_left else 2)
+        infix_length = len(infix) + (
+            (1 if infix_keep_with_left else 2) if infix_spacing else 0
+        )
         self.__len = (
             len(prefix)
             + sum(len(inner_representation) for inner_representation in inner)
