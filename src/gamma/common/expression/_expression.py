@@ -392,7 +392,6 @@ class DictEntry(BaseOperation):
                 self._subexpression_representation(self.value),
             ),
             infix_keep_with_left=True,
-            infix_spacing=False,
         )
 
     representation.__doc__ = Expression.representation.__doc__

@@ -1,5 +1,4 @@
 import logging
-from typing import *
 
 from gamma.common.expression import Call, Expression, Identifier, Literal
 
@@ -34,7 +33,7 @@ def test_expression_formatting() -> None:
 
     assert (
         str(Expression.from_value([1, 2, {3: 4, 5: e}]))
-        == "[1, 2, {3:4, 5:f((1 | 2) >> 'x' % x, abc=-5)}]"
+        == "[1, 2, {3: 4, 5: f((1 | 2) >> 'x' % x, abc=-5)}]"
     )
 
 
