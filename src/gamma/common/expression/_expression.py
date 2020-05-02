@@ -460,25 +460,3 @@ class DictExpression(Enumeration):
 
 def _operator_precedence(operator: str):
     return OPERATOR_PRECEDENCE.get(operator, MAX_PRECEDENCE)
-
-
-def main() -> None:
-    """
-    Basic tests
-    Todo: convert into unit tests
-    """
-    e = Call(
-        "f",
-        (Literal(1) | Literal(2)) >> Literal("x") % Identifier("x"),
-        abc=-Literal(5),
-    )
-    rep = str(e + e + e - e * e)
-    print(len(rep))
-    print(len(e.representation()))
-    print(rep)
-
-    print(Expression.from_value([1, 2, {3: 4, 5: 6}]))
-
-
-if __name__ == "__main__":
-    main()
