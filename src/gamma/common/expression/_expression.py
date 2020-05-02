@@ -40,7 +40,7 @@ __OPERATOR_PRECEDENCE_ORDER = (
     {"and"},
     {"or"},
     {"lambda"},
-    {"="},
+    {"=", ":"},
     {","},
 )
 
@@ -277,11 +277,10 @@ class Enumeration(Expression):
     _PRECEDENCE = OPERATOR_PRECEDENCE[","]
 
     def __init__(
-        self,
-        delimiter_left: str,
-        elements: Tuple[Expression, ...],
-        delimiter_right: str,
+        self, delimiter_left: str, elements: Iterable[Expression], delimiter_right: str
     ) -> None:
+        if not isinstance(elements, tuple):
+            elements = tuple(elements)
         if not all(isinstance(element, Expression) for element in elements):
             raise ValueError("all elements must implement class Expression")
         self.delimiter_left = delimiter_left
@@ -333,6 +332,31 @@ class KeywordArgument(BaseOperation):
     representation.__doc__ = Expression.representation.__doc__
 
 
+class DictEntry(BaseOperation):
+    """
+    A keyword argument, used by functions
+    """
+
+    def __init__(self, key: Expression, value: Expression):
+        super().__init__(":")
+        self.key = key
+        self.value = value
+
+    # noinspection PyMissingOrEmptyDocstring
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(
+            infix=self.operator,
+            inner=(
+                self._subexpression_representation(self.key),
+                self._subexpression_representation(self.value),
+            ),
+            infix_keep_with_left=True,
+            infix_spacing=False,
+        )
+
+    representation.__doc__ = Expression.representation.__doc__
+
+
 class Call(Enumeration):
     """
     A function invocation
@@ -358,8 +382,8 @@ class ListExpression(Enumeration):
     A list of expressions
     """
 
-    def __init__(self, *args: Expression):
-        super().__init__(delimiter_left="[", elements=args, delimiter_right="]")
+    def __init__(self, values: Iterable[Expression]):
+        super().__init__(delimiter_left="[", elements=values, delimiter_right="]")
 
 
 class TupleExpression(Enumeration):
@@ -367,8 +391,8 @@ class TupleExpression(Enumeration):
     A list of expressions
     """
 
-    def __init__(self, *args: Expression):
-        super().__init__(delimiter_left="(", elements=args, delimiter_right=")")
+    def __init__(self, values: Iterable[Expression]):
+        super().__init__(delimiter_left="(", elements=values, delimiter_right=")")
 
 
 class SetExpression(Enumeration):
@@ -376,8 +400,8 @@ class SetExpression(Enumeration):
     A list of expressions
     """
 
-    def __init__(self, *args: Expression):
-        super().__init__(delimiter_left="{", elements=args, delimiter_right="}")
+    def __init__(self, values: Iterable[Expression]):
+        super().__init__(delimiter_left="{", elements=values, delimiter_right="}")
 
 
 class DictExpression(Enumeration):
@@ -385,12 +409,10 @@ class DictExpression(Enumeration):
     A list of expressions
     """
 
-    def __init__(self, **kwargs: Expression):
+    def __init__(self, entries: Dict[Expression, Expression]):
         super().__init__(
             delimiter_left="{",
-            elements=tuple(
-                KeywordArgument(key, value) for key, value in kwargs.items()
-            ),
+            elements=tuple(DictEntry(key, value) for key, value in entries.items()),
             delimiter_right="}",
         )
 
@@ -413,6 +435,8 @@ def main() -> None:
     print(len(rep))
     print(len(e.representation()))
     print(rep)
+
+    print(Expression.from_value([1, 2, {3: 4, 5: 6}]))
 
 
 if __name__ == "__main__":
