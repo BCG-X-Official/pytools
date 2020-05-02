@@ -21,6 +21,7 @@ __all__ = [
     "Operation",
     "UnaryOperation",
     "Enumeration",
+    "KeywordArgument",
     "Function",
 ]
 
@@ -518,7 +519,7 @@ class Enumeration(Expression):
     precedence.__doc__ = Expression.precedence.__doc__
 
 
-class _KeywordArgument(BaseOperation):
+class KeywordArgument(BaseOperation):
     """
     A keyword argument, used by functions
     """
@@ -553,7 +554,7 @@ class Function(Enumeration):
             elements=(
                 *args,
                 *(
-                    _KeywordArgument(name, expression)
+                    KeywordArgument(name, expression)
                     for name, expression in kwargs.items()
                 ),
             ),
