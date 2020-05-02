@@ -76,15 +76,17 @@ class ExpressionRepresentation:
         prefix: str = "",
         *,
         infix: str = "",
-        infix_leading_space: bool = True,
+        infix_spacing: bool = True,
+        infix_keep_with_left: bool = False,
         inner: Tuple[ExpressionRepresentation, ...] = (),
         suffix: str = "",
     ):
         """
         :param prefix: the start of the expression
         :param infix: separator for subexpressions nested inside the expression
-        :param infix_leading_space: if `True`, the infix operator has spaces on both \
-            sides, otherwise has a space only on the right
+        :param infix_spacing: if `True`, insert spaces between infix and operands
+        :param infix_keep_with_left: if `True`, always keep the infix operator \
+            with the left operand and never insert a space left of the infix
         :param inner: list of representations of the subexpressions nested inside the \
             expression
         :param suffix: the end of the expression
@@ -92,10 +94,11 @@ class ExpressionRepresentation:
 
         self.prefix = prefix
         self.infix = infix
-        self.infix_leading_space = infix_leading_space
+        self.infix_spacing = infix_spacing
+        self.infix_keep_with_left = infix_keep_with_left
         self.inner = inner
         self.suffix = suffix
-        infix_length = len(infix) + (2 if infix_leading_space else 1)
+        infix_length = len(infix) + (1 if infix_keep_with_left else 2)
         self.__len = (
             len(prefix)
             + sum(len(inner_representation) for inner_representation in inner)
@@ -113,7 +116,7 @@ class ExpressionRepresentation:
         return ExpressionRepresentation(
             prefix=prefix,
             infix=self.infix,
-            infix_leading_space=self.infix_leading_space,
+            infix_keep_with_left=self.infix_keep_with_left,
             inner=self.inner,
             suffix=suffix,
         )
@@ -157,10 +160,12 @@ class ExpressionRepresentation:
         :return: the resulting string
         """
         if self.infix:
-            if self.infix_leading_space:
-                infix = f" {self.infix} "
-            else:
+            if not self.infix_spacing:
+                infix = self.infix
+            elif self.infix_keep_with_left:
                 infix = f"{self.infix} "
+            else:
+                infix = f" {self.infix} "
         else:
             infix = ""
         inner = infix.join(
@@ -192,23 +197,7 @@ class ExpressionRepresentation:
             last_idx = len(inner) - 1
             infix = self.infix
 
-            if self.infix_leading_space:
-                len_infix = len(infix) + 1
-                for idx, inner_representation in enumerate(inner):
-                    lines = inner_representation._to_lines(
-                        indent=inner_indent,
-                        leading_space=leading_space if idx == 0 else len_infix,
-                        trailing_space=(trailing_space if idx == last_idx else 0),
-                    )
-                    if idx != 0:
-                        # prepend infix to first line,
-                        # except we're in the first representation
-                        lines[0] = IndentedLine(
-                            indent=inner_indent, text=f"{infix} {lines[0].text}"
-                        )
-
-                    result.extend(lines)
-            else:
+            if self.infix_keep_with_left:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
@@ -222,6 +211,25 @@ class ExpressionRepresentation:
                         # except we're in the last representation
                         lines[-1] = IndentedLine(
                             indent=inner_indent, text=f"{lines[-1].text}{infix}"
+                        )
+
+                    result.extend(lines)
+            else:
+                if self.infix_spacing:
+                    infix = f"{infix} "
+
+                len_infix = len(infix)
+                for idx, inner_representation in enumerate(inner):
+                    lines = inner_representation._to_lines(
+                        indent=inner_indent,
+                        leading_space=leading_space if idx == 0 else len_infix,
+                        trailing_space=(trailing_space if idx == last_idx else 0),
+                    )
+                    if idx != 0:
+                        # prepend infix to first line,
+                        # except we're in the first representation
+                        lines[0] = IndentedLine(
+                            indent=inner_indent, text=f"{infix}{lines[0].text}"
                         )
 
                     result.extend(lines)
@@ -397,6 +405,12 @@ class BaseOperation(Expression, metaclass=ABCMeta):
             raise ValueError("operator must not contain whitespace")
         self.operator = operator
 
+    # noinspection PyMissingOrEmptyDocstring
+    def precedence(self) -> int:
+        return _operator_precedence(self.operator)
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
 
 class Operation(BaseOperation):
     """
@@ -422,12 +436,6 @@ class Operation(BaseOperation):
             )
         else:
             self.subexpressions = subexpressions
-
-    # noinspection PyMissingOrEmptyDocstring
-    def precedence(self) -> int:
-        return _operator_precedence(self.operator)
-
-    precedence.__doc__ = Expression.precedence.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
@@ -497,7 +505,7 @@ class Enumeration(Expression):
                 self._subexpression_representation(element) for element in self.elements
             ),
             infix=",",
-            infix_leading_space=False,
+            infix_keep_with_left=True,
             suffix=self.delimiter_right,
         )
 
@@ -510,13 +518,28 @@ class Enumeration(Expression):
     precedence.__doc__ = Expression.precedence.__doc__
 
 
-class _KeywordArgument(Operation):
+class _KeywordArgument(BaseOperation):
     """
     A keyword argument, used by functions
     """
 
     def __init__(self, name: str, value: Expression):
-        super().__init__(operator="=", subexpressions=(Identifier(name), value))
+        super().__init__("=")
+        self.name = name
+        self.value = value
+
+    # noinspection PyMissingOrEmptyDocstring
+    def representation(self) -> ExpressionRepresentation:
+        return ExpressionRepresentation(
+            infix=self.operator,
+            inner=(
+                Identifier(self.name).representation(),
+                self._subexpression_representation(self.value),
+            ),
+            infix_spacing=False,
+        )
+
+    representation.__doc__ = Expression.representation.__doc__
 
 
 class Function(Enumeration):
@@ -556,7 +579,7 @@ def main() -> None:
     rep = str(e + e + e - e * e)
     print(len(rep))
     print(len(e.representation()))
-    print(f'"{rep}"')
+    print(rep)
 
 
 if __name__ == "__main__":
