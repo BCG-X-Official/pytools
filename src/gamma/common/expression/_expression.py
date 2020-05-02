@@ -58,6 +58,47 @@ class Expression(metaclass=ABCMeta):
     A nested expression
     """
 
+    @staticmethod
+    def from_value(value: Any) -> Expression:
+        """
+        Convert a python object into an expression.
+
+        Conversions:
+        - expressions are returned as themselves
+        - standard containers are turned into their expression equivalents
+        - strings are turned into literals
+        - other iterables are turned into a Call expression
+        - all other values are turned into literals
+
+        :param value: value to turn into an expression
+        :return: the resulting expression
+        """
+
+        def _from_collection(values: Iterable) -> Iterable[Expression]:
+            return (Expression.from_value(value) for value in values)
+
+        if isinstance(value, Expression):
+            return value
+        elif isinstance(value, str):
+            return Literal(value)
+        elif isinstance(value, list):
+            return ListExpression(_from_collection(value))
+        elif isinstance(value, tuple):
+            return TupleExpression(_from_collection(value))
+        elif isinstance(value, set):
+            return SetExpression(_from_collection(value))
+        elif isinstance(value, dict):
+            return DictExpression(
+                {
+                    Expression.from_value(key): Expression.from_value(value)
+                    for key, value in value.items()
+                }
+            )
+        elif isinstance(value, Iterable):
+            return Call(name=type(value).__name__, *_from_collection(value))
+        else:
+            return Literal(value)
+
     @abstractmethod
     def representation(self) -> ExpressionRepresentation:
         """
