@@ -22,7 +22,7 @@ __all__ = [
     "UnaryOperation",
     "Enumeration",
     "KeywordArgument",
-    "Function",
+    "Call",
 ]
 
 INDENT_WIDTH = 4
@@ -386,8 +386,8 @@ class Identifier(Expression):
             raise ValueError("arg name must be a string")
         self.name = name
 
-    def __call__(self, *args: Expression, **kwargs: Expression) -> Function:
-        return Function(name=self.name, *args, **kwargs)
+    def __call__(self, *args: Expression, **kwargs: Expression) -> Call:
+        return Call(name=self.name, *args, **kwargs)
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
@@ -543,7 +543,7 @@ class KeywordArgument(BaseOperation):
     representation.__doc__ = Expression.representation.__doc__
 
 
-class Function(Enumeration):
+class Call(Enumeration):
     """
     A function invocation
     """
@@ -572,7 +572,7 @@ def main() -> None:
     Basic tests
     Todo: convert into unit tests
     """
-    e = Function(
+    e = Call(
         "f",
         (Literal(1) | Literal(2)) >> Literal("x") % Identifier("x"),
         abc=-Literal(5),
