@@ -270,14 +270,25 @@ class Expression(metaclass=ABCMeta):
         self, subexpression: Expression
     ) -> ExpressionRepresentation:
         subexpression_representation = subexpression.representation()
-        if subexpression.precedence() >= self.precedence():
-            if subexpression_representation.prefix:
+
+        if subexpression_representation.prefix and subexpression_representation.suffix:
+            # subexpression is already encapsulated, it is safe to use as-is
+            return subexpression_representation
+        if subexpression.precedence() > self.precedence():
+            # if the subexpression takes higher precedence, we need to encapsulate it
+            if (
+                subexpression_representation.prefix
+                or subexpression_representation.suffix
+            ):
+                # create new representation wrapper to protect existing prefix or suffix
                 return ExpressionRepresentation(
                     prefix="(", inner=(subexpression_representation,), suffix=")"
                 )
             else:
+                # add wrapper to existing representation
                 return subexpression_representation.with_wrapper(prefix="(", suffix=")")
         else:
+            # subexpression has lower precedence, we can keep it
             return subexpression_representation
 
     def precedence(self) -> int:
@@ -414,7 +425,7 @@ class Operation(BaseOperation):
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
+        return _operator_precedence(self.operator)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -526,6 +537,10 @@ class Function(Enumeration):
             delimiter_right=")",
         )
         self.name = name
+
+
+def _operator_precedence(operator: str):
+    return OPERATOR_PRECEDENCE.get(operator, MAX_PRECEDENCE)
 
 
 def main() -> None:
