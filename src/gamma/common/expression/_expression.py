@@ -563,6 +563,48 @@ class Call(Enumeration):
         self.name = name
 
 
+class ListExpression(Enumeration):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *args: Expression):
+        super().__init__(delimiter_left="[", elements=args, delimiter_right="]")
+
+
+class TupleExpression(Enumeration):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *args: Expression):
+        super().__init__(delimiter_left="(", elements=args, delimiter_right=")")
+
+
+class SetExpression(Enumeration):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *args: Expression):
+        super().__init__(delimiter_left="{", elements=args, delimiter_right="}")
+
+
+class DictExpression(Enumeration):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, **kwargs: Expression):
+        super().__init__(
+            delimiter_left="{",
+            elements=tuple(
+                KeywordArgument(key, value) for key, value in kwargs.items()
+            ),
+            delimiter_right="}",
+        )
+
+
 def _operator_precedence(operator: str):
     return OPERATOR_PRECEDENCE.get(operator, MAX_PRECEDENCE)
 
