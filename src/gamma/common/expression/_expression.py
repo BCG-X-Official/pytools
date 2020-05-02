@@ -65,6 +65,13 @@ class Expression(metaclass=ABCMeta):
         """
         pass
 
+    def precedence(self) -> int:
+        """
+        :return: the precedence of this expression, used to determine the need for \
+            parentheses
+        """
+        return -1
+
     def _subexpression_representation(
         self, subexpression: Expression
     ) -> ExpressionRepresentation:
@@ -89,13 +96,6 @@ class Expression(metaclass=ABCMeta):
         else:
             # subexpression has lower precedence, we can keep it
             return subexpression_representation
-
-    def precedence(self) -> int:
-        """
-        :return: the precedence of this expression, used to determine the need for \
-            parentheses
-        """
-        return -1
 
     def __repr__(self) -> str:
         return str(self.representation())
