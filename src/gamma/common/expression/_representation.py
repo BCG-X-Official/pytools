@@ -80,6 +80,31 @@ class ExpressionRepresentation:
             suffix=suffix,
         )
 
+    def to_string(self, multiline: bool = True) -> str:
+        """
+        Convert this representation to a string
+        :param multiline: if `True`, include line breaks to keep the width within \
+            maximum bounds (default: `True`)
+        :return: this representation rendered as a string
+        """
+
+        def _spacing(indent: int) -> str:
+            return " " * (INDENT_WIDTH * indent)
+
+        lines: List[IndentedLine] = self._to_lines()
+        if multiline:
+            return "\n".join(f"{_spacing(indent)}{text}" for indent, text in lines)
+        else:
+            if len(lines) == 1:
+                return lines[0].text
+            else:
+                return "".join(
+                    f"{text} " if indent == next_indent else text
+                    for (indent, text), next_indent in itertools.zip_longest(
+                        lines, (indent for indent, _ in lines[1:])
+                    )
+                )
+
     def _to_lines(
         self, indent: int = 0, leading_space: int = 0, trailing_space: int = 0
     ) -> List[IndentedLine]:
@@ -198,24 +223,7 @@ class ExpressionRepresentation:
         return result
 
     def __str__(self) -> str:
-        multiline = True
-
-        def _spacing(indent: int) -> str:
-            return " " * (INDENT_WIDTH * indent)
-
-        lines: List[IndentedLine] = self._to_lines()
-        if multiline:
-            return "\n".join(f"{_spacing(indent)}{text}" for indent, text in lines)
-        else:
-            if len(lines) == 1:
-                return lines[0].text
-            else:
-                return "".join(
-                    f"{text} " if indent == next_indent else text
-                    for (indent, text), next_indent in itertools.zip_longest(
-                        lines, (indent for indent, _ in lines[1:])
-                    )
-                )
+        return self.to_string()
 
     def __len__(self) -> int:
         return self.__len
