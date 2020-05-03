@@ -118,15 +118,6 @@ class ExpressionRepresentation:
         :param trailing_space: trailing space to reserve in last line
         :return: resulting lines
         """
-        log.warning(
-            (
-                self._to_single_line(),
-                indent * INDENT_WIDTH,
-                leading_space,
-                len(self),
-                trailing_space,
-            )
-        )
 
         if (
             leading_space + len(self) + indent * INDENT_WIDTH + trailing_space
