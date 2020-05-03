@@ -10,6 +10,7 @@ from gamma.common.expression import (
     Operation,
     SetExpression,
     TupleExpression,
+    UnaryOperation,
 )
 
 log = logging.getLogger(__name__)
@@ -77,3 +78,23 @@ def test_expression() -> None:
         assert len(representation) == expected_length
         assert str(representation) == expected_str
         assert len(representation.to_string(multiline=False)) == expected_length
+
+
+def test_expression_operators() -> None:
+    a, b = Identifier("a"), Identifier("b")
+    assert str(a + b) == str(Operation("+", subexpressions=(a, b)))
+    assert str(a - b) == str(Operation("-", subexpressions=(a, b)))
+    assert str(a * b) == str(Operation("*", subexpressions=(a, b)))
+    assert str(a @ b) == str(Operation("@", subexpressions=(a, b)))
+    assert str(a / b) == str(Operation("/", subexpressions=(a, b)))
+    assert str(a // b) == str(Operation("//", subexpressions=(a, b)))
+    assert str(a % b) == str(Operation("%", subexpressions=(a, b)))
+    assert str(a ** b) == str(Operation("**", subexpressions=(a, b)))
+    assert str(a << b) == str(Operation("<<", subexpressions=(a, b)))
+    assert str(a >> b) == str(Operation(">>", subexpressions=(a, b)))
+    assert str(a & b) == str(Operation("&", subexpressions=(a, b)))
+    assert str(a ^ b) == str(Operation("^", subexpressions=(a, b)))
+    assert str(a | b) == str(Operation("|", subexpressions=(a, b)))
+    assert str(-a) == str(UnaryOperation("-", subexpression=a))
+    assert str(+a) == str(UnaryOperation("+", subexpression=a))
+    assert str(~a) == str(UnaryOperation("~", subexpression=a))
