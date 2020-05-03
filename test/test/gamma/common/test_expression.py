@@ -66,7 +66,7 @@ def test_expression() -> None:
             "{5: 'abc', xx: 5}",
         ),
         (
-            Operation(operator="+", subexpressions=(lit_5, lit_abc, ident_xx)),
+            Operation(operator="+", operands=(lit_5, lit_abc, ident_xx)),
             14,
             "5 + 'abc' + xx",
         ),
@@ -82,19 +82,19 @@ def test_expression() -> None:
 
 def test_expression_operators() -> None:
     a, b = Identifier("a"), Identifier("b")
-    assert str(a + b) == str(Operation("+", subexpressions=(a, b)))
-    assert str(a - b) == str(Operation("-", subexpressions=(a, b)))
-    assert str(a * b) == str(Operation("*", subexpressions=(a, b)))
-    assert str(a @ b) == str(Operation("@", subexpressions=(a, b)))
-    assert str(a / b) == str(Operation("/", subexpressions=(a, b)))
-    assert str(a // b) == str(Operation("//", subexpressions=(a, b)))
-    assert str(a % b) == str(Operation("%", subexpressions=(a, b)))
-    assert str(a ** b) == str(Operation("**", subexpressions=(a, b)))
-    assert str(a << b) == str(Operation("<<", subexpressions=(a, b)))
-    assert str(a >> b) == str(Operation(">>", subexpressions=(a, b)))
-    assert str(a & b) == str(Operation("&", subexpressions=(a, b)))
-    assert str(a ^ b) == str(Operation("^", subexpressions=(a, b)))
-    assert str(a | b) == str(Operation("|", subexpressions=(a, b)))
-    assert str(-a) == str(UnaryOperation("-", subexpression=a))
-    assert str(+a) == str(UnaryOperation("+", subexpression=a))
-    assert str(~a) == str(UnaryOperation("~", subexpression=a))
+    assert str(a + b) == str(Operation("+", operands=(a, b)))
+    assert str(a - b) == str(Operation("-", operands=(a, b)))
+    assert str(a * b) == str(Operation("*", operands=(a, b)))
+    assert str(a @ b) == str(Operation("@", operands=(a, b)))
+    assert str(a / b) == str(Operation("/", operands=(a, b)))
+    assert str(a // b) == str(Operation("//", operands=(a, b)))
+    assert str(a % b) == str(Operation("%", operands=(a, b)))
+    assert str(a ** b) == str(Operation("**", operands=(a, b)))
+    assert str(a << b) == str(Operation("<<", operands=(a, b)))
+    assert str(a >> b) == str(Operation(">>", operands=(a, b)))
+    assert str(a & b) == str(Operation("&", operands=(a, b)))
+    assert str(a ^ b) == str(Operation("^", operands=(a, b)))
+    assert str(a | b) == str(Operation("|", operands=(a, b)))
+    assert str(-a) == str(UnaryOperation("-", operand=a))
+    assert str(+a) == str(UnaryOperation("+", operand=a))
+    assert str(~a) == str(UnaryOperation("~", operand=a))

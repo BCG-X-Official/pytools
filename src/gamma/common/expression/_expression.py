@@ -121,10 +121,10 @@ class Expression(metaclass=ABCMeta):
         subexpression_representation = subexpression.representation()
 
         if subexpression_representation.prefix and subexpression_representation.suffix:
-            # subexpression is already encapsulated, it is safe to use as-is
+            # operand is already encapsulated, it is safe to use as-is
             return subexpression_representation
         if subexpression.precedence() > self.precedence():
-            # if the subexpression takes higher precedence, we need to encapsulate it
+            # if the operand takes higher precedence, we need to encapsulate it
             if (
                 subexpression_representation.prefix
                 or subexpression_representation.suffix
@@ -137,7 +137,7 @@ class Expression(metaclass=ABCMeta):
                 # add wrapper to existing representation
                 return subexpression_representation.with_wrapper(prefix="(", suffix=")")
         else:
-            # subexpression has lower precedence, we can keep it
+            # operand has lower precedence, we can keep it
             return subexpression_representation
 
     def __repr__(self) -> str:
@@ -251,33 +251,29 @@ class Operation(BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(self, operator: str, subexpressions: Tuple[Expression, ...]):
+    def __init__(self, operator: str, operands: Iterable[Expression, ...]):
         super().__init__(operator=operator)
-        if len(subexpressions) < 2:
-            raise ValueError("need to pass at least two subexpressions")
-        if not all(isinstance(expression, Expression) for expression in subexpressions):
-            raise ValueError("all subexpressions must implement class Expression")
+        if not isinstance(operands, tuple):
+            operands = tuple(operands)
+        if len(operands) < 2:
+            raise ValueError("need to pass at least two operands")
+        if not all(isinstance(expression, Expression) for expression in operands):
+            raise ValueError("all operands must implement class Expression")
 
-        first_subexpression = subexpressions[0]
-        if (
-            isinstance(first_subexpression, Operation)
-            and first_subexpression.operator == operator
-        ):
-            # if first subexpression has the same operator, we flatten the subexpression
-            self.subexpressions = (
-                *first_subexpression.subexpressions,
-                *subexpressions[1:],
-            )
+        first_operand = operands[0]
+        if isinstance(first_operand, Operation) and first_operand.operator == operator:
+            # if first operand has the same operator, we flatten the operand
+            self.operands = (*first_operand.operands, *operands[1:])
         else:
-            self.subexpressions = subexpressions
+            self.operands = operands
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
         return ExpressionRepresentation(
             infix=self.operator,
             inner=tuple(
-                self._subexpression_representation(subexpression=subexpression)
-                for subexpression in self.subexpressions
+                self._subexpression_representation(subexpression=operand)
+                for operand in self.operands
             ),
         )
 
@@ -289,12 +285,12 @@ class UnaryOperation(BaseOperation):
     A unary operation
     """
 
-    def __init__(self, operator: str, subexpression: Expression):
+    def __init__(self, operator: str, operand: Expression):
         super().__init__(operator=operator)
-        if not isinstance(subexpression, Expression):
-            raise ValueError("subexpression must implement class Expression")
+        if not isinstance(operand, Expression):
+            raise ValueError("operand must implement class Expression")
 
-        self.subexpression = subexpression
+        self.operand = operand
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
@@ -306,7 +302,7 @@ class UnaryOperation(BaseOperation):
     def representation(self) -> ExpressionRepresentation:
         return ExpressionRepresentation(
             prefix=self.operator,
-            inner=(self._subexpression_representation(self.subexpression),),
+            inner=(self._subexpression_representation(self.operand),),
         )
 
     representation.__doc__ = Expression.representation.__doc__
