@@ -57,9 +57,9 @@ def test_expression() -> None:
         (lit_abc, 5, "'abc'"),
         (ident_xx, 2, "xx"),
         (Call("func", lit_5, lit_abc), 14, "func(5, 'abc')"),
-        (ListExpression(values=[lit_5, lit_abc, ident_xx]), 14, "[5, 'abc', xx]"),
-        (SetExpression(values=[lit_5, lit_abc, ident_xx]), 14, "{5, 'abc', xx}"),
-        (TupleExpression(values=[lit_5, lit_abc, ident_xx]), 14, "(5, 'abc', xx)"),
+        (ListExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "[5, 'abc', xx]"),
+        (SetExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "{5, 'abc', xx}"),
+        (TupleExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "(5, 'abc', xx)"),
         (
             DictExpression(entries={lit_5: lit_abc, ident_xx: lit_5}),
             17,

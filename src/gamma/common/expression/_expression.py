@@ -424,8 +424,8 @@ class ListExpression(BaseEnumeration):
     A list of expressions
     """
 
-    def __init__(self, values: Iterable[Expression]):
-        super().__init__(delimiter_left="[", elements=values, delimiter_right="]")
+    def __init__(self, elements: Iterable[Expression]):
+        super().__init__(delimiter_left="[", elements=elements, delimiter_right="]")
 
 
 class TupleExpression(BaseEnumeration):
@@ -433,8 +433,8 @@ class TupleExpression(BaseEnumeration):
     A list of expressions
     """
 
-    def __init__(self, values: Iterable[Expression]):
-        super().__init__(delimiter_left="(", elements=values, delimiter_right=")")
+    def __init__(self, elements: Iterable[Expression]):
+        super().__init__(delimiter_left="(", elements=elements, delimiter_right=")")
 
 
 class SetExpression(BaseEnumeration):
@@ -442,8 +442,8 @@ class SetExpression(BaseEnumeration):
     A list of expressions
     """
 
-    def __init__(self, values: Iterable[Expression]):
-        super().__init__(delimiter_left="{", elements=values, delimiter_right="}")
+    def __init__(self, elements: Iterable[Expression]):
+        super().__init__(delimiter_left="{", elements=elements, delimiter_right="}")
 
 
 class DictExpression(BaseEnumeration):
