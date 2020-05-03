@@ -18,9 +18,11 @@ __all__ = [
     "Identifier",
     "Operation",
     "UnaryOperation",
-    "Enumeration",
-    "KeywordArgument",
     "Call",
+    "ListExpression",
+    "TupleExpression",
+    "SetExpression",
+    "DictExpression",
 ]
 
 __OPERATOR_PRECEDENCE_ORDER = (
@@ -310,7 +312,7 @@ class UnaryOperation(BaseOperation):
     representation.__doc__ = Expression.representation.__doc__
 
 
-class Enumeration(Expression):
+class BaseEnumeration(Expression):
     """
     An enumeration of expressions, separated by commas
     """
@@ -349,7 +351,7 @@ class Enumeration(Expression):
     precedence.__doc__ = Expression.precedence.__doc__
 
 
-class KeywordArgument(BaseOperation):
+class _KeywordArgument(BaseOperation):
     """
     A keyword argument, used by functions
     """
@@ -373,7 +375,7 @@ class KeywordArgument(BaseOperation):
     representation.__doc__ = Expression.representation.__doc__
 
 
-class DictEntry(BaseOperation):
+class _DictEntry(BaseOperation):
     """
     A keyword argument, used by functions
     """
@@ -397,7 +399,7 @@ class DictEntry(BaseOperation):
     representation.__doc__ = Expression.representation.__doc__
 
 
-class Call(Enumeration):
+class Call(BaseEnumeration):
     """
     A function invocation
     """
@@ -408,7 +410,7 @@ class Call(Enumeration):
             elements=(
                 *args,
                 *(
-                    KeywordArgument(name, expression)
+                    _KeywordArgument(name, expression)
                     for name, expression in kwargs.items()
                 ),
             ),
@@ -417,7 +419,7 @@ class Call(Enumeration):
         self.name = name
 
 
-class ListExpression(Enumeration):
+class ListExpression(BaseEnumeration):
     """
     A list of expressions
     """
@@ -426,7 +428,7 @@ class ListExpression(Enumeration):
         super().__init__(delimiter_left="[", elements=values, delimiter_right="]")
 
 
-class TupleExpression(Enumeration):
+class TupleExpression(BaseEnumeration):
     """
     A list of expressions
     """
@@ -435,7 +437,7 @@ class TupleExpression(Enumeration):
         super().__init__(delimiter_left="(", elements=values, delimiter_right=")")
 
 
-class SetExpression(Enumeration):
+class SetExpression(BaseEnumeration):
     """
     A list of expressions
     """
@@ -444,7 +446,7 @@ class SetExpression(Enumeration):
         super().__init__(delimiter_left="{", elements=values, delimiter_right="}")
 
 
-class DictExpression(Enumeration):
+class DictExpression(BaseEnumeration):
     """
     A list of expressions
     """
@@ -452,7 +454,7 @@ class DictExpression(Enumeration):
     def __init__(self, entries: Dict[Expression, Expression]):
         super().__init__(
             delimiter_left="{",
-            elements=tuple(DictEntry(key, value) for key, value in entries.items()),
+            elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
             delimiter_right="}",
         )
 
