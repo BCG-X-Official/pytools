@@ -108,25 +108,25 @@ class ExpressionRepresentation:
                 )
 
     def _to_lines(
-        self, indent: int = 0, leading_space: int = 0, trailing_space: int = 0
+        self, indent: int = 0, leading_characters: int = 0, trailing_characters: int = 0
     ) -> List[IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
         maximum line length
         :param indent: global indent of this expression
-        :param leading_space: leading space to reserve in first line
-        :param trailing_space: trailing space to reserve in last line
+        :param leading_characters: leading space to reserve in first line
+        :param trailing_characters: trailing space to reserve in last line
         :return: resulting lines
         """
 
         if (
-            leading_space + len(self) + indent * INDENT_WIDTH + trailing_space
+            leading_characters + len(self) + indent * INDENT_WIDTH + trailing_characters
             > MAX_LINE_LENGTH
         ):
             return self._to_multiple_lines(
                 indent=indent,
-                leading_space=leading_space,
-                trailing_space=trailing_space,
+                leading_space=leading_characters,
+                trailing_space=trailing_characters,
             )
         else:
             return [IndentedLine(indent=indent, text=self._to_single_line())]
@@ -179,8 +179,10 @@ class ExpressionRepresentation:
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
                         indent=inner_indent,
-                        leading_space=(leading_space if idx == 0 else 0),
-                        trailing_space=len_infix if idx < last_idx else trailing_space,
+                        leading_characters=(leading_space if idx == 0 else 0),
+                        trailing_characters=len_infix
+                        if idx < last_idx
+                        else trailing_space,
                     )
 
                     if idx != last_idx:
@@ -199,8 +201,8 @@ class ExpressionRepresentation:
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
                         indent=inner_indent,
-                        leading_space=leading_space if idx == 0 else len_infix,
-                        trailing_space=(trailing_space if idx == last_idx else 0),
+                        leading_characters=leading_space if idx == 0 else len_infix,
+                        trailing_characters=(trailing_space if idx == last_idx else 0),
                     )
                     if idx != 0:
                         # prepend infix to first line,
