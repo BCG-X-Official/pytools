@@ -148,6 +148,14 @@ class Expression(metaclass=ABCMeta):
     def __repr__(self) -> str:
         return str(self.representation())
 
+    @abstractmethod
+    def __eq__(self, other) -> bool:
+        pass
+
+    @abstractmethod
+    def __hash__(self) -> int:
+        pass
+
     def __add__(self, other: Expression) -> Operation:
         return Operation("+", (self, other))
 
@@ -213,6 +221,12 @@ class Literal(Expression):
 
     representation.__doc__ = Expression.representation.__doc__
 
+    def __eq__(self, other: Literal) -> bool:
+        return isinstance(other, type(self)) and other.value == self.value
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.value))
+
 
 class Identifier(Expression):
     """
@@ -233,6 +247,12 @@ class Identifier(Expression):
 
     representation.__doc__ = Expression.representation.__doc__
 
+    def __eq__(self, other: Identifier) -> bool:
+        return isinstance(other, type(self)) and other.name == self.name
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.name))
+
 
 class BaseOperation(Expression, metaclass=ABCMeta):
     """
@@ -249,6 +269,12 @@ class BaseOperation(Expression, metaclass=ABCMeta):
         return _operator_precedence(self.operator)
 
     precedence.__doc__ = Expression.precedence.__doc__
+
+    def __eq__(self, other: BaseOperation) -> bool:
+        return isinstance(other, type(self)) and other.operator == self.operator
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.operator))
 
 
 class Operation(BaseOperation):
@@ -286,6 +312,12 @@ class Operation(BaseOperation):
 
     representation.__doc__ = Expression.representation.__doc__
 
+    def __eq__(self, other: Operation) -> bool:
+        return super().__eq__(other) and self.operands == other.operands
+
+    def __hash__(self) -> int:
+        return hash((super().__hash__(), self.operands))
+
 
 class UnaryOperation(BaseOperation):
     """
@@ -313,6 +345,12 @@ class UnaryOperation(BaseOperation):
         )
 
     representation.__doc__ = Expression.representation.__doc__
+
+    def __eq__(self, other: UnaryOperation) -> bool:
+        return super().__eq__(other) and self.operand == other.operand
+
+    def __hash__(self) -> int:
+        return hash((super().__hash__(), self.operand))
 
 
 class BaseEnumeration(Expression):
@@ -353,6 +391,24 @@ class BaseEnumeration(Expression):
 
     precedence.__doc__ = Expression.precedence.__doc__
 
+    def __eq__(self, other: BaseEnumeration) -> bool:
+        return (
+            isinstance(other, type(self))
+            and self.delimiter_left == other.delimiter_left
+            and self.delimiter_right == other.delimiter_right
+            and self.elements == other.elements
+        )
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                super().__hash__(),
+                self.delimiter_left,
+                self.elements,
+                self.delimiter_right,
+            )
+        )
+
 
 class _KeywordArgument(BaseOperation):
     """
@@ -376,6 +432,16 @@ class _KeywordArgument(BaseOperation):
         )
 
     representation.__doc__ = Expression.representation.__doc__
+
+    def __eq__(self, other: _KeywordArgument) -> bool:
+        return (
+            isinstance(other, type(self))
+            and self.name == other.name
+            and self.value == other.value
+        )
+
+    def __hash__(self) -> int:
+        return hash((super().__hash__(), self.name, self.value))
 
 
 class _DictEntry(BaseOperation):
@@ -401,6 +467,16 @@ class _DictEntry(BaseOperation):
 
     representation.__doc__ = Expression.representation.__doc__
 
+    def __eq__(self, other: _KeywordArgument) -> bool:
+        return (
+            isinstance(other, type(self))
+            and self.key == other.key
+            and self.value == other.value
+        )
+
+    def __hash__(self) -> int:
+        return hash((super().__hash__(), self.key, self.value))
+
 
 class Call(BaseEnumeration):
     """
@@ -419,7 +495,14 @@ class Call(BaseEnumeration):
             ),
             delimiter_right=")",
         )
-        self.name = name
+
+    @property
+    def name(self) -> str:
+        """
+        the name of the function being called
+        :return: the name of the function being called
+        """
+        return self.delimiter_left[:-1]
 
 
 class ListExpression(BaseEnumeration):
