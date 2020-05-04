@@ -116,15 +116,20 @@ class Expression(metaclass=ABCMeta):
         return -1
 
     def _subexpression_representation(
-        self, subexpression: Expression
+        self, subexpression: Expression, encapsulate_on_same_precedence: bool = True
     ) -> ExpressionRepresentation:
         subexpression_representation = subexpression.representation()
 
         if subexpression_representation.prefix and subexpression_representation.suffix:
             # operand is already encapsulated, it is safe to use as-is
             return subexpression_representation
-        if subexpression.precedence() > self.precedence():
-            # if the operand takes higher precedence, we need to encapsulate it
+        subexpression_precedence = subexpression.precedence()
+        self_precedence = self.precedence()
+        if subexpression_precedence > self_precedence or (
+            encapsulate_on_same_precedence
+            and subexpression_precedence == self_precedence
+        ):
+            # if the operand takes same or higher precedence, we need to encapsulate it
             if (
                 subexpression_representation.prefix
                 or subexpression_representation.suffix
@@ -272,8 +277,10 @@ class Operation(BaseOperation):
         return ExpressionRepresentation(
             infix=self.operator,
             inner=tuple(
-                self._subexpression_representation(subexpression=operand)
-                for operand in self.operands
+                self._subexpression_representation(
+                    subexpression=operand, encapsulate_on_same_precedence=(pos > 0)
+                )
+                for pos, operand in enumerate(self.operands)
             ),
         )
 
