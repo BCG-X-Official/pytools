@@ -82,7 +82,7 @@ def test_expression() -> None:
 
 def test_expression_operators() -> None:
     a, b = Identifier("a"), Identifier("b")
-    assert str(a + b) == str(Operation("+", operands=(a, b)))
+    assert str(a + b) == str(Operation("+", operands=[a, b]))
     assert str(a - b) == str(Operation("-", operands=(a, b)))
     assert str(a * b) == str(Operation("*", operands=(a, b)))
     assert str(a @ b) == str(Operation("@", operands=(a, b)))
@@ -98,3 +98,19 @@ def test_expression_operators() -> None:
     assert str(-a) == str(UnaryOperation("-", operand=a))
     assert str(+a) == str(UnaryOperation("+", operand=a))
     assert str(~a) == str(UnaryOperation("~", operand=a))
+
+
+def test_operator_precedence() -> None:
+    a, b, c = Identifier("a"), Identifier("b"), Identifier("c")
+    assert str(a + b + c) == "a + b + c"
+    assert str((a + b) + c) == "a + b + c"
+    assert str(a + (b + c)) == "a + (b + c)"
+    assert str(a / b / c) == "a / b / c"
+    assert str((a / b) / c) == "a / b / c"
+    assert str(a / (b / c)) == "a / (b / c)"
+    assert str(a * b + c) == "a * b + c"
+    assert str((a * b) + c) == "a * b + c"
+    assert str(a * (b + c)) == "a * (b + c)"
+    assert str(a + b * c) == "a + b * c"
+    assert str((a + b) * c) == "(a + b) * c"
+    assert str(a + (b * c)) == "a + b * c"
