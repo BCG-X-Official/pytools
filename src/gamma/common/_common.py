@@ -12,7 +12,46 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
-__all__ = ["is_list_like", "deprecated", "deprecation_warning"]
+
+__all__ = ["is_list_like", "deprecated", "deprecation_warning", "AllTracker"]
+
+
+class AllTracker:
+    """
+    Track global symbols defined in a module and validate that all eligible symbols have
+    been included in the `__all__` variable.
+
+    Eligible symbols are all symbols starting with a letter, but not with "Base".
+    """
+
+    def __init__(self, globals_: Dict[str, Any]):
+        self.globals_ = globals_
+        self.imported = set(globals_.keys())
+
+    def validate(self) -> None:
+        """
+        Validate that all eligible symbols defined since creation of this tracker
+        are listed in the `__all__` field.
+
+        :raise RuntimeError: if `__all__` is not as expected
+        """
+        all_expected = [
+            item
+            for item in self.globals_
+            if item[0].isalpha()
+            and item not in self.imported
+            and not item.startswith("Base")
+        ]
+        if set(self.globals_.get("__all__", [])) != set(all_expected):
+            raise RuntimeError(
+                f"unexpected all declaration, expected:\n__all__ = {all_expected}"
+            )
+
+
+__tracker = AllTracker(globals())
+# we forget that class AllTracker itself is already defined, because we want to include
+# it in the __all__ statement
+__tracker.imported.remove(AllTracker.__name__)
 
 
 def is_list_like(obj: Any) -> bool:
@@ -102,3 +141,6 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     if stacklevel < 1:
         raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
+
+
+__tracker.validate()
