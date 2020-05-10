@@ -161,12 +161,17 @@ class ExpressionRepresentation:
         :param trailing_space: trailing space to reserve in last line
         :return: resulting lines
         """
-        result: List[IndentedLine] = []
+
         if self.prefix:
-            result.append(IndentedLine(indent=indent, text=self.prefix))
-            inner_indent = indent + 1
+            if self.suffix:
+                prefix = self.prefix
+            else:
+                prefix = f"{self.prefix}("
         else:
-            inner_indent = indent
+            prefix = "("
+
+        result: List[IndentedLine] = [IndentedLine(indent=indent, text=prefix)]
+        inner_indent = indent + 1
 
         inner = self.inner
         if inner:
@@ -214,7 +219,15 @@ class ExpressionRepresentation:
                     result.extend(lines)
 
         if self.suffix:
-            result.append(IndentedLine(indent=indent, text=self.suffix))
+            if self.prefix:
+                suffix = self.suffix
+            else:
+                suffix = f"){self.suffix}"
+        else:
+            suffix = ")"
+
+        result.append(IndentedLine(indent=indent, text=suffix))
+
         return result
 
     def __repr__(self) -> str:
