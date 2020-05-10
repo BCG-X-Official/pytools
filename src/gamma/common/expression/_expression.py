@@ -146,7 +146,7 @@ class Expression(metaclass=ABCMeta):
             return subexpression_representation
 
     def __repr__(self) -> str:
-        return str(self.representation())
+        return repr(self.representation())
 
     @abstractmethod
     def __eq__(self, other) -> bool:
