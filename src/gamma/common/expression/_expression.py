@@ -13,6 +13,7 @@ from gamma.common.expression._representation import ExpressionRepresentation
 log = logging.getLogger(__name__)
 
 __all__ = [
+    "HasExpressionRepr",
     "Expression",
     "Literal",
     "Identifier",
@@ -55,6 +56,23 @@ OPERATOR_PRECEDENCE = {
 MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 
+class HasExpressionRepr(metaclass=ABCMeta):
+    """
+    Mix-in class for classes whose `repr` representations are rendered as expressions
+    """
+
+    @abstractmethod
+    def to_expression(self) -> Expression:
+        """
+        Render this object as an expression
+        :return: the expression representing this object
+        """
+        pass
+
+    def __repr__(self) -> str:
+        return repr(self.to_expression())
+
+
 class Expression(metaclass=ABCMeta):
     """
     A nested expression
@@ -81,6 +99,8 @@ class Expression(metaclass=ABCMeta):
 
         if isinstance(value, Expression):
             return value
+        elif isinstance(value, HasExpressionRepr):
+            return value.to_expression()
         elif isinstance(value, str):
             return Literal(value)
         elif isinstance(value, list):
