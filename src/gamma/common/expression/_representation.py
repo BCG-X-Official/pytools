@@ -217,7 +217,7 @@ class ExpressionRepresentation:
             result.append(IndentedLine(indent=indent, text=self.suffix))
         return result
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return self.to_string()
 
     def __len__(self) -> int:
