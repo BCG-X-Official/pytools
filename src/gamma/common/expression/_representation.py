@@ -112,7 +112,7 @@ class ExpressionRepresentation:
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
-        is_parenthesized: bool = False,
+        has_enclosing_brackets: bool = False,
     ) -> List[IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
@@ -120,7 +120,8 @@ class ExpressionRepresentation:
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
-        :param is_parenthesized: expression is enclosed by parentheses
+        :param has_enclosing_brackets: `True` if this expression is bracketed by the \
+            outer expression
         :return: resulting lines
         """
 
@@ -132,7 +133,7 @@ class ExpressionRepresentation:
                 indent=indent,
                 leading_characters=leading_characters,
                 trailing_characters=trailing_characters,
-                is_parenthesized=is_parenthesized,
+                has_enclosing_brackets=has_enclosing_brackets,
             )
         else:
             return [IndentedLine(indent=indent, text=self._to_single_line())]
@@ -162,13 +163,15 @@ class ExpressionRepresentation:
         indent: int,
         leading_characters: int,
         trailing_characters: int,
-        is_parenthesized: bool,
+        has_enclosing_brackets: bool,
     ) -> List[IndentedLine]:
         """
         Convert this representation to multiple lines
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
+        :param has_enclosing_brackets: `True` if this expression is bracketed by the outer \
+            expression
         :return: resulting lines
         """
 
@@ -178,31 +181,37 @@ class ExpressionRepresentation:
 
         # we add parentheses if there is a prefix or a suffix but not both,
         # or if we have more than one inner element and no other bracketing is in place
-        parenthesize = (bool(self.prefix) != bool(self.suffix)) or (
-            not is_parenthesized
-            and not (self.prefix and self.suffix)
-            and len(inner) > 1
+        parenthesize = (bool(self.prefix) != bool(self.suffix)) or not (
+            has_enclosing_brackets or (self.prefix and self.suffix) or len(inner) <= 1
         )
-
-        child_is_parenthesized = parenthesize or self.prefix and self.suffix
 
         if self.prefix:
             if parenthesize:
-                prefix = f"{self.prefix}("
+                opening_bracket = f"{self.prefix}("
             else:
-                prefix = self.prefix
+                opening_bracket = self.prefix
         elif parenthesize:
-            prefix = "("
+            opening_bracket = "("
         else:
-            prefix = None
+            opening_bracket = None
 
-        if prefix:
-            result.append(IndentedLine(indent=indent, text=prefix))
+        if opening_bracket:
+            result.append(IndentedLine(indent=indent, text=opening_bracket))
             inner_indent = indent + 1
         else:
             inner_indent = indent
 
-        if inner:
+        if len(inner) == 1:
+            result.extend(
+                inner[0]._to_lines(
+                    indent=inner_indent,
+                    leading_characters=leading_characters,
+                    trailing_characters=trailing_characters,
+                    has_enclosing_brackets=opening_bracket is not None,
+                )
+            )
+
+        elif inner:
 
             last_idx = len(inner) - 1
             infix = self.infix
@@ -216,7 +225,7 @@ class ExpressionRepresentation:
                         trailing_characters=(
                             len_infix if idx < last_idx else trailing_characters
                         ),
-                        is_parenthesized=child_is_parenthesized,
+                        has_enclosing_brackets=False,
                     )
 
                     if idx != last_idx:
@@ -241,7 +250,7 @@ class ExpressionRepresentation:
                         trailing_characters=(
                             trailing_characters if idx == last_idx else 0
                         ),
-                        is_parenthesized=child_is_parenthesized,
+                        has_enclosing_brackets=False,
                     )
                     if idx != 0:
                         # prepend infix to first line,
@@ -254,16 +263,16 @@ class ExpressionRepresentation:
 
         if self.suffix:
             if parenthesize:
-                suffix = f"){self.suffix}"
+                closing_bracket = f"){self.suffix}"
             else:
-                suffix = self.suffix
+                closing_bracket = self.suffix
         elif parenthesize:
-            suffix = ")"
+            closing_bracket = ")"
         else:
-            suffix = None
+            closing_bracket = None
 
-        if suffix:
-            result.append(IndentedLine(indent=indent, text=suffix))
+        if closing_bracket:
+            result.append(IndentedLine(indent=indent, text=closing_bracket))
 
         return result
 
