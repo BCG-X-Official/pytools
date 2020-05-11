@@ -90,22 +90,17 @@ class ExpressionRepresentation:
         :return: this representation rendered as a string
         """
 
-        def _spacing(indent: int) -> str:
-            return " " * (INDENT_WIDTH * indent)
-
-        lines: List[IndentedLine] = self._to_lines()
         if multiline:
-            return "\n".join(f"{_spacing(indent)}{text}" for indent, text in lines)
+
+            def _spacing(indent: int) -> str:
+                return " " * (INDENT_WIDTH * indent)
+
+            return "\n".join(
+                f"{_spacing(indent)}{text}" for indent, text in self._to_lines()
+            )
+
         else:
-            if len(lines) == 1:
-                return lines[0].text
-            else:
-                return "".join(
-                    f"{text} " if indent == next_indent else text
-                    for (indent, text), next_indent in itertools.zip_longest(
-                        lines, (indent for indent, _ in lines[1:])
-                    )
-                )
+            return self._to_single_line()
 
     def _to_lines(
         self,
