@@ -4,7 +4,6 @@ String representations of expressions
 
 from __future__ import annotations
 
-import itertools
 import logging
 from typing import *
 
@@ -103,11 +102,7 @@ class ExpressionRepresentation:
             return self._to_single_line()
 
     def _to_lines(
-        self,
-        indent: int = 0,
-        leading_characters: int = 0,
-        trailing_characters: int = 0,
-        has_enclosing_brackets: bool = False,
+        self, indent: int = 0, leading_characters: int = 0, trailing_characters: int = 0
     ) -> List[IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
@@ -115,8 +110,6 @@ class ExpressionRepresentation:
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
-        :param has_enclosing_brackets: `True` if this expression is bracketed by the \
-            outer expression
         :return: resulting lines
         """
 
@@ -128,7 +121,6 @@ class ExpressionRepresentation:
                 indent=indent,
                 leading_characters=leading_characters,
                 trailing_characters=trailing_characters,
-                has_enclosing_brackets=has_enclosing_brackets,
             )
         else:
             return [IndentedLine(indent=indent, text=self._to_single_line())]
@@ -154,19 +146,13 @@ class ExpressionRepresentation:
         return f"{self.prefix}{inner}{self.suffix}"
 
     def _to_multiple_lines(
-        self,
-        indent: int,
-        leading_characters: int,
-        trailing_characters: int,
-        has_enclosing_brackets: bool,
+        self, indent: int, leading_characters: int, trailing_characters: int
     ) -> List[IndentedLine]:
         """
         Convert this representation to multiple lines
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
-        :param has_enclosing_brackets: `True` if this expression is bracketed by the outer \
-            expression
         :return: resulting lines
         """
 
@@ -176,8 +162,8 @@ class ExpressionRepresentation:
 
         # we add parentheses if there is a prefix or a suffix but not both,
         # or if we have more than one inner element and no other bracketing is in place
-        parenthesize = (bool(self.prefix) != bool(self.suffix)) or not (
-            has_enclosing_brackets or (self.prefix and self.suffix) or len(inner) <= 1
+        parenthesize = (bool(self.prefix) != bool(self.suffix)) or (
+            indent == 0 and len(inner) > 1
         )
 
         if self.prefix:
@@ -202,7 +188,6 @@ class ExpressionRepresentation:
                     indent=inner_indent,
                     leading_characters=leading_characters,
                     trailing_characters=trailing_characters,
-                    has_enclosing_brackets=opening_bracket is not None,
                 )
             )
 
@@ -220,7 +205,6 @@ class ExpressionRepresentation:
                         trailing_characters=(
                             len_infix if idx < last_idx else trailing_characters
                         ),
-                        has_enclosing_brackets=False,
                     )
 
                     if idx != last_idx:
@@ -245,7 +229,6 @@ class ExpressionRepresentation:
                         trailing_characters=(
                             trailing_characters if idx == last_idx else 0
                         ),
-                        has_enclosing_brackets=False,
                     )
                     if idx != 0:
                         # prepend infix to first line,
