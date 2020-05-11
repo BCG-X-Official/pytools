@@ -13,7 +13,13 @@ import pandas as pd
 log = logging.getLogger(__name__)
 
 
-__all__ = ["is_list_like", "deprecated", "deprecation_warning", "AllTracker"]
+__all__ = [
+    "is_list_like",
+    "to_tuple",
+    "deprecated",
+    "deprecation_warning",
+    "AllTracker",
+]
 
 
 class AllTracker:
@@ -85,6 +91,24 @@ def is_list_like(obj: Any) -> bool:
         # exclude zero-dimensional numpy arrays, effectively scalars
         and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
     )
+
+
+def to_tuple(items: Optional[Iterable[str]]) -> Optional[Tuple[str, ...]]:
+    """
+    Return the given iterable as a tuple.
+
+    If the argument already is a tuple, return the argument without creating a new
+    tuple.
+
+    :param items: the items to return a tuple
+    :return: the items as a tuple
+    """
+    if items is None:
+        return None
+    if isinstance(items, tuple):
+        return items
+    else:
+        return tuple(items)
 
 
 def deprecated(function: Callable = None, *, message: str = None):
