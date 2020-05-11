@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Any, Dict, Iterable
 
 from gamma.common.expression._representation import ExpressionRepresentation
 
@@ -95,7 +95,7 @@ class Expression(metaclass=ABCMeta):
         """
 
         def _from_collection(values: Iterable) -> Iterable[Expression]:
-            return (Expression.from_value(value) for value in values)
+            return (Expression.from_value(_value) for _value in values)
 
         if isinstance(value, Expression):
             return value
