@@ -108,7 +108,11 @@ class ExpressionRepresentation:
                 )
 
     def _to_lines(
-        self, indent: int = 0, leading_characters: int = 0, trailing_characters: int = 0
+        self,
+        indent: int = 0,
+        leading_characters: int = 0,
+        trailing_characters: int = 0,
+        is_parenthesized: bool = False,
     ) -> List[IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
@@ -116,6 +120,7 @@ class ExpressionRepresentation:
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
+        :param is_parenthesized: expression is enclosed by parentheses
         :return: resulting lines
         """
 
@@ -125,8 +130,9 @@ class ExpressionRepresentation:
         ):
             return self._to_multiple_lines(
                 indent=indent,
-                leading_space=leading_characters,
-                trailing_space=trailing_characters,
+                leading_characters=leading_characters,
+                trailing_characters=trailing_characters,
+                is_parenthesized=is_parenthesized,
             )
         else:
             return [IndentedLine(indent=indent, text=self._to_single_line())]
@@ -152,28 +158,50 @@ class ExpressionRepresentation:
         return f"{self.prefix}{inner}{self.suffix}"
 
     def _to_multiple_lines(
-        self, indent: int, leading_space: int, trailing_space: int
+        self,
+        indent: int,
+        leading_characters: int,
+        trailing_characters: int,
+        is_parenthesized: bool,
     ) -> List[IndentedLine]:
         """
         Convert this representation to multiple lines
         :param indent: global indent of this expression
-        :param leading_space: leading space to reserve in first line
-        :param trailing_space: trailing space to reserve in last line
+        :param leading_characters: leading space to reserve in first line
+        :param trailing_characters: trailing space to reserve in last line
         :return: resulting lines
         """
 
+        result: List[IndentedLine] = []
+
+        inner: Tuple[ExpressionRepresentation, ...] = self.inner
+
+        # we add parentheses if there is a prefix or a suffix but not both,
+        # or if we have more than one inner element and no other bracketing is in place
+        parenthesize = (bool(self.prefix) != bool(self.suffix)) or (
+            not is_parenthesized
+            and not (self.prefix and self.suffix)
+            and len(inner) > 1
+        )
+
+        child_is_parenthesized = parenthesize or self.prefix and self.suffix
+
         if self.prefix:
-            if self.suffix:
-                prefix = self.prefix
-            else:
+            if parenthesize:
                 prefix = f"{self.prefix}("
-        else:
+            else:
+                prefix = self.prefix
+        elif parenthesize:
             prefix = "("
+        else:
+            prefix = None
 
-        result: List[IndentedLine] = [IndentedLine(indent=indent, text=prefix)]
-        inner_indent = indent + 1
+        if prefix:
+            result.append(IndentedLine(indent=indent, text=prefix))
+            inner_indent = indent + 1
+        else:
+            inner_indent = indent
 
-        inner = self.inner
         if inner:
 
             last_idx = len(inner) - 1
@@ -184,10 +212,11 @@ class ExpressionRepresentation:
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
                         indent=inner_indent,
-                        leading_characters=(leading_space if idx == 0 else 0),
-                        trailing_characters=len_infix
-                        if idx < last_idx
-                        else trailing_space,
+                        leading_characters=(leading_characters if idx == 0 else 0),
+                        trailing_characters=(
+                            len_infix if idx < last_idx else trailing_characters
+                        ),
+                        is_parenthesized=child_is_parenthesized,
                     )
 
                     if idx != last_idx:
@@ -206,8 +235,13 @@ class ExpressionRepresentation:
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
                         indent=inner_indent,
-                        leading_characters=leading_space if idx == 0 else len_infix,
-                        trailing_characters=(trailing_space if idx == last_idx else 0),
+                        leading_characters=leading_characters
+                        if idx == 0
+                        else len_infix,
+                        trailing_characters=(
+                            trailing_characters if idx == last_idx else 0
+                        ),
+                        is_parenthesized=child_is_parenthesized,
                     )
                     if idx != 0:
                         # prepend infix to first line,
@@ -219,14 +253,17 @@ class ExpressionRepresentation:
                     result.extend(lines)
 
         if self.suffix:
-            if self.prefix:
-                suffix = self.suffix
-            else:
+            if parenthesize:
                 suffix = f"){self.suffix}"
-        else:
+            else:
+                suffix = self.suffix
+        elif parenthesize:
             suffix = ")"
+        else:
+            suffix = None
 
-        result.append(IndentedLine(indent=indent, text=suffix))
+        if suffix:
+            result.append(IndentedLine(indent=indent, text=suffix))
 
         return result
 

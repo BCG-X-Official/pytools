@@ -430,25 +430,19 @@ class BaseEnumeration(Expression):
         )
 
 
-class _KeywordArgument(BaseOperation):
+class _KeywordArgument(Expression):
     """
     A keyword argument, used by functions
     """
 
     def __init__(self, name: str, value: Expression):
-        super().__init__("=")
         self.name = name
         self.value = value
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
         return ExpressionRepresentation(
-            infix=self.operator,
-            inner=(
-                Identifier(self.name).representation(),
-                self._subexpression_representation(self.value),
-            ),
-            infix_spacing=False,
+            prefix=f"{self.name}=", inner=(self.value.representation(),)
         )
 
     representation.__doc__ = Expression.representation.__doc__
