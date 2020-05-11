@@ -34,10 +34,12 @@ def test_expression_formatting() -> None:
 
     assert (
         str(rep)
-        == """f((1 | 2) >> 'x' % x, abc=-5)
-+ f((1 | 2) >> 'x' % x, abc=-5)
-+ f((1 | 2) >> 'x' % x, abc=-5)
-- f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)"""
+        == """(
+    f((1 | 2) >> 'x' % x, abc=-5)
+    + f((1 | 2) >> 'x' % x, abc=-5)
+    + f((1 | 2) >> 'x' % x, abc=-5)
+    - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+)"""
     )
 
     # expression 2, generated with from_value
