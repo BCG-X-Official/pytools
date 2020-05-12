@@ -73,7 +73,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
         return repr(self.to_expression())
 
 
-class Expression(metaclass=ABCMeta):
+class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
     A nested expression
     """
@@ -97,9 +97,7 @@ class Expression(metaclass=ABCMeta):
         def _from_collection(values: Iterable) -> Iterable[Expression]:
             return (Expression.from_value(_value) for _value in values)
 
-        if isinstance(value, Expression):
-            return value
-        elif isinstance(value, HasExpressionRepr):
+        if isinstance(value, HasExpressionRepr):
             return value.to_expression()
         elif isinstance(value, str):
             return Literal(value)
@@ -120,6 +118,13 @@ class Expression(metaclass=ABCMeta):
             return Call(name=type(value).__name__, *_from_collection(value))
         else:
             return Literal(value)
+
+    def to_expression(self) -> Expression:
+        """
+        Return self
+        :return: `self`
+        """
+        return self
 
     @abstractmethod
     def representation(self) -> ExpressionRepresentation:
