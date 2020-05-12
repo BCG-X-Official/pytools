@@ -321,6 +321,11 @@ class Operation(BaseOperation):
     def representation(self) -> ExpressionRepresentation:
         return ExpressionRepresentation(
             infix=self.operator,
+            infix_padding=(
+                ExpressionRepresentation.PADDING_NONE
+                if self.operator == "."
+                else ExpressionRepresentation.PADDING_BOTH
+            ),
             inner=tuple(
                 self._subexpression_representation(
                     subexpression=operand, encapsulate_on_same_precedence=(pos > 0)
@@ -399,7 +404,7 @@ class BaseEnumeration(Expression):
                 self._subexpression_representation(element) for element in self.elements
             ),
             infix=",",
-            infix_keep_with_left=True,
+            infix_padding=ExpressionRepresentation.PADDING_RIGHT,
         )
 
     representation.__doc__ = Expression.representation.__doc__
@@ -468,7 +473,7 @@ class _DictEntry(BaseOperation):
                 self._subexpression_representation(self.key),
                 self._subexpression_representation(self.value),
             ),
-            infix_keep_with_left=True,
+            infix_padding=ExpressionRepresentation.PADDING_RIGHT,
         )
 
     representation.__doc__ = Expression.representation.__doc__
