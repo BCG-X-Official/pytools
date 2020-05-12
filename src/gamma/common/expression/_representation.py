@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 from typing import *
 
+
 log = logging.getLogger(__name__)
 
 INDENT_WIDTH = 4
@@ -29,22 +30,26 @@ class ExpressionRepresentation:
     A hierarchical string representation of an expression
     """
 
+    PADDING_NONE = "none"
+    PADDING_RIGHT = "right"
+    PADDING_BOTH = "both"
+
+    __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
+
     def __init__(
         self,
         prefix: str = "",
         *,
         brackets: Optional[str] = None,
         infix: str = "",
-        infix_spacing: bool = True,
-        infix_keep_with_left: bool = False,
+        infix_padding: str = PADDING_BOTH,
         inner: Tuple[ExpressionRepresentation, ...] = (),
     ):
         """
         :param prefix: the start of the expression
         :param infix: separator for subexpressions nested inside the expression
-        :param infix_spacing: if `True`, insert spaces between infix and operands
-        :param infix_keep_with_left: if `True`, always keep the infix operator \
-            with the left operand and never insert a space left of the infix
+        :param infix_padding: where to pad the infix withspaces. Permissible values \
+            are `none`. `right`, snd `both` (default: `both`)
         :param inner: list of representations of the subexpressions nested inside the \
             expression
         """
@@ -61,20 +66,24 @@ class ExpressionRepresentation:
                 brackets = inner_single.brackets
                 inner = inner_single.inner
 
+        def validate_padding(permitted: Iterable[str]) -> str:
+            for option in permitted:
+                if infix_padding == option:
+                    return option
+            raise ValueError(f"illegal value for arg infix_padding: {infix_padding}")
+
         self.prefix = prefix
         self.brackets = brackets
         self.infix = infix
-        self.infix_spacing = infix_spacing
-        self.infix_keep_with_left = infix_keep_with_left
+        self.infix_padding = validate_padding(self.__PADDING_SPACES.keys())
         self.inner = inner
-        infix_length = len(infix) + (
-            (1 if infix_keep_with_left else 2) if infix_spacing else 0
-        )
+
         self.__len = (
             len(prefix)
             + (len(brackets) if brackets else 0)
             + sum(len(inner_representation) for inner_representation in inner)
-            + max(len(inner) - 1, 0) * infix_length
+            + max(len(inner) - 1, 0)
+            * (len(infix) + (ExpressionRepresentation.__PADDING_SPACES[infix_padding]))
         )
 
     def to_string(self, multiline: bool = True) -> str:
@@ -141,12 +150,15 @@ class ExpressionRepresentation:
         :return: the resulting string
         """
         if self.infix:
-            if not self.infix_spacing:
+            infix_padding = self.infix_padding
+            if infix_padding is ExpressionRepresentation.PADDING_NONE:
                 infix = self.infix
-            elif self.infix_keep_with_left:
+            elif infix_padding is ExpressionRepresentation.PADDING_RIGHT:
                 infix = f"{self.infix} "
-            else:
+            elif infix_padding is ExpressionRepresentation.PADDING_BOTH:
                 infix = f" {self.infix} "
+            else:
+                raise ValueError(f"unknown infix padding: {infix_padding}")
         else:
             infix = ""
         inner = infix.join(
@@ -204,7 +216,7 @@ class ExpressionRepresentation:
             last_idx = len(inner) - 1
             infix = self.infix
 
-            if self.infix_keep_with_left:
+            if self.infix_padding is ExpressionRepresentation.PADDING_RIGHT:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
@@ -224,7 +236,7 @@ class ExpressionRepresentation:
 
                     result.extend(lines)
             else:
-                if self.infix_spacing:
+                if self.infix_padding is ExpressionRepresentation.PADDING_BOTH:
                     infix = f"{infix} "
 
                 len_infix = len(infix)
