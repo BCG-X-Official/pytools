@@ -38,7 +38,6 @@ class ExpressionRepresentation:
         infix_spacing: bool = True,
         infix_keep_with_left: bool = False,
         inner: Tuple[ExpressionRepresentation, ...] = (),
-        suffix: str = "",
     ):
         """
         :param prefix: the start of the expression
@@ -48,7 +47,6 @@ class ExpressionRepresentation:
             with the left operand and never insert a space left of the infix
         :param inner: list of representations of the subexpressions nested inside the \
             expression
-        :param suffix: the end of the expression
         """
 
         if brackets and len(brackets) != 2:
@@ -59,7 +57,7 @@ class ExpressionRepresentation:
         # promote inner brackets to top level if inner is a bracketed singleton
         if not brackets and len(inner) == 1:
             inner_single = inner[0]
-            if not (inner_single.prefix or inner_single.suffix):
+            if not inner_single.prefix:
                 brackets = inner_single.brackets
                 inner = inner_single.inner
 
@@ -69,7 +67,6 @@ class ExpressionRepresentation:
         self.infix_spacing = infix_spacing
         self.infix_keep_with_left = infix_keep_with_left
         self.inner = inner
-        self.suffix = suffix
         infix_length = len(infix) + (
             (1 if infix_keep_with_left else 2) if infix_spacing else 0
         )
@@ -78,7 +75,6 @@ class ExpressionRepresentation:
             + (len(brackets) if brackets else 0)
             + sum(len(inner_representation) for inner_representation in inner)
             + max(len(inner) - 1, 0) * infix_length
-            + len(suffix)
         )
 
     def to_string(self, multiline: bool = True) -> str:
@@ -151,11 +147,7 @@ class ExpressionRepresentation:
             subexpression_representation._to_single_line()
             for subexpression_representation in self.inner
         )
-        return (
-            f"{self.prefix}{self.opening_bracket}"
-            f"{inner}"
-            f"{self.closing_bracket}{self.suffix}"
-        )
+        return f"{self.prefix}{self.opening_bracket}{inner}{self.closing_bracket}"
 
     def _to_multiple_lines(
         self, indent: int, leading_characters: int, trailing_characters: int
@@ -173,10 +165,10 @@ class ExpressionRepresentation:
         inner: Tuple[ExpressionRepresentation, ...] = self.inner
 
         # we add parentheses if there is no existing bracketing, and either
-        # - there is a prefix or a suffix but not both,
+        # - there is a prefix, or
         # - we are at indentation level 0 and have more than one inner element
         parenthesize = not self.brackets and (
-            (bool(self.prefix) != bool(self.suffix)) or (indent == 0 and len(inner) > 1)
+            self.prefix or (indent == 0 and len(inner) > 1)
         )
 
         if parenthesize:
@@ -250,9 +242,9 @@ class ExpressionRepresentation:
                     result.extend(lines)
 
         if parenthesize:
-            closing_bracket = f"){self.suffix}"
+            closing_bracket = f")"
         else:
-            closing_bracket = f"{self.closing_bracket}{self.suffix}"
+            closing_bracket = f"{self.closing_bracket}"
 
         if closing_bracket:
             result.append(IndentedLine(indent=indent, text=closing_bracket))
