@@ -99,10 +99,16 @@ class ExpressionRepresentation:
 
     @property
     def opening_bracket(self) -> str:
+        """
+        The opening bracket of this expression.
+        """
         return self.brackets[0] if self.brackets else ""
 
     @property
     def closing_bracket(self) -> str:
+        """
+        The closing bracket of this expression.
+        """
         return self.brackets[1] if self.brackets else ""
 
     def _to_lines(
