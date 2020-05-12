@@ -140,27 +140,21 @@ class Expression(metaclass=ABCMeta):
     ) -> ExpressionRepresentation:
         subexpression_representation = subexpression.representation()
 
-        if subexpression_representation.prefix and subexpression_representation.suffix:
+        if subexpression_representation.brackets:
             # operand is already encapsulated, it is safe to use as-is
             return subexpression_representation
+
         subexpression_precedence = subexpression.precedence()
         self_precedence = self.precedence()
+
         if subexpression_precedence > self_precedence or (
             encapsulate_on_same_precedence
             and subexpression_precedence == self_precedence
         ):
             # if the operand takes same or higher precedence, we need to encapsulate it
-            if (
-                subexpression_representation.prefix
-                or subexpression_representation.suffix
-            ):
-                # create new representation wrapper to protect existing prefix or suffix
-                return ExpressionRepresentation(
-                    prefix="(", inner=(subexpression_representation,), suffix=")"
-                )
-            else:
-                # add wrapper to existing representation
-                return subexpression_representation.with_wrapper(prefix="(", suffix=")")
+            return ExpressionRepresentation(
+                brackets="()", inner=(subexpression_representation,)
+            )
         else:
             # operand has lower precedence, we can keep it
             return subexpression_representation
@@ -381,26 +375,26 @@ class BaseEnumeration(Expression):
     _PRECEDENCE = OPERATOR_PRECEDENCE[","]
 
     def __init__(
-        self, delimiter_left: str, elements: Iterable[Expression], delimiter_right: str
+        self, *, brackets: str, elements: Iterable[Expression], prefix: str = ""
     ) -> None:
         if not isinstance(elements, tuple):
             elements = tuple(elements)
         if not all(isinstance(element, Expression) for element in elements):
             raise ValueError("all elements must implement class Expression")
-        self.delimiter_left = delimiter_left
-        self.delimiter_right = delimiter_right
+        self.prefix = prefix
+        self.brackets = brackets
         self.elements = elements
 
     # noinspection PyMissingOrEmptyDocstring
     def representation(self) -> ExpressionRepresentation:
         return ExpressionRepresentation(
-            prefix=self.delimiter_left,
+            prefix=self.prefix,
+            brackets=self.brackets,
             inner=tuple(
                 self._subexpression_representation(element) for element in self.elements
             ),
             infix=",",
             infix_keep_with_left=True,
-            suffix=self.delimiter_right,
         )
 
     representation.__doc__ = Expression.representation.__doc__
@@ -414,20 +408,13 @@ class BaseEnumeration(Expression):
     def __eq__(self, other: BaseEnumeration) -> bool:
         return (
             isinstance(other, type(self))
-            and self.delimiter_left == other.delimiter_left
-            and self.delimiter_right == other.delimiter_right
+            and self.prefix == other.prefix
+            and self.brackets == other.brackets
             and self.elements == other.elements
         )
 
     def __hash__(self) -> int:
-        return hash(
-            (
-                super().__hash__(),
-                self.delimiter_left,
-                self.elements,
-                self.delimiter_right,
-            )
-        )
+        return hash((super().__hash__(), self.prefix, self.brackets, self.elements))
 
 
 class _KeywordArgument(Expression):
@@ -499,7 +486,8 @@ class Call(BaseEnumeration):
 
     def __init__(self, name: str, *args: Expression, **kwargs: Expression):
         super().__init__(
-            delimiter_left=f"{name}(",
+            prefix=name,
+            brackets="()",
             elements=(
                 *args,
                 *(
@@ -507,7 +495,6 @@ class Call(BaseEnumeration):
                     for name, expression in kwargs.items()
                 ),
             ),
-            delimiter_right=")",
         )
 
     @property
@@ -516,7 +503,7 @@ class Call(BaseEnumeration):
         the name of the function being called
         :return: the name of the function being called
         """
-        return self.delimiter_left[:-1]
+        return self.prefix
 
 
 class ListExpression(BaseEnumeration):
@@ -525,7 +512,7 @@ class ListExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="[", elements=elements, delimiter_right="]")
+        super().__init__(brackets="[]", elements=elements)
 
 
 class TupleExpression(BaseEnumeration):
@@ -534,7 +521,7 @@ class TupleExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="(", elements=elements, delimiter_right=")")
+        super().__init__(brackets="()", elements=elements)
 
 
 class SetExpression(BaseEnumeration):
@@ -543,7 +530,7 @@ class SetExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="{", elements=elements, delimiter_right="}")
+        super().__init__(brackets="{}", elements=elements)
 
 
 class DictExpression(BaseEnumeration):
@@ -553,9 +540,8 @@ class DictExpression(BaseEnumeration):
 
     def __init__(self, entries: Dict[Expression, Expression]):
         super().__init__(
-            delimiter_left="{",
+            brackets="{}",
             elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
-            delimiter_right="}",
         )
 
 
