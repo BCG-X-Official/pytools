@@ -37,7 +37,7 @@ class TextualForm(DisplayForm):
 
     __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
 
-    def __init__(self, expression: "Expression", encapsulate: bool = False) -> None:
+    def __init__(self, expression: Expression, encapsulate: bool = False) -> None:
         subexpressions = expression.subexpressions
         multiple_subexpressions = len(subexpressions) > 1
 
@@ -90,7 +90,7 @@ class TextualForm(DisplayForm):
         )
 
     @staticmethod
-    def from_expression(expression: "Expression") -> "TextualForm":
+    def from_expression(expression: Expression) -> "TextualForm":
         """[see superclass]"""
         return TextualForm(expression)
 
