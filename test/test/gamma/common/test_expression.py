@@ -9,6 +9,7 @@ from gamma.common.expression import (
     Literal,
     Operation,
     SetExpression,
+    TextualForm,
     TupleExpression,
     UnaryOperation,
 )
@@ -30,7 +31,7 @@ def test_expression_formatting() -> None:
     )
 
     expr_1 = e * (e + e + e - e * e)
-    repr_1 = expr_1.to_text()
+    repr_1 = TextualForm.from_expression(expr_1)
     assert len(repr_1) == len(repr_1.to_string(multiline=False))
 
     assert (
@@ -92,7 +93,7 @@ def test_expression() -> None:
     ]
 
     for expression, expected_length, expected_str in expressions_lengths:
-        representation = expression.to_text()
+        representation = expression.to_display_form()
         print(f'"{expression}"')
         assert len(representation) == expected_length
         assert str(representation) == expected_str

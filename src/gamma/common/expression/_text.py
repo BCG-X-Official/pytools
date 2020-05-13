@@ -5,11 +5,16 @@ String representations of expressions
 import logging
 from typing import *
 
+from gamma.common.expression._expression import DisplayForm, Expression
 
 log = logging.getLogger(__name__)
 
 INDENT_WIDTH = 4
 MAX_LINE_LENGTH = 80
+
+T_TextualForm = TypeVar("T_TextualForm", bound="TextualForm")
+
+LEFT_ALIGNED_OPERATORS = {",", ":"}
 
 __all__ = ["TextualForm"]
 
@@ -23,7 +28,7 @@ class _IndentedLine(NamedTuple):
     text: str
 
 
-class TextualForm:
+class TextualForm(DisplayForm):
     """
     A hierarchical textual representation of an expression
     """
@@ -34,55 +39,64 @@ class TextualForm:
 
     __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
 
-    def __init__(
-        self,
-        prefix: str = "",
-        *,
-        brackets: Optional[str] = None,
-        infix: str = "",
-        infix_padding: str = PADDING_BOTH,
-        inner: Tuple["TextualForm", ...] = (),
-    ):
-        """
-        :param prefix: the start of the expression
-        :param infix: separator for subexpressions nested inside the expression
-        :param infix_padding: where to pad the infix with spaces. Permissible values \
-            are `none`. `right`, snd `both` (default: `both`)
-        :param inner: list of representations of the subexpressions nested inside the \
-            expression
-        """
+    def __init__(self, expression: "Expression", encapsulate: bool = False) -> None:
+        subexpressions = expression.subexpressions
+        multiple_subexpressions = len(subexpressions) > 1
 
-        if brackets and len(brackets) != 2:
-            raise ValueError(
-                f"arg brackets must have exactly 2 characters but is {brackets}"
+        sub_forms = tuple(
+            TextualForm(
+                subexpression,
+                encapsulate=(
+                    multiple_subexpressions
+                    and subexpression.precedence()
+                    > expression.precedence() - (0 if pos == 0 else 1)
+                ),
             )
+            for pos, subexpression in enumerate(subexpressions)
+        )
+
+        brackets = expression.brackets
+        assert brackets is None or len(brackets) == 2, "brackets is None or a pair"
+
+        if not brackets and encapsulate:
+            brackets = ("(", ")")
+
+        infix = expression.infix
+        prefix = expression.prefix
+
+        infix_padding = (
+            TextualForm.PADDING_RIGHT
+            if infix in LEFT_ALIGNED_OPERATORS
+            else TextualForm.PADDING_BOTH
+        )
 
         # promote inner brackets to top level if inner is a bracketed singleton
-        if not brackets and len(inner) == 1:
-            inner_single = inner[0]
-            if not inner_single.prefix:
-                brackets = inner_single.brackets
-                inner = inner_single.inner
-
-        def _validate_padding(permitted: Iterable[str]) -> str:
-            for option in permitted:
-                if infix_padding == option:
-                    return option
-            raise ValueError(f"illegal value for arg infix_padding: {infix_padding}")
+        if not brackets and len(sub_forms) == 1:
+            _inner_single = sub_forms[0]
+            if not _inner_single.prefix:
+                brackets = _inner_single.brackets
+                sub_forms = _inner_single.inner
 
         self.prefix = prefix
         self.brackets = brackets
         self.infix = infix
-        self.infix_padding = _validate_padding(self.__PADDING_SPACES.keys())
-        self.inner = inner
+        self.infix_padding = infix_padding
+        self.inner = sub_forms
 
         self.__len = (
             len(prefix)
-            + (len(brackets) if brackets else 0)
-            + sum(len(inner_representation) for inner_representation in inner)
-            + max(len(inner) - 1, 0)
+            + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
+            + sum(len(inner_representation) for inner_representation in sub_forms)
+            + max(len(sub_forms) - 1, 0)
             * (len(infix) + (TextualForm.__PADDING_SPACES[infix_padding]))
         )
+
+    @staticmethod
+    def from_expression(expression: "Expression") -> "TextualForm":
+        """[see superclass]"""
+        return TextualForm(expression)
+
+    from_expression.__doc__ = DisplayForm.from_expression.__doc__
 
     def to_string(self, multiline: bool = True) -> str:
         """
@@ -272,3 +286,8 @@ class TextualForm:
 
     def __len__(self) -> int:
         return self.__len
+
+
+# Register class TextualForm as the default display form
+# noinspection PyProtectedMember
+DisplayForm._register_default_form(TextualForm)
