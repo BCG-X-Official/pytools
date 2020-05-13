@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 INDENT_WIDTH = 4
 MAX_LINE_LENGTH = 80
 
-__all__ = ["ExpressionRepresentation"]
+__all__ = ["TextualForm"]
 
 
 class _IndentedLine(NamedTuple):
@@ -23,9 +23,9 @@ class _IndentedLine(NamedTuple):
     text: str
 
 
-class ExpressionRepresentation:
+class TextualForm:
     """
-    A hierarchical string representation of an expression
+    A hierarchical textual representation of an expression
     """
 
     PADDING_NONE = "none"
@@ -41,7 +41,7 @@ class ExpressionRepresentation:
         brackets: Optional[str] = None,
         infix: str = "",
         infix_padding: str = PADDING_BOTH,
-        inner: Tuple["ExpressionRepresentation", ...] = (),
+        inner: Tuple["TextualForm", ...] = (),
     ):
         """
         :param prefix: the start of the expression
@@ -81,7 +81,7 @@ class ExpressionRepresentation:
             + (len(brackets) if brackets else 0)
             + sum(len(inner_representation) for inner_representation in inner)
             + max(len(inner) - 1, 0)
-            * (len(infix) + (ExpressionRepresentation.__PADDING_SPACES[infix_padding]))
+            * (len(infix) + (TextualForm.__PADDING_SPACES[infix_padding]))
         )
 
     def to_string(self, multiline: bool = True) -> str:
@@ -149,11 +149,11 @@ class ExpressionRepresentation:
         """
         if self.infix:
             infix_padding = self.infix_padding
-            if infix_padding is ExpressionRepresentation.PADDING_NONE:
+            if infix_padding is TextualForm.PADDING_NONE:
                 infix = self.infix
-            elif infix_padding is ExpressionRepresentation.PADDING_RIGHT:
+            elif infix_padding is TextualForm.PADDING_RIGHT:
                 infix = f"{self.infix} "
-            elif infix_padding is ExpressionRepresentation.PADDING_BOTH:
+            elif infix_padding is TextualForm.PADDING_BOTH:
                 infix = f" {self.infix} "
             else:
                 raise ValueError(f"unknown infix padding: {infix_padding}")
@@ -178,7 +178,7 @@ class ExpressionRepresentation:
 
         result: List[_IndentedLine] = []
 
-        inner: Tuple[ExpressionRepresentation, ...] = self.inner
+        inner: Tuple[TextualForm, ...] = self.inner
 
         # we add parentheses if there is no existing bracketing, and either
         # - there is a prefix, or
@@ -214,7 +214,7 @@ class ExpressionRepresentation:
             last_idx = len(inner) - 1
             infix = self.infix
 
-            if self.infix_padding is ExpressionRepresentation.PADDING_RIGHT:
+            if self.infix_padding is TextualForm.PADDING_RIGHT:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(inner):
                     lines = inner_representation._to_lines(
@@ -234,7 +234,7 @@ class ExpressionRepresentation:
 
                     result.extend(lines)
             else:
-                if self.infix_padding is ExpressionRepresentation.PADDING_BOTH:
+                if self.infix_padding is TextualForm.PADDING_BOTH:
                     infix = f"{infix} "
 
                 len_infix = len(infix)
