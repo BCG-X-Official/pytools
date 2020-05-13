@@ -10,12 +10,8 @@ from gamma.common.expression._expression import Expression, ExpressionFormatter
 
 log = logging.getLogger(__name__)
 
-INDENT_WIDTH = 4
-MAX_LINE_LENGTH = 80
 
-LEFT_ALIGNED_OPERATORS = {",", ":"}
-
-__all__ = ["TextualForm", "PythonExpressionFormat"]
+__all__ = ["PythonExpressionFormatter"]
 __tracker = AllTracker(globals())
 
 
@@ -28,7 +24,7 @@ class _IndentedLine(NamedTuple):
     text: str
 
 
-class TextualForm:
+class _TextualForm:
     """
     A hierarchical textual representation of an expression
     """
@@ -44,7 +40,7 @@ class TextualForm:
         multiple_subexpressions = len(subexpressions) > 1
 
         sub_forms = tuple(
-            TextualForm(
+            _TextualForm(
                 subexpression,
                 encapsulate=(
                     multiple_subexpressions
@@ -65,9 +61,11 @@ class TextualForm:
         prefix = expression.prefix
 
         infix_padding = (
-            TextualForm.PADDING_RIGHT
-            if infix in LEFT_ALIGNED_OPERATORS
-            else TextualForm.PADDING_BOTH
+            _TextualForm.PADDING_RIGHT
+            if infix in [",", ":"]
+            else _TextualForm.PADDING_NONE
+            if infix == "."
+            else _TextualForm.PADDING_BOTH
         )
 
         # promote inner brackets to top level if inner is a bracketed singleton
@@ -88,28 +86,8 @@ class TextualForm:
             + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
             + sum(len(inner_representation) for inner_representation in sub_forms)
             + max(len(sub_forms) - 1, 0)
-            * (len(infix) + (TextualForm.__PADDING_SPACES[infix_padding]))
+            * (len(infix) + (_TextualForm.__PADDING_SPACES[infix_padding]))
         )
-
-    def to_string(self, multiline: bool = True) -> str:
-        """
-        Convert this representation to a string
-        :param multiline: if `True`, include line breaks to keep the width within \
-            maximum bounds (default: `True`)
-        :return: this representation rendered as a string
-        """
-
-        if multiline:
-
-            def _spacing(indent: int) -> str:
-                return " " * (INDENT_WIDTH * indent)
-
-            return "\n".join(
-                f"{_spacing(indent)}{text}" for indent, text in self._to_lines()
-            )
-
-        else:
-            return self._to_single_line()
 
     @property
     def opening_bracket(self) -> str:
@@ -125,8 +103,62 @@ class TextualForm:
         """
         return self.brackets[1] if self.brackets else ""
 
+    def __repr__(self) -> str:
+        # noinspection PyProtectedMember
+        return _DEFAULT_PYTHON_EXPRESSION_FORMATTER._form_to_text(self)
+
+    def __len__(self) -> int:
+        return self.__len
+
+
+class PythonExpressionFormatter(ExpressionFormatter):
+    """
+    Formats expression objects as Python expressions, in line with the `black` style
+    """
+
+    def __init__(
+        self, max_width: int = 80, indent_width: int = 4, single_line: bool = False
+    ):
+        """
+        :param max_width: the maximum line width (ignored when enforcing single-line \
+            text (default: 80)
+        :param indent_width: the width of one indentation in spaces (default: 4)
+        :param single_line: if `False`, include line breaks to keep the width within \
+            maximum bounds (default: `False`)
+        """
+        self.max_width = max_width
+        self.indent_width = indent_width
+        self.single_line = single_line
+
+    def to_text(self, expression: "Expression") -> str:
+        """[see superclass]"""
+
+        return self._form_to_text(_TextualForm(expression))
+
+    def _form_to_text(self, form: _TextualForm) -> str:
+        # render a textual form as a string
+
+        if self.single_line:
+
+            return self._to_single_line(form=form)
+
+        else:
+
+            def _spacing(indent: int) -> str:
+                return " " * (self.indent_width * indent)
+
+            return "\n".join(
+                f"{_spacing(indent)}{text}" for indent, text in self._to_lines(form)
+            )
+
+    to_text.__doc__ = ExpressionFormatter.to_text.__doc__
+
     def _to_lines(
-        self, indent: int = 0, leading_characters: int = 0, trailing_characters: int = 0
+        self,
+        form: _TextualForm,
+        indent: int = 0,
+        leading_characters: int = 0,
+        trailing_characters: int = 0,
     ) -> List[_IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
@@ -138,42 +170,50 @@ class TextualForm:
         """
 
         if (
-            leading_characters + len(self) + indent * INDENT_WIDTH + trailing_characters
-            > MAX_LINE_LENGTH
+            leading_characters
+            + len(form)
+            + indent * self.indent_width
+            + trailing_characters
+            > self.max_width
         ):
             return self._to_multiple_lines(
+                form=form,
                 indent=indent,
                 leading_characters=leading_characters,
                 trailing_characters=trailing_characters,
             )
         else:
-            return [_IndentedLine(indent=indent, text=self._to_single_line())]
+            return [_IndentedLine(indent=indent, text=self._to_single_line(form=form))]
 
-    def _to_single_line(self) -> str:
+    def _to_single_line(self, form: _TextualForm) -> str:
         """
         Convert this representation to a single-line string
         :return: the resulting string
         """
-        if self.infix:
-            infix_padding = self.infix_padding
-            if infix_padding is TextualForm.PADDING_NONE:
-                infix = self.infix
-            elif infix_padding is TextualForm.PADDING_RIGHT:
-                infix = f"{self.infix} "
-            elif infix_padding is TextualForm.PADDING_BOTH:
-                infix = f" {self.infix} "
+        if form.infix:
+            infix_padding = form.infix_padding
+            if infix_padding is _TextualForm.PADDING_NONE:
+                infix = form.infix
+            elif infix_padding is _TextualForm.PADDING_RIGHT:
+                infix = f"{form.infix} "
+            elif infix_padding is _TextualForm.PADDING_BOTH:
+                infix = f" {form.infix} "
             else:
                 raise ValueError(f"unknown infix padding: {infix_padding}")
         else:
             infix = ""
         inner = infix.join(
-            subexpression_representation._to_single_line()
-            for subexpression_representation in self.inner
+            self._to_single_line(form=subexpression_form)
+            for subexpression_form in form.inner
         )
-        return f"{self.prefix}{self.opening_bracket}{inner}{self.closing_bracket}"
+        return f"{form.prefix}{form.opening_bracket}{inner}{form.closing_bracket}"
 
     def _to_multiple_lines(
-        self, indent: int, leading_characters: int, trailing_characters: int
+        self,
+        form: _TextualForm,
+        indent: int,
+        leading_characters: int,
+        trailing_characters: int,
     ) -> List[_IndentedLine]:
         """
         Convert this representation to multiple lines
@@ -185,19 +225,19 @@ class TextualForm:
 
         result: List[_IndentedLine] = []
 
-        inner: Tuple[TextualForm, ...] = self.inner
+        inner: Tuple[_TextualForm, ...] = form.inner
 
         # we add parentheses if there is no existing bracketing, and either
         # - there is a prefix, or
         # - we are at indentation level 0 and have more than one inner element
-        parenthesize = not self.brackets and (
-            self.prefix or (indent == 0 and len(inner) > 1)
+        parenthesize = not form.brackets and (
+            form.prefix or (indent == 0 and len(inner) > 1)
         )
 
         if parenthesize:
-            opening_bracket = f"{self.prefix}("
+            opening_bracket = f"{form.prefix}("
         else:
-            opening_bracket = f"{self.prefix}{self.opening_bracket}"
+            opening_bracket = f"{form.prefix}{form.opening_bracket}"
 
         if opening_bracket:
             result.append(_IndentedLine(indent=indent, text=opening_bracket))
@@ -209,7 +249,8 @@ class TextualForm:
             inner_single = inner[0]
 
             result.extend(
-                inner_single._to_lines(
+                self._to_lines(
+                    form=inner_single,
                     indent=inner_indent,
                     leading_characters=leading_characters,
                     trailing_characters=trailing_characters,
@@ -219,12 +260,13 @@ class TextualForm:
         elif inner:
 
             last_idx = len(inner) - 1
-            infix = self.infix
+            infix = form.infix
 
-            if self.infix_padding is TextualForm.PADDING_RIGHT:
+            if form.infix_padding is _TextualForm.PADDING_RIGHT:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(inner):
-                    lines = inner_representation._to_lines(
+                    lines = self._to_lines(
+                        form=inner_representation,
                         indent=inner_indent,
                         leading_characters=(leading_characters if idx == 0 else 0),
                         trailing_characters=(
@@ -241,12 +283,13 @@ class TextualForm:
 
                     result.extend(lines)
             else:
-                if self.infix_padding is TextualForm.PADDING_BOTH:
+                if form.infix_padding is _TextualForm.PADDING_BOTH:
                     infix = f"{infix} "
 
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(inner):
-                    lines = inner_representation._to_lines(
+                    lines = self._to_lines(
+                        form=inner_representation,
                         indent=inner_indent,
                         leading_characters=leading_characters
                         if idx == 0
@@ -267,34 +310,17 @@ class TextualForm:
         if parenthesize:
             closing_bracket = f")"
         else:
-            closing_bracket = f"{self.closing_bracket}"
+            closing_bracket = f"{form.closing_bracket}"
 
         if closing_bracket:
             result.append(_IndentedLine(indent=indent, text=closing_bracket))
 
         return result
 
-    def __repr__(self) -> str:
-        return self.to_string()
-
-    def __len__(self) -> int:
-        return self.__len
-
-
-class PythonExpressionFormat(ExpressionFormatter):
-    """
-    Formats expression objects as Python expressions, in line with the `black` style
-    """
-
-    def to_text(self, expression: "Expression") -> str:
-        """[see superclass]"""
-        return TextualForm(expression).to_string()
-
-    to_text.__doc__ = ExpressionFormatter.to_text.__doc__
-
 
 # Register class PythonExpressionFormat as the default display form
+_DEFAULT_PYTHON_EXPRESSION_FORMATTER = PythonExpressionFormatter()
 # noinspection PyProtectedMember
-ExpressionFormatter._register_default_format(PythonExpressionFormat())
+ExpressionFormatter._register_default_format(_DEFAULT_PYTHON_EXPRESSION_FORMATTER)
 
 __tracker.validate()

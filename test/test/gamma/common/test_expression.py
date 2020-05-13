@@ -1,3 +1,7 @@
+"""
+Tests for module gamma.common.expression
+"""
+
 import logging
 
 from gamma.common.expression import (
@@ -8,11 +12,14 @@ from gamma.common.expression import (
     ListExpression,
     Literal,
     Operation,
+    PythonExpressionFormatter,
     SetExpression,
-    TextualForm,
     TupleExpression,
     UnaryOperation,
 )
+
+# noinspection PyProtectedMember
+from gamma.common.expression._text import _TextualForm
 
 log = logging.getLogger(__name__)
 
@@ -31,8 +38,10 @@ def test_expression_formatting() -> None:
     )
 
     expr_1 = e * (e + e + e - e * e)
-    repr_1 = TextualForm(expr_1)
-    assert len(repr_1) == len(repr_1.to_string(multiline=False))
+    repr_1 = _TextualForm(expr_1)
+    assert len(repr_1) == len(
+        PythonExpressionFormatter(single_line=True).to_text(expr_1)
+    )
 
     assert (
         str(expr_1)
@@ -93,11 +102,14 @@ def test_expression() -> None:
     ]
 
     for expression, expected_length, expected_str in expressions_lengths:
-        representation = TextualForm(expression)
+        representation = _TextualForm(expression)
         print(f'"{expression}"')
         assert len(representation) == expected_length
         assert str(representation) == expected_str
-        assert len(representation.to_string(multiline=False)) == expected_length
+        assert (
+            len(PythonExpressionFormatter(single_line=True).to_text(expression))
+            == expected_length
+        )
 
 
 def test_expression_operators() -> None:
