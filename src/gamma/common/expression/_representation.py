@@ -11,10 +11,10 @@ log = logging.getLogger(__name__)
 INDENT_WIDTH = 4
 MAX_LINE_LENGTH = 80
 
-__all__ = ["IndentedLine", "ExpressionRepresentation"]
+__all__ = ["ExpressionRepresentation"]
 
 
-class IndentedLine(NamedTuple):
+class _IndentedLine(NamedTuple):
     """
     An indented line of text
     """
@@ -120,7 +120,7 @@ class ExpressionRepresentation:
 
     def _to_lines(
         self, indent: int = 0, leading_characters: int = 0, trailing_characters: int = 0
-    ) -> List[IndentedLine]:
+    ) -> List[_IndentedLine]:
         """
         Convert this representation to as few lines as possible without exceeding
         maximum line length
@@ -140,7 +140,7 @@ class ExpressionRepresentation:
                 trailing_characters=trailing_characters,
             )
         else:
-            return [IndentedLine(indent=indent, text=self._to_single_line())]
+            return [_IndentedLine(indent=indent, text=self._to_single_line())]
 
     def _to_single_line(self) -> str:
         """
@@ -167,7 +167,7 @@ class ExpressionRepresentation:
 
     def _to_multiple_lines(
         self, indent: int, leading_characters: int, trailing_characters: int
-    ) -> List[IndentedLine]:
+    ) -> List[_IndentedLine]:
         """
         Convert this representation to multiple lines
         :param indent: global indent of this expression
@@ -176,7 +176,7 @@ class ExpressionRepresentation:
         :return: resulting lines
         """
 
-        result: List[IndentedLine] = []
+        result: List[_IndentedLine] = []
 
         inner: Tuple[ExpressionRepresentation, ...] = self.inner
 
@@ -193,7 +193,7 @@ class ExpressionRepresentation:
             opening_bracket = f"{self.prefix}{self.opening_bracket}"
 
         if opening_bracket:
-            result.append(IndentedLine(indent=indent, text=opening_bracket))
+            result.append(_IndentedLine(indent=indent, text=opening_bracket))
             inner_indent = indent + 1
         else:
             inner_indent = indent
@@ -228,7 +228,7 @@ class ExpressionRepresentation:
                     if idx != last_idx:
                         # append infix to last line,
                         # except we're in the last representation
-                        lines[-1] = IndentedLine(
+                        lines[-1] = _IndentedLine(
                             indent=inner_indent, text=f"{lines[-1].text}{infix}"
                         )
 
@@ -251,7 +251,7 @@ class ExpressionRepresentation:
                     if idx != 0:
                         # prepend infix to first line,
                         # except we're in the first representation
-                        lines[0] = IndentedLine(
+                        lines[0] = _IndentedLine(
                             indent=inner_indent, text=f"{infix}{lines[0].text}"
                         )
 
@@ -263,7 +263,7 @@ class ExpressionRepresentation:
             closing_bracket = f"{self.closing_bracket}"
 
         if closing_bracket:
-            result.append(IndentedLine(indent=indent, text=closing_bracket))
+            result.append(_IndentedLine(indent=indent, text=closing_bracket))
 
         return result
 
