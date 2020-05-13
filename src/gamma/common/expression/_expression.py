@@ -6,7 +6,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, Iterable
 
-from gamma.common.expression._representation import ExpressionRepresentation
+from gamma.common.expression._representation import TextualForm
 
 log = logging.getLogger(__name__)
 
@@ -125,9 +125,9 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return self
 
     @abstractmethod
-    def representation(self) -> ExpressionRepresentation:
+    def to_text(self) -> TextualForm:
         """
-        Return a nested text representation of this expression
+        Return a hierarchical textual representation of this expression
         """
         pass
 
@@ -140,8 +140,8 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
     def _subexpression_representation(
         self, subexpression: "Expression", encapsulate_on_same_precedence: bool = True
-    ) -> ExpressionRepresentation:
-        subexpression_representation = subexpression.representation()
+    ) -> TextualForm:
+        subexpression_representation = subexpression.to_text()
 
         if subexpression_representation.brackets:
             # operand is already encapsulated, it is safe to use as-is
@@ -155,15 +155,13 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
             and subexpression_precedence == self_precedence
         ):
             # if the operand takes same or higher precedence, we need to encapsulate it
-            return ExpressionRepresentation(
-                brackets="()", inner=(subexpression_representation,)
-            )
+            return TextualForm(brackets="()", inner=(subexpression_representation,))
         else:
             # operand has lower precedence, we can keep it
             return subexpression_representation
 
     def __repr__(self) -> str:
-        return repr(self.representation())
+        return repr(self.to_text())
 
     @abstractmethod
     def __eq__(self, other) -> bool:
@@ -233,10 +231,10 @@ class Literal(Expression):
         self.value = value
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(repr(self.value))
+    def to_text(self) -> TextualForm:
+        return TextualForm(repr(self.value))
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: "Literal") -> bool:
         return isinstance(other, type(self)) and other.value == self.value
@@ -259,10 +257,10 @@ class Identifier(Expression):
         return Call(name=self.name, *args, **kwargs)
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(self.name)
+    def to_text(self) -> TextualForm:
+        return TextualForm(self.name)
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: "Identifier") -> bool:
         return isinstance(other, type(self)) and other.name == self.name
@@ -316,13 +314,13 @@ class Operation(BaseOperation):
             self.operands = operands
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
+    def to_text(self) -> TextualForm:
+        return TextualForm(
             infix=self.operator,
             infix_padding=(
-                ExpressionRepresentation.PADDING_NONE
+                TextualForm.PADDING_NONE
                 if self.operator == "."
-                else ExpressionRepresentation.PADDING_BOTH
+                else TextualForm.PADDING_BOTH
             ),
             inner=tuple(
                 self._subexpression_representation(
@@ -332,7 +330,7 @@ class Operation(BaseOperation):
             ),
         )
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: "Operation") -> bool:
         return super().__eq__(other) and self.operands == other.operands
@@ -360,13 +358,13 @@ class UnaryOperation(BaseOperation):
     precedence.__doc__ = Expression.precedence.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
+    def to_text(self) -> TextualForm:
+        return TextualForm(
             prefix=self.operator,
             inner=(self._subexpression_representation(self.operand),),
         )
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: "UnaryOperation") -> bool:
         return super().__eq__(other) and self.operand == other.operand
@@ -394,18 +392,18 @@ class BaseEnumeration(Expression):
         self.elements = elements
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
+    def to_text(self) -> TextualForm:
+        return TextualForm(
             prefix=self.prefix,
             brackets=self.brackets,
             inner=tuple(
                 self._subexpression_representation(element) for element in self.elements
             ),
             infix=",",
-            infix_padding=ExpressionRepresentation.PADDING_RIGHT,
+            infix_padding=TextualForm.PADDING_RIGHT,
         )
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
@@ -435,12 +433,10 @@ class _KeywordArgument(Expression):
         self.value = value
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            prefix=f"{self.name}=", inner=(self.value.representation(),)
-        )
+    def to_text(self) -> TextualForm:
+        return TextualForm(prefix=f"{self.name}=", inner=(self.value.to_text(),))
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: "_KeywordArgument") -> bool:
         return (
@@ -464,17 +460,17 @@ class _DictEntry(BaseOperation):
         self.value = value
 
     # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
+    def to_text(self) -> TextualForm:
+        return TextualForm(
             infix=self.operator,
             inner=(
                 self._subexpression_representation(self.key),
                 self._subexpression_representation(self.value),
             ),
-            infix_padding=ExpressionRepresentation.PADDING_RIGHT,
+            infix_padding=TextualForm.PADDING_RIGHT,
         )
 
-    representation.__doc__ = Expression.representation.__doc__
+    to_text.__doc__ = Expression.to_text.__doc__
 
     def __eq__(self, other: _KeywordArgument) -> bool:
         return (
