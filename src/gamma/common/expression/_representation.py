@@ -2,8 +2,6 @@
 String representations of expressions
 """
 
-from __future__ import annotations
-
 import logging
 from typing import *
 
@@ -43,7 +41,7 @@ class ExpressionRepresentation:
         brackets: Optional[str] = None,
         infix: str = "",
         infix_padding: str = PADDING_BOTH,
-        inner: Tuple[ExpressionRepresentation, ...] = (),
+        inner: Tuple["ExpressionRepresentation", ...] = (),
     ):
         """
         :param prefix: the start of the expression

@@ -2,8 +2,6 @@
 Basic utilities for constructing complex expressions and rendering them as indented
 strings; useful for generating representations of complex Python objects.
 """
-from __future__ import annotations
-
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, Iterable
@@ -62,7 +60,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def to_expression(self) -> Expression:
+    def to_expression(self) -> "Expression":
         """
         Render this object as an expression
         :return: the expression representing this object
@@ -79,7 +77,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
 
     @staticmethod
-    def from_value(value: Any) -> Expression:
+    def from_value(value: Any) -> "Expression":
         """
         Convert a python object into an expression.
 
@@ -119,7 +117,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         else:
             return Literal(value)
 
-    def to_expression(self) -> Expression:
+    def to_expression(self) -> "Expression":
         """
         Return self
         :return: `self`
@@ -141,7 +139,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return -1
 
     def _subexpression_representation(
-        self, subexpression: Expression, encapsulate_on_same_precedence: bool = True
+        self, subexpression: "Expression", encapsulate_on_same_precedence: bool = True
     ) -> ExpressionRepresentation:
         subexpression_representation = subexpression.representation()
 
@@ -175,54 +173,54 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __hash__(self) -> int:
         pass
 
-    def __add__(self, other: Expression) -> Operation:
+    def __add__(self, other: "Expression") -> "Operation":
         return Operation("+", (self, other))
 
-    def __sub__(self, other: Expression) -> Operation:
+    def __sub__(self, other: "Expression") -> "Operation":
         return Operation("-", (self, other))
 
-    def __mul__(self, other: Expression) -> Operation:
+    def __mul__(self, other: "Expression") -> "Operation":
         return Operation("*", (self, other))
 
-    def __matmul__(self, other: Expression) -> Operation:
+    def __matmul__(self, other: "Expression") -> "Operation":
         return Operation("@", (self, other))
 
-    def __truediv__(self, other: Expression) -> Operation:
+    def __truediv__(self, other: "Expression") -> "Operation":
         return Operation("/", (self, other))
 
-    def __floordiv__(self, other: Expression) -> Operation:
+    def __floordiv__(self, other: "Expression") -> "Operation":
         return Operation("//", (self, other))
 
-    def __mod__(self, other: Expression) -> Operation:
+    def __mod__(self, other: "Expression") -> "Operation":
         return Operation("%", (self, other))
 
-    def __pow__(self, power, modulo=None) -> Operation:
+    def __pow__(self, power, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
         return Operation("**", (self, power))
 
-    def __lshift__(self, other: Expression) -> Operation:
+    def __lshift__(self, other: "Expression") -> "Operation":
         return Operation("<<", (self, other))
 
-    def __rshift__(self, other: Expression) -> Operation:
+    def __rshift__(self, other: "Expression") -> "Operation":
         return Operation(">>", (self, other))
 
-    def __and__(self, other: Expression) -> Operation:
+    def __and__(self, other: "Expression") -> "Operation":
         return Operation("&", (self, other))
 
-    def __xor__(self, other: Expression) -> Operation:
+    def __xor__(self, other: "Expression") -> "Operation":
         return Operation("^", (self, other))
 
-    def __or__(self, other: Expression) -> Operation:
+    def __or__(self, other: "Expression") -> "Operation":
         return Operation("|", (self, other))
 
-    def __neg__(self) -> UnaryOperation:
+    def __neg__(self) -> "UnaryOperation":
         return UnaryOperation("-", self)
 
-    def __pos__(self) -> UnaryOperation:
+    def __pos__(self) -> "UnaryOperation":
         return UnaryOperation("+", self)
 
-    def __invert__(self) -> UnaryOperation:
+    def __invert__(self) -> "UnaryOperation":
         return UnaryOperation("~", self)
 
 
@@ -240,7 +238,7 @@ class Literal(Expression):
 
     representation.__doc__ = Expression.representation.__doc__
 
-    def __eq__(self, other: Literal) -> bool:
+    def __eq__(self, other: "Literal") -> bool:
         return isinstance(other, type(self)) and other.value == self.value
 
     def __hash__(self) -> int:
@@ -257,7 +255,7 @@ class Identifier(Expression):
             raise ValueError("arg name must be a string")
         self.name = name
 
-    def __call__(self, *args: Expression, **kwargs: Expression) -> Call:
+    def __call__(self, *args: Expression, **kwargs: Expression) -> "Call":
         return Call(name=self.name, *args, **kwargs)
 
     # noinspection PyMissingOrEmptyDocstring
@@ -266,7 +264,7 @@ class Identifier(Expression):
 
     representation.__doc__ = Expression.representation.__doc__
 
-    def __eq__(self, other: Identifier) -> bool:
+    def __eq__(self, other: "Identifier") -> bool:
         return isinstance(other, type(self)) and other.name == self.name
 
     def __hash__(self) -> int:
@@ -289,7 +287,7 @@ class BaseOperation(Expression, metaclass=ABCMeta):
 
     precedence.__doc__ = Expression.precedence.__doc__
 
-    def __eq__(self, other: BaseOperation) -> bool:
+    def __eq__(self, other: "BaseOperation") -> bool:
         return isinstance(other, type(self)) and other.operator == self.operator
 
     def __hash__(self) -> int:
@@ -336,7 +334,7 @@ class Operation(BaseOperation):
 
     representation.__doc__ = Expression.representation.__doc__
 
-    def __eq__(self, other: Operation) -> bool:
+    def __eq__(self, other: "Operation") -> bool:
         return super().__eq__(other) and self.operands == other.operands
 
     def __hash__(self) -> int:
@@ -370,7 +368,7 @@ class UnaryOperation(BaseOperation):
 
     representation.__doc__ = Expression.representation.__doc__
 
-    def __eq__(self, other: UnaryOperation) -> bool:
+    def __eq__(self, other: "UnaryOperation") -> bool:
         return super().__eq__(other) and self.operand == other.operand
 
     def __hash__(self) -> int:
@@ -415,7 +413,7 @@ class BaseEnumeration(Expression):
 
     precedence.__doc__ = Expression.precedence.__doc__
 
-    def __eq__(self, other: BaseEnumeration) -> bool:
+    def __eq__(self, other: "BaseEnumeration") -> bool:
         return (
             isinstance(other, type(self))
             and self.prefix == other.prefix
@@ -444,7 +442,7 @@ class _KeywordArgument(Expression):
 
     representation.__doc__ = Expression.representation.__doc__
 
-    def __eq__(self, other: _KeywordArgument) -> bool:
+    def __eq__(self, other: "_KeywordArgument") -> bool:
         return (
             isinstance(other, type(self))
             and self.name == other.name
