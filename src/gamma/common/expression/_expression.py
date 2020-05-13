@@ -299,7 +299,7 @@ class Operation(BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(self, operator: str, operands: Iterable[Expression, ...]):
+    def __init__(self, operator: str, operands: Iterable[Expression]):
         super().__init__(operator=operator)
         if not isinstance(operands, tuple):
             operands = tuple(operands)
