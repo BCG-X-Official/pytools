@@ -46,7 +46,7 @@ class ExpressionRepresentation:
         """
         :param prefix: the start of the expression
         :param infix: separator for subexpressions nested inside the expression
-        :param infix_padding: where to pad the infix withspaces. Permissible values \
+        :param infix_padding: where to pad the infix with spaces. Permissible values \
             are `none`. `right`, snd `both` (default: `both`)
         :param inner: list of representations of the subexpressions nested inside the \
             expression
@@ -64,7 +64,7 @@ class ExpressionRepresentation:
                 brackets = inner_single.brackets
                 inner = inner_single.inner
 
-        def validate_padding(permitted: Iterable[str]) -> str:
+        def _validate_padding(permitted: Iterable[str]) -> str:
             for option in permitted:
                 if infix_padding == option:
                     return option
@@ -73,7 +73,7 @@ class ExpressionRepresentation:
         self.prefix = prefix
         self.brackets = brackets
         self.infix = infix
-        self.infix_padding = validate_padding(self.__PADDING_SPACES.keys())
+        self.infix_padding = _validate_padding(self.__PADDING_SPACES.keys())
         self.inner = inner
 
         self.__len = (
