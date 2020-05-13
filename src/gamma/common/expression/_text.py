@@ -12,8 +12,6 @@ log = logging.getLogger(__name__)
 INDENT_WIDTH = 4
 MAX_LINE_LENGTH = 80
 
-T_TextualForm = TypeVar("T_TextualForm", bound="TextualForm")
-
 LEFT_ALIGNED_OPERATORS = {",", ":"}
 
 __all__ = ["TextualForm"]

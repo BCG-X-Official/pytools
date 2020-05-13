@@ -4,7 +4,7 @@ strings; useful for generating representations of complex Python objects.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Iterable, Optional, Tuple, Type, TypeVar
+from typing import Any, Dict, Iterable, Optional, Tuple, Type
 
 from gamma.common import AllTracker
 
@@ -54,7 +54,6 @@ OPERATOR_PRECEDENCE = {
 
 MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
-T_DisplayForm = TypeVar("T_DisplayForm", bound="DisplayForm")
 
 __tracker = AllTracker((globals()))
 
