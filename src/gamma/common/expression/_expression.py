@@ -323,7 +323,7 @@ class BaseOperation(Expression, metaclass=ABCMeta):
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return _operator_precedence(self.operator)
+        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -616,10 +616,6 @@ class DictExpression(BaseEnumeration):
             brackets=("{", "}"),
             elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
         )
-
-
-def _operator_precedence(operator: str):
-    return OPERATOR_PRECEDENCE.get(operator, MAX_PRECEDENCE)
 
 
 __tracker.validate()
