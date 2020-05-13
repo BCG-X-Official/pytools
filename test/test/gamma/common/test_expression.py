@@ -29,24 +29,41 @@ def test_expression_formatting() -> None:
         abc=-Literal(5),
     )
 
-    rep = (e + e + e - e * e).representation()
-    assert len(rep) == len(rep.to_string(multiline=False))
+    expr_1 = e * (e + e + e - e * e)
+    repr_1 = expr_1.representation()
+    assert len(repr_1) == len(repr_1.to_string(multiline=False))
 
     assert (
-        str(rep)
+        str(expr_1)
         == """(
     f((1 | 2) >> 'x' % x, abc=-5)
-    + f((1 | 2) >> 'x' % x, abc=-5)
-    + f((1 | 2) >> 'x' % x, abc=-5)
-    - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+    * (
+        f((1 | 2) >> 'x' % x, abc=-5)
+        + f((1 | 2) >> 'x' % x, abc=-5)
+        + f((1 | 2) >> 'x' % x, abc=-5)
+        - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+    )
 )"""
     )
 
     # expression 2, generated with from_value
 
+    expr_2 = Expression.from_value([1, 2, {3: 4, 5: e}])
+    assert str(expr_2) == "[1, 2, {3: 4, 5: f((1 | 2) >> 'x' % x, abc=-5)}]"
+
+    # expression 3
+
+    expr_3 = Call("f", param=Expression.from_value((e, e + e, e * e + e)))
     assert (
-        str(Expression.from_value([1, 2, {3: 4, 5: e}]))
-        == "[1, 2, {3: 4, 5: f((1 | 2) >> 'x' % x, abc=-5)}]"
+        repr(expr_3)
+        == """f(
+    param=(
+        f((1 | 2) >> 'x' % x, abc=-5)
+         f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5)
+         f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+        + f((1 | 2) >> 'x' % x, abc=-5)
+    )
+)"""
     )
 
 
