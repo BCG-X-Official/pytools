@@ -5,7 +5,8 @@ String representations of expressions
 import logging
 from typing import *
 
-from gamma.common.expression._expression import DisplayForm, Expression
+from gamma.common import AllTracker
+from gamma.common.expression._expression import Expression, ExpressionFormatter
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +15,8 @@ MAX_LINE_LENGTH = 80
 
 LEFT_ALIGNED_OPERATORS = {",", ":"}
 
-__all__ = ["TextualForm"]
+__all__ = ["TextualForm", "PythonExpressionFormat"]
+__tracker = AllTracker(globals())
 
 
 class _IndentedLine(NamedTuple):
@@ -26,7 +28,7 @@ class _IndentedLine(NamedTuple):
     text: str
 
 
-class TextualForm(DisplayForm):
+class TextualForm:
     """
     A hierarchical textual representation of an expression
     """
@@ -88,13 +90,6 @@ class TextualForm(DisplayForm):
             + max(len(sub_forms) - 1, 0)
             * (len(infix) + (TextualForm.__PADDING_SPACES[infix_padding]))
         )
-
-    @staticmethod
-    def from_expression(expression: Expression) -> "TextualForm":
-        """[see superclass]"""
-        return TextualForm(expression)
-
-    from_expression.__doc__ = DisplayForm.from_expression.__doc__
 
     def to_string(self, multiline: bool = True) -> str:
         """
@@ -286,6 +281,20 @@ class TextualForm(DisplayForm):
         return self.__len
 
 
-# Register class TextualForm as the default display form
+class PythonExpressionFormat(ExpressionFormatter):
+    """
+    Formats expression objects as Python expressions, in line with the `black` style
+    """
+
+    def to_text(self, expression: "Expression") -> str:
+        """[see superclass]"""
+        return TextualForm(expression).to_string()
+
+    to_text.__doc__ = ExpressionFormatter.to_text.__doc__
+
+
+# Register class PythonExpressionFormat as the default display form
 # noinspection PyProtectedMember
-DisplayForm._register_default_form(TextualForm)
+ExpressionFormatter._register_default_format(PythonExpressionFormat())
+
+__tracker.validate()

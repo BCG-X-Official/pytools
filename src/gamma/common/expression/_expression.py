@@ -4,14 +4,14 @@ strings; useful for generating representations of complex Python objects.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Iterable, Optional, Tuple, Type
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 from gamma.common import AllTracker
 
 log = logging.getLogger(__name__)
 
 __all__ = [
-    "DisplayForm",
+    "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
     "Literal",
@@ -58,36 +58,34 @@ MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 __tracker = AllTracker((globals()))
 
 
-class DisplayForm(metaclass=ABCMeta):
+class ExpressionFormatter(metaclass=ABCMeta):
     """
-    A display form renders an expression in a human-readable format, e.g., as text
-    or as a diagram
+    An expression formatter produces text representations of expressions.
     """
 
-    __default_form: Type["DisplayForm"] = None
+    __default_format: Optional["ExpressionFormatter"] = None
 
-    @staticmethod
     @abstractmethod
-    def from_expression(expression: "Expression") -> "DisplayForm":
+    def to_text(self, expression: "Expression") -> str:
         """
-        Create a display form of the given expression.
-        :param expression: the expression for which to create the display form
-        :return: the display form of the expression
+        Construct a text representation of the given expression.
+
+        :return: a text representation of the expression
         """
         pass
 
     @staticmethod
-    def default() -> Type["DisplayForm"]:
+    def default() -> "ExpressionFormatter":
         """
-        The default display form
+        Get the default expression format.
         """
-        return DisplayForm.__default_form
+        return ExpressionFormatter.__default_format
 
     @staticmethod
-    def _register_default_form(form: Type["DisplayForm"]) -> None:
-        if DisplayForm.__default_form is not None:
-            raise RuntimeError("default form is already registered")
-        DisplayForm.__default_form = form
+    def _register_default_format(expression_format: "ExpressionFormatter") -> None:
+        if ExpressionFormatter.__default_format is not None:
+            raise RuntimeError("default format is already registered")
+        ExpressionFormatter.__default_format = expression_format
 
 
 class HasExpressionRepr(metaclass=ABCMeta):
@@ -104,7 +102,9 @@ class HasExpressionRepr(metaclass=ABCMeta):
         pass
 
     def __repr__(self) -> str:
-        return repr(self.to_expression().to_display_form())
+        # get the expression representing this object, and use the default formatter
+        # to get a text representation of the expression
+        return ExpressionFormatter.default().to_text(self.to_expression())
 
 
 class Expression(HasExpressionRepr, metaclass=ABCMeta):
@@ -189,12 +189,6 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         :return: `self`
         """
         return self
-
-    def to_display_form(self) -> DisplayForm:
-        """
-        Return the default display form of this expression
-        """
-        return DisplayForm.default().from_expression(self)
 
     def precedence(self) -> int:
         """
