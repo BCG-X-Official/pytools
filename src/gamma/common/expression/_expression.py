@@ -6,7 +6,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Dict, Iterable
 
-from gamma.common.expression._representation import TextualForm
+from gamma.common.expression._text import TextualForm
 
 log = logging.getLogger(__name__)
 
