@@ -2,17 +2,16 @@
 Basic utilities for constructing complex expressions and rendering them as indented
 strings; useful for generating representations of complex Python objects.
 """
-from __future__ import annotations
-
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, Optional, Tuple
 
-from gamma.common.expression._representation import ExpressionRepresentation
+from gamma.common import AllTracker
 
 log = logging.getLogger(__name__)
 
 __all__ = [
+    "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
     "Literal",
@@ -56,13 +55,46 @@ OPERATOR_PRECEDENCE = {
 MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 
+__tracker = AllTracker((globals()))
+
+
+class ExpressionFormatter(metaclass=ABCMeta):
+    """
+    An expression formatter produces text representations of expressions.
+    """
+
+    __default_format: Optional["ExpressionFormatter"] = None
+
+    @abstractmethod
+    def to_text(self, expression: "Expression") -> str:
+        """
+        Construct a text representation of the given expression.
+
+        :return: a text representation of the expression
+        """
+        pass
+
+    @staticmethod
+    def default() -> "ExpressionFormatter":
+        """
+        Get the default expression format.
+        """
+        return ExpressionFormatter.__default_format
+
+    @staticmethod
+    def _register_default_format(expression_format: "ExpressionFormatter") -> None:
+        if ExpressionFormatter.__default_format is not None:
+            raise RuntimeError("default format is already registered")
+        ExpressionFormatter.__default_format = expression_format
+
+
 class HasExpressionRepr(metaclass=ABCMeta):
     """
     Mix-in class for classes whose `repr` representations are rendered as expressions
     """
 
     @abstractmethod
-    def to_expression(self) -> Expression:
+    def to_expression(self) -> "Expression":
         """
         Render this object as an expression
         :return: the expression representing this object
@@ -70,16 +102,18 @@ class HasExpressionRepr(metaclass=ABCMeta):
         pass
 
     def __repr__(self) -> str:
-        return repr(self.to_expression())
+        # get the expression representing this object, and use the default formatter
+        # to get a text representation of the expression
+        return ExpressionFormatter.default().to_text(self.to_expression())
 
 
-class Expression(metaclass=ABCMeta):
+class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
     A nested expression
     """
 
     @staticmethod
-    def from_value(value: Any) -> Expression:
+    def from_value(value: Any) -> "Expression":
         """
         Convert a python object into an expression.
 
@@ -97,9 +131,7 @@ class Expression(metaclass=ABCMeta):
         def _from_collection(values: Iterable) -> Iterable[Expression]:
             return (Expression.from_value(_value) for _value in values)
 
-        if isinstance(value, Expression):
-            return value
-        elif isinstance(value, HasExpressionRepr):
+        if isinstance(value, HasExpressionRepr):
             return value.to_expression()
         elif isinstance(value, str):
             return Literal(value)
@@ -121,12 +153,42 @@ class Expression(metaclass=ABCMeta):
         else:
             return Literal(value)
 
-    @abstractmethod
-    def representation(self) -> ExpressionRepresentation:
+    @property
+    def prefix(self) -> str:
         """
-        Return a nested text representation of this expression
+        The prefix of this expression
         """
-        pass
+        return ""
+
+    @property
+    def brackets(self) -> Optional[Tuple[str, str]]:
+        """
+        The brackets surrounding this expression's subexpressions.
+
+        A value of `None` indicates no brackets.
+        """
+        return None
+
+    @property
+    def infix(self) -> str:
+        """
+        The infix used to separate this expression's subexpressions.
+        """
+        return ""
+
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """
+        The subexpressions of this expression.
+        """
+        return ()
+
+    def to_expression(self) -> "Expression":
+        """
+        Return self
+        :return: `self`
+        """
+        return self
 
     def precedence(self) -> int:
         """
@@ -134,39 +196,6 @@ class Expression(metaclass=ABCMeta):
             parentheses
         """
         return -1
-
-    def _subexpression_representation(
-        self, subexpression: Expression, encapsulate_on_same_precedence: bool = True
-    ) -> ExpressionRepresentation:
-        subexpression_representation = subexpression.representation()
-
-        if subexpression_representation.prefix and subexpression_representation.suffix:
-            # operand is already encapsulated, it is safe to use as-is
-            return subexpression_representation
-        subexpression_precedence = subexpression.precedence()
-        self_precedence = self.precedence()
-        if subexpression_precedence > self_precedence or (
-            encapsulate_on_same_precedence
-            and subexpression_precedence == self_precedence
-        ):
-            # if the operand takes same or higher precedence, we need to encapsulate it
-            if (
-                subexpression_representation.prefix
-                or subexpression_representation.suffix
-            ):
-                # create new representation wrapper to protect existing prefix or suffix
-                return ExpressionRepresentation(
-                    prefix="(", inner=(subexpression_representation,), suffix=")"
-                )
-            else:
-                # add wrapper to existing representation
-                return subexpression_representation.with_wrapper(prefix="(", suffix=")")
-        else:
-            # operand has lower precedence, we can keep it
-            return subexpression_representation
-
-    def __repr__(self) -> str:
-        return repr(self.representation())
 
     @abstractmethod
     def __eq__(self, other) -> bool:
@@ -176,54 +205,54 @@ class Expression(metaclass=ABCMeta):
     def __hash__(self) -> int:
         pass
 
-    def __add__(self, other: Expression) -> Operation:
+    def __add__(self, other: "Expression") -> "Operation":
         return Operation("+", (self, other))
 
-    def __sub__(self, other: Expression) -> Operation:
+    def __sub__(self, other: "Expression") -> "Operation":
         return Operation("-", (self, other))
 
-    def __mul__(self, other: Expression) -> Operation:
+    def __mul__(self, other: "Expression") -> "Operation":
         return Operation("*", (self, other))
 
-    def __matmul__(self, other: Expression) -> Operation:
+    def __matmul__(self, other: "Expression") -> "Operation":
         return Operation("@", (self, other))
 
-    def __truediv__(self, other: Expression) -> Operation:
+    def __truediv__(self, other: "Expression") -> "Operation":
         return Operation("/", (self, other))
 
-    def __floordiv__(self, other: Expression) -> Operation:
+    def __floordiv__(self, other: "Expression") -> "Operation":
         return Operation("//", (self, other))
 
-    def __mod__(self, other: Expression) -> Operation:
+    def __mod__(self, other: "Expression") -> "Operation":
         return Operation("%", (self, other))
 
-    def __pow__(self, power, modulo=None) -> Operation:
+    def __pow__(self, power, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
         return Operation("**", (self, power))
 
-    def __lshift__(self, other: Expression) -> Operation:
+    def __lshift__(self, other: "Expression") -> "Operation":
         return Operation("<<", (self, other))
 
-    def __rshift__(self, other: Expression) -> Operation:
+    def __rshift__(self, other: "Expression") -> "Operation":
         return Operation(">>", (self, other))
 
-    def __and__(self, other: Expression) -> Operation:
+    def __and__(self, other: "Expression") -> "Operation":
         return Operation("&", (self, other))
 
-    def __xor__(self, other: Expression) -> Operation:
+    def __xor__(self, other: "Expression") -> "Operation":
         return Operation("^", (self, other))
 
-    def __or__(self, other: Expression) -> Operation:
+    def __or__(self, other: "Expression") -> "Operation":
         return Operation("|", (self, other))
 
-    def __neg__(self) -> UnaryOperation:
+    def __neg__(self) -> "UnaryOperation":
         return UnaryOperation("-", self)
 
-    def __pos__(self) -> UnaryOperation:
+    def __pos__(self) -> "UnaryOperation":
         return UnaryOperation("+", self)
 
-    def __invert__(self) -> UnaryOperation:
+    def __invert__(self) -> "UnaryOperation":
         return UnaryOperation("~", self)
 
 
@@ -235,13 +264,14 @@ class Literal(Expression):
     def __init__(self, value: Any):
         self.value = value
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(repr(self.value))
+    @property
+    def prefix(self) -> str:
+        """[see superclass]"""
+        return repr(self.value)
 
-    representation.__doc__ = Expression.representation.__doc__
+    prefix.__doc__ = Expression.prefix.__doc__
 
-    def __eq__(self, other: Literal) -> bool:
+    def __eq__(self, other: "Literal") -> bool:
         return isinstance(other, type(self)) and other.value == self.value
 
     def __hash__(self) -> int:
@@ -258,16 +288,17 @@ class Identifier(Expression):
             raise ValueError("arg name must be a string")
         self.name = name
 
-    def __call__(self, *args: Expression, **kwargs: Expression) -> Call:
+    @property
+    def prefix(self) -> str:
+        """[see superclass]"""
+        return self.name
+
+    prefix.__doc__ = Expression.prefix.__doc__
+
+    def __call__(self, *args: Expression, **kwargs: Expression) -> "Call":
         return Call(name=self.name, *args, **kwargs)
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(self.name)
-
-    representation.__doc__ = Expression.representation.__doc__
-
-    def __eq__(self, other: Identifier) -> bool:
+    def __eq__(self, other: "Identifier") -> bool:
         return isinstance(other, type(self)) and other.name == self.name
 
     def __hash__(self) -> int:
@@ -286,11 +317,11 @@ class BaseOperation(Expression, metaclass=ABCMeta):
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return _operator_precedence(self.operator)
+        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
-    def __eq__(self, other: BaseOperation) -> bool:
+    def __eq__(self, other: "BaseOperation") -> bool:
         return isinstance(other, type(self)) and other.operator == self.operator
 
     def __hash__(self) -> int:
@@ -302,7 +333,7 @@ class Operation(BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(self, operator: str, operands: Iterable[Expression, ...]):
+    def __init__(self, operator: str, operands: Iterable[Expression]):
         super().__init__(operator=operator)
         if not isinstance(operands, tuple):
             operands = tuple(operands)
@@ -318,21 +349,21 @@ class Operation(BaseOperation):
         else:
             self.operands = operands
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            infix=self.operator,
-            inner=tuple(
-                self._subexpression_representation(
-                    subexpression=operand, encapsulate_on_same_precedence=(pos > 0)
-                )
-                for pos, operand in enumerate(self.operands)
-            ),
-        )
+    @property
+    def infix(self) -> str:
+        """[see superclass]"""
+        return self.operator
 
-    representation.__doc__ = Expression.representation.__doc__
+    infix.__doc__ = Expression.infix.__doc__
 
-    def __eq__(self, other: Operation) -> bool:
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return self.operands
+
+    subexpressions.__doc__ = Expression.subexpressions.__doc__
+
+    def __eq__(self, other: "Operation") -> bool:
         return super().__eq__(other) and self.operands == other.operands
 
     def __hash__(self) -> int:
@@ -351,22 +382,27 @@ class UnaryOperation(BaseOperation):
 
         self.operand = operand
 
+    @property
+    def prefix(self) -> str:
+        """[see superclass]"""
+        return self.operator
+
+    prefix.__doc__ = Expression.prefix.__doc__
+
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return (self.operand,)
+
+    subexpressions.__doc__ = Expression.subexpressions.__doc__
+
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
         return OPERATOR_PRECEDENCE.get(f"{self.operator} x", MAX_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            prefix=self.operator,
-            inner=(self._subexpression_representation(self.operand),),
-        )
-
-    representation.__doc__ = Expression.representation.__doc__
-
-    def __eq__(self, other: UnaryOperation) -> bool:
+    def __eq__(self, other: "UnaryOperation") -> bool:
         return super().__eq__(other) and self.operand == other.operand
 
     def __hash__(self) -> int:
@@ -381,29 +417,47 @@ class BaseEnumeration(Expression):
     _PRECEDENCE = OPERATOR_PRECEDENCE[","]
 
     def __init__(
-        self, delimiter_left: str, elements: Iterable[Expression], delimiter_right: str
+        self,
+        *,
+        brackets: Tuple[str, str],
+        elements: Iterable[Expression],
+        prefix: str = "",
     ) -> None:
         if not isinstance(elements, tuple):
             elements = tuple(elements)
         if not all(isinstance(element, Expression) for element in elements):
             raise ValueError("all elements must implement class Expression")
-        self.delimiter_left = delimiter_left
-        self.delimiter_right = delimiter_right
+        self._prefix = prefix
+        self._brackets = brackets
         self.elements = elements
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            prefix=self.delimiter_left,
-            inner=tuple(
-                self._subexpression_representation(element) for element in self.elements
-            ),
-            infix=",",
-            infix_keep_with_left=True,
-            suffix=self.delimiter_right,
-        )
+    @property
+    def prefix(self) -> str:
+        """[see superclass]"""
+        return self._prefix
 
-    representation.__doc__ = Expression.representation.__doc__
+    prefix.__doc__ = Expression.prefix.__doc__
+
+    @property
+    def brackets(self) -> Tuple[str, str]:
+        """[see superclass]"""
+        return self._brackets
+
+    brackets.__doc__ = Expression.brackets.__doc__
+
+    @property
+    def infix(self) -> str:
+        """[see superclass]"""
+        return ","
+
+    infix.__doc__ = Expression.infix.__doc__
+
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return self.elements
+
+    subexpressions.__doc__ = Expression.subexpressions.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
@@ -411,23 +465,16 @@ class BaseEnumeration(Expression):
 
     precedence.__doc__ = Expression.precedence.__doc__
 
-    def __eq__(self, other: BaseEnumeration) -> bool:
+    def __eq__(self, other: "BaseEnumeration") -> bool:
         return (
             isinstance(other, type(self))
-            and self.delimiter_left == other.delimiter_left
-            and self.delimiter_right == other.delimiter_right
+            and self.prefix == other.prefix
+            and self.brackets == other.brackets
             and self.elements == other.elements
         )
 
     def __hash__(self) -> int:
-        return hash(
-            (
-                super().__hash__(),
-                self.delimiter_left,
-                self.elements,
-                self.delimiter_right,
-            )
-        )
+        return hash((super().__hash__(), self.prefix, self.brackets, self.elements))
 
 
 class _KeywordArgument(Expression):
@@ -439,15 +486,21 @@ class _KeywordArgument(Expression):
         self.name = name
         self.value = value
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            prefix=f"{self.name}=", inner=(self.value.representation(),)
-        )
+    @property
+    def prefix(self) -> str:
+        """[see superclass]"""
+        return f"{self.name}="
 
-    representation.__doc__ = Expression.representation.__doc__
+    prefix.__doc__ = Expression.prefix.__doc__
 
-    def __eq__(self, other: _KeywordArgument) -> bool:
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return (self.value,)
+
+    subexpressions.__doc__ = Expression.subexpressions.__doc__
+
+    def __eq__(self, other: "_KeywordArgument") -> bool:
         return (
             isinstance(other, type(self))
             and self.name == other.name
@@ -468,18 +521,19 @@ class _DictEntry(BaseOperation):
         self.key = key
         self.value = value
 
-    # noinspection PyMissingOrEmptyDocstring
-    def representation(self) -> ExpressionRepresentation:
-        return ExpressionRepresentation(
-            infix=self.operator,
-            inner=(
-                self._subexpression_representation(self.key),
-                self._subexpression_representation(self.value),
-            ),
-            infix_keep_with_left=True,
-        )
+    @property
+    def infix(self) -> str:
+        """[see superclass]"""
+        return self.operator
 
-    representation.__doc__ = Expression.representation.__doc__
+    infix.__doc__ = Expression.infix.__doc__
+
+    @property
+    def subexpressions(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return self.key, self.value
+
+    subexpressions.__doc__ = Expression.subexpressions.__doc__
 
     def __eq__(self, other: _KeywordArgument) -> bool:
         return (
@@ -499,7 +553,8 @@ class Call(BaseEnumeration):
 
     def __init__(self, name: str, *args: Expression, **kwargs: Expression):
         super().__init__(
-            delimiter_left=f"{name}(",
+            prefix=name,
+            brackets=("(", ")"),
             elements=(
                 *args,
                 *(
@@ -507,7 +562,6 @@ class Call(BaseEnumeration):
                     for name, expression in kwargs.items()
                 ),
             ),
-            delimiter_right=")",
         )
 
     @property
@@ -516,7 +570,7 @@ class Call(BaseEnumeration):
         the name of the function being called
         :return: the name of the function being called
         """
-        return self.delimiter_left[:-1]
+        return self.prefix
 
 
 class ListExpression(BaseEnumeration):
@@ -525,7 +579,7 @@ class ListExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="[", elements=elements, delimiter_right="]")
+        super().__init__(brackets=("[", "]"), elements=elements)
 
 
 class TupleExpression(BaseEnumeration):
@@ -534,7 +588,7 @@ class TupleExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="(", elements=elements, delimiter_right=")")
+        super().__init__(brackets=("(", ")"), elements=elements)
 
 
 class SetExpression(BaseEnumeration):
@@ -543,7 +597,7 @@ class SetExpression(BaseEnumeration):
     """
 
     def __init__(self, elements: Iterable[Expression]):
-        super().__init__(delimiter_left="{", elements=elements, delimiter_right="}")
+        super().__init__(brackets=("{", "}"), elements=elements)
 
 
 class DictExpression(BaseEnumeration):
@@ -553,11 +607,9 @@ class DictExpression(BaseEnumeration):
 
     def __init__(self, entries: Dict[Expression, Expression]):
         super().__init__(
-            delimiter_left="{",
+            brackets=("{", "}"),
             elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
-            delimiter_right="}",
         )
 
 
-def _operator_precedence(operator: str):
-    return OPERATOR_PRECEDENCE.get(operator, MAX_PRECEDENCE)
+__tracker.validate()
