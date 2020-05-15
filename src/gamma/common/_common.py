@@ -12,14 +12,19 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
-
 __all__ = [
+    "AllTracker",
     "is_list_like",
     "to_tuple",
+    "to_list",
+    "to_set",
+    "validate_element_types",
     "deprecated",
     "deprecation_warning",
-    "AllTracker",
 ]
+
+T = TypeVar("T")
+T_Collection = TypeVar("T_Collection", bound=Collection[T])
 
 
 class AllTracker:
@@ -93,22 +98,117 @@ def is_list_like(obj: Any) -> bool:
     )
 
 
-def to_tuple(items: Optional[Iterable[str]]) -> Optional[Tuple[str, ...]]:
+def to_tuple(
+    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+) -> Tuple[T, ...]:
     """
-    Return the given iterable as a tuple.
+    Return the given values as a tuple.
 
-    If the argument already is a tuple, return the argument without creating a new
-    tuple.
+    - if arg values is a tuple, return arg values unchanged
+    - if arg values is an iterable and is an instance of the expected type,
+      return a tuple with the value as its only element
+    - if arg values is an iterable and is not an instance of the expected type,
+      return a tuple of its elements
+    - if arg values is not an iterable,
+      return a tuple with the value as its only element
 
-    :param items: the items to return a tuple
-    :return: the items as a tuple
+    :param values: one or more elements to return as a tuple
+    :param element_type: expected type of the values, raise a TypeException if one \
+        or more values do not implement this type
+    :return: the values as a tuple
     """
-    if items is None:
-        return None
-    if isinstance(items, tuple):
-        return items
+
+    return _to_collection(
+        values=values, collection_type=tuple, element_type=element_type
+    )
+
+
+def to_list(
+    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+) -> List[T]:
+    """
+    Return the given values as a list.
+
+    - if arg values is a list, return arg values unchanged
+    - if arg values is an iterable and is an instance of the expected type,
+      return a list with the value as its only element
+    - if arg values is an iterable and is not an instance of the expected type,
+      return a list of its elements
+    - if arg values is not an iterable,
+      return a list with the value as its only element
+
+    :param values: one or more elements to return as a list
+    :param element_type: expected type of the values, raise a TypeException if one \
+        or more values do not implement this type
+    :return: the values as a list
+    """
+
+    return _to_collection(
+        values=values, collection_type=list, element_type=element_type
+    )
+
+
+def to_set(
+    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+) -> Set[T]:
+    """
+    Return the given values as a set.
+
+    - if arg values is a set, return arg values unchanged
+    - if arg values is an iterable and is an instance of the expected type,
+      return a set with the value as its only element
+    - if arg values is an iterable and is not an instance of the expected type,
+      return a set of its elements
+    - if arg values is not an iterable,
+      return a set with the value as its only element
+
+    :param values: one or more elements to return as a set
+    :param element_type: expected type of the values, raise a TypeException if one \
+        or more values do not implement this type
+    :return: the values as a set
+    """
+
+    return _to_collection(values=values, collection_type=set, element_type=element_type)
+
+
+def _to_collection(
+    values: Union[T, Iterable[T]],
+    collection_type: Type[T_Collection],
+    element_type: Optional[Type[T]],
+) -> T_Collection:
+
+    elements: T_Collection
+
+    if isinstance(values, Iterable):
+        if isinstance(values, collection_type):
+            elements = values
+        elif element_type and isinstance(values, element_type):
+            elements = (values,)
+        else:
+            elements = collection_type(values)
     else:
-        return tuple(items)
+        elements = (values,)
+
+    if element_type:
+        validate_element_types(elements, element_type)
+
+    return elements
+
+
+def validate_element_types(iterable: Iterable[T], element_type: Type[T]) -> None:
+    """
+    Validate that all elements in the given iterable implement the expected type
+    :param iterable: an iterable
+    :param element_type: the type to check for
+    """
+    if element_type in [object, Any]:
+        return
+
+    for element in iterable:
+        if not isinstance(element, element_type):
+            raise TypeError(
+                f"expected instances of {element_type.__name__} but got {element}"
+            )
 
 
 def deprecated(function: Callable = None, *, message: str = None):
