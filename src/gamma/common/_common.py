@@ -181,13 +181,16 @@ def _to_collection(
 
     if isinstance(values, Iterable):
         if isinstance(values, collection_type):
+            # no change needed, values already is the collection we need
             elements = values
         elif element_type and isinstance(values, element_type):
-            elements = (values,)
+            # create a single-element collection
+            elements = collection_type((values,))
         else:
             elements = collection_type(values)
     else:
-        elements = (values,)
+        # create a single-element collection
+        elements = collection_type((values,))
 
     if element_type:
         validate_element_types(elements, element_type)
