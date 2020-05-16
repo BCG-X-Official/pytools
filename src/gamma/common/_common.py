@@ -173,6 +173,7 @@ def to_set(
 
 def _to_collection(
     values: Union[T, Iterable[T]],
+    *,
     collection_type: Type[T_Collection],
     element_type: Optional[Type[T]],
 ) -> T_Collection:
@@ -193,12 +194,12 @@ def _to_collection(
         elements = collection_type((values,))
 
     if element_type:
-        validate_element_types(elements, element_type)
+        validate_element_types(elements, element_type=element_type)
 
     return elements
 
 
-def validate_element_types(iterable: Iterable[T], element_type: Type[T]) -> None:
+def validate_element_types(iterable: Iterable[T], *, element_type: Type[T]) -> None:
     """
     Validate that all elements in the given iterable implement the expected type
     :param iterable: an iterable
