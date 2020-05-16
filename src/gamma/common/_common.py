@@ -49,9 +49,7 @@ class AllTracker:
         all_expected = [
             item
             for item in self.globals_
-            if item[0].isalpha()
-            and item not in self.imported
-            and not item.startswith("Base")
+            if item[0].isalpha() and item not in self.imported
         ]
         if set(self.globals_.get("__all__", [])) != set(all_expected):
             raise RuntimeError(
