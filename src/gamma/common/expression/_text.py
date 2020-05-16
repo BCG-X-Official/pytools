@@ -37,13 +37,12 @@ class _TextualForm:
 
     def __init__(self, expression: Expression, encapsulate: bool = False) -> None:
         subexpressions = expression.subexpressions
-        multiple_subexpressions = len(subexpressions) > 1
 
-        sub_forms = tuple(
+        inner = tuple(
             _TextualForm(
                 subexpression,
                 encapsulate=(
-                    multiple_subexpressions
+                    len(subexpressions) > 1
                     and subexpression.precedence()
                     > expression.precedence() - (0 if pos == 0 else 1)
                 ),
@@ -54,38 +53,41 @@ class _TextualForm:
         brackets = expression.brackets
         assert brackets is None or len(brackets) == 2, "brackets is None or a pair"
 
-        if not brackets and encapsulate:
-            brackets = ("(", ")")
-
-        infix = expression.infix
         prefix = expression.prefix
 
-        infix_padding = (
-            _TextualForm.PADDING_RIGHT
-            if infix in [",", ":"]
-            else _TextualForm.PADDING_NONE
-            if infix == "."
-            else _TextualForm.PADDING_BOTH
-        )
+        if not brackets and len(inner) == 1 and not inner[0].prefix:
+            # promote inner brackets to top level if inner is a bracketed singleton
 
-        # promote inner brackets to top level if inner is a bracketed singleton
-        if not brackets and len(sub_forms) == 1:
-            _inner_single = sub_forms[0]
-            if not _inner_single.prefix:
-                brackets = _inner_single.brackets
-                sub_forms = _inner_single.inner
+            _inner_single = inner[0]
+            brackets = _inner_single.brackets
+            infix = _inner_single.infix
+            infix_padding = _inner_single.infix_padding
+            inner = _inner_single.inner
+
+        else:
+            infix = expression.infix
+            infix_padding = (
+                _TextualForm.PADDING_RIGHT
+                if infix in [",", ":"]
+                else _TextualForm.PADDING_NONE
+                if infix == "."
+                else _TextualForm.PADDING_BOTH
+            )
+
+        if encapsulate and not brackets:
+            brackets = ("(", ")")
 
         self.prefix = prefix
         self.brackets = brackets
         self.infix = infix
         self.infix_padding = infix_padding
-        self.inner = sub_forms
+        self.inner = inner
 
         self.__len = (
             len(prefix)
             + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
-            + sum(len(inner_representation) for inner_representation in sub_forms)
-            + max(len(sub_forms) - 1, 0)
+            + sum(len(inner_representation) for inner_representation in inner)
+            + max(len(inner) - 1, 0)
             * (len(infix) + (_TextualForm.__PADDING_SPACES[infix_padding]))
         )
 

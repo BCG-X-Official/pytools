@@ -63,14 +63,14 @@ def test_expression_formatting() -> None:
 
     # expression 3
 
-    expr_3 = Call("f", param=Expression.from_value((e, e + e, e * e + e)))
+    expr_3 = Call("g", param=Expression.from_value((e, e + e, e * e + e)))
     assert (
         repr(expr_3)
-        == """f(
+        == """g(
     param=(
-        f((1 | 2) >> 'x' % x, abc=-5)
-         f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5)
-         f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+        f((1 | 2) >> 'x' % x, abc=-5),
+        f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5),
+        f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
         + f((1 | 2) >> 'x' % x, abc=-5)
     )
 )"""
