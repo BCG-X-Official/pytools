@@ -85,35 +85,31 @@ def test_expression() -> None:
     lit_5 = Literal(5)
     lit_abc = Literal("abc")
     ident_xx = Identifier("xx")
-    expressions_lengths = [
-        (lit_5, 1, "5"),
-        (lit_abc, 5, "'abc'"),
-        (ident_xx, 2, "xx"),
-        (Call(Identifier("func"), lit_5, lit_abc), 14, "func(5, 'abc')"),
-        (ListExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "[5, 'abc', xx]"),
-        (SetExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "{5, 'abc', xx}"),
-        (TupleExpression(elements=[lit_5, lit_abc, ident_xx]), 14, "(5, 'abc', xx)"),
+    expressions = [
+        (lit_5, "5"),
+        (lit_abc, "'abc'"),
+        (ident_xx, "xx"),
+        (Call(Identifier("func"), lit_5, lit_abc), "func(5, 'abc')"),
+        (ListExpression(elements=[lit_5, lit_abc, ident_xx]), "[5, 'abc', xx]"),
+        (SetExpression(elements=[lit_5, lit_abc, ident_xx]), "{5, 'abc', xx}"),
+        (TupleExpression(elements=[lit_5, lit_abc, ident_xx]), "(5, 'abc', xx)"),
         (
             DictExpression(entries={lit_5: lit_abc, ident_xx: lit_5}),
-            17,
             "{5: 'abc', xx: 5}",
         ),
         (
             Operation(operator="+", operands=(lit_5, lit_abc, ident_xx)),
-            14,
             "5 + 'abc' + xx",
         ),
     ]
 
-    for expression, expected_length, expected_str in expressions_lengths:
+    for expression, expected_str in expressions:
         representation = TextualForm.from_expression(expression)
-        print(f'"{expression}"')
-        assert len(representation) == expected_length
+        assert len(representation) == len(expected_str)
         assert str(representation) == expected_str
-        assert (
-            len(PythonExpressionFormatter(single_line=True).to_text(expression))
-            == expected_length
-        )
+        assert len(
+            PythonExpressionFormatter(single_line=True).to_text(expression)
+        ) == len(expected_str)
 
 
 def test_expression_operators() -> None:
