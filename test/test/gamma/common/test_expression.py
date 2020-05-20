@@ -9,6 +9,7 @@ from gamma.common.expression import (
     DictExpression,
     Expression,
     Identifier,
+    Lambda,
     ListExpression,
     Literal,
     Operation,
@@ -75,6 +76,9 @@ def test_expression_formatting() -> None:
     )
 )"""
     )
+
+    expr_4 = Lambda(args=Identifier("x"), body=e)(Literal(5))
+    assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
 
 
 def test_expression() -> None:
