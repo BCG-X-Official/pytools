@@ -4,9 +4,9 @@ strings; useful for generating representations of complex Python objects.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple, Union
 
-from gamma.common import AllTracker
+from gamma.common import AllTracker, to_tuple
 
 log = logging.getLogger(__name__)
 
@@ -14,17 +14,23 @@ __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
+    "AtomicExpression",
+    "ComplexExpression",
     "Literal",
     "Identifier",
     "BaseOperation",
+    "BaseInfixOperation",
     "Operation",
     "UnaryOperation",
     "BaseEnumeration",
     "Call",
+    "Index",
     "ListExpression",
     "TupleExpression",
     "SetExpression",
     "DictExpression",
+    "Attr",
+    "Lambda",
 ]
 
 __OPERATOR_PRECEDENCE_ORDER = (
@@ -43,7 +49,7 @@ __OPERATOR_PRECEDENCE_ORDER = (
     {"not x"},
     {"and"},
     {"or"},
-    {"lambda"},
+    {"lambda x"},
     {"=", ":"},
     {","},
 )
@@ -151,39 +157,11 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
                 }
             )
         elif isinstance(value, Iterable):
-            return Call(name=type(value).__name__, *_from_collection(value))
+            return Call(
+                callee=Identifier(type(value).__name__), *_from_collection(value)
+            )
         else:
             return Literal(value)
-
-    @property
-    def prefix(self) -> str:
-        """
-        The prefix of this expression
-        """
-        return ""
-
-    @property
-    def brackets(self) -> Optional[Tuple[str, str]]:
-        """
-        The brackets surrounding this expression's subexpressions.
-
-        A value of `None` indicates no brackets.
-        """
-        return None
-
-    @property
-    def infix(self) -> str:
-        """
-        The infix used to separate this expression's subexpressions.
-        """
-        return ""
-
-    @property
-    def subexpressions(self) -> Tuple["Expression", ...]:
-        """
-        The subexpressions of this expression.
-        """
-        return ()
 
     def to_expression(self) -> "Expression":
         """
@@ -257,8 +235,57 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __invert__(self) -> "UnaryOperation":
         return UnaryOperation("~", self)
 
+    def __call__(self, *args: Any, **kwargs: Any) -> "Call":
+        return Call(
+            callee=self,
+            *(Expression.from_value(arg) for arg in args),
+            **{k: Expression.from_value(v) for k, v in kwargs.items()},
+        )
 
-class Literal(Expression):
+    def __getitem__(self, *args: "Expression") -> "Index":
+        return Index(callee=self, *args)
+
+
+class AtomicExpression(Expression):
+    @property
+    @abstractmethod
+    def text(self) -> str:
+        pass
+
+
+class ComplexExpression(Expression):
+    @property
+    def prefix(self) -> Optional[Expression]:
+        """
+        The prefix of this expression
+        """
+        return None
+
+    @property
+    def brackets(self) -> Optional[Tuple[str, str]]:
+        """
+        The brackets surrounding this expression's subexpressions.
+
+        A value of `None` indicates no brackets.
+        """
+        return None
+
+    @property
+    def infix(self) -> str:
+        """
+        The infix used to separate this expression's subexpressions.
+        """
+        return ""
+
+    @property
+    def subexpressions(self) -> Tuple[Expression, ...]:
+        """
+        The subexpressions of this expression.
+        """
+        return ()
+
+
+class Literal(AtomicExpression):
     """
     A literal
     """
@@ -267,11 +294,11 @@ class Literal(Expression):
         self.value = value
 
     @property
-    def prefix(self) -> str:
+    def text(self) -> str:
         """[see superclass]"""
         return repr(self.value)
 
-    prefix.__doc__ = Expression.prefix.__doc__
+    text.__doc__ = AtomicExpression.text.__doc__
 
     def __eq__(self, other: "Literal") -> bool:
         return isinstance(other, type(self)) and other.value == self.value
@@ -280,7 +307,7 @@ class Literal(Expression):
         return hash((type(self), self.value))
 
 
-class Identifier(Expression):
+class Identifier(AtomicExpression):
     """
     An identifier
     """
@@ -291,14 +318,11 @@ class Identifier(Expression):
         self.name = name
 
     @property
-    def prefix(self) -> str:
+    def text(self) -> str:
         """[see superclass]"""
         return self.name
 
-    prefix.__doc__ = Expression.prefix.__doc__
-
-    def __call__(self, *args: Expression, **kwargs: Expression) -> "Call":
-        return Call(name=self.name, *args, **kwargs)
+    text.__doc__ = AtomicExpression.text.__doc__
 
     def __eq__(self, other: "Identifier") -> bool:
         return isinstance(other, type(self)) and other.name == self.name
@@ -307,7 +331,7 @@ class Identifier(Expression):
         return hash((type(self), self.name))
 
 
-class BaseOperation(Expression, metaclass=ABCMeta):
+class BaseOperation(ComplexExpression, metaclass=ABCMeta):
     """
     Abstract base class for operation expressions
     """
@@ -317,12 +341,6 @@ class BaseOperation(Expression, metaclass=ABCMeta):
             raise ValueError("operator must not contain whitespace")
         self.operator = operator
 
-    # noinspection PyMissingOrEmptyDocstring
-    def precedence(self) -> int:
-        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
-
-    precedence.__doc__ = Expression.precedence.__doc__
-
     def __eq__(self, other: "BaseOperation") -> bool:
         return isinstance(other, type(self)) and other.operator == self.operator
 
@@ -330,40 +348,56 @@ class BaseOperation(Expression, metaclass=ABCMeta):
         return hash((type(self), self.operator))
 
 
-class Operation(BaseOperation):
+class BaseInfixOperation(BaseOperation, metaclass=ABCMeta):
     """
-    A operation with at least two operands
+    Abstract base class for operation expressions with an infix operator
     """
-
-    def __init__(self, operator: str, operands: Iterable[Expression]):
-        super().__init__(operator=operator)
-        if not isinstance(operands, tuple):
-            operands = tuple(operands)
-        if len(operands) < 2:
-            raise ValueError("need to pass at least two operands")
-        if not all(isinstance(expression, Expression) for expression in operands):
-            raise ValueError("all operands must implement class Expression")
-
-        first_operand = operands[0]
-        if isinstance(first_operand, Operation) and first_operand.operator == operator:
-            # if first operand has the same operator, we flatten the operand
-            self.operands = (*first_operand.operands, *operands[1:])
-        else:
-            self.operands = operands
 
     @property
     def infix(self) -> str:
         """[see superclass]"""
         return self.operator
 
-    infix.__doc__ = Expression.infix.__doc__
+    infix.__doc__ = ComplexExpression.infix.__doc__
+
+    # noinspection PyMissingOrEmptyDocstring
+    def precedence(self) -> int:
+        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
+
+class Operation(BaseInfixOperation):
+    """
+    A operation with at least two operands
+    """
+
+    def __init__(
+        self, operator: str, operands: Union[Expression, Iterable[Expression]]
+    ):
+        super().__init__(operator=operator)
+        operands: Tuple[Expression, ...] = to_tuple(operands)
+        if len(operands) < 2:
+            raise ValueError("need to pass at least two operands")
+        if not all(isinstance(expression, Expression) for expression in operands):
+            raise ValueError("all operands must implement class Expression")
+
+        first_operand = operands[0]
+
+        # noinspection PyUnresolvedReferences
+        if isinstance(first_operand, Operation) and first_operand.operator == operator:
+            # if first operand has the same operator, we flatten the operand
+            # noinspection PyUnresolvedReferences
+            self.operands = (*first_operand.operands, *operands[1:])
+        else:
+            self.operands = operands
 
     @property
     def subexpressions(self) -> Tuple["Expression", ...]:
         """[see superclass]"""
         return self.operands
 
-    subexpressions.__doc__ = Expression.subexpressions.__doc__
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
     def __eq__(self, other: "Operation") -> bool:
         return super().__eq__(other) and self.operands == other.operands
@@ -385,18 +419,18 @@ class UnaryOperation(BaseOperation):
         self.operand = operand
 
     @property
-    def prefix(self) -> str:
+    def prefix(self) -> Expression:
         """[see superclass]"""
-        return self.operator
+        return Identifier(self.operator)
 
-    prefix.__doc__ = Expression.prefix.__doc__
+    prefix.__doc__ = ComplexExpression.prefix.__doc__
 
     @property
     def subexpressions(self) -> Tuple["Expression", ...]:
         """[see superclass]"""
         return (self.operand,)
 
-    subexpressions.__doc__ = Expression.subexpressions.__doc__
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
@@ -411,7 +445,7 @@ class UnaryOperation(BaseOperation):
         return hash((super().__hash__(), self.operand))
 
 
-class BaseEnumeration(Expression):
+class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
     """
     An enumeration of expressions, separated by commas
     """
@@ -421,49 +455,45 @@ class BaseEnumeration(Expression):
     def __init__(
         self,
         *,
+        prefix: Optional[Expression] = None,
         brackets: Tuple[str, str],
         elements: Iterable[Expression],
-        prefix: str = "",
     ) -> None:
-        if not isinstance(elements, tuple):
-            elements = tuple(elements)
-        if not all(isinstance(element, Expression) for element in elements):
-            raise ValueError("all elements must implement class Expression")
         self._prefix = prefix
         self._brackets = brackets
-        self.elements = elements
+        self.elements = to_tuple(elements, element_type=Expression)
 
     @property
-    def prefix(self) -> str:
+    def prefix(self) -> Expression:
         """[see superclass]"""
         return self._prefix
 
-    prefix.__doc__ = Expression.prefix.__doc__
+    prefix.__doc__ = ComplexExpression.prefix.__doc__
 
     @property
     def brackets(self) -> Tuple[str, str]:
         """[see superclass]"""
         return self._brackets
 
-    brackets.__doc__ = Expression.brackets.__doc__
+    brackets.__doc__ = ComplexExpression.brackets.__doc__
 
     @property
     def infix(self) -> str:
         """[see superclass]"""
         return ","
 
-    infix.__doc__ = Expression.infix.__doc__
+    infix.__doc__ = ComplexExpression.infix.__doc__
 
     @property
     def subexpressions(self) -> Tuple["Expression", ...]:
         """[see superclass]"""
         return self.elements
 
-    subexpressions.__doc__ = Expression.subexpressions.__doc__
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return self._PRECEDENCE
+        return BaseEnumeration._PRECEDENCE
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -479,7 +509,7 @@ class BaseEnumeration(Expression):
         return hash((super().__hash__(), self.prefix, self.brackets, self.elements))
 
 
-class _KeywordArgument(Expression):
+class _KeywordArgument(ComplexExpression):
     """
     A keyword argument, used by functions
     """
@@ -489,18 +519,18 @@ class _KeywordArgument(Expression):
         self.value = value
 
     @property
-    def prefix(self) -> str:
+    def prefix(self) -> Expression:
         """[see superclass]"""
-        return f"{self.name}="
+        return Identifier(f"{self.name}=")
 
-    prefix.__doc__ = Expression.prefix.__doc__
+    prefix.__doc__ = ComplexExpression.prefix.__doc__
 
     @property
     def subexpressions(self) -> Tuple["Expression", ...]:
         """[see superclass]"""
         return (self.value,)
 
-    subexpressions.__doc__ = Expression.subexpressions.__doc__
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
     def __eq__(self, other: "_KeywordArgument") -> bool:
         return (
@@ -513,9 +543,9 @@ class _KeywordArgument(Expression):
         return hash((super().__hash__(), self.name, self.value))
 
 
-class _DictEntry(BaseOperation):
+class _ColonPair(BaseInfixOperation):
     """
-    A keyword argument, used by functions
+    Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
     def __init__(self, key: Expression, value: Expression):
@@ -524,20 +554,13 @@ class _DictEntry(BaseOperation):
         self.value = value
 
     @property
-    def infix(self) -> str:
-        """[see superclass]"""
-        return self.operator
-
-    infix.__doc__ = Expression.infix.__doc__
-
-    @property
     def subexpressions(self) -> Tuple["Expression", ...]:
         """[see superclass]"""
         return self.key, self.value
 
-    subexpressions.__doc__ = Expression.subexpressions.__doc__
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
-    def __eq__(self, other: _KeywordArgument) -> bool:
+    def __eq__(self, other: "_ColonPair") -> bool:
         return (
             isinstance(other, type(self))
             and self.key == other.key
@@ -553,9 +576,9 @@ class Call(BaseEnumeration):
     A function invocation
     """
 
-    def __init__(self, name: str, *args: Expression, **kwargs: Expression):
+    def __init__(self, callee: Expression, *args: Expression, **kwargs: Expression):
         super().__init__(
-            prefix=name,
+            prefix=callee,
             brackets=("(", ")"),
             elements=(
                 *args,
@@ -566,13 +589,14 @@ class Call(BaseEnumeration):
             ),
         )
 
-    @property
-    def name(self) -> str:
-        """
-        the name of the function being called
-        :return: the name of the function being called
-        """
-        return self.prefix
+
+class Index(BaseEnumeration):
+    """
+    An indexing operation in the shape of `x[i]`
+    """
+
+    def __init__(self, callee: Expression, *args: Expression):
+        super().__init__(prefix=callee, brackets=("[", "]"), elements=args),
 
 
 class ListExpression(BaseEnumeration):
@@ -610,7 +634,43 @@ class DictExpression(BaseEnumeration):
     def __init__(self, entries: Dict[Expression, Expression]):
         super().__init__(
             brackets=("{", "}"),
-            elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
+            elements=tuple(_ColonPair(key, value) for key, value in entries.items()),
+        )
+
+
+class Attr(BaseInfixOperation):
+    """
+    The "dot" operation to reference an attribute of an object
+    """
+
+    def __init__(self, obj: Expression, attribute: Identifier) -> None:
+        super().__init__(operator=".")
+        self.obj = obj
+        self.attribute = attribute
+
+    @property
+    def subexpressions(self) -> Tuple[Expression, ...]:
+        """
+        [see superclass]
+        """
+        return self.obj, self.attribute
+
+    subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
+
+
+class Lambda(UnaryOperation):
+    """
+    A lambda expression
+    """
+
+    def __init__(
+        self, variables: Union[Identifier, Iterable[Identifier]], body: Expression
+    ):
+        super().__init__(
+            operator="lambda",
+            operand=_ColonPair(
+                key=Operation(operator=",", operands=variables), value=body
+            ),
         )
 
 
