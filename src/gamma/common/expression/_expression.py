@@ -373,7 +373,7 @@ class Operation(BaseInfixOperation):
         self, operator: str, operands: Union[Expression, Iterable[Expression]]
     ):
         super().__init__(operator=operator)
-        operands: Tuple[Expression, ...] = to_tuple(operands)
+        operands: Tuple[Expression, ...] = to_tuple(operands, element_type=Expression)
         if not operands:
             raise ValueError("need to pass at least one operand")
         if not all(isinstance(expression, Expression) for expression in operands):
@@ -458,7 +458,13 @@ class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
     ) -> None:
         self._prefix = prefix
         self._brackets = brackets
-        self.elements = (Operation(operator=",", operands=elements),)
+        elements = to_tuple(elements)  # no type check needed here, done in Operation
+        if not elements:
+            self.elements = ()
+        elif len(elements) == 1:
+            self.elements = to_tuple(elements, element_type=Expression)
+        else:
+            self.elements = (Operation(operator=",", operands=elements),)
 
     @property
     def prefix(self) -> Expression:

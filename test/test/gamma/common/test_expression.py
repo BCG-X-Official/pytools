@@ -101,6 +101,11 @@ def test_expression() -> None:
             Operation(operator="+", operands=(lit_5, lit_abc, ident_xx)),
             "5 + 'abc' + xx",
         ),
+        (Call(Identifier("func")), "func()"),
+        (ListExpression(elements=[]), "[]"),
+        (SetExpression(elements=[]), "{}"),
+        (TupleExpression(elements=[]), "()"),
+        (DictExpression(entries=dict()), "{}"),
     ]
 
     for expression, expected_str in expressions:
