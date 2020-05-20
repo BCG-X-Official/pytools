@@ -65,7 +65,9 @@ class TextualForm:
             return AtomicForm(expression)
         else:
             expression: ComplexExpression
-            return ComplexForm(expression, encapsulate=encapsulate)
+            return ComplexForm.from_complex_expression(
+                expression, encapsulate=encapsulate
+            )
 
     def to_text(self, config: FormattingConfig) -> str:
         """
@@ -167,8 +169,52 @@ class ComplexForm(TextualForm):
     __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
 
     def __init__(
-        self, expression: ComplexExpression, encapsulate: bool = False
+        self,
+        prefix: Optional[TextualForm] = None,
+        brackets: Optional[Tuple[str, str]] = None,
+        infix: str = "",
+        infix_padding: str = PADDING_BOTH,
+        subforms: Tuple[TextualForm, ...] = (),
     ) -> None:
+        """
+        :param prefix: the prefix form
+        :param brackets: the brackets surrounding the subform(s) (optional)
+        :param infix: the infix operator separating the subforms
+        :param infix_padding: the padding mode for the infix operator
+        :param subforms: the subforms
+        """
+        self.prefix = prefix
+        self.brackets = brackets
+        self.infix = infix
+        self.infix_padding = infix_padding
+        self.subforms = subforms
+        self.__len = (
+            (len(prefix) if prefix else 0)
+            + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
+            + sum(len(inner_representation) for inner_representation in subforms)
+            + max(len(subforms) - 1, 0)
+            * (len(infix) + (ComplexForm.__PADDING_SPACES[infix_padding]))
+        )
+
+    @staticmethod
+    def from_complex_expression(
+        expression: ComplexExpression, encapsulate: bool = False
+    ) -> "ComplexForm":
+        """
+        Create a complex form from the given complex expression
+        :param expression:
+        :param encapsulate:
+        :return:
+        """
+
+        if encapsulate and expression.prefix:
+            return ComplexForm(
+                brackets=("(", ")"),
+                subforms=(
+                    ComplexForm.from_complex_expression(expression, encapsulate=False),
+                ),
+            )
+
         subexpressions = expression.subexpressions
 
         subforms = tuple(
@@ -196,7 +242,7 @@ class ComplexForm(TextualForm):
             brackets = first_subform.brackets
             infix = first_subform.infix
             infix_padding = first_subform.infix_padding
-            subforms = first_subform.inner
+            subforms = first_subform.subforms
 
         else:
             infix = expression.infix
@@ -208,26 +254,21 @@ class ComplexForm(TextualForm):
                 else ComplexForm.PADDING_BOTH
             )
 
-        if encapsulate and not brackets:
-            brackets = ("(", ")")
-
-        self.prefix = prefix = (
-            TextualForm.from_expression(expression.prefix)
+        prefix = (
+            TextualForm.from_expression(expression.prefix, encapsulate=True)
             if expression.prefix
             else None
         )
 
-        self.brackets = brackets
-        self.infix = infix
-        self.infix_padding = infix_padding
-        self.inner = subforms
+        if encapsulate and not brackets:
+            brackets = ("(", ")")
 
-        self.__len = (
-            (len(prefix) if prefix else 0)
-            + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
-            + sum(len(inner_representation) for inner_representation in subforms)
-            + max(len(subforms) - 1, 0)
-            * (len(infix) + (ComplexForm.__PADDING_SPACES[infix_padding]))
+        return ComplexForm(
+            prefix=prefix,
+            brackets=brackets,
+            infix=infix,
+            infix_padding=infix_padding,
+            subforms=subforms,
         )
 
     @property
@@ -286,7 +327,7 @@ class ComplexForm(TextualForm):
             infix = ""
 
         inner = infix.join(
-            subexpression_form._to_single_line() for subexpression_form in self.inner
+            subexpression_form._to_single_line() for subexpression_form in self.subforms
         )
 
         line_inner = f"{self.opening_bracket}{inner}{self.closing_bracket}"
@@ -315,7 +356,7 @@ class ComplexForm(TextualForm):
         result: List[IndentedLine]
 
         prefix = self.prefix
-        inner: Tuple[ComplexForm, ...] = self.inner
+        inner: Tuple[TextualForm, ...] = self.subforms
 
         # we add parentheses if there is no existing bracketing, and either
         # - there is a prefix, or

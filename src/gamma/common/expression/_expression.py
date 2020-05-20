@@ -37,7 +37,7 @@ __OPERATOR_PRECEDENCE_ORDER = (
     {"."},
     {"**"},
     {"~"},
-    {"+ x", "- x"},
+    {"+x", "-x"},
     {"*", "/", "//", "%"},
     {"+", "-"},
     {"<<", ">>"},
@@ -236,11 +236,8 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return UnaryOperation("~", self)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
-        return Call(
-            callee=self,
-            *(Expression.from_value(arg) for arg in args),
-            **{k: Expression.from_value(v) for k, v in kwargs.items()},
-        )
+        _items = {k: Expression.from_value(v) for k, v in kwargs.items()}
+        return Call(self, *(Expression.from_value(arg) for arg in args), **_items)
 
     def __getitem__(self, *args: "Expression") -> "Index":
         return Index(callee=self, *args)
@@ -377,8 +374,8 @@ class Operation(BaseInfixOperation):
     ):
         super().__init__(operator=operator)
         operands: Tuple[Expression, ...] = to_tuple(operands)
-        if len(operands) < 2:
-            raise ValueError("need to pass at least two operands")
+        if not operands:
+            raise ValueError("need to pass at least one operand")
         if not all(isinstance(expression, Expression) for expression in operands):
             raise ValueError("all operands must implement class Expression")
 
@@ -434,7 +431,7 @@ class UnaryOperation(BaseOperation):
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return OPERATOR_PRECEDENCE.get(f"{self.operator} x", MAX_PRECEDENCE)
+        return OPERATOR_PRECEDENCE.get(f"{self.operator}x", MAX_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -450,7 +447,7 @@ class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
     An enumeration of expressions, separated by commas
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[","]
+    _PRECEDENCE = -1
 
     def __init__(
         self,
@@ -461,7 +458,7 @@ class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
     ) -> None:
         self._prefix = prefix
         self._brackets = brackets
-        self.elements = to_tuple(elements, element_type=Expression)
+        self.elements = (Operation(operator=",", operands=elements),)
 
     @property
     def prefix(self) -> Expression:
@@ -490,12 +487,6 @@ class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
         return self.elements
 
     subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
-
-    # noinspection PyMissingOrEmptyDocstring
-    def precedence(self) -> int:
-        return BaseEnumeration._PRECEDENCE
-
-    precedence.__doc__ = Expression.precedence.__doc__
 
     def __eq__(self, other: "BaseEnumeration") -> bool:
         return (
@@ -663,14 +654,15 @@ class Lambda(UnaryOperation):
     A lambda expression
     """
 
-    def __init__(
-        self, variables: Union[Identifier, Iterable[Identifier]], body: Expression
-    ):
+    def __init__(self, args: Union[Identifier, Iterable[Identifier]], body: Expression):
+        if isinstance(args, Identifier):
+            arg_list = args
+        else:
+            arg_list = Operation(
+                operator=",", operands=to_tuple(args, element_type=Identifier)
+            )
         super().__init__(
-            operator="lambda",
-            operand=_ColonPair(
-                key=Operation(operator=",", operands=variables), value=body
-            ),
+            operator="lambda ", operand=_ColonPair(key=arg_list, value=body)
         )
 
 
