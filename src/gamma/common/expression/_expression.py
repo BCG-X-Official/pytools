@@ -62,7 +62,8 @@ OPERATOR_PRECEDENCE = {
     for operator in operators
 }
 
-MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
+MAX_PRECEDENCE = -1
+MIN_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 
 __tracker = AllTracker((globals()))
@@ -254,7 +255,7 @@ class AtomicExpression(Expression, metaclass=ABCMeta):
 
     def precedence(self) -> int:
         """[see superclass]"""
-        return -1
+        return MAX_PRECEDENCE
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -368,7 +369,7 @@ class BaseInfixOperation(BaseOperation, metaclass=ABCMeta):
 
     def precedence(self) -> int:
         """[see superclass]"""
-        return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
+        return OPERATOR_PRECEDENCE.get(self.operator, MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -440,7 +441,7 @@ class UnaryOperation(BaseOperation):
 
     # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
-        return OPERATOR_PRECEDENCE.get(f"{self.operator}x", MAX_PRECEDENCE)
+        return OPERATOR_PRECEDENCE.get(f"{self.operator}x", MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -538,7 +539,7 @@ class _KeywordArgument(ComplexExpression):
 
     def precedence(self) -> int:
         """[see superclass]"""
-        return -1
+        return MAX_PRECEDENCE
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -639,7 +640,7 @@ class BaseCollection(BaseEnumeration, metaclass=ABCMeta):
 
     def precedence(self) -> int:
         """[see superclass]"""
-        return -1
+        return MAX_PRECEDENCE
 
     precedence.__doc__ = Expression.precedence.__doc__
 
