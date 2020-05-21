@@ -255,7 +255,10 @@ class ComplexForm(TextualForm):
             )
 
         prefix = (
-            TextualForm.from_expression(expression.prefix, encapsulate=True)
+            TextualForm.from_expression(
+                expression.prefix,
+                encapsulate=expression.prefix.precedence() > expression.precedence(),
+            )
             if expression.prefix
             else None
         )

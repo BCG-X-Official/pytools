@@ -23,8 +23,10 @@ __all__ = [
     "Operation",
     "UnaryOperation",
     "BaseEnumeration",
+    "BaseInvocation",
     "Call",
     "Index",
+    "BaseCollection",
     "ListExpression",
     "TupleExpression",
     "SetExpression",
@@ -170,12 +172,13 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         """
         return self
 
+    @abstractmethod
     def precedence(self) -> int:
         """
         :return: the precedence of this expression, used to determine the need for \
             parentheses
         """
-        return -1
+        pass
 
     @abstractmethod
     def __eq__(self, other) -> bool:
@@ -243,14 +246,20 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return Index(callee=self, *args)
 
 
-class AtomicExpression(Expression):
+class AtomicExpression(Expression, metaclass=ABCMeta):
     @property
     @abstractmethod
     def text(self) -> str:
         pass
 
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return -1
 
-class ComplexExpression(Expression):
+    precedence.__doc__ = Expression.precedence.__doc__
+
+
+class ComplexExpression(Expression, metaclass=ABCMeta):
     @property
     def prefix(self) -> Optional[Expression]:
         """
@@ -357,8 +366,8 @@ class BaseInfixOperation(BaseOperation, metaclass=ABCMeta):
 
     infix.__doc__ = ComplexExpression.infix.__doc__
 
-    # noinspection PyMissingOrEmptyDocstring
     def precedence(self) -> int:
+        """[see superclass]"""
         return OPERATOR_PRECEDENCE.get(self.operator, MAX_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
@@ -447,8 +456,6 @@ class BaseEnumeration(ComplexExpression, metaclass=ABCMeta):
     An enumeration of expressions, separated by commas
     """
 
-    _PRECEDENCE = -1
-
     def __init__(
         self,
         *,
@@ -529,6 +536,12 @@ class _KeywordArgument(ComplexExpression):
 
     subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return -1
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
     def __eq__(self, other: "_KeywordArgument") -> bool:
         return (
             isinstance(other, type(self))
@@ -568,16 +581,39 @@ class _ColonPair(BaseInfixOperation):
         return hash((super().__hash__(), self.key, self.value))
 
 
-class Call(BaseEnumeration):
+class BaseInvocation(BaseEnumeration):
+    """
+    An invocation in the shape of `<expression>(<expression>)` or
+    `<expression>[<expression>]`
+    """
+
+    _PRECEDENCE = OPERATOR_PRECEDENCE["."]
+
+    def __init__(
+        self,
+        callee: Expression,
+        brackets: Tuple[str, str],
+        args: Tuple[Expression, ...],
+    ):
+        super().__init__(prefix=callee, brackets=brackets, elements=args)
+
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return BaseInvocation._PRECEDENCE
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
+
+class Call(BaseInvocation):
     """
     A function invocation
     """
 
     def __init__(self, callee: Expression, *args: Expression, **kwargs: Expression):
         super().__init__(
-            prefix=callee,
+            callee=callee,
             brackets=("(", ")"),
-            elements=(
+            args=(
                 *args,
                 *(
                     _KeywordArgument(name, expression)
@@ -587,16 +623,28 @@ class Call(BaseEnumeration):
         )
 
 
-class Index(BaseEnumeration):
+class Index(BaseInvocation):
     """
     An indexing operation in the shape of `x[i]`
     """
 
     def __init__(self, callee: Expression, *args: Expression):
-        super().__init__(prefix=callee, brackets=("[", "]"), elements=args),
+        super().__init__(callee=callee, brackets=("[", "]"), args=args),
 
 
-class ListExpression(BaseEnumeration):
+class BaseCollection(BaseEnumeration, metaclass=ABCMeta):
+    """
+    A collection literal, e.g. a list, set, tuple, or dictionary
+    """
+
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return -1
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
+
+class ListExpression(BaseCollection):
     """
     A list of expressions
     """
@@ -605,7 +653,7 @@ class ListExpression(BaseEnumeration):
         super().__init__(brackets=("[", "]"), elements=elements)
 
 
-class TupleExpression(BaseEnumeration):
+class TupleExpression(BaseCollection):
     """
     A list of expressions
     """
@@ -614,7 +662,7 @@ class TupleExpression(BaseEnumeration):
         super().__init__(brackets=("(", ")"), elements=elements)
 
 
-class SetExpression(BaseEnumeration):
+class SetExpression(BaseCollection):
     """
     A list of expressions
     """
@@ -623,7 +671,7 @@ class SetExpression(BaseEnumeration):
         super().__init__(brackets=("{", "}"), elements=elements)
 
 
-class DictExpression(BaseEnumeration):
+class DictExpression(BaseCollection):
     """
     A list of expressions
     """
