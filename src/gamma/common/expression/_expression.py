@@ -173,6 +173,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         """
         return self
 
+    @property
     @abstractmethod
     def precedence(self) -> int:
         """
@@ -253,6 +254,7 @@ class AtomicExpression(Expression, metaclass=ABCMeta):
     def text(self) -> str:
         pass
 
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return MAX_PRECEDENCE
@@ -367,6 +369,7 @@ class BaseInfixOperation(BaseOperation, metaclass=ABCMeta):
 
     infix.__doc__ = ComplexExpression.infix.__doc__
 
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return OPERATOR_PRECEDENCE.get(self.operator, MIN_PRECEDENCE)
@@ -439,8 +442,9 @@ class UnaryOperation(BaseOperation):
 
     subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
-    # noinspection PyMissingOrEmptyDocstring
+    @property
     def precedence(self) -> int:
+        """[see superclass]"""
         return OPERATOR_PRECEDENCE.get(f"{self.operator}x", MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
@@ -537,6 +541,7 @@ class _KeywordArgument(ComplexExpression):
 
     subexpressions.__doc__ = ComplexExpression.subexpressions.__doc__
 
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return MAX_PRECEDENCE
@@ -598,6 +603,7 @@ class BaseInvocation(BaseEnumeration):
     ):
         super().__init__(prefix=callee, brackets=brackets, elements=args)
 
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return BaseInvocation._PRECEDENCE
@@ -638,6 +644,7 @@ class BaseCollection(BaseEnumeration, metaclass=ABCMeta):
     A collection literal, e.g. a list, set, tuple, or dictionary
     """
 
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return MAX_PRECEDENCE

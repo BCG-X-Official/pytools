@@ -222,8 +222,8 @@ class ComplexForm(TextualForm):
                 subexpression,
                 encapsulate=(
                     len(subexpressions) > 1
-                    and subexpression.precedence()
-                    > expression.precedence() - (0 if pos == 0 else 1)
+                    and subexpression.precedence
+                    > expression.precedence - (0 if pos == 0 else 1)
                 ),
             )
             for pos, subexpression in enumerate(subexpressions)
@@ -257,7 +257,7 @@ class ComplexForm(TextualForm):
         prefix = (
             TextualForm.from_expression(
                 expression.prefix,
-                encapsulate=expression.prefix.precedence() > expression.precedence(),
+                encapsulate=expression.prefix.precedence > expression.precedence,
             )
             if expression.prefix
             else None
