@@ -205,6 +205,18 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
             + trailing_characters
             > config.max_width
         ):
+            if indent == 0 and not self.brackets:
+                # we add parentheses if we have multiple lines at indent level 0,
+                # and there is no existing bracketing
+                return BracketedForm(
+                    brackets=("(", ")"), subform=self
+                )._to_multiple_lines(
+                    config=config,
+                    indent=0,
+                    leading_characters=leading_characters,
+                    trailing_characters=trailing_characters,
+                )
+
             return self._to_multiple_lines(
                 config=config,
                 indent=indent,
@@ -466,16 +478,6 @@ class InfixForm(ComplexForm):
         :param trailing_characters: trailing space to reserve in last line
         :return: resulting lines
         """
-
-        if indent == 0:
-            # we add parentheses if we have multiple lines at indent level 0,
-            # and there is no existing bracketing
-            return BracketedForm(brackets=("(", ")"), subform=self)._to_multiple_lines(
-                config=config,
-                indent=0,
-                leading_characters=leading_characters,
-                trailing_characters=trailing_characters,
-            )
 
         subforms: Tuple[TextualForm, ...] = self.subforms
         result: List[IndentedLine] = []
