@@ -39,10 +39,9 @@ def test_expression_formatting() -> None:
     )
 
     expr_1 = e * (e + e + e - e * e)
-    repr_1 = TextualForm.from_expression(expr_1)
-    assert len(repr_1) == len(
-        PythonExpressionFormatter(single_line=True).to_text(expr_1)
-    )
+    form_1 = TextualForm.from_expression(expr_1)
+    repr_1 = PythonExpressionFormatter(single_line=True).to_text(expr_1)
+    assert len(form_1) == len(repr_1), f"length of {repr_1}"
 
     assert (
         str(expr_1)
@@ -71,8 +70,10 @@ def test_expression_formatting() -> None:
     param=(
         f((1 | 2) >> 'x' % x, abc=-5),
         f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5),
-        f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
-        + f((1 | 2) >> 'x' % x, abc=-5)
+        (
+            f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+            + f((1 | 2) >> 'x' % x, abc=-5)
+        )
     )
 )"""
     )
