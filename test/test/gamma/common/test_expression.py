@@ -34,7 +34,7 @@ def test_expression_formatting() -> None:
 
     e = Call(
         Identifier("f"),
-        (Literal(1) | Literal(2)) >> Literal("x") % Identifier("x"),
+        (1 | Literal(2)) >> Literal("x") % Identifier("x"),
         abc=-Literal(5),
     )
 
@@ -63,7 +63,7 @@ def test_expression_formatting() -> None:
 
     # expression 3
 
-    expr_3 = Call(Identifier("g"), param=Expression.from_value((e, e + e, e * e + e)))
+    expr_3 = Identifier("g")(param=(e, e + e, e * e + e))
     assert (
         repr(expr_3)
         == """g(
@@ -78,7 +78,7 @@ def test_expression_formatting() -> None:
 )"""
     )
 
-    expr_4 = Lambda(args=Identifier("x"), body=e)(Literal(5))
+    expr_4 = Lambda(params=Identifier("x"), body=e)(Literal(5))
     assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
 
 
