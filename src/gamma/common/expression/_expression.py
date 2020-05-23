@@ -4,7 +4,7 @@ strings; useful for generating representations of complex Python objects.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Generic, Iterable, Optional, Tuple, TypeVar, Union
+from typing import Any, Generic, Iterable, Mapping, Optional, Tuple, TypeVar, Union
 
 from gamma.common import AllTracker, to_tuple
 
@@ -20,19 +20,20 @@ __all__ = [
     "EPSILON",
     "BaseOperation",
     "PrefixExpression",
+    "BasePrefixExpression",
     "UnaryOperation",
     "BaseInvocation",
     "Call",
     "Index",
     "InfixExpression",
     "Operation",
+    "Attr",
     "BracketedExpression",
     "CollectionExpression",
     "ListExpression",
     "TupleExpression",
     "SetExpression",
     "DictExpression",
-    "Attr",
     "Lambda",
 ]
 
@@ -192,46 +193,87 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __hash__(self) -> int:
         pass
 
-    def __add__(self, other: "Expression") -> "Operation":
+    def __add__(self, other: Any) -> "Operation":
         return Operation("+", (self, other))
 
-    def __sub__(self, other: "Expression") -> "Operation":
+    def __sub__(self, other: Any) -> "Operation":
         return Operation("-", (self, other))
 
-    def __mul__(self, other: "Expression") -> "Operation":
+    def __mul__(self, other: Any) -> "Operation":
         return Operation("*", (self, other))
 
-    def __matmul__(self, other: "Expression") -> "Operation":
+    def __matmul__(self, other: Any) -> "Operation":
         return Operation("@", (self, other))
 
-    def __truediv__(self, other: "Expression") -> "Operation":
+    def __truediv__(self, other: Any) -> "Operation":
         return Operation("/", (self, other))
 
-    def __floordiv__(self, other: "Expression") -> "Operation":
+    def __floordiv__(self, other: Any) -> "Operation":
         return Operation("//", (self, other))
 
-    def __mod__(self, other: "Expression") -> "Operation":
+    def __mod__(self, other: Any) -> "Operation":
         return Operation("%", (self, other))
 
-    def __pow__(self, power, modulo=None) -> "Operation":
+    def __pow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
         return Operation("**", (self, power))
 
-    def __lshift__(self, other: "Expression") -> "Operation":
+    def __lshift__(self, other: Any) -> "Operation":
         return Operation("<<", (self, other))
 
-    def __rshift__(self, other: "Expression") -> "Operation":
+    def __rshift__(self, other: Any) -> "Operation":
         return Operation(">>", (self, other))
 
-    def __and__(self, other: "Expression") -> "Operation":
+    def __and__(self, other: Any) -> "Operation":
         return Operation("&", (self, other))
 
-    def __xor__(self, other: "Expression") -> "Operation":
+    def __xor__(self, other: Any) -> "Operation":
         return Operation("^", (self, other))
 
-    def __or__(self, other: "Expression") -> "Operation":
+    def __or__(self, other: Any) -> "Operation":
         return Operation("|", (self, other))
+
+    def __radd__(self, other: Any) -> "Operation":
+        return Operation("+", (other, self))
+
+    def __rsub__(self, other: Any) -> "Operation":
+        return Operation("-", (other, self))
+
+    def __rmul__(self, other: Any) -> "Operation":
+        return Operation("*", (other, self))
+
+    def __rmatmul__(self, other: Any) -> "Operation":
+        return Operation("@", (other, self))
+
+    def __rtruediv__(self, other: Any) -> "Operation":
+        return Operation("/", (other, self))
+
+    def __rfloordiv__(self, other: Any) -> "Operation":
+        return Operation("//", (other, self))
+
+    def __rmod__(self, other: Any) -> "Operation":
+        return Operation("%", (other, self))
+
+    def __rpow__(self, power: Any, modulo=None) -> "Operation":
+        if modulo is not None:
+            raise NotImplementedError("modulo is not supported")
+        return Operation("**", (power, self))
+
+    def __rlshift__(self, other: Any) -> "Operation":
+        return Operation("<<", (other, self))
+
+    def __rrshift__(self, other: Any) -> "Operation":
+        return Operation(">>", (other, self))
+
+    def __rand__(self, other: Any) -> "Operation":
+        return Operation("&", (other, self))
+
+    def __rxor__(self, other: Any) -> "Operation":
+        return Operation("^", (other, self))
+
+    def __ror__(self, other: Any) -> "Operation":
+        return Operation("|", (other, self))
 
     def __neg__(self) -> "UnaryOperation":
         return UnaryOperation("-", self)
@@ -246,7 +288,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         _items = {k: Expression.from_value(v) for k, v in kwargs.items()}
         return Call(self, *(Expression.from_value(arg) for arg in args), **_items)
 
-    def __getitem__(self, *args: "Expression") -> "Index":
+    def __getitem__(self, *args: Any) -> "Index":
         return Index(callee=self, *args)
 
 
@@ -435,31 +477,38 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         return hash((type(self), self.prefix, self.subexpression))
 
 
-class UnaryOperation(PrefixExpression, BaseOperation, metaclass=ABCMeta):
+class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     """
-    A unary operation
+    Base implementation for prefix expressions
     """
 
-    def __init__(self, operator: str, operand: Expression):
-        if not isinstance(operand, Expression):
-            raise ValueError("operand must implement class Expression")
-
-        self._operator = operator
-        self.operand = operand
+    def __init__(self, prefix: Any, subexpression: Any):
+        self._prefix = Expression.from_value(prefix)
+        self._subexpression = Expression.from_value(subexpression)
 
     @property
     def prefix(self) -> Expression:
         """[see superclass]"""
-        return Identifier(self.operator)
+        return self._prefix
 
     prefix.__doc__ = PrefixExpression.prefix.__doc__
 
     @property
     def subexpression(self) -> Expression:
         """[see superclass]"""
-        return self.operand
+        return self._subexpression
 
     subexpression.__doc__ = PrefixExpression.subexpression.__doc__
+
+
+class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
+    """
+    A unary operation
+    """
+
+    def __init__(self, operator: str, operand: Any):
+        super().__init__(prefix=Identifier(operator), subexpression=operand)
+        self._operator = operator
 
     @property
     def operator(self) -> str:
@@ -471,35 +520,35 @@ class UnaryOperation(PrefixExpression, BaseOperation, metaclass=ABCMeta):
     @property
     def operands(self) -> Tuple[Expression, ...]:
         """[see superclass]"""
-        return (self.operand,)
+        return (self.subexpression,)
 
     operator.__doc__ = BaseOperation.operator.__doc__
 
     @property
     def precedence(self) -> int:
         """[see superclass]"""
-        return OPERATOR_PRECEDENCE.get(f"{self.operator}x", MIN_PRECEDENCE)
+        return OPERATOR_PRECEDENCE.get(f"{self._operator}x", MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
 
-class _KeywordArgument(PrefixExpression):
+class _KeywordArgument(BasePrefixExpression):
     """
     A keyword argument, used by functions
     """
 
     _PRECEDENCE = OPERATOR_PRECEDENCE["="]
 
-    def __init__(self, name: str, value: Expression):
-        self.name = name
-        self.value = value
+    def __init__(self, name: str, value: Any):
+        super().__init__(prefix=Identifier(name), subexpression=value)
+        self._name = name
 
     @property
-    def prefix(self) -> Expression:
-        """[see superclass]"""
-        return Identifier(name=self.name)
-
-    prefix.__doc__ = PrefixExpression.prefix.__doc__
+    def name(self) -> str:
+        """
+        The name of this keyword argument
+        """
+        return self._name
 
     @property
     def separator(self) -> str:
@@ -509,11 +558,11 @@ class _KeywordArgument(PrefixExpression):
     separator.__doc__ = PrefixExpression.separator.__doc__
 
     @property
-    def subexpression(self) -> Expression:
-        """[see superclass]"""
-        return self.value
-
-    subexpression.__doc__ = PrefixExpression.subexpression.__doc__
+    def value(self) -> Expression:
+        """
+        The name of this keyword argument
+        """
+        return self.subexpression
 
     @property
     def precedence(self) -> int:
@@ -524,23 +573,22 @@ class _KeywordArgument(PrefixExpression):
 
 
 # noinspection DuplicatedCode
-class _DictEntry(PrefixExpression):
+class _DictEntry(BasePrefixExpression):
     """
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
     _PRECEDENCE = OPERATOR_PRECEDENCE[":"]
 
-    def __init__(self, key: Expression, value: Expression):
-        self.key = key
-        self.value = value
+    def __init__(self, key: Any, value: Any):
+        super().__init__(prefix=key, subexpression=value)
 
     @property
-    def prefix(self) -> Expression:
-        """[see superclass]"""
-        return self.key
-
-    prefix.__doc__ = PrefixExpression.prefix.__doc__
+    def key(self) -> Expression:
+        """
+        The key of this dictionary entry
+        """
+        return self.prefix
 
     @property
     def separator(self) -> str:
@@ -550,11 +598,11 @@ class _DictEntry(PrefixExpression):
     separator.__doc__ = PrefixExpression.separator.__doc__
 
     @property
-    def subexpression(self) -> Expression:
-        """[see superclass]"""
-        return self.value
-
-    subexpression.__doc__ = PrefixExpression.subexpression.__doc__
+    def value(self) -> Expression:
+        """
+        The value of this dictionary entry
+        """
+        return self.subexpression
 
     @property
     def precedence(self) -> int:
@@ -572,13 +620,8 @@ class BaseInvocation(PrefixExpression):
 
     _PRECEDENCE = OPERATOR_PRECEDENCE["."]
 
-    def __init__(
-        self,
-        callee: Expression,
-        brackets: Tuple[str, str],
-        args: Tuple[Expression, ...],
-    ):
-        self.callee = callee
+    def __init__(self, callee: Any, brackets: Tuple[str, str], args: Tuple[Any, ...]):
+        self.callee = Expression.from_value(callee)
         self.brackets = brackets
         self.invocation = _InvocationExpression(brackets=brackets, args=args)
 
@@ -616,7 +659,7 @@ class Call(BaseInvocation):
     A function invocation
     """
 
-    def __init__(self, callee: Expression, *args: Expression, **kwargs: Expression):
+    def __init__(self, callee: Any, *args: Any, **kwargs: Any):
         super().__init__(
             callee=callee,
             brackets=("(", ")"),
@@ -635,7 +678,7 @@ class Index(BaseInvocation):
     An indexing operation in the shape of `x[i]`
     """
 
-    def __init__(self, callee: Expression, *args: Expression):
+    def __init__(self, callee: Any, *args: Any):
         super().__init__(callee=callee, brackets=("[", "]"), args=args),
 
 
@@ -682,12 +725,13 @@ class Operation(InfixExpression, BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(
-        self, operator: str, operands: Union[Expression, Iterable[Expression]]
-    ):
-        operands: Tuple[Expression, ...] = to_tuple(operands, element_type=Expression)
+    def __init__(self, operator: str, operands: Any):
+
+        operands = to_tuple(operands)
         if not operands:
             raise ValueError("operation requires at least one operand")
+
+        operands = tuple(Expression.from_value(operand) for operand in operands)
 
         first_operand = operands[0]
 
@@ -734,6 +778,19 @@ class Operation(InfixExpression, BaseOperation):
         return OPERATOR_PRECEDENCE.get(self.infix, MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
+
+
+class Attr(Operation):
+    """
+    The "dot" operation to reference an attribute of an object
+    """
+
+    def __init__(self, obj: Any, attribute: Union[Identifier, str]) -> None:
+        if isinstance(attribute, str):
+            attribute = Identifier(attribute)
+        elif not isinstance(attribute, Identifier):
+            raise TypeError("arg attribute must be a string or an Identifier")
+        super().__init__(operator=".", operands=(obj, attribute))
 
 
 #
@@ -785,10 +842,10 @@ class CollectionExpression(BracketedExpression):
     A collection literal, e.g. a list, set, tuple, or dictionary
     """
 
-    def __init__(
-        self, *, brackets: Tuple[str, str], elements: Iterable[Expression]
-    ) -> None:
-        elements = to_tuple(elements)  # no type check needed here, done in Operation
+    def __init__(self, *, brackets: Tuple[str, str], elements: Iterable[Any]) -> None:
+        elements = tuple(
+            Expression.from_value(element) for element in to_tuple(elements)
+        )
 
         subexpression: Expression
         if not elements:
@@ -822,7 +879,7 @@ class ListExpression(CollectionExpression):
     A list of expressions
     """
 
-    def __init__(self, elements: Iterable[Expression]):
+    def __init__(self, elements: Iterable[Any]):
         super().__init__(brackets=("[", "]"), elements=elements)
 
 
@@ -831,7 +888,7 @@ class TupleExpression(CollectionExpression):
     A list of expressions
     """
 
-    def __init__(self, elements: Iterable[Expression]):
+    def __init__(self, elements: Iterable[Any]):
         super().__init__(brackets=("(", ")"), elements=elements)
 
 
@@ -840,7 +897,7 @@ class _InvocationExpression(CollectionExpression):
     A list of expressions
     """
 
-    def __init__(self, brackets: Tuple[str, str], args: Iterable[Expression]):
+    def __init__(self, brackets: Tuple[str, str], args: Iterable[Any]):
         super().__init__(brackets=brackets, elements=args)
 
 
@@ -849,7 +906,7 @@ class SetExpression(CollectionExpression):
     A list of expressions
     """
 
-    def __init__(self, elements: Iterable[Expression]):
+    def __init__(self, elements: Iterable[Any]):
         super().__init__(brackets=("{", "}"), elements=elements)
 
 
@@ -858,40 +915,29 @@ class DictExpression(CollectionExpression):
     A list of expressions
     """
 
-    def __init__(self, entries: Dict[Expression, Expression]):
+    def __init__(self, entries: Mapping[Any, Any]):
         super().__init__(
             brackets=("{", "}"),
             elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
         )
 
 
-class Attr(Operation):
-    """
-    The "dot" operation to reference an attribute of an object
-    """
-
-    def __init__(self, obj: Expression, attribute: Identifier) -> None:
-        super().__init__(operator=".", operands=(obj, attribute))
-
-
-# noinspection DuplicatedCode
-class _LambdaColon(PrefixExpression):
+class _LambdaColon(BasePrefixExpression):
     """
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
     _PRECEDENCE = OPERATOR_PRECEDENCE["lambda x"]
 
-    def __init__(self, args: Expression, body: Expression):
-        self.args = args
-        self.body = body
+    def __init__(self, params: Any, body: Any):
+        super().__init__(prefix=params, subexpression=body)
 
     @property
-    def prefix(self) -> Expression:
-        """[see superclass]"""
-        return self.args
-
-    prefix.__doc__ = PrefixExpression.prefix.__doc__
+    def params(self) -> Expression:
+        """
+        The parameters of the lambda expression
+        """
+        return self.prefix
 
     @property
     def separator(self) -> str:
@@ -901,11 +947,11 @@ class _LambdaColon(PrefixExpression):
     separator.__doc__ = PrefixExpression.separator.__doc__
 
     @property
-    def subexpression(self) -> Expression:
-        """[see superclass]"""
-        return self.body
-
-    subexpression.__doc__ = PrefixExpression.subexpression.__doc__
+    def body(self) -> Expression:
+        """
+        The body of the lambda expression
+        """
+        return self.subexpression
 
     @property
     def precedence(self) -> int:
@@ -920,18 +966,32 @@ class Lambda(UnaryOperation):
     A lambda expression
     """
 
-    def __init__(self, args: Union[Identifier, Iterable[Identifier]], body: Expression):
-        args = to_tuple(args, element_type=Identifier)
+    def __init__(
+        self,
+        params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
+        body: Expression,
+    ):
+        params = to_tuple(params)
 
-        if not args:
+        def _to_identifier(param: Union[str, Identifier]) -> Identifier:
+            if isinstance(param, str):
+                return Identifier(param)
+            elif isinstance(param, Identifier):
+                return param
+            else:
+                raise TypeError("arg params may only contain strings and Identifiers")
+
+        params = tuple(_to_identifier(param) for param in params)
+
+        if not params:
             arg_list = EPSILON
-        elif len(args) == 1:
-            arg_list = args[0]
+        elif len(params) == 1:
+            arg_list = params[0]
         else:
-            arg_list = Operation(operator=",", operands=args)
+            arg_list = Operation(operator=",", operands=params)
 
         super().__init__(
-            operator="lambda ", operand=_LambdaColon(args=arg_list, body=body)
+            operator="lambda ", operand=_LambdaColon(params=arg_list, body=body)
         )
 
 
