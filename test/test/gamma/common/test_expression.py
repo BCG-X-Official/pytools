@@ -110,7 +110,7 @@ def test_expression() -> None:
 
     for expression, expected_str in expressions:
         representation = TextualForm.from_expression(expression)
-        assert len(representation) == len(expected_str)
+        assert len(representation) == len(expected_str), f"length of {expected_str}"
         assert str(representation) == expected_str
         assert len(
             PythonExpressionFormatter(single_line=True).to_text(expression)

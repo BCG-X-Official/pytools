@@ -3,15 +3,17 @@ String representations of expressions
 """
 
 import logging
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import *
 
 from gamma.common import AllTracker
 from gamma.common.expression._expression import (
     AtomicExpression,
-    ComplexExpression,
+    BracketedExpression,
     Expression,
     ExpressionFormatter,
+    InfixExpression,
+    PrefixExpression,
 )
 
 log = logging.getLogger(__name__)
@@ -52,22 +54,21 @@ class TextualForm:
     """
 
     @staticmethod
-    def from_expression(
-        expression: Expression, encapsulate: bool = False
-    ) -> "TextualForm":
+    def from_expression(expression: Expression) -> "TextualForm":
         """
         Generate a textual form for the given expression
         :param expression: the expression to be transformed
-        :param encapsulate: if `True`, encapsulate the expression in parentheses
         :return: the resulting textual form
         """
         if isinstance(expression, AtomicExpression):
             return AtomicForm(expression)
+        elif isinstance(expression, BracketedExpression):
+            return BracketedForm.from_bracketed_expression(expression)
+        elif isinstance(expression, InfixExpression):
+            return InfixForm.from_infix_expression(expression)
         else:
-            expression: ComplexExpression
-            return ComplexForm.from_complex_expression(
-                expression, encapsulate=encapsulate
-            )
+            assert isinstance(expression, PrefixExpression)
+            return PrefixedForm.from_prefix_expression(expression)
 
     def to_text(self, config: FormattingConfig) -> str:
         """
@@ -109,12 +110,35 @@ class TextualForm:
         pass
 
     @property
-    @abstractmethod
-    def _is_encapsulated(self) -> bool:
+    def brackets(self) -> Optional[Tuple[str, str]]:
         """
-        :return: `True` if this form is surrounded by brackets
+        The brackets enclosing this form
+        :return: a tuple of opening and closing brackets, or `None` for no brackets
         """
-        pass
+        return None
+
+    @property
+    def opening_bracket(self) -> str:
+        """
+        The opening bracket of this expression.
+        """
+        return self.brackets[0] if self.brackets else ""
+
+    @property
+    def closing_bracket(self) -> str:
+        """
+        The closing bracket of this expression.
+        """
+        return self.brackets[1] if self.brackets else ""
+
+    def encapsulate_if(self, condition: bool) -> "BracketedForm":
+        """
+        If condition is met, return this form encapsulated in round parentheses,
+        otherwise return this form unchanged.
+        :param condition: if `True`, the condition is met
+        :return: the resulting form depending on the condition
+        """
+        return BracketedForm(brackets=("(", ")"), subform=self) if condition else self
 
     @abstractmethod
     def __len__(self) -> int:
@@ -149,144 +173,21 @@ class AtomicForm(TextualForm):
 
         return self.text
 
-    @property
-    def _is_encapsulated(self) -> bool:
-        return False
-
     def __len__(self) -> int:
         return len(self.text)
 
 
-class ComplexForm(TextualForm):
+class ComplexForm(TextualForm, metaclass=ABCMeta):
     """
-    A hierarchical textual representation of a complex expression
+    Base class of non-atomic forms.
     """
 
-    PADDING_NONE = "none"
-    PADDING_RIGHT = "right"
-    PADDING_BOTH = "both"
-
-    __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
-
-    def __init__(
-        self,
-        prefix: Optional[TextualForm] = None,
-        brackets: Optional[Tuple[str, str]] = None,
-        infix: str = "",
-        infix_padding: str = PADDING_BOTH,
-        subforms: Tuple[TextualForm, ...] = (),
-    ) -> None:
+    def __init__(self, length: int) -> None:
         """
-        :param prefix: the prefix form
-        :param brackets: the brackets surrounding the subform(s) (optional)
-        :param infix: the infix operator separating the subforms
-        :param infix_padding: the padding mode for the infix operator
-        :param subforms: the subforms
-        """
-        self.prefix = prefix
-        self.brackets = brackets
-        self.infix = infix
-        self.infix_padding = infix_padding
-        self.subforms = subforms
-        self.__len = (
-            (len(prefix) if prefix else 0)
-            + (len(brackets[0]) + len(brackets[1]) if brackets else 0)
-            + sum(len(inner_representation) for inner_representation in subforms)
-            + max(len(subforms) - 1, 0)
-            * (len(infix) + (ComplexForm.__PADDING_SPACES[infix_padding]))
-        )
-
-    @staticmethod
-    def from_complex_expression(
-        expression: ComplexExpression, encapsulate: bool = False
-    ) -> "ComplexForm":
-        """
-        Create a complex form from the given complex expression
-        :param expression:
-        :param encapsulate:
-        :return:
+        :param length: the length of the single-line representation of this form
         """
 
-        if encapsulate and expression.prefix:
-            return ComplexForm(
-                brackets=("(", ")"),
-                subforms=(
-                    ComplexForm.from_complex_expression(expression, encapsulate=False),
-                ),
-            )
-
-        subexpressions = expression.subexpressions
-
-        subforms = tuple(
-            TextualForm.from_expression(
-                subexpression,
-                encapsulate=(
-                    len(subexpressions) > 1
-                    and subexpression.precedence
-                    > expression.precedence - (0 if pos == 0 else 1)
-                ),
-            )
-            for pos, subexpression in enumerate(subexpressions)
-        )
-
-        brackets = expression.brackets
-        assert brackets is None or len(brackets) == 2, "brackets is None or a pair"
-
-        first_subform: TextualForm = subforms[0] if subforms else None
-
-        if not brackets and first_subform._is_encapsulated and len(subforms) == 1:
-            # promote inner brackets to top level if inner is a bracketed singleton
-
-            first_subform: ComplexForm
-
-            brackets = first_subform.brackets
-            infix = first_subform.infix
-            infix_padding = first_subform.infix_padding
-            subforms = first_subform.subforms
-
-        else:
-            infix = expression.infix
-            infix_padding = (
-                ComplexForm.PADDING_RIGHT
-                if infix in [",", ":"]
-                else ComplexForm.PADDING_NONE
-                if infix in [".", ""]
-                else ComplexForm.PADDING_BOTH
-            )
-
-        prefix = (
-            TextualForm.from_expression(
-                expression.prefix,
-                encapsulate=expression.prefix.precedence > expression.precedence,
-            )
-            if expression.prefix
-            else None
-        )
-
-        if encapsulate and not brackets:
-            brackets = ("(", ")")
-
-        return ComplexForm(
-            prefix=prefix,
-            brackets=brackets,
-            infix=infix,
-            infix_padding=infix_padding,
-            subforms=subforms,
-        )
-
-    @property
-    def opening_bracket(self) -> str:
-        """
-        The opening bracket of this expression.
-        """
-        return self.brackets[0] if self.brackets else ""
-
-    @property
-    def closing_bracket(self) -> str:
-        """
-        The closing bracket of this expression.
-        """
-        return self.brackets[1] if self.brackets else ""
+        self._len = length
 
     def _to_lines(
         self,
@@ -313,33 +214,243 @@ class ComplexForm(TextualForm):
         else:
             return [IndentedLine(indent=indent, text=self._to_single_line())]
 
+    @abstractmethod
+    def _to_multiple_lines(
+        self,
+        config: FormattingConfig,
+        indent: int,
+        leading_characters: int,
+        trailing_characters: int,
+    ) -> List[IndentedLine]:
+        """
+        Convert this representation to multiple lines
+        :param indent: global indent of this expression
+        :param leading_characters: leading space to reserve in first line
+        :param trailing_characters: trailing space to reserve in last line
+        :return: resulting lines
+        """
+        pass
+
+    def __len__(self) -> int:
+        return self._len
+
+
+class BracketedForm(ComplexForm):
+    """
+    A hierarchical textual representation of a complex expression
+    """
+
+    def __init__(self, brackets: Tuple[str, str], subform: TextualForm) -> None:
+        """
+        :param brackets: the brackets surrounding the subform(s)
+        """
+        assert len(brackets) == 2, "brackets is a pair"
+
+        super().__init__(
+            length=(len(brackets[0]) + len(brackets[1]) if brackets else 0)
+            + len(subform)
+        )
+
+        self._brackets = brackets
+        self.subform = subform
+
+    @staticmethod
+    def from_bracketed_expression(expression: BracketedExpression) -> "BracketedForm":
+        return BracketedForm(
+            brackets=expression.brackets,
+            subform=TextualForm.from_expression(expression.subexpression),
+        )
+
+    @property
+    def brackets(self) -> Tuple[str, str]:
+        """[see superclass]"""
+        return self._brackets
+
+    brackets.__doc__ = TextualForm.brackets.__doc__
+
+    def _to_single_line(self) -> str:
+        return (
+            self.opening_bracket + self.subform._to_single_line() + self.closing_bracket
+        )
+
+    def _to_multiple_lines(
+        self,
+        config: FormattingConfig,
+        indent: int,
+        leading_characters: int,
+        trailing_characters: int,
+    ) -> List[IndentedLine]:
+        return [
+            IndentedLine(indent=indent, text=self.opening_bracket),
+            *self.subform._to_lines(
+                config=config,
+                indent=indent + 1,
+                leading_characters=leading_characters,
+                trailing_characters=trailing_characters,
+            ),
+            IndentedLine(indent=indent, text=self.closing_bracket),
+        ]
+
+
+class PrefixedForm(ComplexForm):
+    """
+    A hierarchical textual representation of a complex expression
+    """
+
+    def __init__(self, prefix: TextualForm, subform: TextualForm) -> None:
+        """
+        :param prefix: the prefix form
+        :param subform: the subform
+        """
+        super().__init__(length=len(prefix) + len(subform))
+
+        self.prefix = prefix
+        self.subform = subform
+
+    @staticmethod
+    def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
+        """
+        Create a prefixed form from the given prefix expression
+        """
+
+        prefix = expression.prefix
+        subexpression = expression.subexpression
+        return PrefixedForm(
+            prefix=(
+                TextualForm.from_expression(prefix).encapsulate_if(
+                    condition=prefix.precedence > expression.precedence
+                )
+            ),
+            subform=(
+                TextualForm.from_expression(subexpression).encapsulate_if(
+                    condition=subexpression.precedence > expression.precedence
+                )
+            ),
+        )
+
     def _to_single_line(self) -> str:
         """[see superclass]"""
 
+        return self.prefix._to_single_line() + self.subform._to_single_line()
+
+    def _to_multiple_lines(
+        self,
+        config: FormattingConfig,
+        indent: int,
+        leading_characters: int,
+        trailing_characters: int,
+    ) -> List[IndentedLine]:
+
+        result: List[IndentedLine]
+
+        result = self.prefix._to_lines(
+            config=config,
+            indent=indent,
+            leading_characters=leading_characters,
+            trailing_characters=0,
+        )
+
+        last_prefix_line = result[-1]
+        subform_lines = self.subform._to_lines(
+            config=config,
+            indent=indent,
+            leading_characters=len(last_prefix_line),
+            trailing_characters=trailing_characters,
+        )
+
+        result[-1] = IndentedLine(
+            indent=last_prefix_line.indent,
+            text=last_prefix_line.text + subform_lines[0].text,
+        )
+        result.extend(subform_lines[1:])
+
+        return result
+
+
+class InfixForm(ComplexForm):
+    """
+    A hierarchical textual representation of a complex expression
+    """
+
+    PADDING_NONE = "none"
+    PADDING_RIGHT = "right"
+    PADDING_BOTH = "both"
+
+    __PADDING_SPACES = {PADDING_NONE: 0, PADDING_RIGHT: 1, PADDING_BOTH: 2}
+
+    def __init__(
+        self,
+        infix: str = "",
+        infix_padding: str = PADDING_BOTH,
+        subforms: Tuple[TextualForm, ...] = (),
+    ) -> None:
+        """
+        :param infix: the infix operator separating the subforms
+        :param infix_padding: the padding mode for the infix operator
+        :param subforms: the subforms
+        """
+        super().__init__(
+            length=(
+                sum(len(inner_representation) for inner_representation in subforms)
+                + max(len(subforms) - 1, 0)
+                * (len(infix) + (InfixForm.__PADDING_SPACES[infix_padding]))
+            )
+        )
+        self.infix = infix
+        self.infix_padding = infix_padding
+        self.subforms = subforms
+
+    @staticmethod
+    def from_infix_expression(expression: InfixExpression) -> TextualForm:
+        """
+        Create a infix form from the given infix expression
+        :param expression:
+        :return:
+        """
+
+        subexpressions = expression.subexpressions
+        if len(subexpressions) == 1:
+            return TextualForm.from_expression(subexpressions[0])
+
+        subforms = tuple(
+            TextualForm.from_expression(subexpression).encapsulate_if(
+                condition=(
+                    subexpression.precedence
+                    > expression.precedence - (0 if pos == 0 else 1)
+                )
+            )
+            for pos, subexpression in enumerate(subexpressions)
+        )
+
+        infix = expression.infix
+
+        infix_padding = (
+            InfixForm.PADDING_RIGHT
+            if infix in [",", ":"]
+            else InfixForm.PADDING_NONE
+            if infix in [".", ""]
+            else InfixForm.PADDING_BOTH
+        )
+
+        return InfixForm(infix=infix, infix_padding=infix_padding, subforms=subforms)
+
+    def _to_single_line(self) -> str:
+
         if self.infix:
             infix_padding = self.infix_padding
-            if infix_padding is ComplexForm.PADDING_NONE:
+            if infix_padding is InfixForm.PADDING_NONE:
                 infix = self.infix
-            elif infix_padding is ComplexForm.PADDING_RIGHT:
+            elif infix_padding is InfixForm.PADDING_RIGHT:
                 infix = f"{self.infix} "
-            elif infix_padding is ComplexForm.PADDING_BOTH:
-                infix = f" {self.infix} "
             else:
-                raise ValueError(f"unknown infix padding: {infix_padding}")
+                assert (
+                    infix_padding is InfixForm.PADDING_BOTH
+                ), "known infix padding mode"
+                infix = f" {self.infix} "
         else:
             infix = ""
 
-        inner = infix.join(
-            subexpression_form._to_single_line() for subexpression_form in self.subforms
-        )
-
-        line_inner = f"{self.opening_bracket}{inner}{self.closing_bracket}"
-
-        prefix = self.prefix
-        if prefix:
-            return f"{prefix._to_single_line()}{line_inner}"
-        else:
-            return line_inner
+        return infix.join(subform._to_single_line() for subform in self.subforms)
 
     def _to_multiple_lines(
         self,
@@ -356,71 +467,41 @@ class ComplexForm(TextualForm):
         :return: resulting lines
         """
 
-        result: List[IndentedLine]
-
-        prefix = self.prefix
-        inner: Tuple[TextualForm, ...] = self.subforms
-
-        # we add parentheses if there is no existing bracketing, and either
-        # - there is a prefix, or
-        # - we are at indentation level 0 and have more than one inner element
-        parenthesize = not self.brackets and (
-            prefix or (indent == 0 and len(inner) > 1)
-        )
-
-        if parenthesize:
-            opening_bracket = f"("
-        else:
-            opening_bracket = f"{self.opening_bracket}"
-
-        if isinstance(prefix, str):
-            result = [IndentedLine(indent=indent, text=prefix)]
-        elif prefix:
-            result = prefix._to_lines(
+        if indent == 0:
+            # we add parentheses if we have multiple lines at indent level 0,
+            # and there is no existing bracketing
+            return BracketedForm(brackets=("(", ")"), subform=self)._to_multiple_lines(
                 config=config,
-                indent=indent,
+                indent=0,
                 leading_characters=leading_characters,
-                trailing_characters=len(opening_bracket),
+                trailing_characters=trailing_characters,
             )
-        else:
-            result = []
 
-        if opening_bracket:
-            if prefix:
-                prefix_last_line = result[-1]
-                result[-1] = IndentedLine(
-                    indent=prefix_last_line.indent,
-                    text=prefix_last_line.text + opening_bracket,
-                )
-            else:
-                result.append(IndentedLine(indent=indent, text=opening_bracket))
-            inner_indent = indent + 1
-        else:
-            inner_indent = indent
+        subforms: Tuple[TextualForm, ...] = self.subforms
+        result: List[IndentedLine] = []
 
-        if len(inner) == 1:
-            inner_single = inner[0]
+        if len(subforms) == 1:
 
             result.extend(
-                inner_single._to_lines(
+                subforms[0]._to_lines(
                     config=config,
-                    indent=inner_indent,
+                    indent=indent,
                     leading_characters=leading_characters,
                     trailing_characters=trailing_characters,
                 )
             )
 
-        elif inner:
+        else:
 
-            last_idx = len(inner) - 1
+            last_idx = len(subforms) - 1
             infix = self.infix
 
-            if self.infix_padding is ComplexForm.PADDING_RIGHT:
+            if self.infix_padding is InfixForm.PADDING_RIGHT:
                 len_infix = len(infix)
-                for idx, inner_representation in enumerate(inner):
+                for idx, inner_representation in enumerate(subforms):
                     lines = inner_representation._to_lines(
                         config=config,
-                        indent=inner_indent,
+                        indent=indent,
                         leading_characters=(leading_characters if idx == 0 else 0),
                         trailing_characters=(
                             len_infix if idx < last_idx else trailing_characters
@@ -431,19 +512,19 @@ class ComplexForm(TextualForm):
                         # append infix to last line,
                         # except we're in the last representation
                         lines[-1] = IndentedLine(
-                            indent=inner_indent, text=f"{lines[-1].text}{infix}"
+                            indent=indent, text=f"{lines[-1].text}{infix}"
                         )
 
                     result.extend(lines)
             else:
-                if self.infix_padding is ComplexForm.PADDING_BOTH:
+                if self.infix_padding is InfixForm.PADDING_BOTH:
                     infix = f"{infix} "
 
                 len_infix = len(infix)
-                for idx, inner_representation in enumerate(inner):
+                for idx, inner_representation in enumerate(subforms):
                     lines = inner_representation._to_lines(
                         config=config,
-                        indent=inner_indent,
+                        indent=indent,
                         leading_characters=leading_characters
                         if idx == 0
                         else len_infix,
@@ -455,28 +536,12 @@ class ComplexForm(TextualForm):
                         # prepend infix to first line,
                         # except we're in the first representation
                         lines[0] = IndentedLine(
-                            indent=inner_indent, text=f"{infix}{lines[0].text}"
+                            indent=indent, text=f"{infix}{lines[0].text}"
                         )
 
                     result.extend(lines)
 
-        if parenthesize:
-            closing_bracket = f")"
-        else:
-            closing_bracket = f"{self.closing_bracket}"
-
-        if closing_bracket:
-            result.append(IndentedLine(indent=indent, text=closing_bracket))
-
         return result
-
-    @property
-    @abstractmethod
-    def _is_encapsulated(self) -> bool:
-        return not self.prefix and self.brackets
-
-    def __len__(self) -> int:
-        return self.__len
 
 
 #
