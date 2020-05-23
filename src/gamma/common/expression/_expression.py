@@ -622,39 +622,31 @@ class InfixExpression(Expression, metaclass=ABCMeta):
     infix.
     """
 
-    def __init__(
-        self, infix: str, subexpressions: Union[Expression, Iterable[Expression]]
-    ):
-        subexpressions = to_tuple(subexpressions, element_type=Expression)
-        if not subexpressions:
-            raise ValueError("infix expression requires at least one subexpression")
-
-        self._infix = infix
-        self._subexpressions = subexpressions
-
     @property
+    @abstractmethod
     def infix(self) -> str:
         """
         The infix used to separate this expression's subexpressions.
         """
-        return self._infix
+        pass
 
     @property
+    @abstractmethod
     def subexpressions(self) -> Tuple[Expression, ...]:
         """
         The subexpressions of this expression.
         """
-        return self._subexpressions
+        pass
 
     def __eq__(self, other: "InfixExpression") -> bool:
         return (
             isinstance(other, type(self))
-            and self._infix == other._infix
-            and self._subexpressions == other._subexpressions
+            and self.infix == other.infix
+            and self.subexpressions == other.subexpressions
         )
 
     def __hash__(self) -> int:
-        return hash((self._infix, self._subexpressions))
+        return hash((type(self), self.infix, self.subexpressions))
 
 
 class Operation(InfixExpression, BaseOperation):
@@ -666,6 +658,8 @@ class Operation(InfixExpression, BaseOperation):
         self, operator: str, operands: Union[Expression, Iterable[Expression]]
     ):
         operands: Tuple[Expression, ...] = to_tuple(operands, element_type=Expression)
+        if not operands:
+            raise ValueError("operation requires at least one operand")
 
         first_operand = operands[0]
 
@@ -675,21 +669,36 @@ class Operation(InfixExpression, BaseOperation):
             # noinspection PyUnresolvedReferences
             operands = (*first_operand.operands, *operands[1:])
 
-        super().__init__(infix=operator, subexpressions=operands)
+        self._operator = operator
+        self._operands = operands
 
     @property
     def operator(self) -> str:
-        """
-        The operator of this operation
-        """
-        return self.infix
+        """[see superclass]"""
+        return self._operator
+
+    operator.__doc__ = BaseOperation.operator.__doc__
 
     @property
     def operands(self) -> Tuple[Expression, ...]:
-        """
-        The operands of this operation
-        """
-        return self.subexpressions
+        """[see superclass]"""
+        return self._operands
+
+    operands.__doc__ = BaseOperation.operands.__doc__
+
+    @property
+    def infix(self) -> str:
+        """[see superclass]"""
+        return self._operator
+
+    infix.__doc__ = InfixExpression.infix.__doc__
+
+    @property
+    def subexpressions(self) -> Tuple[Expression, ...]:
+        """[see superclass]"""
+        return self._operands
+
+    subexpressions.__doc__ = InfixExpression.subexpressions.__doc__
 
     @property
     def precedence(self) -> int:
