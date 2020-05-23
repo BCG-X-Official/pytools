@@ -4,7 +4,7 @@ strings; useful for generating representations of complex Python objects.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Dict, Generic, Iterable, Optional, Tuple, TypeVar, Union
 
 from gamma.common import AllTracker, to_tuple
 
@@ -66,6 +66,7 @@ OPERATOR_PRECEDENCE = {
 MAX_PRECEDENCE = -1
 MIN_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
+T = TypeVar("T")
 
 __tracker = AllTracker((globals()))
 
@@ -254,7 +255,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 #
 
 
-class AtomicExpression(Expression, metaclass=ABCMeta):
+class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
     An atomic expression.
 
@@ -270,6 +271,14 @@ class AtomicExpression(Expression, metaclass=ABCMeta):
         pass
 
     @property
+    @abstractmethod
+    def value(self) -> T:
+        """
+        The underlying valye of this atomic expression
+        """
+        pass
+
+    @property
     def precedence(self) -> int:
         """[see superclass]"""
         return MAX_PRECEDENCE
@@ -277,19 +286,26 @@ class AtomicExpression(Expression, metaclass=ABCMeta):
     precedence.__doc__ = Expression.precedence.__doc__
 
     def __eq__(self, other: "AtomicExpression") -> bool:
-        return isinstance(other, type(self)) and other.text == self.text
+        return isinstance(other, type(self)) and other.value == self.value
 
     def __hash__(self) -> int:
-        return hash((type(self), self.text))
+        return hash((type(self), self.value))
 
 
-class Literal(AtomicExpression):
+class Literal(AtomicExpression[T], Generic[T]):
     """
     A literal
     """
 
-    def __init__(self, value: Any):
-        self.value = value
+    def __init__(self, value: T):
+        self._value = value
+
+    @property
+    def value(self) -> T:
+        """[see superclass]"""
+        return self._value
+
+    value.__doc__ = AtomicExpression.value.__doc__
 
     @property
     def text(self) -> str:
@@ -299,7 +315,7 @@ class Literal(AtomicExpression):
     text.__doc__ = AtomicExpression.text.__doc__
 
 
-class Identifier(AtomicExpression):
+class Identifier(AtomicExpression[str]):
     """
     An identifier
     """
@@ -310,6 +326,13 @@ class Identifier(AtomicExpression):
         self.name = name
 
     @property
+    def value(self) -> str:
+        """[see superclass]"""
+        return self.name
+
+    value.__doc__ = AtomicExpression.value.__doc__
+
+    @property
     def text(self) -> str:
         """[see superclass]"""
         return self.name
@@ -317,10 +340,15 @@ class Identifier(AtomicExpression):
     text.__doc__ = AtomicExpression.text.__doc__
 
 
-class _Epsilon(AtomicExpression):
+class _Epsilon(AtomicExpression[None]):
     """
     The empty expression.
     """
+
+    @property
+    def value(self) -> None:
+        """[see superclass]"""
+        return None
 
     @property
     def text(self) -> str:
