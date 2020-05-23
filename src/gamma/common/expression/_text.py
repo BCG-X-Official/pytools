@@ -104,7 +104,7 @@ class TextualForm:
 
         if config.single_line:
 
-            return self._to_single_line()
+            return self.to_single_line()
 
         else:
 
@@ -113,21 +113,31 @@ class TextualForm:
 
             return "\n".join(
                 f"{_spacing(indent)}{text}"
-                for indent, text in self._to_lines(config=config)
+                for indent, text in self.to_lines(config=config)
             )
 
     @abstractmethod
-    def _to_lines(
+    def to_lines(
         self,
         config: FormattingConfig,
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
     ) -> List[IndentedLine]:
+        """
+        Generate a list of indented lines from this textual form.
+        :param config: the rendering configuration
+        :param indent: the indentation level to use as a starting point
+        :param leading_characters: space to reserve in the first line for leading \
+            characters (needed to determine whether maximum width has been exceeded)
+        :param trailing_characters: space to reserve in the last line for trailing \
+            characters (needed to determine whether maximum width has been exceeded)
+        :return: a list of indented lines generated from this textual form
+        """
         pass
 
     @abstractmethod
-    def _to_single_line(self) -> str:
+    def to_single_line(self) -> str:
         """
         Convert this representation to a single-line string
         :return: the resulting string
@@ -189,7 +199,7 @@ class AtomicForm(TextualForm):
     def __init__(self, expression: AtomicExpression) -> None:
         self.text = expression.text
 
-    def _to_lines(
+    def to_lines(
         self,
         config: FormattingConfig,
         indent: int = 0,
@@ -198,9 +208,9 @@ class AtomicForm(TextualForm):
     ) -> List[IndentedLine]:
         """[see superclass]"""
 
-        return [IndentedLine(indent=indent, text=self._to_single_line())]
+        return [IndentedLine(indent=indent, text=self.to_single_line())]
 
-    def _to_single_line(self) -> str:
+    def to_single_line(self) -> str:
         """[see superclass]"""
 
         return self.text
@@ -221,7 +231,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
 
         self._len = length
 
-    def _to_lines(
+    def to_lines(
         self,
         config: FormattingConfig,
         indent: int = 0,
@@ -237,17 +247,17 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
             + trailing_characters
             > config.max_width
         ):
-            return self._to_multiple_lines(
+            return self.to_multiple_lines(
                 config=config,
                 indent=indent,
                 leading_characters=leading_characters,
                 trailing_characters=trailing_characters,
             )
         else:
-            return [IndentedLine(indent=indent, text=self._to_single_line())]
+            return [IndentedLine(indent=indent, text=self.to_single_line())]
 
     @abstractmethod
-    def _to_multiple_lines(
+    def to_multiple_lines(
         self,
         config: FormattingConfig,
         indent: int,
@@ -255,7 +265,9 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
         trailing_characters: int,
     ) -> List[IndentedLine]:
         """
-        Convert this representation to multiple lines
+        Convert this representation to multiple lines.
+
+        :param config: the formatting configuration to use
         :param indent: global indent of this expression
         :param leading_characters: leading space to reserve in first line
         :param trailing_characters: trailing space to reserve in last line
@@ -308,24 +320,29 @@ class BracketedForm(ComplexForm):
 
     brackets.__doc__ = TextualForm.brackets.__doc__
 
-    def _to_single_line(self) -> str:
-        subform_text = self.subform._to_single_line()
+    def to_single_line(self) -> str:
+        """[see superclass]"""
+        subform_text = self.subform.to_single_line()
         if self.single_line:
             # render the brackets only when they are visible in single-line forms
             return f"{self.opening_bracket}{subform_text}{self.closing_bracket}"
         else:
             return subform_text
 
-    def _to_multiple_lines(
+    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
+
+    def to_multiple_lines(
         self,
         config: FormattingConfig,
         indent: int,
         leading_characters: int,
         trailing_characters: int,
     ) -> List[IndentedLine]:
+        """[see superclass]"""
+
         return [
             IndentedLine(indent=indent, text=self.opening_bracket),
-            *self.subform._to_lines(
+            *self.subform.to_lines(
                 config=config,
                 indent=indent + 1,
                 leading_characters=leading_characters,
@@ -333,6 +350,8 @@ class BracketedForm(ComplexForm):
             ),
             IndentedLine(indent=indent, text=self.closing_bracket),
         ]
+
+    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
 class PrefixForm(ComplexForm):
@@ -376,26 +395,27 @@ class PrefixForm(ComplexForm):
             ),
         )
 
-    def _to_single_line(self) -> str:
+    def to_single_line(self) -> str:
         """[see superclass]"""
 
         return (
-            self.prefix._to_single_line()
+            self.prefix.to_single_line()
             + self.separator
-            + self.subform._to_single_line()
+            + self.subform.to_single_line()
         )
 
-    def _to_multiple_lines(
+    def to_multiple_lines(
         self,
         config: FormattingConfig,
         indent: int,
         leading_characters: int,
         trailing_characters: int,
     ) -> List[IndentedLine]:
+        """[see superclass]"""
 
         result: List[IndentedLine]
 
-        result = self.prefix._to_lines(
+        result = self.prefix.to_lines(
             config=config,
             indent=indent,
             leading_characters=leading_characters,
@@ -404,7 +424,7 @@ class PrefixForm(ComplexForm):
 
         separator = self.separator
 
-        subform_lines = self.subform._to_lines(
+        subform_lines = self.subform.to_lines(
             config=config,
             indent=indent,
             leading_characters=len(result[-1]) + len(separator),
@@ -415,6 +435,8 @@ class PrefixForm(ComplexForm):
         result.extend(subform_lines[1:])
 
         return result
+
+    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
 class InfixForm(ComplexForm):
@@ -492,7 +514,8 @@ class InfixForm(ComplexForm):
 
         return InfixForm(infix=infix, infix_padding=infix_padding, subforms=subforms)
 
-    def _to_single_line(self) -> str:
+    def to_single_line(self) -> str:
+        """[see superclass]"""
 
         if self.infix:
             infix_padding = self.infix_padding
@@ -508,29 +531,25 @@ class InfixForm(ComplexForm):
         else:
             infix = ""
 
-        return infix.join(subform._to_single_line() for subform in self.subforms)
+        return infix.join(subform.to_single_line() for subform in self.subforms)
 
-    def _to_multiple_lines(
+    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
+
+    def to_multiple_lines(
         self,
         config: FormattingConfig,
         indent: int,
         leading_characters: int,
         trailing_characters: int,
     ) -> List[IndentedLine]:
-        """
-        Convert this representation to multiple lines
-        :param indent: global indent of this expression
-        :param leading_characters: leading space to reserve in first line
-        :param trailing_characters: trailing space to reserve in last line
-        :return: resulting lines
-        """
+        """[see superclass]"""
 
         subforms: Tuple[TextualForm, ...] = self.subforms
 
         if indent == 0:
             # we add parentheses if we have multiple lines at indent level 0,
             # and there is no existing bracketing
-            return self.encapsulate()._to_multiple_lines(
+            return self.encapsulate().to_multiple_lines(
                 config=config,
                 indent=0,
                 leading_characters=leading_characters,
@@ -542,7 +561,7 @@ class InfixForm(ComplexForm):
         if len(subforms) == 1:
 
             result.extend(
-                subforms[0]._to_lines(
+                subforms[0].to_lines(
                     config=config,
                     indent=indent,
                     leading_characters=leading_characters,
@@ -558,7 +577,7 @@ class InfixForm(ComplexForm):
             if self.infix_padding is InfixForm.PADDING_RIGHT:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(subforms):
-                    lines = inner_representation._to_lines(
+                    lines = inner_representation.to_lines(
                         config=config,
                         indent=indent,
                         leading_characters=(leading_characters if idx == 0 else 0),
@@ -579,7 +598,7 @@ class InfixForm(ComplexForm):
 
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(subforms):
-                    lines = inner_representation._to_lines(
+                    lines = inner_representation.to_lines(
                         config=config,
                         indent=indent,
                         leading_characters=leading_characters
@@ -597,6 +616,8 @@ class InfixForm(ComplexForm):
                     result.extend(lines)
 
         return result
+
+    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
 #
