@@ -4,6 +4,7 @@ Tests for module gamma.common.expression
 
 import logging
 
+import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
     DictExpression,
@@ -99,7 +100,7 @@ def test_expression() -> None:
             "{5: 'abc', xx: 5}",
         ),
         (
-            Operation(operator="+", operands=(lit_5, lit_abc, ident_xx)),
+            Operation(operator=op.ADD, operands=(lit_5, lit_abc, ident_xx)),
             "5 + 'abc' + xx",
         ),
         (Call(Identifier("func")), "func()"),
@@ -120,22 +121,22 @@ def test_expression() -> None:
 
 def test_expression_operators() -> None:
     a, b = Identifier("a"), Identifier("b")
-    assert a + b == Operation("+", operands=[a, b])
-    assert a - b == Operation("-", operands=(a, b))
-    assert a * b == Operation("*", operands=(a, b))
-    assert a @ b == Operation("@", operands=(a, b))
-    assert a / b == Operation("/", operands=(a, b))
-    assert a // b == Operation("//", operands=(a, b))
-    assert a % b == Operation("%", operands=(a, b))
-    assert a ** b == Operation("**", operands=(a, b))
-    assert a << b == Operation("<<", operands=(a, b))
-    assert a >> b == Operation(">>", operands=(a, b))
-    assert a & b == Operation("&", operands=(a, b))
-    assert a ^ b == Operation("^", operands=(a, b))
-    assert a | b == Operation("|", operands=(a, b))
-    assert -a == UnaryOperation("-", operand=a)
-    assert +a == UnaryOperation("+", operand=a)
-    assert ~a == UnaryOperation("~", operand=a)
+    assert a + b == Operation(op.ADD, operands=[a, b])
+    assert a - b == Operation(op.SUB, operands=(a, b))
+    assert a * b == Operation(op.MUL, operands=(a, b))
+    assert a @ b == Operation(op.MATMUL, operands=(a, b))
+    assert a / b == Operation(op.DIV, operands=(a, b))
+    assert a // b == Operation(op.FLOOR_DIV, operands=(a, b))
+    assert a % b == Operation(op.MOD, operands=(a, b))
+    assert a ** b == Operation(op.POW, operands=(a, b))
+    assert a << b == Operation(op.LSHIFT, operands=(a, b))
+    assert a >> b == Operation(op.RSHIFT, operands=(a, b))
+    assert a & b == Operation(op.AND_BITWISE, operands=(a, b))
+    assert a ^ b == Operation(op.XOR_BITWISE, operands=(a, b))
+    assert a | b == Operation(op.OR_BITWISE, operands=(a, b))
+    assert -a == UnaryOperation(op.NEG, operand=a)
+    assert +a == UnaryOperation(op.POS, operand=a)
+    assert ~a == UnaryOperation(op.INVERT, operand=a)
 
 
 def test_operator_precedence() -> None:

@@ -6,10 +6,12 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 
+import gamma.common.expression.operator as op
 from gamma.common import AllTracker
 from gamma.common.expression._expression import (
     AtomicExpression,
     BracketedExpression,
+    EPSILON,
     Expression,
     ExpressionFormatter,
     InfixExpression,
@@ -85,6 +87,8 @@ class TextualForm:
         :param expression: the expression to be transformed
         :return: the resulting textual form
         """
+        if expression is EPSILON:
+            return EMPTY_FORM
         if isinstance(expression, AtomicExpression):
             return AtomicForm(expression)
         elif isinstance(expression, BracketedExpression):
@@ -191,6 +195,37 @@ class TextualForm:
         return self.to_text(config=_DEFAULT_PYTHON_EXPRESSION_FORMATTER.config)
 
 
+class EmptyForm(TextualForm):
+    """
+    An empty form representing the _epsilon_ expression.
+    """
+
+    def to_lines(
+        self,
+        config: FormattingConfig,
+        indent: int = 0,
+        leading_characters: int = 0,
+        trailing_characters: int = 0,
+    ) -> List[IndentedLine]:
+        """[see superclass]"""
+        return []
+
+    to_lines.__doc__ = TextualForm.to_lines.__doc__
+
+    def to_single_line(self) -> str:
+        """[see superclass]"""
+        return ""
+
+    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
+
+    def __len__(self) -> int:
+        """[see superclass]"""
+        return 0
+
+
+EMPTY_FORM = EmptyForm()
+
+
 class AtomicForm(TextualForm):
     """
     A textual representation of an atomic expression
@@ -210,10 +245,14 @@ class AtomicForm(TextualForm):
 
         return [IndentedLine(indent=indent, text=self.to_single_line())]
 
+    to_lines.__doc__ = TextualForm.to_lines.__doc__
+
     def to_single_line(self) -> str:
         """[see superclass]"""
 
         return self.text
+
+    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
 
     def __len__(self) -> int:
         return len(self.text)
@@ -380,20 +419,22 @@ class PrefixForm(ComplexForm):
         """
 
         prefix = expression.prefix
-        subexpression = expression.subexpression
-        return PrefixForm(
-            prefix=(
-                TextualForm.from_expression(prefix).encapsulate(
-                    condition=prefix.precedence > expression.precedence
-                )
-            ),
-            separator=expression.separator,
-            subform=(
-                TextualForm.from_expression(subexpression).encapsulate(
-                    condition=subexpression.precedence > expression.precedence
-                )
-            ),
+        prefix_form = TextualForm.from_expression(prefix).encapsulate(
+            condition=prefix.precedence > expression.precedence
         )
+
+        subexpression = expression.subexpression
+        subform = TextualForm.from_expression(subexpression).encapsulate(
+            condition=subexpression.precedence > expression.precedence
+        )
+
+        separator = expression.separator
+        if len(prefix_form) and separator[:1].isalpha():
+            separator = " " + separator
+        if len(subform) and separator[-1:].isalpha():
+            separator += " "
+
+        return PrefixForm(prefix=prefix_form, separator=separator, subform=subform)
 
     def to_single_line(self) -> str:
         """[see superclass]"""
@@ -506,13 +547,15 @@ class InfixForm(ComplexForm):
 
         infix_padding = (
             InfixForm.PADDING_RIGHT
-            if infix in [",", ":"]
+            if infix in [op.COMMA, op.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [".", ""]
+            if infix in [op.DOT, op.NONE]
             else InfixForm.PADDING_BOTH
         )
 
-        return InfixForm(infix=infix, infix_padding=infix_padding, subforms=subforms)
+        return InfixForm(
+            infix=infix.symbol, infix_padding=infix_padding, subforms=subforms
+        )
 
     def to_single_line(self) -> str:
         """[see superclass]"""
