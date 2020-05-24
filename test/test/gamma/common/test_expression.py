@@ -7,16 +7,16 @@ import logging
 import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
-    DictExpression,
+    DictLiteral,
     Expression,
     Identifier,
     Lambda,
-    ListExpression,
+    ListLiteral,
     Literal,
     Operation,
     PythonExpressionFormatter,
-    SetExpression,
-    TupleExpression,
+    SetLiteral,
+    TupleLiteral,
     UnaryOperation,
 )
 
@@ -92,22 +92,17 @@ def test_expression() -> None:
         (lit_abc, "'abc'"),
         (ident_xx, "xx"),
         (Call(Identifier("func"), lit_5, lit_abc), "func(5, 'abc')"),
-        (ListExpression(elements=[lit_5, lit_abc, ident_xx]), "[5, 'abc', xx]"),
-        (SetExpression(elements=[lit_5, lit_abc, ident_xx]), "{5, 'abc', xx}"),
-        (TupleExpression(elements=[lit_5, lit_abc, ident_xx]), "(5, 'abc', xx)"),
-        (
-            DictExpression(entries={lit_5: lit_abc, ident_xx: lit_5}),
-            "{5: 'abc', xx: 5}",
-        ),
-        (
-            Operation(operator=op.ADD, operands=(lit_5, lit_abc, ident_xx)),
-            "5 + 'abc' + xx",
-        ),
+        (ListLiteral(lit_5, lit_abc, ident_xx), "[5, 'abc', xx]"),
+        (SetLiteral(lit_5, lit_abc, ident_xx), "{5, 'abc', xx}"),
+        (TupleLiteral(lit_5, lit_abc, ident_xx), "(5, 'abc', xx)"),
+        (DictLiteral(**{"5": lit_abc, "x": lit_5}), "{'5': 'abc', 'x': 5}"),
+        (DictLiteral((lit_5, lit_abc), (ident_xx, lit_5)), "{5: 'abc', xx: 5}"),
+        (Operation(op.ADD, lit_5, lit_abc, ident_xx), "5 + 'abc' + xx"),
         (Call(Identifier("func")), "func()"),
-        (ListExpression(elements=[]), "[]"),
-        (SetExpression(elements=[]), "{}"),
-        (TupleExpression(elements=[]), "()"),
-        (DictExpression(entries=dict()), "{}"),
+        (ListLiteral(), "[]"),
+        (SetLiteral(), "{}"),
+        (TupleLiteral(), "()"),
+        (DictLiteral(), "{}"),
         (ident_xx.attr.isalpha(), "xx.isalpha()"),
     ]
 
@@ -122,19 +117,19 @@ def test_expression() -> None:
 
 def test_expression_operators() -> None:
     a, b = Identifier("a"), Identifier("b")
-    assert a + b == Operation(op.ADD, operands=[a, b])
-    assert a - b == Operation(op.SUB, operands=(a, b))
-    assert a * b == Operation(op.MUL, operands=(a, b))
-    assert a @ b == Operation(op.MATMUL, operands=(a, b))
-    assert a / b == Operation(op.DIV, operands=(a, b))
-    assert a // b == Operation(op.FLOOR_DIV, operands=(a, b))
-    assert a % b == Operation(op.MOD, operands=(a, b))
-    assert a ** b == Operation(op.POW, operands=(a, b))
-    assert a << b == Operation(op.LSHIFT, operands=(a, b))
-    assert a >> b == Operation(op.RSHIFT, operands=(a, b))
-    assert a & b == Operation(op.AND_BITWISE, operands=(a, b))
-    assert a ^ b == Operation(op.XOR_BITWISE, operands=(a, b))
-    assert a | b == Operation(op.OR_BITWISE, operands=(a, b))
+    assert a + b == Operation(op.ADD, a, b)
+    assert a - b == Operation(op.SUB, a, b)
+    assert a * b == Operation(op.MUL, a, b)
+    assert a @ b == Operation(op.MATMUL, a, b)
+    assert a / b == Operation(op.DIV, a, b)
+    assert a // b == Operation(op.FLOOR_DIV, a, b)
+    assert a % b == Operation(op.MOD, a, b)
+    assert a ** b == Operation(op.POW, a, b)
+    assert a << b == Operation(op.LSHIFT, a, b)
+    assert a >> b == Operation(op.RSHIFT, a, b)
+    assert a & b == Operation(op.AND_BITWISE, a, b)
+    assert a ^ b == Operation(op.XOR_BITWISE, a, b)
+    assert a | b == Operation(op.OR_BITWISE, a, b)
     assert -a == UnaryOperation(op.NEG, operand=a)
     assert +a == UnaryOperation(op.POS, operand=a)
     assert ~a == UnaryOperation(op.INVERT, operand=a)
