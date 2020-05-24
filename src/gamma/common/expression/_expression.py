@@ -532,6 +532,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     precedence.__doc__ = Expression.precedence.__doc__
 
 
+# noinspection DuplicatedCode
 class _KeywordArgument(BasePrefixExpression):
     """
     A keyword argument, used by functions
@@ -682,6 +683,7 @@ class Index(BaseInvocation):
         super().__init__(callee=callee, brackets=("[", "]"), args=args),
 
 
+# noinspection DuplicatedCode
 class _LambdaColon(BasePrefixExpression):
     """
     Two expressions separated by a colon, used in dictionaries and lambda expressions
