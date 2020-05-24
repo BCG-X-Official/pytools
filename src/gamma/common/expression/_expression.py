@@ -682,6 +682,79 @@ class Index(BaseInvocation):
         super().__init__(callee=callee, brackets=("[", "]"), args=args),
 
 
+class _LambdaColon(BasePrefixExpression):
+    """
+    Two expressions separated by a colon, used in dictionaries and lambda expressions
+    """
+
+    _PRECEDENCE = OPERATOR_PRECEDENCE["lambda x"]
+
+    def __init__(self, params: Any, body: Any):
+        super().__init__(prefix=params, subexpression=body)
+
+    @property
+    def params(self) -> Expression:
+        """
+        The parameters of the lambda expression
+        """
+        return self.prefix
+
+    @property
+    def separator(self) -> str:
+        """[see superclass]"""
+        return ": "
+
+    separator.__doc__ = PrefixExpression.separator.__doc__
+
+    @property
+    def body(self) -> Expression:
+        """
+        The body of the lambda expression
+        """
+        return self.subexpression
+
+    @property
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return _LambdaColon._PRECEDENCE
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
+
+class Lambda(UnaryOperation):
+    """
+    A lambda expression
+    """
+
+    def __init__(
+        self,
+        params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
+        body: Expression,
+    ):
+        params = to_tuple(params)
+
+        def _to_identifier(param: Union[str, Identifier]) -> Identifier:
+            if isinstance(param, str):
+                return Identifier(param)
+            elif isinstance(param, Identifier):
+                return param
+            else:
+                raise TypeError("arg params may only contain strings and Identifiers")
+
+        params = tuple(_to_identifier(param) for param in params)
+
+        if not params:
+            arg_list = EPSILON
+        elif len(params) == 1:
+            arg_list = params[0]
+        else:
+            arg_list = Operation(operator=",", operands=params)
+
+        super().__init__(
+            operator="lambda ", operand=_LambdaColon(params=arg_list, body=body)
+        )
+
+
 #
 # Infix expressions
 #
@@ -919,79 +992,6 @@ class DictExpression(CollectionExpression):
         super().__init__(
             brackets=("{", "}"),
             elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
-        )
-
-
-class _LambdaColon(BasePrefixExpression):
-    """
-    Two expressions separated by a colon, used in dictionaries and lambda expressions
-    """
-
-    _PRECEDENCE = OPERATOR_PRECEDENCE["lambda x"]
-
-    def __init__(self, params: Any, body: Any):
-        super().__init__(prefix=params, subexpression=body)
-
-    @property
-    def params(self) -> Expression:
-        """
-        The parameters of the lambda expression
-        """
-        return self.prefix
-
-    @property
-    def separator(self) -> str:
-        """[see superclass]"""
-        return ": "
-
-    separator.__doc__ = PrefixExpression.separator.__doc__
-
-    @property
-    def body(self) -> Expression:
-        """
-        The body of the lambda expression
-        """
-        return self.subexpression
-
-    @property
-    def precedence(self) -> int:
-        """[see superclass]"""
-        return _LambdaColon._PRECEDENCE
-
-    precedence.__doc__ = Expression.precedence.__doc__
-
-
-class Lambda(UnaryOperation):
-    """
-    A lambda expression
-    """
-
-    def __init__(
-        self,
-        params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
-        body: Expression,
-    ):
-        params = to_tuple(params)
-
-        def _to_identifier(param: Union[str, Identifier]) -> Identifier:
-            if isinstance(param, str):
-                return Identifier(param)
-            elif isinstance(param, Identifier):
-                return param
-            else:
-                raise TypeError("arg params may only contain strings and Identifiers")
-
-        params = tuple(_to_identifier(param) for param in params)
-
-        if not params:
-            arg_list = EPSILON
-        elif len(params) == 1:
-            arg_list = params[0]
-        else:
-            arg_list = Operation(operator=",", operands=params)
-
-        super().__init__(
-            operator="lambda ", operand=_LambdaColon(params=arg_list, body=body)
         )
 
 
