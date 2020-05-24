@@ -420,12 +420,12 @@ class PrefixForm(ComplexForm):
 
         prefix = expression.prefix
         prefix_form = TextualForm.from_expression(prefix).encapsulate(
-            condition=prefix.precedence > expression.precedence
+            condition=prefix.precedence < expression.precedence
         )
 
         subexpression = expression.subexpression
         subform = TextualForm.from_expression(subexpression).encapsulate(
-            condition=subexpression.precedence > expression.precedence
+            condition=subexpression.precedence < expression.precedence
         )
 
         separator = expression.separator
@@ -536,8 +536,9 @@ class InfixForm(ComplexForm):
         subforms = tuple(
             TextualForm.from_expression(subexpression).encapsulate(
                 condition=(
-                    subexpression.precedence
-                    > expression.precedence - (0 if pos == 0 else 1)
+                    subexpression.precedence < expression.precedence
+                    if pos == 0
+                    else subexpression.precedence <= expression.precedence
                 )
             )
             for pos, subexpression in enumerate(subexpressions)

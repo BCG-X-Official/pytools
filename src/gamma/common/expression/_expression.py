@@ -11,9 +11,7 @@ from gamma.common import AllTracker, to_tuple
 from gamma.common.expression.operator import (
     BinaryOperator,
     MAX_PRECEDENCE,
-    MIN_PRECEDENCE,
     Operator,
-    OPERATOR_PRECEDENCE,
     UnaryOperator,
 )
 
@@ -516,7 +514,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     @property
     def precedence(self) -> int:
         """[see superclass]"""
-        return OPERATOR_PRECEDENCE.get(self._operator, MIN_PRECEDENCE)
+        return self._operator.precedence
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -527,7 +525,7 @@ class _KeywordArgument(BasePrefixExpression):
     A keyword argument, used by functions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[op.EQ]
+    _PRECEDENCE = op.EQ.precedence
 
     def __init__(self, name: str, value: Any):
         super().__init__(prefix=Identifier(name), subexpression=value)
@@ -568,7 +566,7 @@ class _DictEntry(BasePrefixExpression):
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[op.COLON]
+    _PRECEDENCE = op.COLON.precedence
 
     def __init__(self, key: Any, value: Any):
         super().__init__(prefix=key, subexpression=value)
@@ -608,7 +606,7 @@ class BaseInvocation(PrefixExpression):
     `<expression>[<expression>]`
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[op.DOT]
+    _PRECEDENCE = op.DOT.precedence
 
     def __init__(self, callee: Any, brackets: Tuple[str, str], args: Tuple[Any, ...]):
         self.callee = Expression.from_value(callee)
@@ -678,7 +676,7 @@ class _LambdaColon(BasePrefixExpression):
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[op.LAMBDA]
+    _PRECEDENCE = op.LAMBDA.precedence
 
     def __init__(self, params: Any, body: Any):
         super().__init__(prefix=params, subexpression=body)
@@ -842,7 +840,7 @@ class Operation(InfixExpression, BaseOperation):
     @property
     def precedence(self) -> int:
         """[see superclass]"""
-        return OPERATOR_PRECEDENCE.get(self.infix, MIN_PRECEDENCE)
+        return self.infix.precedence
 
     precedence.__doc__ = Expression.precedence.__doc__
 

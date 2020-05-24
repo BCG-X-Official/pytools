@@ -47,9 +47,8 @@ __all__ = [
     "COLON",
     "COMMA",
     "NONE",
-    "OPERATOR_PRECEDENCE",
-    "MAX_PRECEDENCE",
     "MIN_PRECEDENCE",
+    "MAX_PRECEDENCE",
 ]
 
 __tracker = AllTracker(globals_=globals())
@@ -70,6 +69,10 @@ class Operator(metaclass=ABCMeta):
         `True` if this is a unary operator
         """
         pass
+
+    @property
+    def precedence(self) -> int:
+        return _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
 
     def __eq__(self, other: "Operator") -> bool:
         return type(self) == type(other) and self.symbol == other.symbol
@@ -143,32 +146,33 @@ NONE = BinaryOperator("")
 
 
 __OPERATOR_PRECEDENCE_ORDER: Tuple[Set[Operator], ...] = (
-    {DOT},
-    {POW},
-    {INVERT},
-    {POS, NEG},
-    {MUL, MATMUL, DIV, FLOOR_DIV, MOD},
-    {ADD, SUB},
-    {LSHIFT, RSHIFT},
-    {AND_BITWISE},
-    {XOR_BITWISE},
-    {OR_BITWISE},
-    {IN, NOT_IN, IS, IS_NOT, LT, LE, GT, GE},
-    {NEQ_, NEQ, EQ},
-    {NOT},
-    {AND},
-    {OR},
-    {LAMBDA},
-    {ASSIGN, COLON},
     {COMMA},
+    {ASSIGN, COLON},
+    {LAMBDA},
+    {OR},
+    {AND},
+    {NOT},
+    {NEQ_, NEQ, EQ},
+    {IN, NOT_IN, IS, IS_NOT, LT, LE, GT, GE},
+    {OR_BITWISE},
+    {XOR_BITWISE},
+    {AND_BITWISE},
+    {LSHIFT, RSHIFT},
+    {ADD, SUB},
+    {MUL, MATMUL, DIV, FLOOR_DIV, MOD},
+    {POS, NEG},
+    {INVERT},
+    {POW},
+    {DOT},
 )
-OPERATOR_PRECEDENCE: Mapping[Operator, int] = {
+
+_OPERATOR_PRECEDENCE: Mapping[Operator, int] = {
     operator: priority
     for priority, operators in enumerate(__OPERATOR_PRECEDENCE_ORDER)
     for operator in operators
 }
-MAX_PRECEDENCE = -1
-MIN_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
+MIN_PRECEDENCE = -1
+MAX_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 
 __tracker.validate()
