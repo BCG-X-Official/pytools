@@ -162,6 +162,18 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         """
         pass
 
+    @property
+    def attr(self) -> "_AttributeView":
+        """
+        An _attribute view_ of this expression, allowing for shorthand attribute
+        access expressions.
+
+        For example, to create the expression `s.isalpha()`, use
+        `Identifier("s").attr.isalpha()` as a shorthand for
+        `Call(Attr(Identifier("s"), "isalpha"))`
+        """
+        return _AttributeView(self)
+
     @abstractmethod
     def __eq__(self, other) -> bool:
         pass
@@ -267,6 +279,14 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
     def __getitem__(self, *args: Any) -> "Index":
         return Index(callee=self, *args)
+
+
+class _AttributeView:
+    def __init__(self, expression: Expression) -> None:
+        self.__expression = expression
+
+    def __getattr__(self, key: str) -> Expression:
+        return Attr(obj=self.__expression, attribute=key)
 
 
 #

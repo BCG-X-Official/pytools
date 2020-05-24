@@ -108,6 +108,7 @@ def test_expression() -> None:
         (SetExpression(elements=[]), "{}"),
         (TupleExpression(elements=[]), "()"),
         (DictExpression(entries=dict()), "{}"),
+        (ident_xx.attr.isalpha(), "xx.isalpha()"),
     ]
 
     for expression, expected_str in expressions:
