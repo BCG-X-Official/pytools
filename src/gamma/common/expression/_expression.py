@@ -6,7 +6,16 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, Mapping, Optional, Tuple, TypeVar, Union
 
+import gamma.common.expression.operator as op
 from gamma.common import AllTracker, to_tuple
+from gamma.common.expression.operator import (
+    BinaryOperator,
+    MAX_PRECEDENCE,
+    MIN_PRECEDENCE,
+    Operator,
+    OPERATOR_PRECEDENCE,
+    UnaryOperator,
+)
 
 log = logging.getLogger(__name__)
 
@@ -36,36 +45,6 @@ __all__ = [
     "DictExpression",
     "Lambda",
 ]
-
-__OPERATOR_PRECEDENCE_ORDER = (
-    {"."},
-    {"**"},
-    {"~"},
-    {"+x", "-x"},
-    {"*", "/", "//", "%"},
-    {"+", "-"},
-    {"<<", ">>"},
-    {"&"},
-    {"^"},
-    {"|"},
-    {"in", "not in", "is", "is not", "<", "<=", ">", ">="},
-    {"<>", "!=", "=="},
-    {"not x"},
-    {"and"},
-    {"or"},
-    {"lambda x"},
-    {"=", ":"},
-    {","},
-)
-
-OPERATOR_PRECEDENCE = {
-    operator: priority
-    for priority, operators in enumerate(__OPERATOR_PRECEDENCE_ORDER)
-    for operator in operators
-}
-
-MAX_PRECEDENCE = -1
-MIN_PRECEDENCE = len(__OPERATOR_PRECEDENCE_ORDER)
 
 T = TypeVar("T")
 
@@ -194,95 +173,95 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         pass
 
     def __add__(self, other: Any) -> "Operation":
-        return Operation("+", (self, other))
+        return Operation(op.ADD, (self, other))
 
     def __sub__(self, other: Any) -> "Operation":
-        return Operation("-", (self, other))
+        return Operation(op.SUB, (self, other))
 
     def __mul__(self, other: Any) -> "Operation":
-        return Operation("*", (self, other))
+        return Operation(op.MUL, (self, other))
 
     def __matmul__(self, other: Any) -> "Operation":
-        return Operation("@", (self, other))
+        return Operation(op.MATMUL, (self, other))
 
     def __truediv__(self, other: Any) -> "Operation":
-        return Operation("/", (self, other))
+        return Operation(op.DIV, (self, other))
 
     def __floordiv__(self, other: Any) -> "Operation":
-        return Operation("//", (self, other))
+        return Operation(op.FLOOR_DIV, (self, other))
 
     def __mod__(self, other: Any) -> "Operation":
-        return Operation("%", (self, other))
+        return Operation(op.MOD, (self, other))
 
     def __pow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
-        return Operation("**", (self, power))
+        return Operation(op.POW, (self, power))
 
     def __lshift__(self, other: Any) -> "Operation":
-        return Operation("<<", (self, other))
+        return Operation(op.LSHIFT, (self, other))
 
     def __rshift__(self, other: Any) -> "Operation":
-        return Operation(">>", (self, other))
+        return Operation(op.RSHIFT, (self, other))
 
     def __and__(self, other: Any) -> "Operation":
-        return Operation("&", (self, other))
+        return Operation(op.AND_BITWISE, (self, other))
 
     def __xor__(self, other: Any) -> "Operation":
-        return Operation("^", (self, other))
+        return Operation(op.XOR_BITWISE, (self, other))
 
     def __or__(self, other: Any) -> "Operation":
-        return Operation("|", (self, other))
+        return Operation(op.OR_BITWISE, (self, other))
 
     def __radd__(self, other: Any) -> "Operation":
-        return Operation("+", (other, self))
+        return Operation(op.ADD, (other, self))
 
     def __rsub__(self, other: Any) -> "Operation":
-        return Operation("-", (other, self))
+        return Operation(op.SUB, (other, self))
 
     def __rmul__(self, other: Any) -> "Operation":
-        return Operation("*", (other, self))
+        return Operation(op.MUL, (other, self))
 
     def __rmatmul__(self, other: Any) -> "Operation":
-        return Operation("@", (other, self))
+        return Operation(op.MATMUL, (other, self))
 
     def __rtruediv__(self, other: Any) -> "Operation":
-        return Operation("/", (other, self))
+        return Operation(op.DIV, (other, self))
 
     def __rfloordiv__(self, other: Any) -> "Operation":
-        return Operation("//", (other, self))
+        return Operation(op.FLOOR_DIV, (other, self))
 
     def __rmod__(self, other: Any) -> "Operation":
-        return Operation("%", (other, self))
+        return Operation(op.MOD, (other, self))
 
     def __rpow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
-        return Operation("**", (power, self))
+        return Operation(op.POW, (power, self))
 
     def __rlshift__(self, other: Any) -> "Operation":
-        return Operation("<<", (other, self))
+        return Operation(op.LSHIFT, (other, self))
 
     def __rrshift__(self, other: Any) -> "Operation":
-        return Operation(">>", (other, self))
+        return Operation(op.RSHIFT, (other, self))
 
     def __rand__(self, other: Any) -> "Operation":
-        return Operation("&", (other, self))
+        return Operation(op.AND_BITWISE, (other, self))
 
     def __rxor__(self, other: Any) -> "Operation":
-        return Operation("^", (other, self))
+        return Operation(op.XOR_BITWISE, (other, self))
 
     def __ror__(self, other: Any) -> "Operation":
-        return Operation("|", (other, self))
+        return Operation(op.OR_BITWISE, (other, self))
 
     def __neg__(self) -> "UnaryOperation":
-        return UnaryOperation("-", self)
+        return UnaryOperation(op.NEG, self)
 
     def __pos__(self) -> "UnaryOperation":
-        return UnaryOperation("+", self)
+        return UnaryOperation(op.POS, self)
 
     def __invert__(self) -> "UnaryOperation":
-        return UnaryOperation("~", self)
+        return UnaryOperation(op.INVERT, self)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
         _items = {k: Expression.from_value(v) for k, v in kwargs.items()}
@@ -402,6 +381,9 @@ class _Epsilon(AtomicExpression[None]):
 
 EPSILON = _Epsilon()
 
+#
+# Operators
+#
 
 #
 # Operations
@@ -415,7 +397,7 @@ class BaseOperation(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def operator(self) -> str:
+    def operator(self) -> Operator:
         """
         The operator of this operation
         """
@@ -506,12 +488,19 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     A unary operation
     """
 
-    def __init__(self, operator: str, operand: Any):
-        super().__init__(prefix=Identifier(operator), subexpression=operand)
+    def __init__(self, operator: UnaryOperator, operand: Any):
+        super().__init__(prefix=EPSILON, subexpression=operand)
         self._operator = operator
 
     @property
-    def operator(self) -> str:
+    def separator(self) -> str:
+        """[see superclass]"""
+        return self._operator.symbol
+
+    separator.__doc__ = PrefixExpression.separator.__doc__
+
+    @property
+    def operator(self) -> op.UnaryOperator:
         """[see superclass]"""
         return self._operator
 
@@ -527,7 +516,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     @property
     def precedence(self) -> int:
         """[see superclass]"""
-        return OPERATOR_PRECEDENCE.get(f"{self._operator}x", MIN_PRECEDENCE)
+        return OPERATOR_PRECEDENCE.get(self._operator, MIN_PRECEDENCE)
 
     precedence.__doc__ = Expression.precedence.__doc__
 
@@ -538,7 +527,7 @@ class _KeywordArgument(BasePrefixExpression):
     A keyword argument, used by functions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE["="]
+    _PRECEDENCE = OPERATOR_PRECEDENCE[op.EQ]
 
     def __init__(self, name: str, value: Any):
         super().__init__(prefix=Identifier(name), subexpression=value)
@@ -579,7 +568,7 @@ class _DictEntry(BasePrefixExpression):
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE[":"]
+    _PRECEDENCE = OPERATOR_PRECEDENCE[op.COLON]
 
     def __init__(self, key: Any, value: Any):
         super().__init__(prefix=key, subexpression=value)
@@ -619,7 +608,7 @@ class BaseInvocation(PrefixExpression):
     `<expression>[<expression>]`
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE["."]
+    _PRECEDENCE = OPERATOR_PRECEDENCE[op.DOT]
 
     def __init__(self, callee: Any, brackets: Tuple[str, str], args: Tuple[Any, ...]):
         self.callee = Expression.from_value(callee)
@@ -689,7 +678,7 @@ class _LambdaColon(BasePrefixExpression):
     Two expressions separated by a colon, used in dictionaries and lambda expressions
     """
 
-    _PRECEDENCE = OPERATOR_PRECEDENCE["lambda x"]
+    _PRECEDENCE = OPERATOR_PRECEDENCE[op.LAMBDA]
 
     def __init__(self, params: Any, body: Any):
         super().__init__(prefix=params, subexpression=body)
@@ -750,15 +739,15 @@ class Lambda(UnaryOperation):
         elif len(params) == 1:
             arg_list = params[0]
         else:
-            arg_list = Operation(operator=",", operands=params)
+            arg_list = Operation(operator=op.COMMA, operands=params)
 
         super().__init__(
-            operator="lambda ", operand=_LambdaColon(params=arg_list, body=body)
+            operator=op.LAMBDA, operand=_LambdaColon(params=arg_list, body=body)
         )
 
 
 #
-# Infix expressions
+# BinaryOperator expressions
 #
 
 
@@ -770,7 +759,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def infix(self) -> str:
+    def infix(self) -> BinaryOperator:
         """
         The infix used to separate this expression's subexpressions.
         """
@@ -800,7 +789,10 @@ class Operation(InfixExpression, BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(self, operator: str, operands: Any):
+    def __init__(self, operator: BinaryOperator, operands: Union[Iterable[Any], Any]):
+
+        if not isinstance(operator, BinaryOperator):
+            raise TypeError(f"arg operator={operator} must be an BinaryOperator")
 
         operands = to_tuple(operands)
         if not operands:
@@ -820,7 +812,7 @@ class Operation(InfixExpression, BaseOperation):
         self._operands = operands
 
     @property
-    def operator(self) -> str:
+    def operator(self) -> BinaryOperator:
         """[see superclass]"""
         return self._operator
 
@@ -834,7 +826,7 @@ class Operation(InfixExpression, BaseOperation):
     operands.__doc__ = BaseOperation.operands.__doc__
 
     @property
-    def infix(self) -> str:
+    def infix(self) -> BinaryOperator:
         """[see superclass]"""
         return self._operator
 
@@ -865,7 +857,7 @@ class Attr(Operation):
             attribute = Identifier(attribute)
         elif not isinstance(attribute, Identifier):
             raise TypeError("arg attribute must be a string or an Identifier")
-        super().__init__(operator=".", operands=(obj, attribute))
+        super().__init__(operator=op.DOT, operands=(obj, attribute))
 
 
 #
@@ -928,7 +920,7 @@ class CollectionExpression(BracketedExpression):
         elif len(elements) == 1:
             subexpression = elements[0]
         else:
-            subexpression = Operation(operator=",", operands=elements)
+            subexpression = Operation(operator=op.COMMA, operands=elements)
 
         self.elements = elements
         self._subexpression = subexpression
