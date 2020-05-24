@@ -729,7 +729,7 @@ class Lambda(UnaryOperation):
     def __init__(
         self,
         params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
-        body: Expression,
+        body: Any,
     ):
         params = to_tuple(params)
 
