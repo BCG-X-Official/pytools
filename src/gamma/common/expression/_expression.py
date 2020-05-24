@@ -2,9 +2,10 @@
 Basic utilities for constructing complex expressions and rendering them as indented
 strings; useful for generating representations of complex Python objects.
 """
+import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, Mapping, Optional, Tuple, TypeVar, Union
+from typing import Any, Generic, Iterable, Optional, Tuple, TypeVar, Union
 
 import gamma.common.expression.operator as op
 from gamma.common import AllTracker, to_tuple
@@ -36,11 +37,11 @@ __all__ = [
     "Operation",
     "Attr",
     "BracketedExpression",
-    "CollectionExpression",
-    "ListExpression",
-    "TupleExpression",
-    "SetExpression",
-    "DictExpression",
+    "CollectionLiteral",
+    "ListLiteral",
+    "TupleLiteral",
+    "SetLiteral",
+    "DictLiteral",
     "Lambda",
 ]
 
@@ -127,21 +128,21 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         elif isinstance(value, str):
             return Literal(value)
         elif isinstance(value, list):
-            return ListExpression(_from_collection(value))
+            return ListLiteral(*_from_collection(value))
         elif isinstance(value, tuple):
-            return TupleExpression(_from_collection(value))
+            return TupleLiteral(*_from_collection(value))
         elif isinstance(value, set):
-            return SetExpression(_from_collection(value))
+            return SetLiteral(*_from_collection(value))
         elif isinstance(value, dict):
-            return DictExpression(
-                {
-                    Expression.from_value(key): Expression.from_value(value)
+            return DictLiteral(
+                *(
+                    (Expression.from_value(key), Expression.from_value(value))
                     for key, value in value.items()
-                }
+                )
             )
         elif isinstance(value, Iterable):
             return Call(
-                callee=Identifier(type(value).__name__), *_from_collection(value)
+                *_from_collection(value), callee=Identifier(type(value).__name__)
             )
         else:
             return Literal(value)
@@ -183,66 +184,66 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         pass
 
     def __add__(self, other: Any) -> "Operation":
-        return Operation(op.ADD, (self, other))
+        return Operation(op.ADD, self, other)
 
     def __sub__(self, other: Any) -> "Operation":
-        return Operation(op.SUB, (self, other))
+        return Operation(op.SUB, self, other)
 
     def __mul__(self, other: Any) -> "Operation":
-        return Operation(op.MUL, (self, other))
+        return Operation(op.MUL, self, other)
 
     def __matmul__(self, other: Any) -> "Operation":
-        return Operation(op.MATMUL, (self, other))
+        return Operation(op.MATMUL, self, other)
 
     def __truediv__(self, other: Any) -> "Operation":
-        return Operation(op.DIV, (self, other))
+        return Operation(op.DIV, self, other)
 
     def __floordiv__(self, other: Any) -> "Operation":
-        return Operation(op.FLOOR_DIV, (self, other))
+        return Operation(op.FLOOR_DIV, self, other)
 
     def __mod__(self, other: Any) -> "Operation":
-        return Operation(op.MOD, (self, other))
+        return Operation(op.MOD, self, other)
 
     def __pow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             raise NotImplementedError("modulo is not supported")
-        return Operation(op.POW, (self, power))
+        return Operation(op.POW, self, power)
 
     def __lshift__(self, other: Any) -> "Operation":
-        return Operation(op.LSHIFT, (self, other))
+        return Operation(op.LSHIFT, self, other)
 
     def __rshift__(self, other: Any) -> "Operation":
-        return Operation(op.RSHIFT, (self, other))
+        return Operation(op.RSHIFT, self, other)
 
     def __and__(self, other: Any) -> "Operation":
-        return Operation(op.AND_BITWISE, (self, other))
+        return Operation(op.AND_BITWISE, self, other)
 
     def __xor__(self, other: Any) -> "Operation":
-        return Operation(op.XOR_BITWISE, (self, other))
+        return Operation(op.XOR_BITWISE, self, other)
 
     def __or__(self, other: Any) -> "Operation":
-        return Operation(op.OR_BITWISE, (self, other))
+        return Operation(op.OR_BITWISE, self, other)
 
     def __radd__(self, other: Any) -> "Operation":
-        return Operation(op.ADD, (other, self))
+        return Operation(op.ADD, other, self)
 
     def __rsub__(self, other: Any) -> "Operation":
-        return Operation(op.SUB, (other, self))
+        return Operation(op.SUB, other, self)
 
     def __rmul__(self, other: Any) -> "Operation":
-        return Operation(op.MUL, (other, self))
+        return Operation(op.MUL, other, self)
 
     def __rmatmul__(self, other: Any) -> "Operation":
-        return Operation(op.MATMUL, (other, self))
+        return Operation(op.MATMUL, other, self)
 
     def __rtruediv__(self, other: Any) -> "Operation":
-        return Operation(op.DIV, (other, self))
+        return Operation(op.DIV, other, self)
 
     def __rfloordiv__(self, other: Any) -> "Operation":
-        return Operation(op.FLOOR_DIV, (other, self))
+        return Operation(op.FLOOR_DIV, other, self)
 
     def __rmod__(self, other: Any) -> "Operation":
-        return Operation(op.MOD, (other, self))
+        return Operation(op.MOD, other, self)
 
     def __rpow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
@@ -250,19 +251,19 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return Operation(op.POW, (power, self))
 
     def __rlshift__(self, other: Any) -> "Operation":
-        return Operation(op.LSHIFT, (other, self))
+        return Operation(op.LSHIFT, other, self)
 
     def __rrshift__(self, other: Any) -> "Operation":
-        return Operation(op.RSHIFT, (other, self))
+        return Operation(op.RSHIFT, other, self)
 
     def __rand__(self, other: Any) -> "Operation":
-        return Operation(op.AND_BITWISE, (other, self))
+        return Operation(op.AND_BITWISE, other, self)
 
     def __rxor__(self, other: Any) -> "Operation":
-        return Operation(op.XOR_BITWISE, (other, self))
+        return Operation(op.XOR_BITWISE, other, self)
 
     def __ror__(self, other: Any) -> "Operation":
-        return Operation(op.OR_BITWISE, (other, self))
+        return Operation(op.OR_BITWISE, other, self)
 
     def __neg__(self) -> "UnaryOperation":
         return UnaryOperation(op.NEG, self)
@@ -274,8 +275,11 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return UnaryOperation(op.INVERT, self)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
-        _items = {k: Expression.from_value(v) for k, v in kwargs.items()}
-        return Call(self, *(Expression.from_value(arg) for arg in args), **_items)
+        return Call(
+            self,
+            *(Expression.from_value(arg) for arg in args),
+            **{k: Expression.from_value(v) for k, v in kwargs.items()},
+        )
 
     def __getitem__(self, *args: Any) -> "Index":
         return Index(callee=self, *args)
@@ -628,10 +632,9 @@ class BaseInvocation(PrefixExpression):
 
     _PRECEDENCE = op.DOT.precedence
 
-    def __init__(self, callee: Any, brackets: Tuple[str, str], args: Tuple[Any, ...]):
+    def __init__(self, callee: Any, brackets: Tuple[str, str], args: Iterable[Any]):
         self.callee = Expression.from_value(callee)
-        self.brackets = brackets
-        self.invocation = _InvocationExpression(brackets=brackets, args=args)
+        self.invocation = _Invocation(brackets, args=args)
 
     @property
     def prefix(self) -> Expression:
@@ -757,7 +760,7 @@ class Lambda(UnaryOperation):
         elif len(params) == 1:
             arg_list = params[0]
         else:
-            arg_list = Operation(operator=op.COMMA, operands=params)
+            arg_list = Operation(operator=op.COMMA, *params)
 
         super().__init__(
             operator=op.LAMBDA, operand=_LambdaColon(params=arg_list, body=body)
@@ -807,14 +810,13 @@ class Operation(InfixExpression, BaseOperation):
     A operation with at least two operands
     """
 
-    def __init__(self, operator: BinaryOperator, operands: Union[Iterable[Any], Any]):
+    def __init__(self, operator: BinaryOperator, *operands: Any):
 
         if not isinstance(operator, BinaryOperator):
             raise TypeError(f"arg operator={operator} must be an BinaryOperator")
 
-        operands = to_tuple(operands)
-        if not operands:
-            raise ValueError("operation requires at least one operand")
+        if len(operands) < 2:
+            raise ValueError("operation requires at least two operands")
 
         operands = tuple(Expression.from_value(operand) for operand in operands)
 
@@ -875,7 +877,7 @@ class Attr(Operation):
             attribute = Identifier(attribute)
         elif not isinstance(attribute, Identifier):
             raise TypeError("arg attribute must be a string or an Identifier")
-        super().__init__(operator=op.DOT, operands=(obj, attribute))
+        super().__init__(op.DOT, obj, attribute)
 
 
 #
@@ -922,12 +924,12 @@ class BracketedExpression(Expression, metaclass=ABCMeta):
         return hash((type(self), self.brackets, self.subexpression))
 
 
-class CollectionExpression(BracketedExpression):
+class CollectionLiteral(BracketedExpression):
     """
     A collection literal, e.g. a list, set, tuple, or dictionary
     """
 
-    def __init__(self, *, brackets: Tuple[str, str], elements: Iterable[Any]) -> None:
+    def __init__(self, brackets: Tuple[str, str], elements: Iterable[Any]) -> None:
         elements = tuple(
             Expression.from_value(element) for element in to_tuple(elements)
         )
@@ -938,7 +940,7 @@ class CollectionExpression(BracketedExpression):
         elif len(elements) == 1:
             subexpression = elements[0]
         else:
-            subexpression = Operation(operator=op.COMMA, operands=elements)
+            subexpression = Operation(op.COMMA, *elements)
 
         self.elements = elements
         self._subexpression = subexpression
@@ -959,52 +961,55 @@ class CollectionExpression(BracketedExpression):
     subexpression.__doc__ = BracketedExpression.subexpression.__doc__
 
 
-class ListExpression(CollectionExpression):
+class ListLiteral(CollectionLiteral):
     """
     A list of expressions
     """
 
-    def __init__(self, elements: Iterable[Any]):
+    def __init__(self, *elements: Any):
         super().__init__(brackets=("[", "]"), elements=elements)
 
 
-class TupleExpression(CollectionExpression):
+class TupleLiteral(CollectionLiteral):
     """
     A list of expressions
     """
 
-    def __init__(self, elements: Iterable[Any]):
+    def __init__(self, *elements: Any):
         super().__init__(brackets=("(", ")"), elements=elements)
 
 
-class _InvocationExpression(CollectionExpression):
+class SetLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *elements: Any):
+        super().__init__(brackets=("{", "}"), elements=elements)
+
+
+class DictLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *args: Tuple[Any, Any], **entries: Tuple[str, Any]):
+        super().__init__(
+            brackets=("{", "}"),
+            elements=(
+                _DictEntry(key, value)
+                for key, value in itertools.chain(args, entries.items())
+            ),
+        )
+
+
+class _Invocation(CollectionLiteral):
     """
     A list of expressions
     """
 
     def __init__(self, brackets: Tuple[str, str], args: Iterable[Any]):
         super().__init__(brackets=brackets, elements=args)
-
-
-class SetExpression(CollectionExpression):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, elements: Iterable[Any]):
-        super().__init__(brackets=("{", "}"), elements=elements)
-
-
-class DictExpression(CollectionExpression):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, entries: Mapping[Any, Any]):
-        super().__init__(
-            brackets=("{", "}"),
-            elements=tuple(_DictEntry(key, value) for key, value in entries.items()),
-        )
 
 
 __tracker.validate()
