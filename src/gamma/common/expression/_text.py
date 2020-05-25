@@ -454,9 +454,7 @@ class PrefixForm(ComplexForm):
     ) -> List[IndentedLine]:
         """[see superclass]"""
 
-        result: List[IndentedLine]
-
-        result = self.prefix.to_lines(
+        prefix_lines: List[IndentedLine] = self.prefix.to_lines(
             config=config,
             indent=indent,
             leading_characters=leading_characters,
@@ -468,14 +466,17 @@ class PrefixForm(ComplexForm):
         subform_lines = self.subform.to_lines(
             config=config,
             indent=indent,
-            leading_characters=len(result[-1]) + len(separator),
+            leading_characters=(len(prefix_lines[-1]) if prefix_lines else 0)
+            + len(separator),
             trailing_characters=trailing_characters,
         )
 
-        result[-1] += separator + subform_lines[0].text
-        result.extend(subform_lines[1:])
+        if prefix_lines:
+            subform_lines[0] = prefix_lines[-1] + separator + subform_lines[0].text
+        else:
+            subform_lines[0] = separator + subform_lines[0]
 
-        return result
+        return prefix_lines[:-1] + subform_lines
 
     to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
