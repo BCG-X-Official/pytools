@@ -64,14 +64,14 @@ def test_expression_formatting() -> None:
 
     # expression 3
 
-    expr_3 = Identifier("g")(param=(e, e + e, e * e + e))
+    expr_3 = Identifier("g")(param=(e, e + e, ~(e * e + e)))
     assert (
         repr(expr_3)
         == """g(
     param=(
         f((1 | 2) >> 'x' % x, abc=-5),
         f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5),
-        (
+        ~(
             f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
             + f((1 | 2) >> 'x' % x, abc=-5)
         )
