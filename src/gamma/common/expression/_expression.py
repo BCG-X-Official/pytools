@@ -514,9 +514,13 @@ class Identifier(AtomicExpression[str]):
     An identifier
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: Any) -> None:
         if not isinstance(name, str):
-            raise ValueError("arg name must be a string")
+            name = getattr(name, "__name__", None)
+            if not name:
+                raise TypeError(
+                    "arg name must be a string, or must have attribute __name__"
+                )
         self.name = name
 
     @property
