@@ -26,6 +26,12 @@ __all__ = [
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
     "BRACKETS_CURLY",
+    "BracketedExpression",
+    "CollectionLiteral",
+    "ListLiteral",
+    "TupleLiteral",
+    "SetLiteral",
+    "DictLiteral",
     "AtomicExpression",
     "Literal",
     "Identifier",
@@ -41,13 +47,8 @@ __all__ = [
     "InfixExpression",
     "Operation",
     "Attr",
-    "BracketedExpression",
-    "CollectionLiteral",
-    "ListLiteral",
-    "TupleLiteral",
-    "SetLiteral",
-    "DictLiteral",
 ]
+
 
 T = TypeVar("T")
 
@@ -297,6 +298,11 @@ class _AttributeView:
         return Attr(obj=self.__expression, attribute=key)
 
 
+#
+# Bracketed expressions
+#
+
+
 class BracketPair(NamedTuple):
     """
     A pair of brackets.
@@ -309,6 +315,133 @@ class BracketPair(NamedTuple):
 BRACKETS_ROUND = BracketPair("(", ")")
 BRACKETS_SQUARE = BracketPair("[", "]")
 BRACKETS_CURLY = BracketPair("{", "}")
+
+
+class BracketedExpression(Expression, metaclass=ABCMeta):
+    """
+    An expression surrounded by brackets.
+    """
+
+    @property
+    @abstractmethod
+    def brackets(self) -> BracketPair:
+        """
+        The brackets surrounding this expression's subexpressions.
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def subexpression(self) -> Expression:
+        """
+        The subexpression bracketed by this expression.
+        """
+        pass
+
+    @property
+    def precedence(self) -> int:
+        """[see superclass]"""
+        return MAX_PRECEDENCE
+
+    precedence.__doc__ = Expression.precedence.__doc__
+
+    def __eq__(self, other: "BracketedExpression") -> bool:
+        return (
+            isinstance(other, type(self))
+            and self.brackets == other.brackets
+            and self.subexpression == other.subexpression
+        )
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.brackets, self.subexpression))
+
+
+class CollectionLiteral(BracketedExpression):
+    """
+    A collection literal, e.g. a list, set, tuple, or dictionary
+    """
+
+    def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
+        elements = tuple(
+            Expression.from_value(element) for element in to_tuple(elements)
+        )
+
+        subexpression: Expression
+        if not elements:
+            subexpression = EPSILON
+        elif len(elements) == 1:
+            subexpression = elements[0]
+        else:
+            subexpression = Operation(op.COMMA, *elements)
+
+        self.elements = elements
+        self._subexpression = subexpression
+        self._brackets = brackets
+
+    @property
+    def brackets(self) -> BracketPair:
+        """[see superclass]"""
+        return self._brackets
+
+    brackets.__doc__ = BracketedExpression.brackets.__doc__
+
+    @property
+    def subexpression(self) -> Expression:
+        """[see superclass]"""
+        return self._subexpression
+
+    subexpression.__doc__ = BracketedExpression.subexpression.__doc__
+
+
+class ListLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *elements: Any):
+        super().__init__(brackets=BRACKETS_SQUARE, elements=elements)
+
+
+class TupleLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *elements: Any):
+        super().__init__(brackets=BRACKETS_ROUND, elements=elements)
+
+
+class SetLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *elements: Any):
+        super().__init__(brackets=BRACKETS_CURLY, elements=elements)
+
+
+class DictLiteral(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, *args: Tuple[Any, Any], **entries: Tuple[str, Any]):
+        super().__init__(
+            brackets=BRACKETS_CURLY,
+            elements=(
+                _DictEntry(key, value)
+                for key, value in itertools.chain(args, entries.items())
+            ),
+        )
+
+
+class _Invocation(CollectionLiteral):
+    """
+    A list of expressions
+    """
+
+    def __init__(self, brackets: BracketPair, args: Iterable[Any]):
+        super().__init__(brackets=brackets, elements=args)
 
 
 #
@@ -335,7 +468,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     @abstractmethod
     def value(self) -> T:
         """
-        The underlying valye of this atomic expression
+        The underlying value of this atomic expression
         """
         pass
 
@@ -420,10 +553,6 @@ class _Epsilon(AtomicExpression[None]):
 
 
 EPSILON = _Epsilon()
-
-#
-# Operators
-#
 
 #
 # Operations
@@ -896,138 +1025,6 @@ class Attr(Operation):
         elif not isinstance(attribute, Identifier):
             raise TypeError("arg attribute must be a string or an Identifier")
         super().__init__(op.DOT, obj, attribute)
-
-
-#
-# Bracketed expressions
-#
-
-
-class BracketedExpression(Expression, metaclass=ABCMeta):
-    """
-    An expression surrounded by brackets.
-    """
-
-    @property
-    @abstractmethod
-    def brackets(self) -> BracketPair:
-        """
-        The brackets surrounding this expression's subexpressions.
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def subexpression(self) -> Expression:
-        """
-        The subexpression bracketed by this expression.
-        """
-        pass
-
-    @property
-    def precedence(self) -> int:
-        """[see superclass]"""
-        return MAX_PRECEDENCE
-
-    precedence.__doc__ = Expression.precedence.__doc__
-
-    def __eq__(self, other: "BracketedExpression") -> bool:
-        return (
-            isinstance(other, type(self))
-            and self.brackets == other.brackets
-            and self.subexpression == other.subexpression
-        )
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.brackets, self.subexpression))
-
-
-class CollectionLiteral(BracketedExpression):
-    """
-    A collection literal, e.g. a list, set, tuple, or dictionary
-    """
-
-    def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
-        elements = tuple(
-            Expression.from_value(element) for element in to_tuple(elements)
-        )
-
-        subexpression: Expression
-        if not elements:
-            subexpression = EPSILON
-        elif len(elements) == 1:
-            subexpression = elements[0]
-        else:
-            subexpression = Operation(op.COMMA, *elements)
-
-        self.elements = elements
-        self._subexpression = subexpression
-        self._brackets = brackets
-
-    @property
-    def brackets(self) -> BracketPair:
-        """[see superclass]"""
-        return self._brackets
-
-    brackets.__doc__ = BracketedExpression.brackets.__doc__
-
-    @property
-    def subexpression(self) -> Expression:
-        """[see superclass]"""
-        return self._subexpression
-
-    subexpression.__doc__ = BracketedExpression.subexpression.__doc__
-
-
-class ListLiteral(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_SQUARE, elements=elements)
-
-
-class TupleLiteral(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_ROUND, elements=elements)
-
-
-class SetLiteral(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_CURLY, elements=elements)
-
-
-class DictLiteral(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, *args: Tuple[Any, Any], **entries: Tuple[str, Any]):
-        super().__init__(
-            brackets=BRACKETS_CURLY,
-            elements=(
-                _DictEntry(key, value)
-                for key, value in itertools.chain(args, entries.items())
-            ),
-        )
-
-
-class _Invocation(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, brackets: BracketPair, args: Iterable[Any]):
-        super().__init__(brackets=brackets, elements=args)
 
 
 __tracker.validate()
