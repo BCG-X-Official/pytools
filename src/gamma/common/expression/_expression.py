@@ -5,7 +5,7 @@ strings; useful for generating representations of complex Python objects.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, Optional, Tuple, TypeVar, Union
+from typing import Any, Generic, Iterable, NamedTuple, Optional, Tuple, TypeVar, Union
 
 import gamma.common.expression.operator as op
 from gamma.common import AllTracker, to_tuple
@@ -22,6 +22,10 @@ __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
+    "BracketPair",
+    "BRACKETS_ROUND",
+    "BRACKETS_SQUARE",
+    "BRACKETS_CURLY",
     "AtomicExpression",
     "Literal",
     "Identifier",
@@ -33,6 +37,7 @@ __all__ = [
     "BaseInvocation",
     "Call",
     "Index",
+    "Lambda",
     "InfixExpression",
     "Operation",
     "Attr",
@@ -42,7 +47,6 @@ __all__ = [
     "TupleLiteral",
     "SetLiteral",
     "DictLiteral",
-    "Lambda",
 ]
 
 T = TypeVar("T")
@@ -291,6 +295,20 @@ class _AttributeView:
 
     def __getattr__(self, key: str) -> Expression:
         return Attr(obj=self.__expression, attribute=key)
+
+
+class BracketPair(NamedTuple):
+    """
+    A pair of brackets.
+    """
+
+    opening: str
+    closing: str
+
+
+BRACKETS_ROUND = BracketPair("(", ")")
+BRACKETS_SQUARE = BracketPair("[", "]")
+BRACKETS_CURLY = BracketPair("{", "}")
 
 
 #
@@ -632,7 +650,7 @@ class BaseInvocation(PrefixExpression):
 
     _PRECEDENCE = op.DOT.precedence
 
-    def __init__(self, callee: Any, brackets: Tuple[str, str], args: Iterable[Any]):
+    def __init__(self, callee: Any, brackets: BracketPair, args: Iterable[Any]):
         self.callee = Expression.from_value(callee)
         self.invocation = _Invocation(brackets, args=args)
 
@@ -673,7 +691,7 @@ class Call(BaseInvocation):
     def __init__(self, callee: Any, *args: Any, **kwargs: Any):
         super().__init__(
             callee=callee,
-            brackets=("(", ")"),
+            brackets=BRACKETS_ROUND,
             args=(
                 *args,
                 *(
@@ -690,7 +708,7 @@ class Index(BaseInvocation):
     """
 
     def __init__(self, callee: Any, *args: Any):
-        super().__init__(callee=callee, brackets=("[", "]"), args=args),
+        super().__init__(callee=callee, brackets=BRACKETS_SQUARE, args=args),
 
 
 # noinspection DuplicatedCode
@@ -892,7 +910,7 @@ class BracketedExpression(Expression, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def brackets(self) -> Tuple[str, str]:
+    def brackets(self) -> BracketPair:
         """
         The brackets surrounding this expression's subexpressions.
         """
@@ -929,7 +947,7 @@ class CollectionLiteral(BracketedExpression):
     A collection literal, e.g. a list, set, tuple, or dictionary
     """
 
-    def __init__(self, brackets: Tuple[str, str], elements: Iterable[Any]) -> None:
+    def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
         elements = tuple(
             Expression.from_value(element) for element in to_tuple(elements)
         )
@@ -947,7 +965,7 @@ class CollectionLiteral(BracketedExpression):
         self._brackets = brackets
 
     @property
-    def brackets(self) -> Tuple[str, str]:
+    def brackets(self) -> BracketPair:
         """[see superclass]"""
         return self._brackets
 
@@ -967,7 +985,7 @@ class ListLiteral(CollectionLiteral):
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=("[", "]"), elements=elements)
+        super().__init__(brackets=BRACKETS_SQUARE, elements=elements)
 
 
 class TupleLiteral(CollectionLiteral):
@@ -976,7 +994,7 @@ class TupleLiteral(CollectionLiteral):
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=("(", ")"), elements=elements)
+        super().__init__(brackets=BRACKETS_ROUND, elements=elements)
 
 
 class SetLiteral(CollectionLiteral):
@@ -985,7 +1003,7 @@ class SetLiteral(CollectionLiteral):
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=("{", "}"), elements=elements)
+        super().__init__(brackets=BRACKETS_CURLY, elements=elements)
 
 
 class DictLiteral(CollectionLiteral):
@@ -995,7 +1013,7 @@ class DictLiteral(CollectionLiteral):
 
     def __init__(self, *args: Tuple[Any, Any], **entries: Tuple[str, Any]):
         super().__init__(
-            brackets=("{", "}"),
+            brackets=BRACKETS_CURLY,
             elements=(
                 _DictEntry(key, value)
                 for key, value in itertools.chain(args, entries.items())
@@ -1008,7 +1026,7 @@ class _Invocation(CollectionLiteral):
     A list of expressions
     """
 
-    def __init__(self, brackets: Tuple[str, str], args: Iterable[Any]):
+    def __init__(self, brackets: BracketPair, args: Iterable[Any]):
         super().__init__(brackets=brackets, elements=args)
 
 
