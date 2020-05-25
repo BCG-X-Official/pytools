@@ -11,6 +11,8 @@ from gamma.common import AllTracker
 from gamma.common.expression._expression import (
     AtomicExpression,
     BracketedExpression,
+    BracketPair,
+    BRACKETS_ROUND,
     EPSILON,
     Expression,
     ExpressionFormatter,
@@ -148,28 +150,6 @@ class TextualForm:
         """
         pass
 
-    @property
-    def brackets(self) -> Optional[Tuple[str, str]]:
-        """
-        The brackets enclosing this form
-        :return: a tuple of opening and closing brackets, or `None` for no brackets
-        """
-        return None
-
-    @property
-    def opening_bracket(self) -> str:
-        """
-        The opening bracket of this expression.
-        """
-        return self.brackets[0] if self.brackets else ""
-
-    @property
-    def closing_bracket(self) -> str:
-        """
-        The closing bracket of this expression.
-        """
-        return self.brackets[1] if self.brackets else ""
-
     def encapsulate(
         self, *, condition: bool = True, single_line: bool = True
     ) -> "BracketedForm":
@@ -181,7 +161,9 @@ class TextualForm:
         :return: the resulting form depending on the condition
         """
         return (
-            BracketedForm(brackets=("(", ")"), subform=self, single_line=single_line)
+            BracketedForm(
+                brackets=BRACKETS_ROUND, subform=self, single_line=single_line
+            )
             if condition
             else self
         )
@@ -324,19 +306,23 @@ class BracketedForm(ComplexForm):
     """
 
     def __init__(
-        self, brackets: Tuple[str, str], subform: TextualForm, single_line: bool = True
+        self, brackets: BracketPair, subform: TextualForm, single_line: bool = True
     ) -> None:
         """
         :param brackets: the brackets surrounding the subform(s)
+        :param subform: the subform to be bracketed
+        :param single_line: if `False`, do not render the brackets in single-line \
+            output
         """
-        assert len(brackets) == 2, "arg brackets is a pair"
 
         super().__init__(
-            length=((len(brackets[0]) + len(brackets[1])) if single_line else 0)
+            length=(
+                (len(brackets.opening) + len(brackets.closing)) if single_line else 0
+            )
             + len(subform)
         )
 
-        self._brackets = brackets
+        self.brackets = brackets
         self.subform = subform
         self.single_line = single_line
 
@@ -352,19 +338,12 @@ class BracketedForm(ComplexForm):
             subform=TextualForm.from_expression(expression.subexpression),
         )
 
-    @property
-    def brackets(self) -> Tuple[str, str]:
-        """[see superclass]"""
-        return self._brackets
-
-    brackets.__doc__ = TextualForm.brackets.__doc__
-
     def to_single_line(self) -> str:
         """[see superclass]"""
         subform_text = self.subform.to_single_line()
         if self.single_line:
             # render the brackets only when they are visible in single-line forms
-            return f"{self.opening_bracket}{subform_text}{self.closing_bracket}"
+            return f"{self.brackets.opening}{subform_text}{self.brackets.closing}"
         else:
             return subform_text
 
@@ -380,14 +359,14 @@ class BracketedForm(ComplexForm):
         """[see superclass]"""
 
         return [
-            IndentedLine(indent=indent, text=self.opening_bracket),
+            IndentedLine(indent=indent, text=self.brackets.opening),
             *self.subform.to_lines(
                 config=config,
                 indent=indent + 1,
                 leading_characters=leading_characters,
                 trailing_characters=trailing_characters,
             ),
-            IndentedLine(indent=indent, text=self.closing_bracket),
+            IndentedLine(indent=indent, text=self.brackets.closing),
         ]
 
     to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
