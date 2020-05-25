@@ -506,7 +506,9 @@ class InfixForm(ComplexForm):
 
         if infix_padding is InfixForm.PADDING_RIGHT:
             subforms = tuple(
-                subform.encapsulate(condition=not subform.brackets, single_line=False)
+                subform.encapsulate(
+                    condition=isinstance(subform, InfixForm), single_line=False
+                )
                 for subform in subforms
             )
 
