@@ -287,7 +287,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         )
 
     def __getitem__(self, *args: Any) -> "Index":
-        return Index(callee=self, *args)
+        return Index(self, *args)
 
 
 class _AttributeView:
