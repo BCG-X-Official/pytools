@@ -22,6 +22,7 @@ __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
+    "AttributeAccessor",
     "BracketPair",
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
@@ -48,7 +49,6 @@ __all__ = [
     "Operation",
     "Attr",
 ]
-
 
 T = TypeVar("T")
 
@@ -169,7 +169,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         pass
 
     @property
-    def attr(self) -> "_AttributeView":
+    def attr(self) -> "AttributeAccessor":
         """
         An _attribute view_ of this expression, allowing for shorthand attribute
         access expressions.
@@ -178,7 +178,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         `Identifier("s").attr.isalpha()` as a shorthand for
         `Call(Attr(Identifier("s"), "isalpha"))`
         """
-        return _AttributeView(self)
+        return AttributeAccessor(self)
 
     @abstractmethod
     def __eq__(self, other) -> bool:
@@ -290,7 +290,14 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return Index(callee=self, *args)
 
 
-class _AttributeView:
+class AttributeAccessor:
+    """
+    The attribute accessor of an expression, allowing the use of "dot notation"
+    to generate expressions with attribute access.
+
+    See :attr:`.Expression.attr` for details.
+    """
+
     def __init__(self, expression: Expression) -> None:
         self.__expression = expression
 
