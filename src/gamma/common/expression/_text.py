@@ -98,7 +98,9 @@ class TextualForm:
         elif isinstance(expression, InfixExpression):
             return InfixForm.from_infix_expression(expression)
         else:
-            assert isinstance(expression, PrefixExpression)
+            assert isinstance(
+                expression, PrefixExpression
+            ), f"{type(expression)} is a PrefixExpression"
             return PrefixForm.from_prefix_expression(expression)
 
     def to_text(self, config: FormattingConfig) -> str:
