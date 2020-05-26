@@ -145,6 +145,15 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
                     for key, value in value.items()
                 )
             )
+        elif isinstance(value, slice):
+            args = [
+                EPSILON if value is None else value
+                for value in (value.start, value.stop, value.step)
+            ]
+            if value.step is not None:
+                return Operation(op.SLICE, *args)
+            else:
+                return Operation(op.SLICE, args[0], args[1])
         elif isinstance(value, Iterable):
             return Call(
                 *_from_collection(value), callee=Identifier(type(value).__name__)
@@ -287,7 +296,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         )
 
     def __getitem__(self, *args: Any) -> "Index":
-        return Index(callee=self, *args)
+        return Index(self, *args)
 
 
 class AttributeAccessor:
