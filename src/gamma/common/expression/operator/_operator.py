@@ -45,6 +45,7 @@ __all__ = [
     "LAMBDA",
     "ASSIGN",
     "COLON",
+    "SLICE",
     "COMMA",
     "NONE",
     "MIN_PRECEDENCE",
@@ -135,6 +136,7 @@ OR = BinaryOperator("or")
 LAMBDA = UnaryOperator("lambda")
 ASSIGN = BinaryOperator("=")
 COLON = BinaryOperator(":")
+SLICE = BinaryOperator(":")
 COMMA = BinaryOperator(",")
 NONE = BinaryOperator("")
 

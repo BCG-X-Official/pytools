@@ -532,7 +532,7 @@ class InfixForm(ComplexForm):
             InfixForm.PADDING_RIGHT
             if infix in [op.COMMA, op.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [op.DOT, op.NONE]
+            if infix in [op.DOT, op.SLICE, op.NONE]
             else InfixForm.PADDING_BOTH
         )
 
