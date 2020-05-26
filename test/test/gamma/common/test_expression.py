@@ -104,11 +104,15 @@ def test_expression() -> None:
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
         (ident_xx.attr.isalpha(), "xx.isalpha()"),
+        (ident_xx[:], "xx[:]"),
+        (ident_xx[::1], "xx[::1]"),
+        (ident_xx[2::3, 1], "xx[2::3, 1]"),
+        (ident_xx[4:], "xx[4:]"),
     ]
 
     for expression, expected_str in expressions:
         representation = TextualForm.from_expression(expression)
-        assert len(representation) == len(expected_str), f"length of {expected_str}"
+        assert len(representation) == len(expected_str), f"length of {representation}"
         assert str(representation) == expected_str
         assert len(
             PythonExpressionFormatter(single_line=True).to_text(expression)
