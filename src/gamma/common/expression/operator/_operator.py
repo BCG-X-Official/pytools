@@ -45,6 +45,7 @@ __all__ = [
     "LAMBDA",
     "ASSIGN",
     "COLON",
+    "SLICE",
     "COMMA",
     "NONE",
     "MIN_PRECEDENCE",
@@ -73,12 +74,6 @@ class Operator(metaclass=ABCMeta):
     @property
     def precedence(self) -> int:
         return _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
-
-    def __eq__(self, other: "Operator") -> bool:
-        return type(self) == type(other) and self.symbol == other.symbol
-
-    def __hash__(self) -> int:
-        return hash(type(self)) + 3 * hash(self.symbol)
 
 
 class BinaryOperator(Operator):
@@ -141,6 +136,7 @@ OR = BinaryOperator("or")
 LAMBDA = UnaryOperator("lambda")
 ASSIGN = BinaryOperator("=")
 COLON = BinaryOperator(":")
+SLICE = BinaryOperator(":")
 COMMA = BinaryOperator(",")
 NONE = BinaryOperator("")
 

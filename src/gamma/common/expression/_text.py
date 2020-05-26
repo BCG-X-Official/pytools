@@ -98,7 +98,9 @@ class TextualForm:
         elif isinstance(expression, InfixExpression):
             return InfixForm.from_infix_expression(expression)
         else:
-            assert isinstance(expression, PrefixExpression)
+            assert isinstance(
+                expression, PrefixExpression
+            ), f"{type(expression)} is a PrefixExpression"
             return PrefixForm.from_prefix_expression(expression)
 
     def to_text(self, config: FormattingConfig) -> str:
@@ -532,7 +534,7 @@ class InfixForm(ComplexForm):
             InfixForm.PADDING_RIGHT
             if infix in [op.COMMA, op.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [op.DOT, op.NONE]
+            if infix in [op.DOT, op.SLICE, op.NONE]
             else InfixForm.PADDING_BOTH
         )
 
