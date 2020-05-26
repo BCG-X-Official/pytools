@@ -143,7 +143,7 @@ NONE = BinaryOperator("")
 
 __OPERATOR_PRECEDENCE_ORDER: Tuple[Set[Operator], ...] = (
     {COMMA},
-    {ASSIGN, COLON},
+    {ASSIGN, COLON, SLICE},
     {LAMBDA},
     {OR},
     {AND},
