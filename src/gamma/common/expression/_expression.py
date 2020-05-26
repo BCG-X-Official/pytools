@@ -295,8 +295,8 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
             **{k: Expression.from_value(v) for k, v in kwargs.items()},
         )
 
-    def __getitem__(self, *args: Any) -> "Index":
-        return Index(self, *args)
+    def __getitem__(self, key: Any) -> "Index":
+        return Index(self, key)
 
 
 class _AttributeView:
@@ -849,8 +849,9 @@ class Index(BaseInvocation):
     An indexing operation in the shape of `x[i]`
     """
 
-    def __init__(self, callee: Any, *args: Any):
-        super().__init__(callee=callee, brackets=BRACKETS_SQUARE, args=args),
+    def __init__(self, callee: Any, key: Any):
+        keys = key if isinstance(key, tuple) else (key,)
+        super().__init__(callee=callee, brackets=BRACKETS_SQUARE, args=keys)
 
 
 # noinspection DuplicatedCode
