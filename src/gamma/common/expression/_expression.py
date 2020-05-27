@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, NamedTuple, Optional, Tuple, TypeVar, Union
 
 import gamma.common.expression.operator as op
-from gamma.common import AllTracker, to_list, to_tuple
+from gamma.common import AllTracker, to_list
 from gamma.common.expression.operator import (
     BinaryOperator,
     MAX_PRECEDENCE,
@@ -323,6 +323,11 @@ class Expression(metaclass=ABCMeta):
             super().__setattr__(key, value)
         else:
             raise TypeError(f"cannot set public field of Expression: {key}")
+
+    def __iter__(self) -> None:
+        # we need to rule iteration out explicitly, otherwise we'd get infinite 'for'
+        # loops through iterating via __getitem__
+        raise TypeError(f"'{Expression.__name__}' object is not iterable")
 
     def __repr__(self) -> str:
         # get the expression representing this object, and use the default formatter
@@ -1009,8 +1014,6 @@ class Lambda(UnaryOperation):
         params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
         body: Any,
     ):
-        params = to_tuple(params)
-
         def _to_identifier(param: Union[str, Identifier]) -> Identifier:
             if isinstance(param, str):
                 return Identifier(param)
@@ -1019,7 +1022,10 @@ class Lambda(UnaryOperation):
             else:
                 raise TypeError("arg params may only contain strings and Identifiers")
 
-        params = tuple(_to_identifier(param) for param in params)
+        if isinstance(params, str) or isinstance(params, Expression):
+            params = (_to_identifier(params),)
+        else:
+            params = tuple(_to_identifier(param) for param in params)
 
         if not params:
             arg_list = EPSILON
