@@ -23,6 +23,12 @@ __all__ = [
     "HasExpressionRepr",
     "Expression",
     "make_expression",
+    "AtomicExpression",
+    "Literal",
+    "Identifier",
+    "EPSILON",
+    "ComplexExpression",
+    "SingletonExpression",
     "BracketPair",
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
@@ -33,10 +39,6 @@ __all__ = [
     "TupleLiteral",
     "SetLiteral",
     "DictLiteral",
-    "AtomicExpression",
-    "Literal",
-    "Identifier",
-    "EPSILON",
     "BaseOperation",
     "PrefixExpression",
     "BasePrefixExpression",
@@ -284,6 +286,158 @@ def make_expression(value: Any) -> "Expression":
 
 
 #
+# Atomic expressions
+#
+
+
+class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
+    """
+    An atomic expression.
+
+    Atomic expressions include literals and identifiers, and have no subexpressions.
+    """
+
+    @property
+    @abstractmethod
+    def text_(self) -> str:
+        """
+        The text representing this atomic expression
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def value_(self) -> T:
+        """
+        The underlying value of this atomic expression
+        """
+        pass
+
+    @property
+    def precedence_(self) -> int:
+        """[see superclass]"""
+        return MAX_PRECEDENCE
+
+    precedence_.__doc__ = Expression.precedence_.__doc__
+
+    def __eq__(self, other: "AtomicExpression") -> bool:
+        return isinstance(other, type(self)) and other.value_ == self.value_
+
+    def __hash__(self) -> int:
+        return hash((type(self), self.value_))
+
+
+class Literal(AtomicExpression[T], Generic[T]):
+    """
+    A literal
+    """
+
+    def __init__(self, value: T):
+        self._value = value
+
+    @property
+    def value_(self) -> T:
+        """[see superclass]"""
+        return self._value
+
+    value_.__doc__ = AtomicExpression.value_.__doc__
+
+    @property
+    def text_(self) -> str:
+        """[see superclass]"""
+        return repr(self.value_)
+
+    text_.__doc__ = AtomicExpression.text_.__doc__
+
+
+class Identifier(AtomicExpression[str]):
+    """
+    An identifier
+    """
+
+    def __init__(self, name: Any) -> None:
+        if not isinstance(name, str):
+            name = getattr(name, "__name__", None)
+            if not name:
+                raise TypeError(
+                    "arg name must be a string, or must have attribute __name__"
+                )
+        self._name = name
+
+    @property
+    def value_(self) -> str:
+        """[see superclass]"""
+        return self._name
+
+    value_.__doc__ = AtomicExpression.value_.__doc__
+
+    @property
+    def text_(self) -> str:
+        """[see superclass]"""
+        return self._name
+
+    text_.__doc__ = AtomicExpression.text_.__doc__
+
+
+class _Epsilon(AtomicExpression[None]):
+    """
+    The empty expression.
+    """
+
+    @property
+    def value_(self) -> None:
+        """[see superclass]"""
+        return None
+
+    @property
+    def text_(self) -> str:
+        """[see superclass]"""
+        return ""
+
+    text_.__doc__ = AtomicExpression.text_.__doc__
+
+
+EPSILON = _Epsilon()
+
+#
+# Complex expressions
+#
+
+
+class ComplexExpression(Expression, metaclass=ABCMeta):
+    """
+    An expression with nested subexpressions.
+    """
+
+    @property
+    @abstractmethod
+    def subexpressions_(self) -> Tuple[Expression, ...]:
+        """
+        The subexpression prefixed by this expression.
+        """
+
+
+class SingletonExpression(ComplexExpression, metaclass=ABCMeta):
+    """
+    An expression with a single subexpression.
+    """
+
+    @property
+    @abstractmethod
+    def subexpression_(self) -> Expression:
+        """
+        The subexpression of this expression.
+        """
+
+    @property
+    def subexpressions_(self) -> Tuple[Expression, ...]:
+        """[see superclass]"""
+        return (self.subexpression_,)
+
+    subexpressions_.__doc__ = ComplexExpression.subexpressions_.__doc__
+
+
+#
 # Bracketed expressions
 #
 
@@ -302,7 +456,7 @@ BRACKETS_SQUARE = BracketPair("[", "]")
 BRACKETS_CURLY = BracketPair("{", "}")
 
 
-class BracketedExpression(Expression, metaclass=ABCMeta):
+class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     """
     An expression surrounded by brackets.
     """
@@ -430,125 +584,11 @@ class _Invocation(CollectionLiteral):
 
 
 #
-# Atomic expressions
-#
-
-
-class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
-    """
-    An atomic expression.
-
-    Atomic expressions include literals and identifiers, and have no subexpressions.
-    """
-
-    @property
-    @abstractmethod
-    def text_(self) -> str:
-        """
-        The text representing this atomic expression
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def value_(self) -> T:
-        """
-        The underlying value of this atomic expression
-        """
-        pass
-
-    @property
-    def precedence_(self) -> int:
-        """[see superclass]"""
-        return MAX_PRECEDENCE
-
-    precedence_.__doc__ = Expression.precedence_.__doc__
-
-    def __eq__(self, other: "AtomicExpression") -> bool:
-        return isinstance(other, type(self)) and other.value_ == self.value_
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.value_))
-
-
-class Literal(AtomicExpression[T], Generic[T]):
-    """
-    A literal
-    """
-
-    def __init__(self, value: T):
-        self._value = value
-
-    @property
-    def value_(self) -> T:
-        """[see superclass]"""
-        return self._value
-
-    value_.__doc__ = AtomicExpression.value_.__doc__
-
-    @property
-    def text_(self) -> str:
-        """[see superclass]"""
-        return repr(self.value_)
-
-    text_.__doc__ = AtomicExpression.text_.__doc__
-
-
-class Identifier(AtomicExpression[str]):
-    """
-    An identifier
-    """
-
-    def __init__(self, name: Any) -> None:
-        if not isinstance(name, str):
-            name = getattr(name, "__name__", None)
-            if not name:
-                raise TypeError(
-                    "arg name must be a string, or must have attribute __name__"
-                )
-        self._name = name
-
-    @property
-    def value_(self) -> str:
-        """[see superclass]"""
-        return self._name
-
-    value_.__doc__ = AtomicExpression.value_.__doc__
-
-    @property
-    def text_(self) -> str:
-        """[see superclass]"""
-        return self._name
-
-    text_.__doc__ = AtomicExpression.text_.__doc__
-
-
-class _Epsilon(AtomicExpression[None]):
-    """
-    The empty expression.
-    """
-
-    @property
-    def value_(self) -> None:
-        """[see superclass]"""
-        return None
-
-    @property
-    def text_(self) -> str:
-        """[see superclass]"""
-        return ""
-
-    text_.__doc__ = AtomicExpression.text_.__doc__
-
-
-EPSILON = _Epsilon()
-
-#
 # Operations
 #
 
 
-class BaseOperation(metaclass=ABCMeta):
+class BaseOperation(ComplexExpression, metaclass=ABCMeta):
     """
     Abstract base class for operation expressions
     """
@@ -567,7 +607,7 @@ class BaseOperation(metaclass=ABCMeta):
         """
         The operands of this operation
         """
-        pass
+        return self.subexpressions_
 
 
 #
@@ -575,7 +615,7 @@ class BaseOperation(metaclass=ABCMeta):
 #
 
 
-class PrefixExpression(Expression, metaclass=ABCMeta):
+class PrefixExpression(SingletonExpression, metaclass=ABCMeta):
     """
     A prefix expression.
 
@@ -667,7 +707,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     @property
     def operands_(self) -> Tuple[Expression, ...]:
         """[see superclass]"""
-        return (self.subexpression_,)
+        return self.subexpressions_
 
     operator_.__doc__ = BaseOperation.operator_.__doc__
 
@@ -768,21 +808,21 @@ class BaseInvocation(PrefixExpression):
 
     _PRECEDENCE = op.DOT.precedence
 
-    def __init__(self, callee: Any, brackets: BracketPair, args: Iterable[Any]):
-        self.callee = make_expression(callee)
-        self.invocation = _Invocation(brackets, args=args)
+    def __init__(self, prefix: Any, brackets: BracketPair, args: Iterable[Any]):
+        self._prefix = make_expression(prefix)
+        self._invocation = _Invocation(brackets, args=args)
 
     @property
     def prefix_(self) -> Expression:
         """[see superclass]"""
-        return self.callee
+        return self._prefix
 
     prefix_.__doc__ = PrefixExpression.prefix_.__doc__
 
     @property
     def subexpression_(self) -> Expression:
         """[see superclass]"""
-        return self.invocation
+        return self._invocation
 
     subexpression_.__doc__ = PrefixExpression.subexpression_.__doc__
 
@@ -801,7 +841,7 @@ class Call(BaseInvocation):
 
     def __init__(self, callee: Any, *args: Any, **kwargs: Any):
         super().__init__(
-            callee=callee,
+            prefix=callee,
             brackets=BRACKETS_ROUND,
             args=(
                 *args,
@@ -812,6 +852,13 @@ class Call(BaseInvocation):
             ),
         )
 
+    @property
+    def callee_(self) -> Expression:
+        """
+        The expression invoked by this call.
+        """
+        return self.prefix_
+
 
 class Index(BaseInvocation):
     """
@@ -820,7 +867,7 @@ class Index(BaseInvocation):
 
     def __init__(self, callee: Any, key: Any):
         keys = key if isinstance(key, tuple) else (key,)
-        super().__init__(callee=callee, brackets=BRACKETS_SQUARE, args=keys)
+        super().__init__(prefix=collection, brackets=BRACKETS_SQUARE, args=keys)
 
 
 # noinspection DuplicatedCode
@@ -902,7 +949,7 @@ class Lambda(UnaryOperation):
 #
 
 
-class InfixExpression(Expression, metaclass=ABCMeta):
+class InfixExpression(ComplexExpression, metaclass=ABCMeta):
     """
     An infix expression, where any number of subexpressions are separated by a specific
     infix.
@@ -913,14 +960,6 @@ class InfixExpression(Expression, metaclass=ABCMeta):
     def infix_(self) -> BinaryOperator:
         """
         The infix used to separate this expression's subexpressions.
-        """
-        pass
-
-    @property
-    @abstractmethod
-    def subexpressions_(self) -> Tuple[Expression, ...]:
-        """
-        The subexpressions of this expression.
         """
         pass
 
