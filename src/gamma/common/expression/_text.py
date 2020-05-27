@@ -216,7 +216,7 @@ class AtomicForm(TextualForm):
     """
 
     def __init__(self, expression: AtomicExpression) -> None:
-        self.text = expression.text
+        self.text = expression.text_
 
     def to_lines(
         self,
@@ -336,8 +336,8 @@ class BracketedForm(ComplexForm):
         :return: the resulting bracketed form
         """
         return BracketedForm(
-            brackets=expression.brackets,
-            subform=TextualForm.from_expression(expression.subexpression),
+            brackets=expression.brackets_,
+            subform=TextualForm.from_expression(expression.subexpression_),
         )
 
     def to_single_line(self) -> str:
@@ -399,17 +399,17 @@ class PrefixForm(ComplexForm):
         Create a prefixed form from the given prefix expression
         """
 
-        prefix = expression.prefix
+        prefix = expression.prefix_
         prefix_form = TextualForm.from_expression(prefix).encapsulate(
-            condition=prefix.precedence < expression.precedence
+            condition=prefix.precedence_ < expression.precedence_
         )
 
-        subexpression = expression.subexpression
+        subexpression = expression.subexpression_
         subform = TextualForm.from_expression(subexpression).encapsulate(
-            condition=subexpression.precedence < expression.precedence
+            condition=subexpression.precedence_ < expression.precedence_
         )
 
-        separator = expression.separator
+        separator = expression.separator_
         if len(prefix_form) and separator[:1].isalpha():
             separator = " " + separator
         if len(subform) and separator[-1:].isalpha():
@@ -513,22 +513,22 @@ class InfixForm(ComplexForm):
         :return:
         """
 
-        subexpressions = expression.subexpressions
+        subexpressions = expression.subexpressions_
         if len(subexpressions) == 1:
             return TextualForm.from_expression(subexpressions[0])
 
         subforms = tuple(
             TextualForm.from_expression(subexpression).encapsulate(
                 condition=(
-                    subexpression.precedence < expression.precedence
+                    subexpression.precedence_ < expression.precedence_
                     if pos == 0
-                    else subexpression.precedence <= expression.precedence
+                    else subexpression.precedence_ <= expression.precedence_
                 )
             )
             for pos, subexpression in enumerate(subexpressions)
         )
 
-        infix = expression.infix
+        infix = expression.infix_
 
         infix_padding = (
             InfixForm.PADDING_RIGHT
