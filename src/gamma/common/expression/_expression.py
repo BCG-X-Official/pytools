@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, NamedTuple, Optional, Tuple, TypeVar, Union
 
 import gamma.common.expression.operator as op
-from gamma.common import AllTracker, to_tuple
+from gamma.common import AllTracker, to_list, to_tuple
 from gamma.common.expression.operator import (
     BinaryOperator,
     MAX_PRECEDENCE,
@@ -123,6 +123,80 @@ class Expression(metaclass=ABCMeta):
         """
         pass
 
+    def eq_(self, other: Any) -> "Operation":
+        """
+        Generate an expression that compares for equality (`a == b` in Python).
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native equality operation
+        for set operations etc.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.EQ, self, other)
+
+    def ne_(self, other: Any) -> "Operation":
+        """
+        Generate an expression that compares for inequality (`a != b` in Python)
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native equality operation
+        for set operations etc.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.NEQ, self, other)
+
+    def gt_(self, other: Any) -> "Operation":
+        """
+        Generate a "greater than" expression (`a > b` in Python)
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native comparison operation.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.GT, self, other)
+
+    def ge_(self, other: Any) -> "Operation":
+        """
+        Generate a "equal or greater than" expression (`a >= b` in Python)
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native comparison operation.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.GE, self, other)
+
+    def lt_(self, other: Any) -> "Operation":
+        """
+        Generate a "less than" expression (`a < b` in Python)
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native comparison operation.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.LT, self, other)
+
+    def le_(self, other: Any) -> "Operation":
+        """
+        Generate a "equal or less than" expression (`a <= b` in Python)
+
+        We cannot generate such expressions using a native Python shorthand,
+        since we need to preserve the semantics of the native comparison operation.
+
+        :param other: the RHS of the comparison
+        :return: the comparison operation
+        """
+        return Operation(op.LE, self, other)
+
     @abstractmethod
     def __eq__(self, other) -> bool:
         pass
@@ -232,8 +306,23 @@ class Expression(metaclass=ABCMeta):
     def __getitem__(self, key: Any) -> "Index":
         return Index(self, key)
 
+    def __setitem__(self, key: Any, value: Any) -> "Index":
+        raise TypeError(f"cannot set indexed item of Expression: {to_list(key)}")
+
+    def __delitem__(self, key: Any) -> "Index":
+        raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
+
     def __getattr__(self, key: str) -> "Expression":
-        return Attr(obj=self, attribute=key)
+        if key[:1] == "_":
+            raise AttributeError(key)
+        else:
+            return Attr(obj=self, attribute=key)
+
+    def __setattr__(self, key: Any, value: Any) -> None:
+        if key[:1] == "_":
+            super().__setattr__(key, value)
+        else:
+            raise TypeError(f"cannot set public field of Expression: {key}")
 
     def __repr__(self) -> str:
         # get the expression representing this object, and use the default formatter
@@ -865,7 +954,7 @@ class Index(BaseInvocation):
     An indexing operation in the shape of `x[i]`
     """
 
-    def __init__(self, callee: Any, key: Any):
+    def __init__(self, collection: Any, key: Any):
         keys = key if isinstance(key, tuple) else (key,)
         super().__init__(prefix=collection, brackets=BRACKETS_SQUARE, args=keys)
 
