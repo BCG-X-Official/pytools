@@ -22,7 +22,7 @@ __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
-    "AttributeAccessor",
+    "make_expression",
     "BracketPair",
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
@@ -104,69 +104,10 @@ class HasExpressionRepr(metaclass=ABCMeta):
         return ExpressionFormatter.default().to_text(self.to_expression())
 
 
-class Expression(HasExpressionRepr, metaclass=ABCMeta):
+class Expression(metaclass=ABCMeta):
     """
-    A nested expression
+    An expression composed of literals and (possibly nested) operations.
     """
-
-    @staticmethod
-    def from_value(value: Any) -> "Expression":
-        """
-        Convert a python object into an expression.
-
-        Conversions:
-        - expressions are returned as themselves
-        - standard containers are turned into their expression equivalents
-        - strings are turned into literals
-        - other iterables are turned into a Call expression
-        - all other values are turned into literals
-
-        :param value: value to turn into an expression
-        :return: the resulting expression
-        """
-
-        def _from_collection(values: Iterable) -> Iterable[Expression]:
-            return (Expression.from_value(_value) for _value in values)
-
-        if isinstance(value, HasExpressionRepr):
-            return value.to_expression()
-        elif isinstance(value, str):
-            return Literal(value)
-        elif isinstance(value, list):
-            return ListLiteral(*_from_collection(value))
-        elif isinstance(value, tuple):
-            return TupleLiteral(*_from_collection(value))
-        elif isinstance(value, set):
-            return SetLiteral(*_from_collection(value))
-        elif isinstance(value, dict):
-            return DictLiteral(
-                *(
-                    (Expression.from_value(key), Expression.from_value(value))
-                    for key, value in value.items()
-                )
-            )
-        elif isinstance(value, slice):
-            args = [
-                EPSILON if value is None else value
-                for value in (value.start, value.stop, value.step)
-            ]
-            if value.step is not None:
-                return Operation(op.SLICE, *args)
-            else:
-                return Operation(op.SLICE, args[0], args[1])
-        elif isinstance(value, Iterable):
-            return Call(
-                *_from_collection(value), callee=Identifier(type(value).__name__)
-            )
-        else:
-            return Literal(value)
-
-    def to_expression(self) -> "Expression":
-        """
-        Return self
-        :return: `self`
-        """
-        return self
 
     @property
     @abstractmethod
@@ -176,18 +117,6 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
             parentheses
         """
         pass
-
-    @property
-    def attr(self) -> "AttributeAccessor":
-        """
-        An _attribute view_ of this expression, allowing for shorthand attribute
-        access expressions.
-
-        For example, to create the expression `s.isalpha()`, use
-        `Identifier("s").attr.isalpha()` as a shorthand for
-        `Call(Attr(Identifier("s"), "isalpha"))`
-        """
-        return AttributeAccessor(self)
 
     @abstractmethod
     def __eq__(self, other) -> bool:
@@ -291,27 +220,64 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
         return Call(
             self,
-            *(Expression.from_value(arg) for arg in args),
-            **{k: Expression.from_value(v) for k, v in kwargs.items()},
+            *(make_expression(arg) for arg in args),
+            **{k: make_expression(v) for k, v in kwargs.items()},
         )
 
     def __getitem__(self, key: Any) -> "Index":
         return Index(self, key)
 
+    def __getattr__(self, key: str) -> "Expression":
+        return Attr(obj=self, attribute=key)
 
-class AttributeAccessor:
+    def __repr__(self) -> str:
+        # get the expression representing this object, and use the default formatter
+        # to get a text representation of the expression
+        return ExpressionFormatter.default().to_text(self)
+
+
+def make_expression(value: Any) -> "Expression":
     """
-    The attribute accessor of an expression, allowing the use of "dot notation"
-    to generate expressions with attribute access.
+    Convert a python object into an expression.
 
-    See :attr:`.Expression.attr` for details.
+    Conversions:
+    - expressions are returned as themselves
+    - standard containers are turned into their expression equivalents
+    - strings are turned into literals
+    - other iterables are turned into a Call expression
+    - all other values are turned into literals
+
+    :param value: value to turn into an expression
+    :return: the resulting expression
     """
 
-    def __init__(self, expression: Expression) -> None:
-        self.__expression = expression
-
-    def __getattr__(self, key: str) -> Expression:
-        return Attr(obj=self.__expression, attribute=key)
+    if isinstance(value, Expression):
+        return value
+    if isinstance(value, HasExpressionRepr):
+        return value.to_expression()
+    elif isinstance(value, str):
+        return Literal(value)
+    elif isinstance(value, list):
+        return ListLiteral(*value)
+    elif isinstance(value, tuple):
+        return TupleLiteral(*value)
+    elif isinstance(value, set):
+        return SetLiteral(*value)
+    elif isinstance(value, dict):
+        return DictLiteral(*value.items())
+    elif isinstance(value, slice):
+        args = [
+            EPSILON if value is None else value
+            for value in (value.start, value.stop, value.step)
+        ]
+        if value.step is not None:
+            return Operation(op.SLICE, *args)
+        else:
+            return Operation(op.SLICE, args[0], args[1])
+    elif isinstance(value, Iterable):
+        return Call(*value, callee=Identifier(type(value)))
+    else:
+        return Literal(value)
 
 
 #
@@ -378,9 +344,7 @@ class CollectionLiteral(BracketedExpression):
     """
 
     def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
-        elements = tuple(
-            Expression.from_value(element) for element in to_tuple(elements)
-        )
+        elements = tuple(make_expression(element) for element in to_tuple(elements))
 
         subexpression: Expression
         if not elements:
@@ -654,8 +618,8 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     """
 
     def __init__(self, prefix: Any, subexpression: Any):
-        self._prefix = Expression.from_value(prefix)
-        self._subexpression = Expression.from_value(subexpression)
+        self._prefix = make_expression(prefix)
+        self._subexpression = make_expression(subexpression)
 
     @property
     def prefix(self) -> Expression:
@@ -800,7 +764,7 @@ class BaseInvocation(PrefixExpression):
     _PRECEDENCE = op.DOT.precedence
 
     def __init__(self, callee: Any, brackets: BracketPair, args: Iterable[Any]):
-        self.callee = Expression.from_value(callee)
+        self.callee = make_expression(callee)
         self.invocation = _Invocation(brackets, args=args)
 
     @property
@@ -986,7 +950,7 @@ class Operation(InfixExpression, BaseOperation):
         if len(operands) < 2:
             raise ValueError("operation requires at least two operands")
 
-        operands = tuple(Expression.from_value(operand) for operand in operands)
+        operands = tuple(make_expression(operand) for operand in operands)
 
         first_operand = operands[0]
 

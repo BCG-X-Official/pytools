@@ -8,11 +8,11 @@ import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
     DictLiteral,
-    Expression,
     Identifier,
     Lambda,
     ListLiteral,
     Literal,
+    make_expression,
     Operation,
     PythonExpressionFormatter,
     SetLiteral,
@@ -59,7 +59,7 @@ def test_expression_formatting() -> None:
 
     # expression 2, generated with from_value
 
-    expr_2 = Expression.from_value([1, 2, {3: 4, 5: e}])
+    expr_2 = make_expression([1, 2, {3: 4, 5: e}])
     assert str(expr_2) == "[1, 2, {3: 4, 5: f((1 | 2) >> 'x' % x, abc=-5)}]"
 
     # expression 3
@@ -103,7 +103,7 @@ def test_expression() -> None:
         (SetLiteral(), "{}"),
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
-        (ident_xx.attr.isalpha(), "xx.isalpha()"),
+        (ident_xx.isalpha(), "xx.isalpha()"),
         (ident_xx[:], "xx[:]"),
         (ident_xx[::1], "xx[::1]"),
         (ident_xx[2::3, 1], "xx[2::3, 1]"),
