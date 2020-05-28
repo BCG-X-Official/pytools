@@ -33,6 +33,7 @@ __all__ = [
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
     "BRACKETS_CURLY",
+    "BRACKETS_ANGLE",
     "BracketedExpression",
     "CollectionLiteral",
     "ListLiteral",
@@ -548,6 +549,7 @@ class BracketPair(NamedTuple):
 BRACKETS_ROUND = BracketPair("(", ")")
 BRACKETS_SQUARE = BracketPair("[", "]")
 BRACKETS_CURLY = BracketPair("{", "}")
+BRACKETS_ANGLE = BracketPair("<", ">")
 
 
 class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
