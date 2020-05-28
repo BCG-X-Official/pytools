@@ -18,6 +18,7 @@ from gamma.common.expression._expression import (
     ExpressionFormatter,
     InfixExpression,
     PrefixExpression,
+    ExpressionAlias,
 )
 
 log = logging.getLogger(__name__)
@@ -97,11 +98,12 @@ class TextualForm:
             return BracketedForm.from_bracketed_expression(expression)
         elif isinstance(expression, InfixExpression):
             return InfixForm.from_infix_expression(expression)
-        else:
-            assert isinstance(
-                expression, PrefixExpression
-            ), f"{type(expression)} is a PrefixExpression"
+        elif isinstance(expression, PrefixExpression):
             return PrefixForm.from_prefix_expression(expression)
+        elif isinstance(expression, ExpressionAlias):
+            return TextualForm.from_expression(expression.expression_)
+        else:
+            raise TypeError(f"unknown expression type: {type(expression)}")
 
     def to_text(self, config: FormattingConfig) -> str:
         """
