@@ -379,19 +379,17 @@ class PrefixForm(ComplexForm):
     A hierarchical textual representation of a complex expression
     """
 
-    def __init__(
-        self, prefix: TextualForm, separator: str, subform: TextualForm
-    ) -> None:
+    def __init__(self, prefix: TextualForm, separator: str, body: TextualForm) -> None:
         """
         :param prefix: the prefix form
         :param separator: characters separating the prefix from the subform
-        :param subform: the subform
+        :param body: the body form
         """
-        super().__init__(length=len(prefix) + len(separator) + len(subform))
+        super().__init__(length=len(prefix) + len(separator) + len(body))
 
         self.prefix = prefix
         self.separator = separator
-        self.subform = subform
+        self.body = body
 
     @staticmethod
     def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
@@ -404,26 +402,24 @@ class PrefixForm(ComplexForm):
             condition=prefix.precedence_ < expression.precedence_
         )
 
-        subexpression = expression.subexpression_
-        subform = TextualForm.from_expression(subexpression).encapsulate(
-            condition=subexpression.precedence_ < expression.precedence_
+        body = expression.body_
+        body_form = TextualForm.from_expression(body).encapsulate(
+            condition=body.precedence_ < expression.precedence_
         )
 
         separator = expression.separator_
         if len(prefix_form) and separator[:1].isalpha():
             separator = " " + separator
-        if len(subform) and separator[-1:].isalpha():
+        if len(body_form) and separator[-1:].isalpha():
             separator += " "
 
-        return PrefixForm(prefix=prefix_form, separator=separator, subform=subform)
+        return PrefixForm(prefix=prefix_form, separator=separator, body=body_form)
 
     def to_single_line(self) -> str:
         """[see superclass]"""
 
         return (
-            self.prefix.to_single_line()
-            + self.separator
-            + self.subform.to_single_line()
+            self.prefix.to_single_line() + self.separator + self.body.to_single_line()
         )
 
     def to_multiple_lines(
@@ -444,7 +440,7 @@ class PrefixForm(ComplexForm):
 
         separator = self.separator
 
-        subform_lines = self.subform.to_lines(
+        subform_lines = self.body.to_lines(
             config=config,
             indent=indent,
             leading_characters=(len(prefix_lines[-1]) if prefix_lines else 0)

@@ -27,7 +27,6 @@ __all__ = [
     "Literal",
     "Identifier",
     "EPSILON",
-    "ComplexExpression",
     "SingletonExpression",
     "BracketPair",
     "BRACKETS_ROUND",
@@ -123,6 +122,13 @@ class Expression(metaclass=ABCMeta):
             parentheses
         """
         pass
+
+    @property
+    @abstractmethod
+    def subexpressions_(self) -> Tuple["Expression", ...]:
+        """
+        The subexpression prefixed by this expression.
+        """
 
     def eq_(self, other: Any) -> "Operation":
         """
@@ -393,6 +399,12 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
 
     @property
+    def subexpressions_(self) -> Tuple["Expression", ...]:
+        return ()
+
+    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
+
+    @property
     @abstractmethod
     def text_(self) -> str:
         """
@@ -494,25 +506,13 @@ class _Epsilon(AtomicExpression[None]):
 
 EPSILON = _Epsilon()
 
+
 #
 # Complex expressions
 #
 
 
-class ComplexExpression(Expression, metaclass=ABCMeta):
-    """
-    An expression with nested subexpressions.
-    """
-
-    @property
-    @abstractmethod
-    def subexpressions_(self) -> Tuple[Expression, ...]:
-        """
-        The subexpression prefixed by this expression.
-        """
-
-
-class SingletonExpression(ComplexExpression, metaclass=ABCMeta):
+class SingletonExpression(Expression, metaclass=ABCMeta):
     """
     An expression with a single subexpression.
     """
@@ -529,7 +529,7 @@ class SingletonExpression(ComplexExpression, metaclass=ABCMeta):
         """[see superclass]"""
         return (self.subexpression_,)
 
-    subexpressions_.__doc__ = ComplexExpression.subexpressions_.__doc__
+    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
 
 #
@@ -670,7 +670,7 @@ class _Invocation(CollectionLiteral):
 #
 
 
-class BaseOperation(ComplexExpression, metaclass=ABCMeta):
+class BaseOperation(Expression, metaclass=ABCMeta):
     """
     Abstract base class for operation expressions
     """
@@ -697,7 +697,7 @@ class BaseOperation(ComplexExpression, metaclass=ABCMeta):
 #
 
 
-class PrefixExpression(SingletonExpression, metaclass=ABCMeta):
+class PrefixExpression(Expression, metaclass=ABCMeta):
     """
     A prefix expression.
 
@@ -722,11 +722,18 @@ class PrefixExpression(SingletonExpression, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def subexpression_(self) -> Expression:
+    def body_(self) -> Expression:
         """
-        The subexpression prefixed by this expression.
+        The prefix of this expression
         """
         pass
+
+    @property
+    def subexpressions_(self) -> Tuple[Expression, ...]:
+        """[see superclass]"""
+        return self.prefix_, self.body_
+
+    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
     def __eq__(self, other: "PrefixExpression") -> bool:
         return (
@@ -744,9 +751,9 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     Base implementation for prefix expressions
     """
 
-    def __init__(self, prefix: Any, subexpression: Any):
+    def __init__(self, prefix: Any, body: Any):
         self._prefix = make_expression(prefix)
-        self._subexpression = make_expression(subexpression)
+        self._body = make_expression(body)
 
     @property
     def prefix_(self) -> Expression:
@@ -756,11 +763,11 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     prefix_.__doc__ = PrefixExpression.prefix_.__doc__
 
     @property
-    def subexpression_(self) -> Expression:
+    def body_(self) -> Expression:
         """[see superclass]"""
-        return self._subexpression
+        return self._body
 
-    subexpression_.__doc__ = PrefixExpression.subexpression_.__doc__
+    body_.__doc__ = PrefixExpression.body_.__doc__
 
 
 class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
@@ -769,7 +776,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     """
 
     def __init__(self, operator: UnaryOperator, operand: Any):
-        super().__init__(prefix=EPSILON, subexpression=operand)
+        super().__init__(prefix=EPSILON, body=operand)
         self._operator = operator
 
     @property
@@ -810,7 +817,7 @@ class KeywordArgument(BasePrefixExpression):
     _PRECEDENCE = op.EQ.precedence
 
     def __init__(self, name: str, value: Any):
-        super().__init__(prefix=Identifier(name), subexpression=value)
+        super().__init__(prefix=Identifier(name), body=value)
         self._name = name
 
     @property
@@ -832,7 +839,7 @@ class KeywordArgument(BasePrefixExpression):
         """
         The name of this keyword argument
         """
-        return self.subexpression_
+        return self.body_
 
     @property
     def precedence_(self) -> int:
@@ -851,7 +858,7 @@ class DictEntry(BasePrefixExpression):
     _PRECEDENCE = op.COLON.precedence
 
     def __init__(self, key: Any, value: Any):
-        super().__init__(prefix=key, subexpression=value)
+        super().__init__(prefix=key, body=value)
 
     @property
     def key_(self) -> Expression:
@@ -872,7 +879,7 @@ class DictEntry(BasePrefixExpression):
         """
         The value of this dictionary entry
         """
-        return self.subexpression_
+        return self.body_
 
     @property
     def precedence_(self) -> int:
@@ -902,11 +909,11 @@ class BaseInvocation(PrefixExpression):
     prefix_.__doc__ = PrefixExpression.prefix_.__doc__
 
     @property
-    def subexpression_(self) -> Expression:
+    def body_(self) -> Expression:
         """[see superclass]"""
         return self._invocation
 
-    subexpression_.__doc__ = PrefixExpression.subexpression_.__doc__
+    body_.__doc__ = PrefixExpression.body_.__doc__
 
     @property
     def precedence_(self) -> int:
@@ -961,7 +968,7 @@ class LambdaDefinition(BasePrefixExpression):
     _PRECEDENCE = op.LAMBDA.precedence
 
     def __init__(self, params: Any, body: Any):
-        super().__init__(prefix=params, subexpression=body)
+        super().__init__(prefix=params, body=body)
 
     @property
     def params_(self) -> Expression:
@@ -976,13 +983,6 @@ class LambdaDefinition(BasePrefixExpression):
         return ": "
 
     separator_.__doc__ = PrefixExpression.separator_.__doc__
-
-    @property
-    def body_(self) -> Expression:
-        """
-        The body of the lambda expression
-        """
-        return self.subexpression_
 
     @property
     def precedence_(self) -> int:
@@ -1032,7 +1032,7 @@ class Lambda(UnaryOperation):
 #
 
 
-class InfixExpression(ComplexExpression, metaclass=ABCMeta):
+class InfixExpression(Expression, metaclass=ABCMeta):
     """
     An infix expression, where any number of subexpressions are separated by a specific
     infix.
