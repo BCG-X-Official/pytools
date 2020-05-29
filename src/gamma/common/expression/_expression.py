@@ -740,7 +740,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         return (
             isinstance(other, type(self))
             and self.prefix_ == other.prefix_
-            and self.subexpression_ == other.subexpression_
+            and self.subexpressions_ == other.subexpressions_
         )
 
     def __hash__(self) -> int:
