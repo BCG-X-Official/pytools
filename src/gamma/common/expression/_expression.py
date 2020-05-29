@@ -1131,7 +1131,12 @@ class Attr(Operation):
             attribute = Identifier(attribute)
         elif not isinstance(attribute, Identifier):
             raise TypeError("arg attribute must be a string or an Identifier")
-        super().__init__(op.DOT, obj, attribute)
+
+        if isinstance(obj, Attr):
+            sub = obj.subexpressions_
+            super().__init__(op.DOT, sub[0], *(sub[1:]), attribute)
+        else:
+            super().__init__(op.DOT, obj, attribute)
 
 
 #
