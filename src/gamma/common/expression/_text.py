@@ -15,10 +15,10 @@ from gamma.common.expression._expression import (
     BRACKETS_ROUND,
     EPSILON,
     Expression,
+    ExpressionAlias,
     ExpressionFormatter,
     InfixExpression,
     PrefixExpression,
-    ExpressionAlias,
 )
 
 log = logging.getLogger(__name__)
@@ -367,8 +367,8 @@ class BracketedForm(ComplexForm):
             *self.subform.to_lines(
                 config=config,
                 indent=indent + 1,
-                leading_characters=leading_characters,
-                trailing_characters=trailing_characters,
+                leading_characters=0,
+                trailing_characters=0,
             ),
             IndentedLine(indent=indent, text=self.brackets.closing),
         ]
