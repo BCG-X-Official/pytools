@@ -33,6 +33,7 @@ __all__ = [
     "BRACKETS_ROUND",
     "BRACKETS_SQUARE",
     "BRACKETS_CURLY",
+    "BRACKETS_ANGLE",
     "BracketedExpression",
     "CollectionLiteral",
     "ListLiteral",
@@ -548,6 +549,7 @@ class BracketPair(NamedTuple):
 BRACKETS_ROUND = BracketPair("(", ")")
 BRACKETS_SQUARE = BracketPair("[", "]")
 BRACKETS_CURLY = BracketPair("{", "}")
+BRACKETS_ANGLE = BracketPair("<", ">")
 
 
 class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
@@ -555,21 +557,23 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     An expression surrounded by brackets.
     """
 
+    def __init__(self, brackets: BracketPair, subexpression: Expression) -> None:
+        self._brackets = brackets
+        self._subexpression = subexpression
+
     @property
-    @abstractmethod
     def brackets_(self) -> BracketPair:
         """
         The brackets surrounding this expression's subexpressions.
         """
-        pass
+        return self._brackets
 
     @property
-    @abstractmethod
     def subexpression_(self) -> Expression:
         """
         The subexpression bracketed by this expression.
         """
-        pass
+        return self._subexpression
 
     @property
     def precedence_(self) -> int:
@@ -600,7 +604,6 @@ class CollectionLiteral(BracketedExpression):
         )
 
         subexpression: Expression
-
         if not elements:
             subexpression = EPSILON
         elif len(elements) == 1:
@@ -608,22 +611,7 @@ class CollectionLiteral(BracketedExpression):
         else:
             subexpression = Operation(op.COMMA, *elements)
 
-        self._subexpression = subexpression
-        self._brackets = brackets
-
-    @property
-    def brackets_(self) -> BracketPair:
-        """[see superclass]"""
-        return self._brackets
-
-    brackets_.__doc__ = BracketedExpression.brackets_.__doc__
-
-    @property
-    def subexpression_(self) -> Expression:
-        """[see superclass]"""
-        return self._subexpression
-
-    subexpression_.__doc__ = BracketedExpression.subexpression_.__doc__
+        super().__init__(brackets, subexpression)
 
 
 class ListLiteral(CollectionLiteral):
