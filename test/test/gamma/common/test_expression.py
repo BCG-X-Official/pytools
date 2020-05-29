@@ -4,15 +4,17 @@ Tests for module gamma.common.expression
 
 import logging
 
+import pytest
+
 import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
     DictLiteral,
-    Expression,
     Identifier,
     Lambda,
     ListLiteral,
     Literal,
+    make_expression,
     Operation,
     PythonExpressionFormatter,
     SetLiteral,
@@ -59,7 +61,7 @@ def test_expression_formatting() -> None:
 
     # expression 2, generated with from_value
 
-    expr_2 = Expression.from_value([1, 2, {3: 4, 5: e}])
+    expr_2 = make_expression([1, 2, {3: 4, 5: e}])
     assert str(expr_2) == "[1, 2, {3: 4, 5: f((1 | 2) >> 'x' % x, abc=-5)}]"
 
     # expression 3
@@ -103,7 +105,7 @@ def test_expression() -> None:
         (SetLiteral(), "{}"),
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
-        (ident_xx.attr.isalpha(), "xx.isalpha()"),
+        (ident_xx.isalpha(), "xx.isalpha()"),
         (ident_xx[:], "xx[:]"),
         (ident_xx[::1], "xx[::1]"),
         (ident_xx[2::3, 1], "xx[2::3, 1]"),
@@ -117,6 +119,53 @@ def test_expression() -> None:
         assert len(
             PythonExpressionFormatter(single_line=True).to_text(expression)
         ) == len(expected_str)
+
+
+def test_expression_setting() -> None:
+    x = Identifier("x")
+
+    # we cannot assign by index
+    with pytest.raises(TypeError):
+        x[5] = 7
+
+    # we cannot delete by index
+    with pytest.raises(TypeError):
+        del x[5]
+
+    # we do not get an Attr expression for names with leading "_"
+    with pytest.raises(AttributeError):
+        x._private_a(3)
+
+    # ... but we can assign private fields to the expression
+    x._private_b = 3
+    assert x._private_b == 3
+
+    # we cannot assign values to public fields
+    with pytest.raises(TypeError):
+        x.public = 3
+
+
+def test_comparison_expressions() -> None:
+    x, y = Identifier("x"), Identifier("y")
+
+    assert repr(x.eq_(y)) == "x == y"
+    assert repr(x.ne_(y)) == "x != y"
+    assert repr(x.gt_(y)) == "x > y"
+    assert repr(x.ge_(y)) == "x >= y"
+    assert repr(x.lt_(y)) == "x < y"
+    assert repr(x.le_(y)) == "x <= y"
+
+    assert x != y
+    assert not x == y
+
+    with pytest.raises(TypeError):
+        _ = x < y
+    with pytest.raises(TypeError):
+        _ = x <= y
+    with pytest.raises(TypeError):
+        _ = x > y
+    with pytest.raises(TypeError):
+        _ = x >= y
 
 
 def test_expression_operators() -> None:
