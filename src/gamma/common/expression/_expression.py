@@ -53,6 +53,7 @@ __all__ = [
     "InfixExpression",
     "Operation",
     "Attr",
+    "ExpressionAlias",
 ]
 
 T = TypeVar("T")
@@ -1131,6 +1132,41 @@ class Attr(Operation):
         elif not isinstance(attribute, Identifier):
             raise TypeError("arg attribute must be a string or an Identifier")
         super().__init__(op.DOT, obj, attribute)
+
+
+#
+# Expression alias
+#
+
+
+class ExpressionAlias(SingletonExpression):
+    def __init__(self, expression: Expression) -> None:
+        self._expression = expression
+
+    @property
+    def expression_(self) -> Expression:
+        return self._expression
+
+    def set_expression_(self, expression: Expression) -> None:
+        self._expression = expression
+
+    @property
+    def precedence_(self) -> int:
+        return self.expression_.precedence_
+
+    precedence_.__doc__ = Expression.precedence_.__doc__
+
+    @property
+    def subexpression_(self) -> Expression:
+        return self.expression_
+
+    subexpression_.__doc__ = SingletonExpression.subexpression_.__doc__
+
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and self.expression_ == other.expression_
+
+    def __hash__(self) -> int:
+        return hash(type(self)) + 3 * hash(self.expression_)
 
 
 __tracker.validate()
