@@ -105,6 +105,14 @@ class TextualForm:
         else:
             raise TypeError(f"unknown expression type: {type(expression)}")
 
+    @property
+    def needs_multi_line_encapsulation(self) -> bool:
+        """
+        If `True`, this form should be encapsulated in brackets when rendered
+        across multiple lines.
+        """
+        return False
+
     def to_text(self, config: FormattingConfig) -> str:
         """
         Render this textual form as a string
@@ -156,7 +164,7 @@ class TextualForm:
 
     def encapsulate(
         self, *, condition: bool = True, single_line: bool = True
-    ) -> "BracketedForm":
+    ) -> "TextualForm":
         """
         Return this form encapsulated in round parentheses.
         :param condition: if `False`, do not encapsulate this form
@@ -417,6 +425,13 @@ class PrefixForm(ComplexForm):
 
         return PrefixForm(prefix=prefix_form, separator=separator, body=body_form)
 
+    @property
+    def needs_multi_line_encapsulation(self) -> bool:
+        return (
+            self.prefix.needs_multi_line_encapsulation
+            or self.body.needs_multi_line_encapsulation
+        )
+
     def to_single_line(self) -> str:
         """[see superclass]"""
 
@@ -540,6 +555,15 @@ class InfixForm(ComplexForm):
             infix=infix.symbol, infix_padding=infix_padding, subforms=subforms
         )
 
+    @property
+    def needs_multi_line_encapsulation(self) -> bool:
+        """[see superclass]"""
+        return True
+
+    needs_multi_line_encapsulation.__doc__ = (
+        TextualForm.needs_multi_line_encapsulation.__doc__
+    )
+
     def to_single_line(self) -> str:
         """[see superclass]"""
 
@@ -571,16 +595,6 @@ class InfixForm(ComplexForm):
         """[see superclass]"""
 
         subforms: Tuple[TextualForm, ...] = self.subforms
-
-        if indent == 0:
-            # we add parentheses if we have multiple lines at indent level 0,
-            # and there is no existing bracketing
-            return self.encapsulate().to_multiple_lines(
-                config=config,
-                indent=0,
-                leading_characters=leading_characters,
-                trailing_characters=trailing_characters,
-            )
 
         result: List[IndentedLine] = []
 
@@ -675,7 +689,14 @@ class PythonExpressionFormatter(ExpressionFormatter):
     def to_text(self, expression: Expression) -> str:
         """[see superclass]"""
 
-        return TextualForm.from_expression(expression).to_text(self.config)
+        form = TextualForm.from_expression(expression)
+
+        # if the outermost form needs multiline encapsulation, do it
+        form = form.encapsulate(
+            condition=form.needs_multi_line_encapsulation, single_line=False
+        )
+
+        return form.to_text(self.config)
 
     to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
