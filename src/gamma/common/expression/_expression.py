@@ -382,7 +382,7 @@ def make_expression(value: Any) -> "Expression":
         else:
             return Operation(op.SLICE, args[0], args[1])
     elif isinstance(value, Iterable):
-        return Call(*value, callee=Identifier(type(value)))
+        return Call(Identifier(type(value)), *value)
     else:
         return Literal(value)
 
