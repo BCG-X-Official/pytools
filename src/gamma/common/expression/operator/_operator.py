@@ -75,14 +75,8 @@ class Operator(metaclass=ABCMeta):
     def precedence(self) -> int:
         return _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
 
-    def __eq__(self, other: "Operator") -> bool:
-        return type(other) == type(self) and self.symbol == other.symbol
-
-    def __hash__(self) -> int:
-        return hash((type(self), hash(self.symbol)))
-
     def __repr__(self) -> str:
-        return f"Operator({self.symbol})"
+        return f"Operator({self.symbol})@{id(self)}"
 
     def __str__(self) -> str:
         return self.symbol
