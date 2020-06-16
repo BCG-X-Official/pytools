@@ -75,6 +75,12 @@ class Operator(metaclass=ABCMeta):
     def precedence(self) -> int:
         return _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
 
+    def __repr__(self) -> str:
+        return f"Operator({self.symbol})@{id(self)}"
+
+    def __str__(self) -> str:
+        return self.symbol
+
 
 class BinaryOperator(Operator):
     """

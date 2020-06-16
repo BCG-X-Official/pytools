@@ -128,7 +128,7 @@ class Expression(metaclass=ABCMeta):
     @abstractmethod
     def subexpressions_(self) -> Tuple["Expression", ...]:
         """
-        The subexpression prefixed by this expression.
+        The subexpressions of this expression.
         """
 
     def eq_(self, other: Any) -> "Operation":
@@ -206,8 +206,23 @@ class Expression(metaclass=ABCMeta):
         return Operation(op.LE, self, other)
 
     @abstractmethod
-    def __eq__(self, other) -> bool:
+    def _equals(self: T, other: T) -> bool:
+        # assuming other is the same type as self, check if self and other are equal
         pass
+
+    def __eq__(self, other: "Expression") -> bool:
+        self_type = type(self)
+        other_type = type(other)
+        if self_type == ExpressionAlias:
+            self: ExpressionAlias
+            return other == self._expression
+        else:
+            if other_type == ExpressionAlias:
+                other: ExpressionAlias
+                # noinspection PyProtectedMember
+                other = other._expression
+
+            return self_type is other_type and self._equals(other)
 
     @abstractmethod
     def __hash__(self) -> int:
@@ -401,6 +416,10 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
 
     @property
     def subexpressions_(self) -> Tuple["Expression", ...]:
+        """
+        The subexpressions of this expression.
+        Always returns an empty tuple for atomic expressions.
+        """
         return ()
 
     subexpressions_.__doc__ = Expression.subexpressions_.__doc__
@@ -428,8 +447,8 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def __eq__(self, other: "AtomicExpression") -> bool:
-        return isinstance(other, type(self)) and other.value_ == self.value_
+    def _equals(self, other: Expression) -> bool:
+        return self.value_ == other.value_
 
     def __hash__(self) -> int:
         return hash((type(self), self.value_))
@@ -583,10 +602,9 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def __eq__(self, other: "BracketedExpression") -> bool:
+    def _equals(self, other: "BracketedExpression") -> bool:
         return (
-            isinstance(other, type(self))
-            and self.brackets_ == other.brackets_
+            self.brackets_ == other.brackets_
             and self.subexpression_ == other.subexpression_
         )
 
@@ -736,10 +754,9 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
 
     subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
-    def __eq__(self, other: "PrefixExpression") -> bool:
+    def _equals(self, other: "PrefixExpression") -> bool:
         return (
-            isinstance(other, type(self))
-            and self.prefix_ == other.prefix_
+            self.prefix_ == other.prefix_
             and self.subexpressions_ == other.subexpressions_
         )
 
@@ -1047,10 +1064,9 @@ class InfixExpression(Expression, metaclass=ABCMeta):
         """
         pass
 
-    def __eq__(self, other: "InfixExpression") -> bool:
+    def _equals(self, other: "InfixExpression") -> bool:
         return (
-            isinstance(other, type(self))
-            and self.infix_ == other.infix_
+            self.infix_ == other.infix_
             and self.subexpressions_ == other.subexpressions_
         )
 
@@ -1145,33 +1161,57 @@ class Attr(Operation):
 
 
 class ExpressionAlias(SingletonExpression):
+    """
+    An alias pointing to another expression, and representing that expression.
+
+    Useful for substituting subexpressions of expressions without having to reconstruct
+    the surrounding expression.
+
+    When comparing or hashing expressions, an expression alias transparently defers to
+    the expression it represents, hence expressions containing aliases are
+    indistinguishable from their non-aliased counterparts.
+    """
+
     def __init__(self, expression: Expression) -> None:
         self._expression = expression
 
     @property
     def expression_(self) -> Expression:
+        """
+        The expression represented by this ExpressionAlias.
+        """
         return self._expression
 
     def set_expression_(self, expression: Expression) -> None:
+        """
+        Set the expression represented by this ExpressionAlias.
+        :param expression: the expression to be set
+        """
         self._expression = expression
 
     @property
     def precedence_(self) -> int:
+        """
+        [see superclass]
+        """
         return self.expression_.precedence_
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
     @property
     def subexpression_(self) -> Expression:
+        """
+        [see superclass]
+        """
         return self.expression_
 
     subexpression_.__doc__ = SingletonExpression.subexpression_.__doc__
 
-    def __eq__(self, other) -> bool:
-        return type(self) == type(other) and self.expression_ == other.expression_
+    def _equals(self, other: "ExpressionAlias") -> bool:
+        return self._expression == other._expression
 
     def __hash__(self) -> int:
-        return hash(type(self)) + 3 * hash(self.expression_)
+        return hash(self.expression_)
 
 
 __tracker.validate()
