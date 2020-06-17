@@ -399,7 +399,12 @@ def make_expression(value: Any) -> "Expression":
     elif isinstance(value, Iterable):
         return Call(Identifier(type(value)), *value)
     else:
-        return Literal(value)
+        name: Optional[str] = getattr(value, "__name__", None)
+        if name:
+            return Identifier(value)
+        else:
+
+            return Literal(value)
 
 
 #
