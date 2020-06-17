@@ -215,13 +215,11 @@ class Expression(metaclass=ABCMeta):
         other_type = type(other)
         if self_type == ExpressionAlias:
             self: ExpressionAlias
-            return other == self._expression
+            return other == self.expression_
+        elif other_type == ExpressionAlias:
+            other: ExpressionAlias
+            return self == other.expression_
         else:
-            if other_type == ExpressionAlias:
-                other: ExpressionAlias
-                # noinspection PyProtectedMember
-                other = other._expression
-
             return self_type is other_type and self._equals(other)
 
     @abstractmethod
