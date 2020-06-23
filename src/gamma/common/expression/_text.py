@@ -413,8 +413,12 @@ class PrefixForm(ComplexForm):
         )
 
         body = expression.body_
-        body_form = TextualForm.from_expression(body).encapsulate(
-            condition=body.precedence_ < expression.precedence_
+        encapsulate_body = body.precedence_ < expression.precedence_
+        body_form = TextualForm.from_expression(body)
+
+        body_form = body_form.encapsulate(
+            condition=encapsulate_body or body_form.needs_multi_line_encapsulation,
+            single_line=encapsulate_body,
         )
 
         separator = expression.separator_
@@ -428,10 +432,7 @@ class PrefixForm(ComplexForm):
     @property
     def needs_multi_line_encapsulation(self) -> bool:
         """[see superclass]"""
-        return (
-            self.prefix.needs_multi_line_encapsulation
-            or self.body.needs_multi_line_encapsulation
-        )
+        return self.prefix.needs_multi_line_encapsulation
 
     needs_multi_line_encapsulation.__doc__ = (
         TextualForm.needs_multi_line_encapsulation.__doc__
@@ -643,7 +644,7 @@ class InfixForm(ComplexForm):
 
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(subforms):
-                    lines = inner_representation.to_lines(
+                    lines: List[IndentedLine] = inner_representation.to_lines(
                         config=config,
                         indent=indent,
                         leading_characters=leading_characters
@@ -656,7 +657,10 @@ class InfixForm(ComplexForm):
                     if idx != 0:
                         # prepend infix to first line,
                         # except we're in the first representation
-                        lines[0] = infix + lines[0]
+                        if lines:
+                            lines[0] = infix + lines[0]
+                        else:
+                            lines = [IndentedLine(indent=indent, text=infix)]
 
                     result.extend(lines)
 
