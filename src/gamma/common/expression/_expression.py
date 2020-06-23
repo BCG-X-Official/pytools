@@ -1013,10 +1013,12 @@ class LambdaDefinition(BasePrefixExpression):
     precedence_.__doc__ = Expression.precedence_.__doc__
 
 
-class Lambda(UnaryOperation):
+class Lambda(BasePrefixExpression):
     """
     A lambda expression
     """
+
+    _PRECEDENCE = op.LAMBDA.precedence
 
     def __init__(
         self,
@@ -1044,8 +1046,17 @@ class Lambda(UnaryOperation):
             arg_list = Operation(operator=op.COMMA, *params)
 
         super().__init__(
-            operator=op.LAMBDA, operand=LambdaDefinition(params=arg_list, body=body)
+            prefix=EPSILON, body=LambdaDefinition(params=arg_list, body=body)
         )
+
+    @property
+    def precedence_(self) -> int:
+        return Lambda._PRECEDENCE
+
+    @property
+    def separator_(self) -> str:
+        """[see superclass]"""
+        return f"{op.LAMBDA.symbol} "
 
 
 #
