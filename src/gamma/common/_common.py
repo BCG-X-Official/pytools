@@ -97,7 +97,10 @@ def is_list_like(obj: Any) -> bool:
 
 
 def to_tuple(
-    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+    values: Union[Iterable[T], T],
+    *,
+    element_type: Optional[Type[T]] = None,
+    arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
     Return the given values as a tuple.
@@ -113,16 +116,24 @@ def to_tuple(
     :param values: one or more elements to return as a tuple
     :param element_type: expected type of the values, raise a TypeException if one \
         or more values do not implement this type
+    :param arg_name: name of the argument when calling this to process a function or \
+        initializer argument. Used to construct exception messages. (optional)
     :return: the values as a tuple
     """
 
     return _to_collection(
-        values=values, collection_type=tuple, element_type=element_type
+        values=values,
+        collection_type=tuple,
+        element_type=element_type,
+        arg_name=arg_name,
     )
 
 
 def to_list(
-    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+    values: Union[Iterable[T], T],
+    *,
+    element_type: Optional[Type[T]] = None,
+    arg_name: Optional[str] = None,
 ) -> List[T]:
     """
     Return the given values as a list.
@@ -138,16 +149,24 @@ def to_list(
     :param values: one or more elements to return as a list
     :param element_type: expected type of the values, raise a TypeException if one \
         or more values do not implement this type
+    :param arg_name: name of the argument when calling this to process a function or \
+        initializer argument. Used to construct exception messages. (optional)
     :return: the values as a list
     """
 
     return _to_collection(
-        values=values, collection_type=list, element_type=element_type
+        values=values,
+        collection_type=list,
+        element_type=element_type,
+        arg_name=arg_name,
     )
 
 
 def to_set(
-    values: Union[Iterable[T], T], *, element_type: Optional[Type[T]] = None
+    values: Union[Iterable[T], T],
+    *,
+    element_type: Optional[Type[T]] = None,
+    arg_name: Optional[str] = None,
 ) -> Set[T]:
     """
     Return the given values as a set.
@@ -163,10 +182,14 @@ def to_set(
     :param values: one or more elements to return as a set
     :param element_type: expected type of the values, raise a TypeException if one \
         or more values do not implement this type
+    :param arg_name: name of the argument when calling this to process a function or \
+        initializer argument. Used to construct exception messages. (optional)
     :return: the values as a set
     """
 
-    return _to_collection(values=values, collection_type=set, element_type=element_type)
+    return _to_collection(
+        values=values, collection_type=set, element_type=element_type, arg_name=arg_name
+    )
 
 
 def _to_collection(
@@ -174,6 +197,7 @@ def _to_collection(
     *,
     collection_type: Type[T_Collection],
     element_type: Optional[Type[T]],
+    arg_name: Optional[str] = None,
 ) -> T_Collection:
 
     elements: T_Collection
@@ -192,24 +216,35 @@ def _to_collection(
         elements = collection_type((values,))
 
     if element_type:
-        validate_element_types(elements, element_type=element_type)
+        validate_element_types(
+            elements, element_type=element_type, name=f"arg {arg_name}"
+        )
 
     return elements
 
 
-def validate_element_types(iterable: Iterable[T], *, element_type: Type[T]) -> None:
+def validate_element_types(
+    iterable: Iterable[T], *, element_type: Type[T], name: Optional[str] = None
+) -> None:
     """
     Validate that all elements in the given iterable implement the expected type
     :param iterable: an iterable
     :param element_type: the type to check for
+    :param name: optional name of the entity to which the elements were passed. \
+        Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
+        arguments.
     """
     if element_type in [object, Any]:
         return
 
     for element in iterable:
         if not isinstance(element, element_type):
+            if name:
+                message_head = f"{name} requires"
+            else:
+                message_head = "expected"
             raise TypeError(
-                f"expected instances of {element_type.__name__} but got {element}"
+                f"{message_head} instances of {element_type.__name__} but got {element}"
             )
 
 
