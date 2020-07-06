@@ -1032,22 +1032,7 @@ class Lambda(BasePrefixExpression):
 
     _PRECEDENCE = op.LAMBDA.precedence
 
-    def __init__(
-        self, params: Union[Union[str, Id], Iterable[Union[str, Id]]], body: Any
-    ):
-        def _to_identifier(param: Union[str, Id]) -> Id:
-            if isinstance(param, str):
-                return Id(param)
-            elif isinstance(param, Id):
-                return param
-            else:
-                raise TypeError("arg params may only contain strings and Identifiers")
-
-        if isinstance(params, str) or isinstance(params, Expression):
-            params = (_to_identifier(params),)
-        else:
-            params = tuple(_to_identifier(param) for param in params)
-
+    def __init__(self, *params: Id, body: Any):
         if not params:
             arg_list = EPSILON
         elif len(params) == 1:

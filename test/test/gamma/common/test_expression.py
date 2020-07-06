@@ -77,7 +77,7 @@ def test_expression_formatting() -> None:
 )"""
     )
 
-    expr_4 = Lambda(params=Id.x, body=e)(Lit(5))
+    expr_4 = Lambda(Id.x, body=e)(Lit(5))
     assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
 
 
