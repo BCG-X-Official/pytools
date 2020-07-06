@@ -5,7 +5,8 @@ strings; useful for generating representations of complex Python objects.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, NamedTuple, Optional, Tuple, TypeVar, Union
+from typing import *
+from weakref import WeakValueDictionary
 
 import gamma.common.expression.operator as op
 from gamma.common import AllTracker, to_list
@@ -24,8 +25,8 @@ __all__ = [
     "Expression",
     "make_expression",
     "AtomicExpression",
-    "Literal",
-    "Identifier",
+    "Lit",
+    "Id",
     "EPSILON",
     "SingletonExpression",
     "BracketPair",
@@ -376,7 +377,7 @@ def make_expression(value: Any) -> "Expression":
     if isinstance(value, HasExpressionRepr):
         return value.to_expression()
     elif isinstance(value, str):
-        return Literal(value)
+        return Lit(value)
     elif isinstance(value, list):
         return ListLiteral(*value)
     elif isinstance(value, tuple):
@@ -395,14 +396,14 @@ def make_expression(value: Any) -> "Expression":
         else:
             return Operation(op.SLICE, args[0], args[1])
     elif isinstance(value, Iterable):
-        return Call(Identifier(type(value)), *value)
+        return Call(Id(type(value)), *value)
     else:
         name: Optional[str] = getattr(value, "__name__", None)
         if name:
-            return Identifier(value)
+            return Id(value)
         else:
 
-            return Literal(value)
+            return Lit(value)
 
 
 #
@@ -457,7 +458,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
         return hash((type(self), self.value_))
 
 
-class Literal(AtomicExpression[T], Generic[T]):
+class Lit(AtomicExpression[T], Generic[T]):
     """
     A literal
     """
@@ -480,7 +481,18 @@ class Literal(AtomicExpression[T], Generic[T]):
     text_.__doc__ = AtomicExpression.text_.__doc__
 
 
-class Identifier(AtomicExpression[str]):
+class _IdentifierMeta(ABCMeta):
+    _identifiers: Dict[str, "Id"] = WeakValueDictionary()
+
+    def __getattr__(self, item: str) -> "Id":
+        identifier = _IdentifierMeta._identifiers.get(item, None)
+        if not identifier:
+            _IdentifierMeta._identifiers[item] = identifier = Id(item)
+
+        return identifier
+
+
+class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     """
     An identifier
     """
@@ -838,7 +850,7 @@ class KeywordArgument(BasePrefixExpression):
     _PRECEDENCE = op.EQ.precedence
 
     def __init__(self, name: str, value: Any):
-        super().__init__(prefix=Identifier(name), body=value)
+        super().__init__(prefix=Id(name), body=value)
         self._name = name
 
     @property
@@ -1021,14 +1033,12 @@ class Lambda(BasePrefixExpression):
     _PRECEDENCE = op.LAMBDA.precedence
 
     def __init__(
-        self,
-        params: Union[Union[str, Identifier], Iterable[Union[str, Identifier]]],
-        body: Any,
+        self, params: Union[Union[str, Id], Iterable[Union[str, Id]]], body: Any
     ):
-        def _to_identifier(param: Union[str, Identifier]) -> Identifier:
+        def _to_identifier(param: Union[str, Id]) -> Id:
             if isinstance(param, str):
-                return Identifier(param)
-            elif isinstance(param, Identifier):
+                return Id(param)
+            elif isinstance(param, Id):
                 return param
             else:
                 raise TypeError("arg params may only contain strings and Identifiers")
@@ -1156,10 +1166,10 @@ class Attr(Operation):
     The "dot" operation to reference an attribute of an object
     """
 
-    def __init__(self, obj: Any, attribute: Union[Identifier, str]) -> None:
+    def __init__(self, obj: Any, attribute: Union[Id, str]) -> None:
         if isinstance(attribute, str):
-            attribute = Identifier(attribute)
-        elif not isinstance(attribute, Identifier):
+            attribute = Id(attribute)
+        elif not isinstance(attribute, Id):
             raise TypeError("arg attribute must be a string or an Identifier")
 
         if isinstance(obj, Attr):
