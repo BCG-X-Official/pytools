@@ -10,10 +10,10 @@ import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
     DictLiteral,
-    Identifier,
+    Id,
     Lambda,
     ListLiteral,
-    Literal,
+    Lit,
     make_expression,
     Operation,
     PythonExpressionFormatter,
@@ -35,11 +35,7 @@ def test_expression_formatting() -> None:
 
     # expression 1
 
-    e = Call(
-        Identifier("f"),
-        (1 | Literal(2)) >> Literal("x") % Identifier("x"),
-        abc=-Literal(5),
-    )
+    e = Call(Id.f, (1 | Lit(2)) >> Lit("x") % Id.x, abc=-Lit(5))
 
     expr_1 = e * (e + e + e - e * e)
     form_1 = TextualForm.from_expression(expr_1)
@@ -66,7 +62,7 @@ def test_expression_formatting() -> None:
 
     # expression 3
 
-    expr_3 = Identifier("g")(param=(e, e + e, ~(e * e + e)))
+    expr_3 = Id.g(param=(e, e + e, ~(e * e + e)))
     assert (
         repr(expr_3)
         == """g(
@@ -81,35 +77,34 @@ def test_expression_formatting() -> None:
 )"""
     )
 
-    expr_4 = Lambda(params=Identifier("x"), body=e)(Literal(5))
+    expr_4 = Lambda(params=Id.x, body=e)(Lit(5))
     assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
 
 
 def test_expression() -> None:
-    lit_5 = Literal(5)
-    lit_abc = Literal("abc")
-    ident_xx = Identifier("xx")
+    lit_5 = Lit(5)
+    lit_abc = Lit("abc")
     expressions = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
-        (ident_xx, "xx"),
-        (Call(Identifier("func"), lit_5, lit_abc), "func(5, 'abc')"),
-        (ListLiteral(lit_5, lit_abc, ident_xx), "[5, 'abc', xx]"),
-        (SetLiteral(lit_5, lit_abc, ident_xx), "{5, 'abc', xx}"),
-        (TupleLiteral(lit_5, lit_abc, ident_xx), "(5, 'abc', xx)"),
+        ((Id.xx), "xx"),
+        (Call(Id("func"), lit_5, lit_abc), "func(5, 'abc')"),
+        (ListLiteral(lit_5, lit_abc, Id.xx), "[5, 'abc', xx]"),
+        (SetLiteral(lit_5, lit_abc, Id.xx), "{5, 'abc', xx}"),
+        (TupleLiteral(lit_5, lit_abc, Id.xx), "(5, 'abc', xx)"),
         (DictLiteral(**{"5": lit_abc, "x": lit_5}), "{'5': 'abc', 'x': 5}"),
-        (DictLiteral((lit_5, lit_abc), (ident_xx, lit_5)), "{5: 'abc', xx: 5}"),
-        (Operation(op.ADD, lit_5, lit_abc, ident_xx), "5 + 'abc' + xx"),
-        (Call(Identifier("func")), "func()"),
+        (DictLiteral((lit_5, lit_abc), (Id.xx, lit_5)), "{5: 'abc', xx: 5}"),
+        (Operation(op.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
+        (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
         (SetLiteral(), "{}"),
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
-        (ident_xx.isalpha(), "xx.isalpha()"),
-        (ident_xx[:], "xx[:]"),
-        (ident_xx[::1], "xx[::1]"),
-        (ident_xx[2::3, 1], "xx[2::3, 1]"),
-        (ident_xx[4:], "xx[4:]"),
+        (Id.xx.isalpha(), "xx.isalpha()"),
+        (Id.xx[:], "xx[:]"),
+        (Id.xx[::1], "xx[::1]"),
+        (Id.xx[2::3, 1], "xx[2::3, 1]"),
+        (Id.xx[4:], "xx[4:]"),
     ]
 
     for expression, expected_str in expressions:
@@ -122,7 +117,7 @@ def test_expression() -> None:
 
 
 def test_expression_setting() -> None:
-    x = Identifier("x")
+    x = Id.x
 
     # we cannot assign by index
     with pytest.raises(TypeError):
@@ -146,7 +141,7 @@ def test_expression_setting() -> None:
 
 
 def test_comparison_expressions() -> None:
-    x, y = Identifier("x"), Identifier("y")
+    x, y = Id.x, Id.y
 
     assert repr(x.eq_(y)) == "x == y"
     assert repr(x.ne_(y)) == "x != y"
@@ -169,7 +164,7 @@ def test_comparison_expressions() -> None:
 
 
 def test_expression_operators() -> None:
-    a, b = Identifier("a"), Identifier("b")
+    a, b = Id.a, Id.b
     assert a + b == Operation(op.ADD, a, b)
     assert a - b == Operation(op.SUB, a, b)
     assert a * b == Operation(op.MUL, a, b)
@@ -189,7 +184,7 @@ def test_expression_operators() -> None:
 
 
 def test_operator_precedence() -> None:
-    a, b, c = Identifier("a"), Identifier("b"), Identifier("c")
+    a, b, c = Id.a, Id.b, Id.c
     assert str(a + b + c) == "a + b + c"
     assert str((a + b) + c) == "a + b + c"
     assert str(a + (b + c)) == "a + (b + c)"
