@@ -10,6 +10,7 @@ import gamma.common.expression.operator as op
 from gamma.common.expression import (
     Call,
     DictLiteral,
+    Expression,
     Id,
     Lambda,
     ListLiteral,
@@ -143,24 +144,23 @@ def test_expression_setting() -> None:
 def test_comparison_expressions() -> None:
     x, y = Id.x, Id.y
 
-    assert repr(x.eq_(y)) == "x == y"
-    assert repr(x.ne_(y)) == "x != y"
-    assert repr(x.gt_(y)) == "x > y"
-    assert repr(x.ge_(y)) == "x >= y"
-    assert repr(x.lt_(y)) == "x < y"
-    assert repr(x.le_(y)) == "x <= y"
+    assert repr(x == y) == "x == y"
+    assert repr(x != y) == "x != y"
+    assert repr(x > y) == "x > y"
+    assert repr(x >= y) == "x >= y"
+    assert repr(x < y) == "x < y"
+    assert repr(x <= y) == "x <= y"
 
-    assert x != y
-    assert not x == y
+    assert x.freeze_() != y
+    assert not x.freeze_() == y
 
-    with pytest.raises(TypeError):
-        _ = x < y
-    with pytest.raises(TypeError):
-        _ = x <= y
-    with pytest.raises(TypeError):
-        _ = x > y
-    with pytest.raises(TypeError):
-        _ = x >= y
+    a: Expression = make_expression([(x + (y * 3)), {y.freeze_(): x}])
+    a_copy: Expression = make_expression([(x + (y * 3)), {y.freeze_(): x}])
+    assert isinstance(a == a_copy, Expression)
+    assert isinstance(a.freeze_() == a_copy, bool)
+    assert a.freeze_() == a_copy.freeze_()
+    assert a.freeze_() != a_copy
+    assert a.freeze_() != (a_copy + 1)
 
 
 def test_expression_operators() -> None:
