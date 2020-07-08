@@ -23,6 +23,7 @@ __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
     "Expression",
+    "FrozenExpression",
     "make_expression",
     "AtomicExpression",
     "Lit",
@@ -116,6 +117,17 @@ class Expression(metaclass=ABCMeta):
     An expression composed of literals and (possibly nested) operations.
     """
 
+    def freeze_(self) -> "FrozenExpression":
+        """
+        Create a frozen expression from this expression.
+
+        Frozen expressions cannot be used as subexpressions in other expressions,
+        but instead support Python's native semantics for equality and hashing.
+
+        :return: this expression converted to a frozen expression
+        """
+        return FrozenExpression(self)
+
     @property
     @abstractmethod
     def precedence_(self) -> int:
@@ -132,99 +144,42 @@ class Expression(metaclass=ABCMeta):
         The subexpressions of this expression.
         """
 
-    def eq_(self, other: Any) -> "Operation":
+    def eq_(self, other: "Expression") -> bool:
         """
-        Generate an expression that compares for equality (`a == b` in Python).
+        Compare this expression with another for equality.
 
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native equality operation
-        for set operations etc.
+        For using Python's native equality operator :code:`==`, see
+        :class:`~gamma.common.expression.FrozenExpression`.
 
-        :param other: the RHS of the comparison
-        :return: the comparison operation
+        :param other: the expression to compare this expression with
+        :return: `True` if and only if both expressions are equal
         """
-        return Operation(op.EQ, self, other)
-
-    def ne_(self, other: Any) -> "Operation":
-        """
-        Generate an expression that compares for inequality (`a != b` in Python)
-
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native equality operation
-        for set operations etc.
-
-        :param other: the RHS of the comparison
-        :return: the comparison operation
-        """
-        return Operation(op.NEQ, self, other)
-
-    def gt_(self, other: Any) -> "Operation":
-        """
-        Generate a "greater than" expression (`a > b` in Python)
-
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native comparison operation.
-
-        :param other: the RHS of the comparison
-        :return: the comparison operation
-        """
-        return Operation(op.GT, self, other)
-
-    def ge_(self, other: Any) -> "Operation":
-        """
-        Generate a "equal or greater than" expression (`a >= b` in Python)
-
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native comparison operation.
-
-        :param other: the RHS of the comparison
-        :return: the comparison operation
-        """
-        return Operation(op.GE, self, other)
-
-    def lt_(self, other: Any) -> "Operation":
-        """
-        Generate a "less than" expression (`a < b` in Python)
-
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native comparison operation.
-
-        :param other: the RHS of the comparison
-        :return: the comparison operation
-        """
-        return Operation(op.LT, self, other)
-
-    def le_(self, other: Any) -> "Operation":
-        """
-        Generate a "equal or less than" expression (`a <= b` in Python)
-
-        We cannot generate such expressions using a native Python shorthand,
-        since we need to preserve the semantics of the native comparison operation.
-
-        :param other: the RHS of the comparison
-        :return: the comparison operation
-        """
-        return Operation(op.LE, self, other)
-
-    @abstractmethod
-    def _equals(self: T, other: T) -> bool:
-        # assuming other is the same type as self, check if self and other are equal
-        pass
-
-    def __eq__(self, other: "Expression") -> bool:
         self_type = type(self)
         other_type = type(other)
-        if self_type == ExpressionAlias:
+
+        if self_type is ExpressionAlias:
             self: ExpressionAlias
-            return other == self.expression_
-        elif other_type == ExpressionAlias:
+            return other.eq_(self.expression_)
+        elif other_type is ExpressionAlias:
             other: ExpressionAlias
-            return self == other.expression_
+            return self.eq_(other.expression_)
         else:
-            return self_type is other_type and self._equals(other)
+            # noinspection PyProtectedMember
+            return self_type is other_type and self._eq(other)
 
     @abstractmethod
-    def __hash__(self) -> int:
+    def hash_(self) -> int:
+        """
+        Calculate the hash for this expression.
+
+        For using Python's native :code:`hash` function, see
+        :class:`~gamma.common.expression.FrozenExpression`.
+        """
+        pass
+
+    @abstractmethod
+    def _eq(self: T, other: T) -> bool:
+        # assuming other is the same type as self, check if self and other are equal
         pass
 
     def __add__(self, other: Any) -> "Operation":
@@ -318,6 +273,24 @@ class Expression(metaclass=ABCMeta):
     def __invert__(self) -> "UnaryOperation":
         return UnaryOperation(op.INVERT, self)
 
+    def __eq__(self, other: Any) -> "Operation":
+        return Operation(op.EQ, self, other)
+
+    def __ne__(self, other: Any) -> "Operation":
+        return Operation(op.NEQ, self, other)
+
+    def __gt__(self, other: Any) -> "Operation":
+        return Operation(op.GT, self, other)
+
+    def __ge__(self, other: Any) -> "Operation":
+        return Operation(op.GE, self, other)
+
+    def __lt__(self, other: Any) -> "Operation":
+        return Operation(op.LT, self, other)
+
+    def __le__(self, other: Any) -> "Operation":
+        return Operation(op.LE, self, other)
+
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
         return Call(
             self,
@@ -356,8 +329,35 @@ class Expression(metaclass=ABCMeta):
         # to get a text representation of the expression
         return ExpressionFormatter.default().to_text(self)
 
+    __hash__ = None
 
-def make_expression(value: Any) -> "Expression":
+
+class FrozenExpression(HasExpressionRepr):
+    """
+    A frozen expression.
+
+    Frozen expressions cannot be used as subexpressions in other expressions,
+    but instead support Python's native semantics for equality and hashing.
+    """
+
+    def __init__(self, expression: Expression) -> None:
+        self._expression = expression
+
+    def to_expression(self) -> "Expression":
+        """
+        Get the underlying un-frozen expression.
+        :return: the underlying un-frozen expression
+        """
+        return self._expression
+
+    def __eq__(self, other: "FrozenExpression") -> bool:
+        return type(self) is type(other) and self._expression.eq_(other._expression)
+
+    def __hash__(self) -> int:
+        return self._expression.hash_()
+
+
+def make_expression(value: Any) -> Expression:
     """
     Convert a python object into an expression.
 
@@ -374,6 +374,8 @@ def make_expression(value: Any) -> "Expression":
 
     if isinstance(value, Expression):
         return value
+    elif isinstance(value, FrozenExpression):
+        return value.to_expression()
     if isinstance(value, HasExpressionRepr):
         return value.to_expression()
     elif isinstance(value, str):
@@ -419,7 +421,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
 
     @property
-    def subexpressions_(self) -> Tuple["Expression", ...]:
+    def subexpressions_(self) -> Tuple[Expression, ...]:
         """
         The subexpressions of this expression.
         Always returns an empty tuple for atomic expressions.
@@ -451,11 +453,16 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def _equals(self, other: Expression) -> bool:
+    def _eq(self, other: "AtomicExpression") -> bool:
         return self.value_ == other.value_
 
-    def __hash__(self) -> int:
+    def hash_(self) -> int:
+        """
+        [see superclass]
+        """
         return hash((type(self), self.value_))
+
+    hash_.__doc__ = Expression.hash_.__doc__
 
 
 class Lit(AtomicExpression[T], Generic[T]):
@@ -592,9 +599,9 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     An expression surrounded by brackets.
     """
 
-    def __init__(self, brackets: BracketPair, subexpression: Expression) -> None:
+    def __init__(self, brackets: BracketPair, subexpression: Any) -> None:
         self._brackets = brackets
-        self._subexpression = subexpression
+        self._subexpression = make_expression(subexpression)
 
     @property
     def brackets_(self) -> BracketPair:
@@ -617,14 +624,18 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def _equals(self, other: "BracketedExpression") -> bool:
-        return (
-            self.brackets_ == other.brackets_
-            and self.subexpression_ == other.subexpression_
+    def _eq(self, other: "BracketedExpression") -> bool:
+        return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
+            other.subexpression_
         )
 
-    def __hash__(self) -> int:
-        return hash((type(self), self.brackets_, self.subexpression_))
+    def hash_(self) -> int:
+        """
+        [see superclass]
+        """
+        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
+
+    hash_.__doc__ = Expression.hash_.__doc__
 
 
 class CollectionLiteral(BracketedExpression):
@@ -769,14 +780,19 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
 
     subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
-    def _equals(self, other: "PrefixExpression") -> bool:
-        return (
-            self.prefix_ == other.prefix_
-            and self.subexpressions_ == other.subexpressions_
+    def _eq(self, other: "PrefixExpression") -> bool:
+        return self.prefix_._eq(other.prefix_) and self.body_.eq_(other.body_)
+
+    def hash_(self) -> int:
+        """
+        [see superclass]
+        :return:
+        """
+        return hash(
+            (type(self), self.prefix_.hash_(), self.separator_, self.body_.hash_())
         )
 
-    def __hash__(self) -> int:
-        return hash((type(self), self.prefix_, self.subexpression_))
+    hash_.__doc__ = Expression.hash_.__doc__
 
 
 class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
@@ -1046,7 +1062,12 @@ class Lambda(BasePrefixExpression):
 
     @property
     def precedence_(self) -> int:
+        """
+        [see superclass]
+        """
         return Lambda._PRECEDENCE
+
+    precedence_.__doc__ = Expression.precedence_.__doc__
 
     @property
     def separator_(self) -> str:
@@ -1073,14 +1094,24 @@ class InfixExpression(Expression, metaclass=ABCMeta):
         """
         pass
 
-    def _equals(self, other: "InfixExpression") -> bool:
-        return (
-            self.infix_ == other.infix_
-            and self.subexpressions_ == other.subexpressions_
+    def _eq(self, other: "InfixExpression") -> bool:
+        return self.infix_ == other.infix_ and all(
+            a.eq_(b) for a, b in zip(self.subexpressions_, other.subexpressions_)
         )
 
-    def __hash__(self) -> int:
-        return hash((type(self), self.infix_, self.subexpressions_))
+    def hash_(self) -> int:
+        """
+        [see superclass]
+        """
+        return hash(
+            (
+                type(self),
+                self.infix_,
+                *(subexpression.hash_() for subexpression in self.subexpressions_),
+            )
+        )
+
+    hash_.__doc__ = Expression.hash_.__doc__
 
 
 class Operation(InfixExpression, BaseOperation):
@@ -1096,12 +1127,13 @@ class Operation(InfixExpression, BaseOperation):
         if len(operands) < 2:
             raise ValueError("operation requires at least two operands")
 
-        operands = tuple(make_expression(operand) for operand in operands)
+        operands: Tuple[Expression, ...] = tuple(
+            make_expression(operand) for operand in operands
+        )
 
         first_operand = operands[0]
 
         if isinstance(first_operand, Operation):
-            first_operand: Operation
             if first_operand.operator_ == operator:
                 # if first operand has the same operator, we flatten the operand
                 # noinspection PyUnresolvedReferences
@@ -1212,15 +1244,20 @@ class ExpressionAlias(SingletonExpression):
         """
         [see superclass]
         """
-        return self.expression_
+        return self._expression
 
     subexpression_.__doc__ = SingletonExpression.subexpression_.__doc__
 
-    def _equals(self, other: "ExpressionAlias") -> bool:
-        return self._expression == other._expression
+    def _eq(self, other: "ExpressionAlias") -> bool:
+        return self._expression.eq_(other._expression)
 
-    def __hash__(self) -> int:
-        return hash(self.expression_)
+    def hash_(self) -> int:
+        """
+        [see superclass]
+        """
+        return self.expression_.hash_()
+
+    hash_.__doc__ = Expression.hash_.__doc__
 
 
 __tracker.validate()
