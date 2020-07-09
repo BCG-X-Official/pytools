@@ -25,6 +25,7 @@ __all__ = [
     "Expression",
     "FrozenExpression",
     "make_expression",
+    "freeze",
     "AtomicExpression",
     "Lit",
     "Id",
@@ -125,17 +126,6 @@ class Expression(metaclass=ABCMeta):
     """
     An expression composed of literals and (possibly nested) operations.
     """
-
-    def freeze_(self) -> "FrozenExpression":
-        """
-        Create a frozen expression from this expression.
-
-        Frozen expressions cannot be used as subexpressions in other expressions,
-        but instead support Python's native semantics for equality and hashing.
-
-        :return: this expression converted to a frozen expression
-        """
-        return FrozenExpression(self)
 
     @property
     @abstractmethod
@@ -418,6 +408,15 @@ def make_expression(value: Any) -> Expression:
         else:
 
             return Lit(value)
+
+
+def freeze(expression: Expression) -> FrozenExpression:
+    """
+    Convenience function to freeze an expression
+    :param expression: the expression to freeze
+    :return: the resulting frozen expression
+    """
+    return FrozenExpression(expression)
 
 
 #
