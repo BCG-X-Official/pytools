@@ -186,7 +186,7 @@ class TextualForm:
 
     def __repr__(self) -> str:
         # noinspection PyProtectedMember
-        return self.to_text(config=_DEFAULT_PYTHON_EXPRESSION_FORMATTER.config)
+        return self.to_text(config=_DEFAULT_FORMATTING_CONFIG)
 
 
 class EmptyForm(TextualForm):
@@ -710,9 +710,19 @@ class PythonExpressionFormatter(ExpressionFormatter):
     to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
 
-# Register class PythonExpressionFormat as the default display form
-_DEFAULT_PYTHON_EXPRESSION_FORMATTER = PythonExpressionFormatter()
 # noinspection PyProtectedMember
-ExpressionFormatter._register_default_format(_DEFAULT_PYTHON_EXPRESSION_FORMATTER)
+def _register_default_formatters() -> FormattingConfig:
+    # Register class PythonExpressionFormat as the default display form
+    multi_line_formatter = PythonExpressionFormatter()
+    ExpressionFormatter._register_default_format(
+        multi_line_formatter, single_line=False
+    )
+    ExpressionFormatter._register_default_format(
+        PythonExpressionFormatter(single_line=True), single_line=True
+    )
+    return multi_line_formatter.config
+
+
+_DEFAULT_FORMATTING_CONFIG = _register_default_formatters()
 
 __tracker.validate()
