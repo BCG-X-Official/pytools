@@ -202,7 +202,11 @@ def _to_collection(
 
     elements: T_Collection
 
-    if isinstance(values, Iterable):
+    if (
+        isinstance(values, Iterable)
+        and not isinstance(values, str)
+        and not isinstance(values, bytes)
+    ):
         if isinstance(values, collection_type):
             # no change needed, values already is the collection we need
             elements = values
