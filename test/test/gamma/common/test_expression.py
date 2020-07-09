@@ -15,6 +15,7 @@ from gamma.common.expression import (
     Lambda,
     ListLiteral,
     Lit,
+    freeze,
     make_expression,
     Operation,
     PythonExpressionFormatter,
@@ -151,16 +152,16 @@ def test_comparison_expressions() -> None:
     assert repr(x < y) == "x < y"
     assert repr(x <= y) == "x <= y"
 
-    assert x.freeze_() != y
-    assert not x.freeze_() == y
+    assert freeze(x) != freeze(y)
+    assert not freeze(x) == freeze(y)
 
-    a: Expression = make_expression([(x + (y * 3)), {y.freeze_(): x}])
-    a_copy: Expression = make_expression([(x + (y * 3)), {y.freeze_(): x}])
+    a: Expression = make_expression([(x + (y * 3)), {freeze(y): x}])
+    a_copy: Expression = make_expression([(x + (y * 3)), {freeze(y): x}])
     assert isinstance(a == a_copy, Expression)
-    assert isinstance(a.freeze_() == a_copy, bool)
-    assert a.freeze_() == a_copy.freeze_()
-    assert a.freeze_() != a_copy
-    assert a.freeze_() != (a_copy + 1)
+    assert isinstance(freeze(a) == a_copy, bool)
+    assert freeze(a) == freeze(a_copy)
+    assert freeze(a) != a_copy
+    assert freeze(a) != (a_copy + 1)
 
 
 def test_expression_operators() -> None:

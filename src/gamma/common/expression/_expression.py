@@ -25,6 +25,7 @@ __all__ = [
     "Expression",
     "FrozenExpression",
     "make_expression",
+    "freeze",
     "AtomicExpression",
     "Lit",
     "Id",
@@ -68,7 +69,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
     An expression formatter produces text representations of expressions.
     """
 
-    __default_format: Optional["ExpressionFormatter"] = None
+    __default_format: Dict[bool, "ExpressionFormatter"] = {}
 
     @abstractmethod
     def to_text(self, expression: "Expression") -> str:
@@ -80,17 +81,21 @@ class ExpressionFormatter(metaclass=ABCMeta):
         pass
 
     @staticmethod
-    def default() -> "ExpressionFormatter":
+    def default(single_line: bool) -> "ExpressionFormatter":
         """
         Get the default expression format.
         """
-        return ExpressionFormatter.__default_format
+        return ExpressionFormatter.__default_format[single_line]
 
     @staticmethod
-    def _register_default_format(expression_format: "ExpressionFormatter") -> None:
-        if ExpressionFormatter.__default_format is not None:
-            raise RuntimeError("default format is already registered")
-        ExpressionFormatter.__default_format = expression_format
+    def _register_default_format(
+        expression_format: "ExpressionFormatter", single_line: bool
+    ) -> None:
+        if single_line in ExpressionFormatter.__default_format:
+            raise RuntimeError(
+                f"default format is already registered for single_line={single_line}"
+            )
+        ExpressionFormatter.__default_format[single_line] = expression_format
 
 
 class HasExpressionRepr(metaclass=ABCMeta):
@@ -108,25 +113,19 @@ class HasExpressionRepr(metaclass=ABCMeta):
 
     def __repr__(self) -> str:
         # get the expression representing this object, and use the default formatter
-        # to get a text representation of the expression
-        return ExpressionFormatter.default().to_text(self.to_expression())
+        # to get a textual representation of the expression
+        return repr(self.to_expression())
+
+    def __str__(self) -> str:
+        # get the expression representing this object, and use the default formatter
+        # to convert the expression to a formatted string
+        return str(self.to_expression())
 
 
 class Expression(metaclass=ABCMeta):
     """
     An expression composed of literals and (possibly nested) operations.
     """
-
-    def freeze_(self) -> "FrozenExpression":
-        """
-        Create a frozen expression from this expression.
-
-        Frozen expressions cannot be used as subexpressions in other expressions,
-        but instead support Python's native semantics for equality and hashing.
-
-        :return: this expression converted to a frozen expression
-        """
-        return FrozenExpression(self)
 
     @property
     @abstractmethod
@@ -325,9 +324,12 @@ class Expression(metaclass=ABCMeta):
         raise TypeError(f"'{Expression.__name__}' object is not iterable")
 
     def __repr__(self) -> str:
-        # get the expression representing this object, and use the default formatter
-        # to get a text representation of the expression
-        return ExpressionFormatter.default().to_text(self)
+        # get a textual representation of the expression using the default formatter
+        return ExpressionFormatter.default(single_line=True).to_text(self)
+
+    def __str__(self) -> str:
+        # convert the expression to a formatted string using the default formatter
+        return ExpressionFormatter.default(single_line=False).to_text(self)
 
     __hash__ = None
 
@@ -406,6 +408,15 @@ def make_expression(value: Any) -> Expression:
         else:
 
             return Lit(value)
+
+
+def freeze(expression: Expression) -> FrozenExpression:
+    """
+    Convenience function to freeze an expression
+    :param expression: the expression to freeze
+    :return: the resulting frozen expression
+    """
+    return FrozenExpression(expression)
 
 
 #
