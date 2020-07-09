@@ -238,7 +238,7 @@ def validate_element_types(
         Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
         arguments.
     """
-    if element_type in [object, Any]:
+    if element_type == object:
         return
 
     for element in iterable:
