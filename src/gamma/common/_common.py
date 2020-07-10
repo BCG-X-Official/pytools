@@ -2,6 +2,7 @@
 Core implementation of :mod:`gamma.common`
 """
 
+import inspect
 import logging
 import warnings
 from functools import wraps
@@ -21,6 +22,7 @@ __all__ = [
     "validate_element_types",
     "deprecated",
     "deprecation_warning",
+    "inheritdoc",
 ]
 
 T = TypeVar("T")
@@ -288,7 +290,7 @@ def deprecated(function: Callable = None, *, message: str = None):
     elif isinstance(function, str):
         raise ValueError(
             "Deprecation message not provided as a keyword argument. "
-            'Usage: @deprecated(message="...")'
+            f'Usage: @{deprecated.__name__}(message="...")'
         )
     else:
         raise ValueError("Deprecated object must be callable")
@@ -306,6 +308,59 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     if stacklevel < 1:
         raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
+
+
+def inheritdoc(cls: type = None, *, match: str):
+    """
+    Decorator to inherit docstrings of overridden methods.
+
+    Usage:
+    .. code::
+        @inheritdoc(match="[see superclass]")
+        class A(B):
+            def my_function(self) -> None:
+                \"""[see superclass]\"""
+                …
+
+            def my_other_function(self) -> None:
+                \"""This docstring will not be replaced.\"""
+
+    In this example, the docstring of the :code:`my_function` will be replaced with the
+    docstring of the overridden function of the same name, or with :code:`None` if no
+    overridden function exists, or if that function has no docstring.
+
+    :param match: the parent docstring will be inherited if the current docstring \
+        is equal to match
+    """
+
+    def _inheritdoc_inner(_cls: type) -> type:
+        if not type(_cls):
+            _raise_type_error(_cls)
+
+        for name, member in vars(_cls).items():
+            if member.__doc__ and match == member.__doc__:
+                parents = inspect.getmro(_cls)[1:]
+                member.__doc__ = getattr(parents[0], name, None) if parents else None
+
+        return _cls
+
+    def _raise_type_error(_cls: type) -> None:
+        raise TypeError(
+            f"@{inheritdoc.__name__} can only decorate classes, "
+            f"not a {type(_cls).__name__}"
+        )
+
+    if cls is None:
+        return _inheritdoc_inner
+    elif type(cls):
+        return _inheritdoc_inner(cls)
+    elif isinstance(cls, str):
+        raise ValueError(
+            "arg match not provided as a keyword argument. "
+            f'Usage: @{inheritdoc.__name__}(match="...")'
+        )
+    else:
+        _raise_type_error(cls)
 
 
 __tracker.validate()
