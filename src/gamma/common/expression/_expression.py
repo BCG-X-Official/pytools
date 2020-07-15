@@ -8,14 +8,9 @@ from abc import ABCMeta, abstractmethod
 from typing import *
 from weakref import WeakValueDictionary
 
-import gamma.common.expression.operator as op
 from gamma.common import AllTracker, to_list
-from gamma.common.expression.operator import (
-    BinaryOperator,
-    MAX_PRECEDENCE,
-    Operator,
-    UnaryOperator,
-)
+from . import operator as op
+from .operator import BinaryOperator, MAX_PRECEDENCE, Operator, UnaryOperator
 
 log = logging.getLogger(__name__)
 
@@ -142,6 +137,30 @@ class Expression(metaclass=ABCMeta):
         """
         The subexpressions of this expression.
         """
+
+    def or_(self, other: "Expression") -> "Operation":
+        """
+        Create a logical "or" expression using this and another expression as operands.
+        :param other: other operand to combine with this expression using a logical "or"
+        :return: the logical "or" expression
+        """
+        return Operation(op.OR, self, other)
+
+    def and_(self, other: "Expression") -> "Operation":
+        """
+        Create a logical "and" expression using this and another expression as operands.
+        :param other: other operand to combine with this expression using a logical \
+            "and"
+        :return: the logical "and" expression
+        """
+        return Operation(op.AND, self, other)
+
+    def not_(self) -> "UnaryOperation":
+        """
+        Create a logical "not" expression using this expression as the operand.
+        :return: the logical "not" expression
+        """
+        return UnaryOperation(op.NOT, self)
 
     def eq_(self, other: "Expression") -> bool:
         """
