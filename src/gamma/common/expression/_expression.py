@@ -164,7 +164,7 @@ class Expression(metaclass=ABCMeta):
             return self.eq_(other.expression_)
         else:
             # noinspection PyProtectedMember
-            return self_type is other_type and self._eq(other)
+            return self_type is other_type and self._eq_same_type(other)
 
     @abstractmethod
     def hash_(self) -> int:
@@ -177,7 +177,7 @@ class Expression(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def _eq(self: T, other: T) -> bool:
+    def _eq_same_type(self: T, other: T) -> bool:
         # assuming other is the same type as self, check if self and other are equal
         pass
 
@@ -464,7 +464,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def _eq(self, other: "AtomicExpression") -> bool:
+    def _eq_same_type(self, other: "AtomicExpression") -> bool:
         return self.value_ == other.value_
 
     def hash_(self) -> int:
@@ -635,7 +635,7 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-    def _eq(self, other: "BracketedExpression") -> bool:
+    def _eq_same_type(self, other: "BracketedExpression") -> bool:
         return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
             other.subexpression_
         )
@@ -791,8 +791,8 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
 
     subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
-    def _eq(self, other: "PrefixExpression") -> bool:
-        return self.prefix_._eq(other.prefix_) and self.body_.eq_(other.body_)
+    def _eq_same_type(self, other: "PrefixExpression") -> bool:
+        return self.prefix_.eq_(other.prefix_) and self.body_.eq_(other.body_)
 
     def hash_(self) -> int:
         """
@@ -1105,7 +1105,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
         """
         pass
 
-    def _eq(self, other: "InfixExpression") -> bool:
+    def _eq_same_type(self, other: "InfixExpression") -> bool:
         return self.infix_ == other.infix_ and all(
             a.eq_(b) for a, b in zip(self.subexpressions_, other.subexpressions_)
         )
@@ -1259,7 +1259,7 @@ class ExpressionAlias(SingletonExpression):
 
     subexpression_.__doc__ = SingletonExpression.subexpression_.__doc__
 
-    def _eq(self, other: "ExpressionAlias") -> bool:
+    def _eq_same_type(self, other: "ExpressionAlias") -> bool:
         return self._expression.eq_(other._expression)
 
     def hash_(self) -> int:
