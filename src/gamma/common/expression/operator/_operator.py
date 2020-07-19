@@ -1,6 +1,6 @@
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Mapping, Set, Tuple
+from typing import *
 
 from gamma.common import AllTracker
 
@@ -60,8 +60,9 @@ class Operator(metaclass=ABCMeta):
     Base class for operators used in expressions
     """
 
-    def __init__(self, symbol: str) -> None:
+    def __init__(self, symbol: str, precedence: Optional[int] = None) -> None:
         self.symbol = symbol
+        self._precedence = precedence
 
     @property
     @abstractmethod
@@ -73,7 +74,11 @@ class Operator(metaclass=ABCMeta):
 
     @property
     def precedence(self) -> int:
-        return _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
+        return (
+            _OPERATOR_PRECEDENCE.get(self, MIN_PRECEDENCE)
+            if self._precedence is None
+            else self._precedence
+        )
 
     def __eq__(self, other: "Operator") -> bool:
         return type(self) == type(other) and self.symbol == other.symbol
