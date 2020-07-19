@@ -10,9 +10,9 @@ import gamma.common.expression.operator as op
 from gamma.common import AllTracker
 from gamma.common.expression._expression import (
     AtomicExpression,
-    BracketedExpression,
-    BracketPair,
     BRACKETS_ROUND,
+    BracketPair,
+    BracketedExpression,
     EPSILON,
     Expression,
     ExpressionAlias,
@@ -533,15 +533,28 @@ class InfixForm(ComplexForm):
         """
 
         subexpressions = expression.subexpressions_
-        if len(subexpressions) == 1:
+        n_subexpressions = len(subexpressions)
+        if n_subexpressions == 1:
             return TextualForm.from_expression(subexpressions[0])
 
+        last_subexpression = n_subexpressions - 1
         subforms = tuple(
             TextualForm.from_expression(subexpression).encapsulate(
                 condition=(
                     subexpression.precedence_ < expression.precedence_
                     if pos == 0
-                    else subexpression.precedence_ <= expression.precedence_
+                    else (
+                        subexpression.precedence_ <= expression.precedence_
+                        and (
+                            # a trailing prefix expression with an empty prefix does
+                            # not need to be encapsulated (e.g., unary operators)
+                            pos < last_subexpression
+                            or not (
+                                isinstance(subexpression, PrefixExpression)
+                                and subexpression.prefix_ is EPSILON
+                            )
+                        )
+                    )
                 )
             )
             for pos, subexpression in enumerate(subexpressions)
