@@ -66,7 +66,7 @@ def test_expression_formatting() -> None:
 
     expr_3 = Id.g(param=(e, e + e, ~(e * e + e)))
     assert (
-        repr(expr_3)
+        str(expr_3)
         == """g(
     param=(
         f((1 | 2) >> 'x' % x, abc=-5),
