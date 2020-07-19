@@ -80,12 +80,6 @@ class Operator(metaclass=ABCMeta):
             else self._precedence
         )
 
-    def __eq__(self, other: "Operator") -> bool:
-        return type(self) == type(other) and self.symbol == other.symbol
-
-    def __hash__(self) -> int:
-        return hash((type(self), self.symbol))
-
     def __repr__(self) -> str:
         return f"Operator({self.symbol})@{id(self)}"
 
