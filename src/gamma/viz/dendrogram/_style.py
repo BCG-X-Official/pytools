@@ -375,7 +375,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
 
     def _drawing_start(self, title: str) -> None:
         # write the title
-        self.out.write(f"{title:*^{self.width}s}\n")
+        self.out.write(f"{f' {title} ':*^{self.width}s}\n")
         self._char_matrix = CharacterMatrix(
             n_rows=self._max_height, n_columns=self.width
         )
