@@ -19,6 +19,7 @@ __all__ = [
     "to_tuple",
     "to_list",
     "to_set",
+    "validate_type",
     "validate_element_types",
     "deprecated",
     "deprecation_warning",
@@ -227,6 +228,40 @@ def _to_collection(
         )
 
     return elements
+
+
+def validate_type(
+    value: T,
+    *,
+    element_type: Type[T],
+    optional: bool = False,
+    name: Optional[str] = None,
+) -> None:
+    """
+    Validate that a value implements the expected type
+    :param value: an arbitrary object
+    :param element_type: the type to check for
+    :param optional: if :code:`True`, accept :code:`None` as a valid value \
+        (default: :code:`False`)
+    :param name: optional name of the entity to which the elements were passed. \
+        Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
+        arguments.
+    """
+    if element_type == object:
+        return
+
+    if optional and value is None:
+        return
+
+    if not isinstance(value, element_type):
+        if name:
+            message_head = f"{name} requires"
+        else:
+            message_head = "expected"
+        raise TypeError(
+            f"{message_head} instance of {element_type.__name__} "
+            f"but got a {type(value).__name__}"
+        )
 
 
 def validate_element_types(
