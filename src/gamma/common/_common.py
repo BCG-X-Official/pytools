@@ -224,7 +224,7 @@ def _to_collection(
 
     if element_type:
         validate_element_types(
-            elements, element_type=element_type, name=f"arg {arg_name}"
+            elements, expected_type=element_type, name=f"arg {arg_name}"
         )
 
     return elements
@@ -233,59 +233,59 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    element_type: Type[T],
+    expected_type: Type[T],
     optional: bool = False,
     name: Optional[str] = None,
 ) -> None:
     """
     Validate that a value implements the expected type
     :param value: an arbitrary object
-    :param element_type: the type to check for
+    :param expected_type: the type to check for
     :param optional: if :code:`True`, accept :code:`None` as a valid value \
         (default: :code:`False`)
     :param name: optional name of the entity to which the elements were passed. \
         Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
         arguments.
     """
-    if element_type == object:
+    if expected_type == object:
         return
 
     if optional and value is None:
         return
 
-    if not isinstance(value, element_type):
+    if not isinstance(value, expected_type):
         if name:
             message_head = f"{name} requires"
         else:
             message_head = "expected"
         raise TypeError(
-            f"{message_head} instance of {element_type.__name__} "
-            f"but got a {type(value).__name__}"
+            f"{message_head} instance of {expected_type.__name__} "
+            f"but got a {expected_type(value).__name__}"
         )
 
 
 def validate_element_types(
-    iterable: Iterable[T], *, element_type: Type[T], name: Optional[str] = None
+    iterable: Iterable[T], *, expected_type: Type[T], name: Optional[str] = None
 ) -> None:
     """
     Validate that all elements in the given iterable implement the expected type
     :param iterable: an iterable
-    :param element_type: the type to check for
+    :param expected_type: the type to check for
     :param name: optional name of the entity to which the elements were passed. \
         Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
         arguments.
     """
-    if element_type == object:
+    if expected_type == object:
         return
 
     for element in iterable:
-        if not isinstance(element, element_type):
+        if not isinstance(element, expected_type):
             if name:
                 message_head = f"{name} requires"
             else:
                 message_head = "expected"
             raise TypeError(
-                f"{message_head} instances of {element_type.__name__} "
+                f"{message_head} instances of {expected_type.__name__} "
                 f"but got a {type(element).__name__}"
             )
 
