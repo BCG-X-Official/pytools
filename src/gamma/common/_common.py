@@ -285,7 +285,8 @@ def validate_element_types(
             else:
                 message_head = "expected"
             raise TypeError(
-                f"{message_head} instances of {element_type.__name__} but got {element}"
+                f"{message_head} instances of {element_type.__name__} "
+                f"but got a {type(element).__name__}"
             )
 
 
