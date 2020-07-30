@@ -326,7 +326,7 @@ class Expression(metaclass=ABCMeta):
         raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
 
     def __getattr__(self, key: str) -> "Expression":
-        if key[:1] == "_":
+        if key.startswith("_"):
             raise AttributeError(key)
         else:
             return Attr(obj=self, attribute=key)
