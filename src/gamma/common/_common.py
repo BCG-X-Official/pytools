@@ -27,7 +27,7 @@ __all__ = [
 ]
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", bound=Collection[T])
+T_Collection = TypeVar("T_Collection", bound=Collection)
 
 
 class AllTracker:
