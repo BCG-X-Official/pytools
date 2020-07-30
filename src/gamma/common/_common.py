@@ -346,12 +346,13 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
 
 
-def inheritdoc(cls: type = None, *, match: str):
+# noinspection PyIncorrectDocstring
+def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], type]]:
     """
     Decorator to inherit docstrings of overridden methods.
 
     Usage:
-    .. code::
+    .. code-block:: python
         @inheritdoc(match="[see superclass]")
         class A(B):
             def my_function(self) -> None:
