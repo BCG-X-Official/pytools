@@ -522,6 +522,10 @@ class _IdentifierMeta(ABCMeta):
     _identifiers: Dict[str, "Id"] = WeakValueDictionary()
 
     def __getattr__(self, item: str) -> "Id":
+        if item.startswith("_"):
+            # we do not allow creating identifiers with leading underscores
+            raise AttributeError()
+
         identifier = _IdentifierMeta._identifiers.get(item, None)
         if not identifier:
             _IdentifierMeta._identifiers[item] = identifier = Id(item)
