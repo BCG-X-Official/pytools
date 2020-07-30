@@ -340,7 +340,7 @@ class Expression(metaclass=ABCMeta):
     def __iter__(self) -> None:
         # we need to rule iteration out explicitly, otherwise we'd get infinite 'for'
         # loops through iterating via __getitem__
-        raise TypeError(f"'{Expression.__name__}' object is not iterable")
+        raise TypeError(f"'{type(self).__name__}' object is not iterable: {repr(self)}")
 
     def __repr__(self) -> str:
         # get a textual representation of the expression using the default formatter
