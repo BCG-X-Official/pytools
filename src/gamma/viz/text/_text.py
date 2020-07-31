@@ -35,7 +35,7 @@ class CharacterMatrix:
         """
         The height of this matrix.
 
-        Same as `len(self)`.
+        Same as ``len(self)``.
         """
         return len(self._matrix)
 
@@ -105,9 +105,9 @@ def format_table(
     :param headings: the table headings
     :param data: the table data, as a list-like with shape `[n_rows, n_columns]`
     :param formats: formatting strings for data in each row (optional); \
-        uses `str()` conversion for any formatting strings stated as `None`
-    :param alignment: text alignment for each column (optional); use `"<"` to align
-        left, `"="` to center, `">"` to align right (defaults to left alignment)
+        uses ``str()`` conversion for any formatting strings stated as ``None``
+    :param alignment: text alignment for each column (optional); use ``"<"`` to align
+        left, ``"="`` to center, ``">"`` to align right (defaults to left alignment)
     :return: the formatted table as a multi-line string
     """
     n_columns = len(headings)

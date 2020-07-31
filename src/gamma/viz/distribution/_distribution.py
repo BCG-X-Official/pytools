@@ -60,7 +60,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
     """
     Plot an ECDF as a Matplotlib plot.
 
-    :param ax: optional axes object to draw on; if `Null` use pyplot's current axes
+    :param ax: optional axes object to draw on; if ``Null`` use pyplot's current axes
     :param color_non_outlier: the color for non outlier points (default: blue)
     :param color_outlier: the color for outlier points (default: orange)
     :param color_far_outlier: the color for far outlier points (default: red)
@@ -129,13 +129,13 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         :param style: the style of the chart; either as a \
             :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
             default style. Permissible names include "matplot" for a style supporting \
-            Matplotlib (default: `"matplot"`).
-        :param iqr_multiple: iqr multiple to determine outliers. If `None`, then no \
+            Matplotlib (default: ``"matplot"``).
+        :param iqr_multiple: iqr multiple to determine outliers. If ``None``, then no \
             outliers and far outliers are computed (default: 1.5).
-        :param iqr_multiple_far: iqr multiple to determine far outliers. If `None`, then \
-            no far outliers are computed. Should be greater than `iqr_multiple` when both \
+        :param iqr_multiple_far: iqr multiple to determine far outliers. If ``None``, then \
+            no far outliers are computed. Should be greater than ``iqr_multiple`` when both \
             are defined (default: 3.0).
-        :param hide_far_outliers: if `True`, do not plot far outliers (default: `False`)
+        :param hide_far_outliers: if ``True``, do not plot far outliers (default: ``False``)
         """
         super().__init__(style=style)
 
@@ -160,7 +160,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         Draw the chart.
         :param data: the data to draw
         :param title: the title of the chart (optional; defaults to "ECDF"; if arg \
-            `data` is a series then the default title will include name of the series)
+            ``data`` is a series then the default title will include name of the series)
         """
         if title is None:
             if hasattr(data, "name"):

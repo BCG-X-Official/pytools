@@ -27,7 +27,7 @@ class _SubtreeInfo(NamedTuple):
 
 class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
-    Class to draw a `LinkageTree` as a dendrogram.
+    Class to draw a ``LinkageTree`` as a dendrogram.
 
     The class has a public method :meth:`~.draw` which draws the dendrogram.
     """
@@ -65,7 +65,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
             :param y: the value determining the position of the node with respect to the
               leaves of the tree
             :param width: width difference in the tree covered by the node
-            :return info: `_SubtreeInfo` which contains weights and labels
+            :return info: ``_SubtreeInfo`` which contains weights and labels
             """
             if node.is_leaf:
                 self.style.draw_link_leg(

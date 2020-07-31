@@ -65,7 +65,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         :param style: the style of the chart; either as a
             :class:`~gamma.viz.DrawStyle` instance, or as the name of a default style. \
             Permissible names include "matplot" for a style supporting Matplotlib, and \
-            "text" if text rendering is supported (default: `"matplot"`)
+            "text" if text rendering is supported (default: ``"matplot"``)
         """
         if isinstance(style, str):
             try:
