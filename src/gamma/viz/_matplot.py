@@ -56,7 +56,7 @@ class MatplotStyle(DrawStyle, metaclass=ABCMeta):
 
     def __init__(self, *, ax: Optional[Axes] = None, **kwargs) -> None:
         """
-        :param ax: optional axes object to draw on; if `Null`, use pyplot's current axes
+        :param ax: optional axes object to draw on; if ``Null``, use pyplot's current axes
         """
         super().__init__(**kwargs)
         self._ax = ax
@@ -99,7 +99,7 @@ class MatplotStyle(DrawStyle, metaclass=ABCMeta):
         """
         Calculate the horizontal and vertical size of the given text in axis units.
         Constructs a :class:`matplotlib.text.Text` artist then calculates it size
-        relative to the axis managed by this style object (attribute `ax`)
+        relative to the axis managed by this style object (attribute ``ax``)
         For non-linear axis scales text size differs depending on placement,
         so the intended placement (in data coordinates) should be provided
 

@@ -19,8 +19,8 @@ class TextStyle(DrawStyle, metaclass=ABCMeta):
     Plain text drawing style.
 
     :param width: the maximum width available to render the text, defaults to 80
-    :param out: the output stream this style instance writes to, or `stdout` if \
-      `None` is passed (defaults to `None`)
+    :param out: the output stream this style instance writes to, or ``stdout`` if \
+      ``None`` is passed (defaults to ``None``)
     """
 
     def __init__(self, out: TextIO = None, width: int = 80, **kwargs) -> None:

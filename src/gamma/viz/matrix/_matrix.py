@@ -76,7 +76,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     ):
         """
         :param max_ticks: the maximum number of ticks to put on the x and y axis; \
-            `None` to determine number of labels automatically (default: `None`)
+            ``None`` to determine number of labels automatically (default: ``None``)
         :param cell_format: optional string format, function, or \
             :class:`~matplotlib.ticker.Formatter` for annotating each matrix cell with \
             its value, if sufficient space is available; don't annotate cells if no \
