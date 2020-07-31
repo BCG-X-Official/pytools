@@ -68,7 +68,7 @@ class Operator(metaclass=ABCMeta):
     @abstractmethod
     def is_unary(self) -> bool:
         """
-        `True` if this is a unary operator
+        ``True`` if this is a unary operator
         """
         pass
 

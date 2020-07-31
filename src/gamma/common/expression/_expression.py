@@ -95,7 +95,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
 
 class HasExpressionRepr(metaclass=ABCMeta):
     """
-    Mix-in class for classes whose `repr` representations are rendered as expressions
+    Mix-in class for classes whose ``repr`` representations are rendered as expressions
     """
 
     @abstractmethod
@@ -166,11 +166,11 @@ class Expression(metaclass=ABCMeta):
         """
         Compare this expression with another for equality.
 
-        For using Python's native equality operator :code:`==`, see
+        For using Python's native equality operator ``==``, see
         :class:`~gamma.common.expression.FrozenExpression`.
 
         :param other: the expression to compare this expression with
-        :return: `True` if and only if both expressions are equal
+        :return: ``True`` if and only if both expressions are equal
         """
         self_type = type(self)
         other_type = type(other)
@@ -190,7 +190,7 @@ class Expression(metaclass=ABCMeta):
         """
         Calculate the hash for this expression.
 
-        For using Python's native :code:`hash` function, see
+        For using Python's native ``hash`` function, see
         :class:`~gamma.common.expression.FrozenExpression`.
         """
         pass
@@ -974,8 +974,8 @@ class DictEntry(BasePrefixExpression):
 
 class BaseInvocation(PrefixExpression):
     """
-    An invocation in the shape of `<expression>(<expression>)` or
-    `<expression>[<expression>]`
+    An invocation in the shape of ``<expression>(<expression>)`` or
+    ``<expression>[<expression>]``
     """
 
     _PRECEDENCE = op.DOT.precedence
@@ -1034,7 +1034,7 @@ class Call(BaseInvocation):
 
 class Index(BaseInvocation):
     """
-    An indexing operation in the shape of `x[i]`
+    An indexing operation in the shape of ``x[i]``
     """
 
     def __init__(self, collection: Any, key: Any):
