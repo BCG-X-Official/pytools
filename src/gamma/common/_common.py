@@ -377,7 +377,9 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         for name, member in vars(_cls).items():
             if member.__doc__ and match == member.__doc__:
                 parents = inspect.getmro(_cls)[1:]
-                member.__doc__ = getattr(parents[0], name, None) if parents else None
+                member.__doc__ = (
+                    getattr(parents[0], name, None).__doc__ if parents else None
+                )
 
         return _cls
 
