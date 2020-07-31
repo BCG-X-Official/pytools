@@ -44,18 +44,26 @@ class ParallelizableMixin:
     ) -> None:
         """
         :param n_jobs: number of jobs to use in parallel; \
-            if `None`, use joblib default (default: `None`).
-        :param shared_memory: if `True` use threads in the parallel runs. If `False` \
-            use multiprocessing (default: `False`).
+            if ``None``, use joblib default (default: ``None``).
+        :param shared_memory: if ``True`` use threads in the parallel runs. If ``False`` \
+            use multiprocessing (default: ``False``).
         :param pre_dispatch: number of batches to pre-dispatch; \
-            if `None`, use joblib default (default: `None`).
+            if ``None``, use joblib default (default: ``None``).
         :param verbose: verbosity level used in the parallel computation; \
-            if `None`, use joblib default (default: `None`).
+            if ``None``, use joblib default (default: ``None``).
         """
         super().__init__(**kwargs)
+        #: number of jobs to use in parallel; if ``None``, use joblib default
         self.n_jobs = n_jobs
+
+        #: shared_memory: if ``True`` use threads in the parallel runs.
+        #: If ``False``, use multiprocessing
         self.shared_memory = shared_memory
+
+        #: pre_dispatch: number of batches to pre-dispatch; if ``None``, use joblib default
         self.pre_dispatch = pre_dispatch
+
+        #: verbosity level used in the parallel computation; if ``None``, use joblib default
         self.verbose = verbose
 
         self._parallel_kwargs = {

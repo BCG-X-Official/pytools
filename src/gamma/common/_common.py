@@ -33,7 +33,7 @@ T_Collection = TypeVar("T_Collection", bound=Collection)
 class AllTracker:
     """
     Track global symbols defined in a module and validate that all eligible symbols have
-    been included in the `__all__` variable.
+    been included in the ``__all__`` variable.
 
     Eligible symbols are all symbols starting with a letter, but not with "Base".
     """
@@ -45,9 +45,9 @@ class AllTracker:
     def validate(self) -> None:
         """
         Validate that all eligible symbols defined since creation of this tracker
-        are listed in the `__all__` field.
+        are listed in the ``__all__`` field.
 
-        :raise RuntimeError: if `__all__` is not as expected
+        :raise RuntimeError: if ``__all__`` is not as expected
         """
         all_expected = [
             item
@@ -70,15 +70,15 @@ def is_list_like(obj: Any) -> bool:
     """
     Check if the object is list-like.
 
-    Objects that are considered list-like when they implement methods `len` and
-    `__getitem__`. These include, for example, lists, tuples, sets, NumPy arrays, and
+    Objects that are considered list-like when they implement methods ``len`` and
+    ``__getitem__``. These include, for example, lists, tuples, sets, NumPy arrays, and
     Pandas series and indices.
 
     As an exception, the following types are not considered list-like despite
     implementing the methods above:
 
-    - `str`
-    - `bytes`
+    - ``str``
+    - ``bytes``
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
         iterating a data frame yields the values of the column index, while the length \
         of a data frame is its number of rows
@@ -87,7 +87,7 @@ def is_list_like(obj: Any) -> bool:
 
 
     :param obj The object to check
-    :return `True` if `obj` has list-like properties
+    :return ``True`` if ``obj`` has list-like properties
     """
 
     return (
@@ -241,8 +241,8 @@ def validate_type(
     Validate that a value implements the expected type
     :param value: an arbitrary object
     :param expected_type: the type to check for
-    :param optional: if :code:`True`, accept :code:`None` as a valid value \
-        (default: :code:`False`)
+    :param optional: if ``True``, accept ``None`` as a valid value \
+        (default: ``False``)
     :param name: optional name of the entity to which the elements were passed. \
         Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
         arguments.
@@ -296,7 +296,7 @@ def deprecated(function: Callable = None, *, message: str = None):
 
     It will result in a warning being logged when the function is used.
 
-    To deprecate classes, apply this decorator to the `__init__` method, not to the
+    To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
     """
 
@@ -352,18 +352,18 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     Decorator to inherit docstrings of overridden methods.
 
     Usage:
-    .. code-block:: python
-        @inheritdoc(match="[see superclass]")
-        class A(B):
-            def my_function(self) -> None:
-                \"""[see superclass]\"""
-                …
+    .. code-block::
+      @inheritdoc(match="[see superclass]")
+      class A(B):
+        def my_function(self) -> None:
+        \"""[see superclass]\"""
+        …
 
-            def my_other_function(self) -> None:
-                \"""This docstring will not be replaced.\"""
+        def my_other_function(self) -> None:
+        \"""This docstring will not be replaced.\"""
 
-    In this example, the docstring of the :code:`my_function` will be replaced with the
-    docstring of the overridden function of the same name, or with :code:`None` if no
+    In this example, the docstring of the ``my_function`` will be replaced with the
+    docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
     :param match: the parent docstring will be inherited if the current docstring \
