@@ -13,11 +13,10 @@ from matplotlib.axis import Axis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
-from gamma.common.typing import Function
 from gamma.viz import (
     ColorbarMatplotStyle,
-    Drawer,
     DrawStyle,
+    Drawer,
     PercentageFormatter,
     RGBA_WHITE,
     TextStyle,
@@ -71,7 +70,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
-        cell_format: Union[str, Formatter, Function] = None,
+        cell_format: Union[str, Formatter, Callable[[Any], str]] = None,
         **kwargs,
     ):
         """
@@ -89,10 +88,15 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         """
         if isinstance(cell_format, str):
             cell_formatter = FuncFormatter(func=lambda x, _: cell_format.format(x))
-        elif isinstance(cell_format, Function):
+        elif isinstance(cell_format, Formatter):
+            cell_formatter = cell_format
+        elif callable(cell_format):
             cell_formatter = FuncFormatter(func=lambda x, _: cell_format(x))
         else:
-            cell_formatter = cell_format
+            raise TypeError(
+                "arg cell_format must be a format string, a Formatter, or a callable, "
+                f"but a {type(cell_format).__name__} was passed"
+            )
 
         if colorbar_major_formatter is None:
             colorbar_major_formatter = cell_formatter
