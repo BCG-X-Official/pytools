@@ -41,7 +41,7 @@ class FormattingConfig(NamedTuple):
     indent_width: int = 4
     """number of spaces in one indentation"""
     single_line: bool = False
-    """if `True`, always produce a single line regardless of width"""
+    """if ``True``, always produce a single line regardless of width"""
 
 
 class IndentedLine(NamedTuple):
@@ -108,7 +108,7 @@ class TextualForm:
     @property
     def needs_multi_line_encapsulation(self) -> bool:
         """
-        If `True`, this form should be encapsulated in brackets when rendered
+        If ``True``, this form should be encapsulated in brackets when rendered
         across multiple lines.
         """
         return False
@@ -167,8 +167,8 @@ class TextualForm:
     ) -> "TextualForm":
         """
         Return this form encapsulated in round parentheses.
-        :param condition: if `False`, do not encapsulate this form
-        :param single_line: if `False`, render the encapsulation only when the form \
+        :param condition: if ``False``, do not encapsulate this form
+        :param single_line: if ``False``, render the encapsulation only when the form \
             is rendered across multiple lines
         :return: the resulting form depending on the condition
         """
@@ -323,7 +323,7 @@ class BracketedForm(ComplexForm):
         """
         :param brackets: the brackets surrounding the subform(s)
         :param subform: the subform to be bracketed
-        :param single_line: if `False`, do not render the brackets in single-line \
+        :param single_line: if ``False``, do not render the brackets in single-line \
             output
         """
 
@@ -691,7 +691,7 @@ __tracker = AllTracker(globals())
 
 class PythonExpressionFormatter(ExpressionFormatter):
     """
-    Formats expression objects as Python expressions, in line with the `black` style
+    Formats expression objects as Python expressions, in line with the ``black`` style
     """
 
     def __init__(
@@ -701,8 +701,8 @@ class PythonExpressionFormatter(ExpressionFormatter):
         :param max_width: the maximum line width (ignored when enforcing single-line \
             text (default: 80)
         :param indent_width: the width of one indentation in spaces (default: 4)
-        :param single_line: if `False`, include line breaks to keep the width within \
-            maximum bounds (default: `False`)
+        :param single_line: if ``False``, include line breaks to keep the width within \
+            maximum bounds (default: ``False``)
         """
         self.config = FormattingConfig(
             max_width=max_width, indent_width=indent_width, single_line=single_line
