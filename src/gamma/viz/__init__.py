@@ -8,5 +8,5 @@ from ._matplot import *
 from ._text import *
 from ._viz import *
 
-__version__ = "1.3.0rc0"
+__version__ = "1.3.0rc1"
 _licensing.check_license(__package__)
