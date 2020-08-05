@@ -19,7 +19,7 @@ class BaseNode(metaclass=ABCMeta):
     """
     BaseNode of a :class:`LinkageTree`.
 
-    Implementations must define `children_distance`, `weight`, `label`, `is_leaf`.
+    Implementations must define ``children_distance``, ``weight``, ``label``, ``is_leaf``.
     """
 
     __slots__ = ["_index"]

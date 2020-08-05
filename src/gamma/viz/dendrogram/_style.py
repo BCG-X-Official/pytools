@@ -56,8 +56,8 @@ class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
     """
     Base class for dendrogram drawing styles.
 
-    Implementations must define `draw_leaf_labels`, `draw_title`, `draw_link_leg` \
-    and `draw_link_connector`.
+    Implementations must define ``draw_leaf_labels``, ``draw_title``, ``draw_link_leg`` \
+    and ``draw_link_connector``.
     """
 
     @abstractmethod
@@ -116,7 +116,7 @@ class BaseDendrogramMatplotStyle(
     Base class for Matplotlib styles for dendrogram.
 
     Provide basic support for plotting a color legend for feature importance,
-    and providing the `Axes` object for plotting the actual dendrogram including
+    and providing the ``Axes`` object for plotting the actual dendrogram including
     tick marks for the feature distance axis.
     """
 
@@ -375,7 +375,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
 
     def _drawing_start(self, title: str) -> None:
         # write the title
-        self.out.write(f"{title:*^{self.width}s}\n")
+        self.out.write(f"{f' {title} ':*^{self.width}s}\n")
         self._char_matrix = CharacterMatrix(
             n_rows=self._max_height, n_columns=self.width
         )
