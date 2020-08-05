@@ -49,7 +49,7 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     @property
     @abstractmethod
     def is_fitted(self) -> bool:
-        """`True` if this object is fitted, else `False`"""
+        """``True`` if this object is fitted, else ``False``"""
         pass
 
     def _ensure_fitted(self) -> None:

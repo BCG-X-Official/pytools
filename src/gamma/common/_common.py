@@ -19,6 +19,7 @@ __all__ = [
     "to_tuple",
     "to_list",
     "to_set",
+    "validate_type",
     "validate_element_types",
     "deprecated",
     "deprecation_warning",
@@ -26,13 +27,13 @@ __all__ = [
 ]
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", bound=Collection[T])
+T_Collection = TypeVar("T_Collection", bound=Collection)
 
 
 class AllTracker:
     """
     Track global symbols defined in a module and validate that all eligible symbols have
-    been included in the `__all__` variable.
+    been included in the ``__all__`` variable.
 
     Eligible symbols are all symbols starting with a letter, but not with "Base".
     """
@@ -44,9 +45,9 @@ class AllTracker:
     def validate(self) -> None:
         """
         Validate that all eligible symbols defined since creation of this tracker
-        are listed in the `__all__` field.
+        are listed in the ``__all__`` field.
 
-        :raise RuntimeError: if `__all__` is not as expected
+        :raise RuntimeError: if ``__all__`` is not as expected
         """
         all_expected = [
             item
@@ -69,15 +70,15 @@ def is_list_like(obj: Any) -> bool:
     """
     Check if the object is list-like.
 
-    Objects that are considered list-like when they implement methods `len` and
-    `__getitem__`. These include, for example, lists, tuples, sets, NumPy arrays, and
+    Objects that are considered list-like when they implement methods ``len`` and
+    ``__getitem__``. These include, for example, lists, tuples, sets, NumPy arrays, and
     Pandas series and indices.
 
     As an exception, the following types are not considered list-like despite
     implementing the methods above:
 
-    - `str`
-    - `bytes`
+    - ``str``
+    - ``bytes``
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
         iterating a data frame yields the values of the column index, while the length \
         of a data frame is its number of rows
@@ -86,7 +87,7 @@ def is_list_like(obj: Any) -> bool:
 
 
     :param obj The object to check
-    :return `True` if `obj` has list-like properties
+    :return ``True`` if ``obj`` has list-like properties
     """
 
     return (
@@ -223,34 +224,69 @@ def _to_collection(
 
     if element_type:
         validate_element_types(
-            elements, element_type=element_type, name=f"arg {arg_name}"
+            elements, expected_type=element_type, name=f"arg {arg_name}"
         )
 
     return elements
 
 
-def validate_element_types(
-    iterable: Iterable[T], *, element_type: Type[T], name: Optional[str] = None
+def validate_type(
+    value: T,
+    *,
+    expected_type: Type[T],
+    optional: bool = False,
+    name: Optional[str] = None,
 ) -> None:
     """
-    Validate that all elements in the given iterable implement the expected type
-    :param iterable: an iterable
-    :param element_type: the type to check for
+    Validate that a value implements the expected type
+    :param value: an arbitrary object
+    :param expected_type: the type to check for
+    :param optional: if ``True``, accept ``None`` as a valid value \
+        (default: ``False``)
     :param name: optional name of the entity to which the elements were passed. \
         Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
         arguments.
     """
-    if element_type == object:
+    if expected_type == object:
+        return
+
+    if optional and value is None:
+        return
+
+    if not isinstance(value, expected_type):
+        if name:
+            message_head = f"{name} requires"
+        else:
+            message_head = "expected"
+        raise TypeError(
+            f"{message_head} instance of {expected_type.__name__} "
+            f"but got a {expected_type(value).__name__}"
+        )
+
+
+def validate_element_types(
+    iterable: Iterable[T], *, expected_type: Type[T], name: Optional[str] = None
+) -> None:
+    """
+    Validate that all elements in the given iterable implement the expected type
+    :param iterable: an iterable
+    :param expected_type: the type to check for
+    :param name: optional name of the entity to which the elements were passed. \
+        Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
+        arguments.
+    """
+    if expected_type == object:
         return
 
     for element in iterable:
-        if not isinstance(element, element_type):
+        if not isinstance(element, expected_type):
             if name:
                 message_head = f"{name} requires"
             else:
                 message_head = "expected"
             raise TypeError(
-                f"{message_head} instances of {element_type.__name__} but got {element}"
+                f"{message_head} instances of {expected_type.__name__} "
+                f"but got a {type(element).__name__}"
             )
 
 
@@ -260,7 +296,7 @@ def deprecated(function: Callable = None, *, message: str = None):
 
     It will result in a warning being logged when the function is used.
 
-    To deprecate classes, apply this decorator to the `__init__` method, not to the
+    To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
     """
 
@@ -310,23 +346,24 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
 
 
-def inheritdoc(cls: type = None, *, match: str):
+# noinspection PyIncorrectDocstring
+def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], type]]:
     """
     Decorator to inherit docstrings of overridden methods.
 
     Usage:
-    .. code::
-        @inheritdoc(match="[see superclass]")
-        class A(B):
-            def my_function(self) -> None:
-                \"""[see superclass]\"""
-                …
+    .. code-block::
+      @inheritdoc(match="[see superclass]")
+      class A(B):
+        def my_function(self) -> None:
+        \"""[see superclass]\"""
+        …
 
-            def my_other_function(self) -> None:
-                \"""This docstring will not be replaced.\"""
+        def my_other_function(self) -> None:
+        \"""This docstring will not be replaced.\"""
 
-    In this example, the docstring of the :code:`my_function` will be replaced with the
-    docstring of the overridden function of the same name, or with :code:`None` if no
+    In this example, the docstring of the ``my_function`` will be replaced with the
+    docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
     :param match: the parent docstring will be inherited if the current docstring \
@@ -340,7 +377,9 @@ def inheritdoc(cls: type = None, *, match: str):
         for name, member in vars(_cls).items():
             if member.__doc__ and match == member.__doc__:
                 parents = inspect.getmro(_cls)[1:]
-                member.__doc__ = getattr(parents[0], name, None) if parents else None
+                member.__doc__ = (
+                    getattr(parents[0], name, None).__doc__ if parents else None
+                )
 
         return _cls
 

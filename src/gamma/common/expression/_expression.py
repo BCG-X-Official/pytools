@@ -95,7 +95,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
 
 class HasExpressionRepr(metaclass=ABCMeta):
     """
-    Mix-in class for classes whose `repr` representations are rendered as expressions
+    Mix-in class for classes whose ``repr`` representations are rendered as expressions
     """
 
     @abstractmethod
@@ -166,11 +166,11 @@ class Expression(metaclass=ABCMeta):
         """
         Compare this expression with another for equality.
 
-        For using Python's native equality operator :code:`==`, see
+        For using Python's native equality operator ``==``, see
         :class:`~gamma.common.expression.FrozenExpression`.
 
         :param other: the expression to compare this expression with
-        :return: `True` if and only if both expressions are equal
+        :return: ``True`` if and only if both expressions are equal
         """
         self_type = type(self)
         other_type = type(other)
@@ -190,7 +190,7 @@ class Expression(metaclass=ABCMeta):
         """
         Calculate the hash for this expression.
 
-        For using Python's native :code:`hash` function, see
+        For using Python's native ``hash`` function, see
         :class:`~gamma.common.expression.FrozenExpression`.
         """
         pass
@@ -326,7 +326,7 @@ class Expression(metaclass=ABCMeta):
         raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
 
     def __getattr__(self, key: str) -> "Expression":
-        if key[:1] == "_":
+        if key.startswith("_"):
             raise AttributeError(key)
         else:
             return Attr(obj=self, attribute=key)
@@ -340,7 +340,7 @@ class Expression(metaclass=ABCMeta):
     def __iter__(self) -> None:
         # we need to rule iteration out explicitly, otherwise we'd get infinite 'for'
         # loops through iterating via __getitem__
-        raise TypeError(f"'{Expression.__name__}' object is not iterable")
+        raise TypeError(f"'{type(self).__name__}' object is not iterable: {repr(self)}")
 
     def __repr__(self) -> str:
         # get a textual representation of the expression using the default formatter
@@ -522,6 +522,10 @@ class _IdentifierMeta(ABCMeta):
     _identifiers: Dict[str, "Id"] = WeakValueDictionary()
 
     def __getattr__(self, item: str) -> "Id":
+        if item.startswith("_"):
+            # we do not allow creating identifiers with leading underscores
+            raise AttributeError()
+
         identifier = _IdentifierMeta._identifiers.get(item, None)
         if not identifier:
             _IdentifierMeta._identifiers[item] = identifier = Id(item)
@@ -970,8 +974,8 @@ class DictEntry(BasePrefixExpression):
 
 class BaseInvocation(PrefixExpression):
     """
-    An invocation in the shape of `<expression>(<expression>)` or
-    `<expression>[<expression>]`
+    An invocation in the shape of ``<expression>(<expression>)`` or
+    ``<expression>[<expression>]``
     """
 
     _PRECEDENCE = op.DOT.precedence
@@ -1030,7 +1034,7 @@ class Call(BaseInvocation):
 
 class Index(BaseInvocation):
     """
-    An indexing operation in the shape of `x[i]`
+    An indexing operation in the shape of ``x[i]``
     """
 
     def __init__(self, collection: Any, key: Any):
