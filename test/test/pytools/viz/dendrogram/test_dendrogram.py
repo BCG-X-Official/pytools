@@ -8,14 +8,12 @@ import logging
 from io import StringIO
 
 import numpy as np
-
 # noinspection PyPackageRequirements
 import pytest
-
 # noinspection PyPackageRequirements
 import scipy.cluster.hierarchy as hc
 
-from gamma.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle, LinkageTree
+from pytools.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle, LinkageTree
 
 log = logging.getLogger(__name__)
 

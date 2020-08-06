@@ -6,26 +6,14 @@ import logging
 
 import pytest
 
-import gamma.common.expression.operator as op
-from gamma.common.expression import (
-    Call,
-    DictLiteral,
-    Expression,
-    Id,
-    Lambda,
-    ListLiteral,
-    Lit,
-    freeze,
+import pytools.common.expression.operator as op
+from pytools.common.expression import (
+    Call, DictLiteral, Expression, Id, Lambda, ListLiteral, Lit, Operation,
+    PythonExpressionFormatter, SetLiteral, TupleLiteral, UnaryOperation, freeze,
     make_expression,
-    Operation,
-    PythonExpressionFormatter,
-    SetLiteral,
-    TupleLiteral,
-    UnaryOperation,
 )
-
 # noinspection PyProtectedMember
-from gamma.common.expression._text import TextualForm
+from pytools.common.expression._text import TextualForm
 
 log = logging.getLogger(__name__)
 
