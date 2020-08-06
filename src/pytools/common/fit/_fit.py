@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`gamma.common.fit`
+Core implementation of :mod:`pytools.common.fit`
 """
 import logging
 from abc import ABCMeta, abstractmethod
@@ -21,7 +21,7 @@ __all__ = ["FittableMixin", "T_Self"]
 
 
 T_Self = TypeVar("T_Self")
-#: Type variable representing ``self`` in :meth:`~gamma.common.fit.FittableMixin`
+#: Type variable representing ``self`` in :meth:`~pytools.common.fit.FittableMixin`
 #: and its subclasses
 
 T_Data = TypeVar("T_Data")

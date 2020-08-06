@@ -7,9 +7,9 @@ from typing import *
 
 import numpy as np
 
-from gamma.viz import Drawer
-from gamma.viz.dendrogram._linkage import BaseNode, LinkageTree
-from gamma.viz.dendrogram._style import (
+from pytools.viz import Drawer
+from pytools.viz.dendrogram._linkage import BaseNode, LinkageTree
+from pytools.viz.dendrogram._style import (
     DendrogramHeatmapStyle,
     DendrogramReportStyle,
     DendrogramStyle,

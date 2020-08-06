@@ -13,7 +13,7 @@ from matplotlib.axis import Axis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
-from gamma.viz import (
+from pytools.viz import (
     ColorbarMatplotStyle,
     DrawStyle,
     Drawer,

@@ -1,5 +1,5 @@
 """
-Tests for module gamma.common.expression
+Tests for module pytools.common.expression
 """
 
 import logging
