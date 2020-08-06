@@ -7,4 +7,4 @@ from ._matplot import *
 from ._text import *
 from ._viz import *
 
-__version__ = "1.3.0rc1"
+__version__ = "1.0"

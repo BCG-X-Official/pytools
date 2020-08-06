@@ -3,4 +3,4 @@ Global definitions of basic types and functions for use across all gamma librari
 """
 from ._common import *
 
-__version__ = "1.3.0rc1"
+__version__ = "1.0"
