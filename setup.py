@@ -22,21 +22,18 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="gamma-common",
+    name="gamma-viz",
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version="1.3.0rc1",  # Required
+    version="1.3.0rc1",
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#summary
-    description=(
-        "Common utility functions, classes, and definitions used across "
-        "Gamma's ALPHA suite"
-    ),
+    description="Visualization framework supporting multiple output styles",
     # This is an optional longer description of your project that represents
     # the body of text which users will see when they visit PyPI.
     #
@@ -61,7 +58,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url="https://git.sourceai.io/alpha/gamma-common",  # Optional
+    url="https://git.sourceai.io/alpha/gamma-viz",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
     # author='The Python Packaging Authority',  # Optional
@@ -127,11 +124,12 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        "joblib>=0.13,<0.14",
         "pandas>=0.24,<0.25",
         "numpy>=1.16,<1.17",
-        "rsa>=4.0.0,<4.1.0",
+        "matplotlib>=3.0.0,<3.1.0",
+        "gamma-common @ git+ssh://git@git.sourceai.io/BCG/gamma-common.git@1.1.0#egg=gamma.common",
     ],
+    dependency_links=[],
     # Optional
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
