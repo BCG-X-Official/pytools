@@ -63,7 +63,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     def __init__(self, style: Union[T_Style, str] = "matplot") -> None:
         """
         :param style: the style of the chart; either as a
-            :class:`~gamma.viz.DrawStyle` instance, or as the name of a default style. \
+            :class:`.DrawStyle` instance, or as the name of a default style. \
             Permissible names include "matplot" for a style supporting Matplotlib, and \
             "text" if text rendering is supported (default: ``"matplot"``)
         """

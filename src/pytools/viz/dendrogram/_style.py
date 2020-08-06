@@ -2,7 +2,7 @@
 Dendrogram styles.
 
 The dendrogram styles are given as a parameter to a
-:class:`~gamma.viz.DendrogramDrawer` and determine the style of the
+:class:`.DendrogramDrawer` and determine the style of the
 plot.
 
 :class:`~BaseDendrogramMatplotStyle` is a an abstract base class for styles using
@@ -455,7 +455,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         """
         Draw a vertical link between two sibling nodes and the outgoing vertical line.
 
-        See :func:`~gamma.yieldengine.viz.DendrogramStyle
+        See :func:`.DendrogramStyle
         .draw_link_connector` for the documentation of the abstract method.
 
         :param bottom: the clustering level (i.e. similarity) of the child nodes

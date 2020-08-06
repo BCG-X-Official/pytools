@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`gamma.viz.distribution`
+Core implementation of :mod:`pytools.viz.distribution`
 """
 import logging
 from typing import *
