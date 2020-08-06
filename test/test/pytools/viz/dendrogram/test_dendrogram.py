@@ -1,5 +1,5 @@
 """
-Tests for package gamma.viz.dendrogram
+Tests for package pytools.viz.dendrogram
 """
 
 # noinspection PyPackageRequirements

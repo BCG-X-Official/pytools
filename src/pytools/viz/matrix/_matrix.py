@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`gamma.viz.matrix`
+Core implementation of :mod:`pytools.viz.matrix`
 """
 
 import logging
@@ -303,11 +303,11 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
 
     Comes with three pre-defined styles:
     - ``matplot``: matplotlib plot of the matrix using a default \
-        :class:`gamma.viz.matrix.MatrixMatplotStyle`
+        :class:`.MatrixMatplotStyle`
     - ``matplot%``: matplotlib plot of matrix with percentage annotations, \
-        using a default :class:`gamma.viz.matrix.PercentageMatrixMatplotStyle`
+        using a default :class:`.PercentageMatrixMatplotStyle`
     - ``text``: print the matrix to stdout, using a default \
-        :class:`gamma.viz.matrix.MatrixReportStyle`
+        :class:`.MatrixReportStyle`
     """
 
     _STYLES = {

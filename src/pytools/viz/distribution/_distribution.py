@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`gamma.viz.distribution`
+Core implementation of :mod:`pytools.viz.distribution`
 """
 
 import logging
@@ -127,7 +127,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     ) -> None:
         """
         :param style: the style of the chart; either as a \
-            :class:`~gamma.viz.distribution.ECDFStyle` instance, or as the name of a \
+            :class:`pytools.viz.distribution.ECDFStyle` instance, or as the name of a \
             default style. Permissible names include "matplot" for a style supporting \
             Matplotlib (default: ``"matplot"``).
         :param iqr_multiple: iqr multiple to determine outliers. If ``None``, then no \
