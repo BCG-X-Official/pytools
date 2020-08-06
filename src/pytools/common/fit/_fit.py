@@ -12,7 +12,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["FittableMixin", "T_Self"]
+__all__ = ["FittableMixin"]
 
 
 #
