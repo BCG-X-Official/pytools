@@ -2,9 +2,13 @@
 Basic test cases for the `gamma.common` module
 """
 # noinspection PyPackageRequirements
+import sys
+
 import pytest
 
-from gamma.common import deprecated
+print(sys.path)
+
+from pytools.common import deprecated
 
 
 def test_deprecated() -> None:

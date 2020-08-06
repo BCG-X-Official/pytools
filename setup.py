@@ -3,7 +3,7 @@ Pip package definition
 """
 from os import path
 
-from setuptools import find_namespace_packages, setup
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 # Get the long description from the README file
@@ -22,7 +22,7 @@ setup(
     # There are some restrictions on what makes a valid project name
     # specification here:
     # https://packaging.python.org/specifications/core-metadata/#name
-    name="gamma-viz",
+    name="pytools",
     # Versions should comply with PEP 440:
     # https://www.python.org/dev/peps/pep-0440/
     #
@@ -108,9 +108,9 @@ setup(
     #   py_modules=["my_module"],
     #
     # packages=find_packages(exclude=['contrib', 'docs', 'tests']),  # Required
-    packages=find_namespace_packages(where="src"),
-    package_dir={"": "src"},
-    namespace_packages=["gamma"],
+    # packages=find_namespace_packages(where="src"),
+    # package_dir={"": "src"},
+    # namespace_packages=["gamma"],
     # Specify which Python versions you support. In contrast to the
     # 'Programming Language' classifiers above, 'pip install' will check this
     # and refuse to install the project if the version does not match. If you
