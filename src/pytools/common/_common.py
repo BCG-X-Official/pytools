@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`gamma.common`
+Core implementation of :mod:`pytools.common`
 """
 
 import inspect

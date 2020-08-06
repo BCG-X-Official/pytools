@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from gamma.viz import Drawer, DrawStyle, MatplotStyle
+from pytools.viz import DrawStyle, Drawer, MatplotStyle
 
 __all__ = ["ECDFStyle", "ECDFMatplotStyle", "ECDFDrawer"]
 

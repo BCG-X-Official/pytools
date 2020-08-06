@@ -1,5 +1,5 @@
 """
-Basic test cases for the `gamma.common` module
+Basic test cases for the `pytools.common` module
 """
 # noinspection PyPackageRequirements
 import sys

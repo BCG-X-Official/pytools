@@ -6,9 +6,9 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 
-import gamma.common.expression.operator as op
-from gamma.common import AllTracker
-from gamma.common.expression._expression import (
+import pytools.common.expression.operator as op
+from pytools.common import AllTracker
+from pytools.common.expression._expression import (
     AtomicExpression,
     BRACKETS_ROUND,
     BracketPair,

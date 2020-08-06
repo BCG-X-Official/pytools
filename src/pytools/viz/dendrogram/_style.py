@@ -26,7 +26,7 @@ from typing import TextIO
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
-from gamma.viz import (
+from pytools.viz import (
     ColorbarMatplotStyle,
     DrawStyle,
     MatplotStyle,
@@ -34,7 +34,7 @@ from gamma.viz import (
     RGBA_WHITE,
     TextStyle,
 )
-from gamma.viz.text import CharacterMatrix
+from pytools.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
 
