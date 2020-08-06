@@ -38,7 +38,7 @@ def linkage_tree(linkage_matrix: np.ndarray) -> LinkageTree:
 
 
 def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
-    checksum_dendrogram_report = "8c87f24324a8e7221b8685e9e8fff897"
+    checksum_dendrogram_report = "2d94fe5966d1fb77b4216c16e9845da6"
     leaf_labels = list("ABCDEFGH")
     leaf_weights = [(w + 1) / 36 for w in range(8)]
 
