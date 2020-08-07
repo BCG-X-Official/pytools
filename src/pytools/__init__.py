@@ -1,8 +1,4 @@
-import sys
-print(sys.path)
+from . import common
+from . import viz
 
-import pytools.common
-
-def test():
-    print("hello")
-
+__version__ = "1.0"
