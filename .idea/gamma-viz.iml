@@ -6,9 +6,8 @@
       <sourceFolder url="file://$MODULE_DIR$/notebooks" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="alpha" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="facet-develop" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="gamma-common" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="requirementsPath" value="" />
