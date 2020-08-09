@@ -1,5 +1,5 @@
 """
-Basic test cases for the `pytools.common` module
+Basic test cases for the `pytools.api` module
 """
 # noinspection PyPackageRequirements
 import sys
@@ -8,7 +8,7 @@ import pytest
 
 print(sys.path)
 
-from pytools.common import deprecated
+from pytools.api import deprecated
 
 
 def test_deprecated() -> None:

@@ -6,9 +6,9 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 
-import pytools.common.expression.operator as op
-from pytools.common import AllTracker
-from pytools.common.expression._expression import (
+import pytools.expression.operator as op
+from pytools.api import AllTracker
+from pytools.expression._expression import (
     AtomicExpression,
     BRACKETS_ROUND,
     BracketPair,

@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.common`
+Core implementation of :mod:`pytools.api`
 """
 
 import inspect

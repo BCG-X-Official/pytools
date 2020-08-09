@@ -8,7 +8,7 @@ from abc import ABCMeta, abstractmethod
 from typing import *
 from weakref import WeakValueDictionary
 
-from pytools.common import AllTracker, to_list
+from pytools.api import AllTracker, to_list
 from . import operator as op
 from .operator import BinaryOperator, MAX_PRECEDENCE, Operator, UnaryOperator
 
@@ -167,7 +167,7 @@ class Expression(metaclass=ABCMeta):
         Compare this expression with another for equality.
 
         For using Python's native equality operator ``==``, see
-        :class:`~pytools.common.expression.FrozenExpression`.
+        :class:`.FrozenExpression`.
 
         :param other: the expression to compare this expression with
         :return: ``True`` if and only if both expressions are equal
@@ -191,7 +191,7 @@ class Expression(metaclass=ABCMeta):
         Calculate the hash for this expression.
 
         For using Python's native ``hash`` function, see
-        :class:`~pytools.common.expression.FrozenExpression`.
+        :class:`.FrozenExpression`.
         """
         pass
 
