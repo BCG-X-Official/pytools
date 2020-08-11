@@ -2,7 +2,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 
-from pytools.common import AllTracker
+from pytools.api import AllTracker
 
 log = logging.getLogger(__name__)
 

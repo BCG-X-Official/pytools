@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.common.parallelization`
+Core implementation of :mod:`pytools.parallelization`
 """
 import logging
 from typing import *

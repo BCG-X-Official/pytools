@@ -1,19 +1,31 @@
 """
-Tests for module pytools.common.expression
+Tests for module pytools.expression
 """
 
 import logging
 
 import pytest
 
-import pytools.common.expression.operator as op
-from pytools.common.expression import (
-    Call, DictLiteral, Expression, Id, Lambda, ListLiteral, Lit, Operation,
-    PythonExpressionFormatter, SetLiteral, TupleLiteral, UnaryOperation, freeze,
+import pytools.expression.operator as op
+from pytools.expression import (
+    Call,
+    DictLiteral,
+    Expression,
+    Id,
+    Lambda,
+    ListLiteral,
+    Lit,
+    Operation,
+    PythonExpressionFormatter,
+    SetLiteral,
+    TupleLiteral,
+    UnaryOperation,
+    freeze,
     make_expression,
 )
+
 # noinspection PyProtectedMember
-from pytools.common.expression._text import TextualForm
+from pytools.expression._text import TextualForm
 
 log = logging.getLogger(__name__)
 
