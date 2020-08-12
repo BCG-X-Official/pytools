@@ -1,6 +1,6 @@
 package:
   name: gamma-pytools
-  version: 1.0 # todo: change to 1.0.0 (also in __init__.py)
+  version: 1.0.0
 
 source:
   git_url: https://github.com/konst-int-i/pytools #todo: change to final
