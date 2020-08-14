@@ -9,8 +9,6 @@ import pandas as pd
 
 log = logging.getLogger(__name__)
 
-__all__ = ["TextCoordinates", "CharacterMatrix", "format_table"]
-
 TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
 
