@@ -4,7 +4,6 @@ package:
 
 source:
   git_url: {{FACET_PATH}}/pytools #todo: change to final
-  git_rev: develop #todo: change to refs/tags/{{PKG_VERSION}}
 
 build:
   noarch: python
