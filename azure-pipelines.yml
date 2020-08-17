@@ -28,20 +28,24 @@ steps:
   inputs:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
-- checkout: self
-- checkout: facet
+
+- task:
+  - checkout: self
+  - checkout: facet
+  - script: dir $(Build.SourcesDirectory)
+  displayName: 'Check out GitHub repos'
 
 
-- script: dir $(Build.SourcesDirectory)
-
-#version- task: Bash@3
-#  inputs:
-#    targetType: 'inline'
-#    script: |
-#      eval "$(conda shell.bash hook)"
-#      conda install -y conda-build
-#      make package
-#  displayName: "Build conda package"
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      eval "$(conda shell.bash hook)"
+      cd s/facet
+      conda env create -f environment.yml
+      cd ../pytools
+      pytest
+  displayName: "Run pytest"
 
 - script: |
     pip install pytest pytest-azurepipelines
