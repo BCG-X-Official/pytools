@@ -51,7 +51,7 @@ stages:
             pytest test/test/
         displayName: "Install env and run pytest"
 
-  stage:
+  - stage:
     displayName: 'Build conda package'
     steps:
       - task: Bash@3
