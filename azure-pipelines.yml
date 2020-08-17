@@ -25,7 +25,6 @@ steps:
 
 - script: |
     make package
-    pip install -r requirements.txt
   displayName: 'Build conda package'
 
 - script: |
