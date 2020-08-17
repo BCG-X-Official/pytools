@@ -6,8 +6,6 @@ resources:
       name: konst-int-i/facet # todo - update to final github org
       ref: develop
 
-
-
 trigger:
 - master
 - releases/*
@@ -23,30 +21,38 @@ strategy:
     Python37:
       python.version: '3.7'
 
-steps:
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+stages:
+  stage:
+    displayName: 'Setup'
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+      displayName: 'Use Python $(python.version)'
 
-- checkout: self
-- checkout: facet
-- script: dir $(Build.SourcesDirectory)
+    - checkout: self
+    - checkout: facet
+    - script: dir $(Build.SourcesDirectory)
 
+  stage:
+    displayName: 'Run Pytest'
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          eval "$(conda shell.bash hook)"
+          cd /home/vsts/work/1/s/facet/
+          conda env create -f environment.yml
+          conda activate facet-develop
+          cd /home/vsts/work/1/s/pytools/
+          export PYTHONPATH=./src/
+          pip install pytest-azurepipelines
+          pytest test/test/
+      displayName: "Install env and run pytest"
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      eval "$(conda shell.bash hook)"
-      cd /home/vsts/work/1/s/facet/
-      conda env create -f environment.yml
-      conda activate facet-develop
-      cd /home/vsts/work/1/s/pytools/
-      export PYTHONPATH=./src/
-      pip install pytest-azurepipelines
-      pytest test/test/
-  displayName: "Run pytest"
-
-#- task: Bash@3
-#  displayName: "Build conda package"
+  stage:
+    displayName: 'Build conda package'
+    - task: Bash@3
+      script: |
+        conda activate facet-develop
+        make package
+      displayName: "Build conda package"
