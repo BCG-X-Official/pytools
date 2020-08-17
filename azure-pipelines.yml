@@ -22,40 +22,42 @@ strategy:
       python.version: '3.7'
 
 stages:
-  - stage:
-    displayName: 'Setup'
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '$(python.version)'
-        displayName: 'Use Python $(python.version)'
+  - stage: 'Setup & testing'
+    displayName: 'Setup & testing'
 
-      - checkout: self
-      - checkout: facet
-      - script: dir $(Build.SourcesDirectory)
+    jobs:
+    - job:
+      displayName: 'Setup & testing'
+      pool:
+          vmImage: 'ubuntu-latest'
 
-  - stage:
-    displayName: 'Run Pytest'
-    steps:
-      - task: Bash@3
-        inputs:
-          targetType: 'inline'
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(python.version)'
+          displayName: 'Use Python $(python.version)'
+
+        - checkout: self
+        - checkout: facet
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              eval "$(conda shell.bash hook)"
+              cd /home/vsts/work/1/s/facet/
+              conda env create -f environment.yml
+              conda activate facet-develop
+              cd /home/vsts/work/1/s/pytools/
+              export PYTHONPATH=./src/
+              pip install pytest-azurepipelines
+              pytest test/test/
+          displayName: "Install env and run pytest"
+
+
+        - task: Bash@3
           script: |
-            eval "$(conda shell.bash hook)"
-            cd /home/vsts/work/1/s/facet/
-            conda env create -f environment.yml
             conda activate facet-develop
-            cd /home/vsts/work/1/s/pytools/
-            export PYTHONPATH=./src/
-            pip install pytest-azurepipelines
-            pytest test/test/
-        displayName: "Install env and run pytest"
-
-  - stage:
-    displayName: 'Build conda package'
-    steps:
-      - task: Bash@3
-        script: |
-          conda activate facet-develop
-          make package
-        displayName: "Build conda package"
+            make package
+          displayName: "Build conda package"
