@@ -2,7 +2,7 @@ resources:
   repositories:
     - repository: facet
       type: github
-      endpoint: https://dev.azure.com/konstantinhemker/facet/_git/
+      endpoint: https://github.com/konst-int-i/
       name: facet
       ref: develop
 
