@@ -69,13 +69,3 @@ stages:
             codeCoverageTool: Cobertura
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
-
-#        - task: Bash@3 TODO - include once packages are public
-#          inputs:
-#            targetType: 'inline'
-#            script: |
-#              eval "$(conda shell.bash hook)"
-#              conda activate facet-develop
-#              cd /home/vsts/work/1/s/pytools/
-#              make package
-#          displayName: "Build conda package"
