@@ -52,6 +52,7 @@ stages:
               cd $(System.DefaultWorkingDirectory)/pytools/
               pip install pytest-azurepipelines
               make package
+              coverage run -m pytest test/test/
               coverage xml
               coverage html
           displayName: "Install env and build conda package"
