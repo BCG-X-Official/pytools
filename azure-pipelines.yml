@@ -47,9 +47,22 @@ stages:
               cd /home/vsts/work/1/s/pytools/
               export PYTHONPATH=./src/
               pip install pytest-azurepipelines
-              pytest test/test/
+              coverage run -m pytest test/test/
+              coverage xml
+              coverage html
           displayName: "Install env and run pytest"
 
+        - task: PublishTestResults@2
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFiles: '/home/vsts/work/1/s/pytools/'
+            testRunTitle: 'Publish test results'
+
+        - task: PublishCodeCoverageResults@1
+          inputs:
+            codeCoverageTool: Cobertura
+            summaryFileLocation: '/home/vsts/work/1/s/pytools/coverage.xml'
+            reportDirectory: '/home/vsts/work/1/s/pytools/htmlcov'
 
 #        - task: Bash@3 TODO - include once packages are public
 #          inputs:
