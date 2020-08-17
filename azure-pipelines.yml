@@ -51,6 +51,7 @@ stages:
               conda env create -f environment.yml
               conda activate facet-develop
               echo "Setting username $(gh_user)"
+              git config --global user.name $(gh_user)
               git config --global credential.helper cache
               MY_PAT=$(gh_pat)
               B64_PATH=$(echo ":$MY_PAT" | base64)
