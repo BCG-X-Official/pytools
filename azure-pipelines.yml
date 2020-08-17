@@ -39,9 +39,9 @@ steps:
     targetType: 'inline'
     script: |
       eval "$(conda shell.bash hook)"
-      cd s/facet
+      cd /home/vsts/work/1/s/facet/
       conda env create -f environment.yml
-      cd ../pytools
+      cd /home/vsts/work/1/s/pytools/
       pytest
   displayName: "Run pytest"
 
