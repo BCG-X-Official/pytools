@@ -2,8 +2,8 @@ resources:
   repositories:
     - repository: facet
       type: github
-      endpoint: konst-int-i
-      name: konst-int-i/facet
+      endpoint: konst-int-i # todo - update to final github org
+      name: konst-int-i/facet # todo - update to final github org
       ref: develop
 
 
@@ -41,6 +41,7 @@ steps:
       eval "$(conda shell.bash hook)"
       cd /home/vsts/work/1/s/facet/
       conda env create -f environment.yml
+      conda activate facet-develop
       cd /home/vsts/work/1/s/pytools/
       pytest
   displayName: "Run pytest"
