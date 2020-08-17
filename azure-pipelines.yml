@@ -6,6 +6,9 @@ resources:
       name: konst-int-i/facet # todo - update to final github org
       ref: develop
 
+
+
+
 trigger:
 - master
 - releases/*
@@ -17,6 +20,10 @@ stages:
     jobs:
     - job:
       displayName: 'Setup & testing'
+
+      variables:
+        GH_PAT: $(gh_pat)
+        GH_USER: $(gh_user)
       pool:
           vmImage: 'ubuntu-latest'
       strategy:
