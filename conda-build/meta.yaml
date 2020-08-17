@@ -38,4 +38,4 @@ test:
                  assert pytools.__version__ == os.environ["PKG_VERSION"]'
 
   # run the tests with the built conda environment:
-    - pytest -vs ${FACET_PATH}/pytools/test
+    - coverage run -m pytest -vs ${FACET_PATH}/pytools/test

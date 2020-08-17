@@ -50,9 +50,8 @@ stages:
               conda env create -f environment.yml
               conda activate facet-develop
               cd $(System.DefaultWorkingDirectory)/pytools/
-              make package
               pip install pytest-azurepipelines
-              coverage run -m pytest test/test/
+              make package
               coverage xml
               coverage html
           displayName: "Install env and build conda package"
