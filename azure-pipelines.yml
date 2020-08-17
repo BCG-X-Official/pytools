@@ -55,14 +55,15 @@ stages:
         - task: PublishTestResults@2
           condition: succeededOrFailed()
           inputs:
-            testResultsFiles: '/home/vsts/work/1/s/pytools/'
+            testResultsFiles: '$(System.DefaultWorkingDirectory)/pytools/*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)/pytools/'
             testRunTitle: 'Publish test results'
 
         - task: PublishCodeCoverageResults@1
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: '/home/vsts/work/1/s/pytools/coverage.xml'
-            reportDirectory: '/home/vsts/work/1/s/pytools/htmlcov'
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
+            reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
 
 #        - task: Bash@3 TODO - include once packages are public
 #          inputs:
