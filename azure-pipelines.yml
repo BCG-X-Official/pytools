@@ -41,16 +41,18 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              cd /home/vsts/work/1/s/facet/
+              cd $(System.DefaultWorkingDirectory)/facet/
               conda env create -f environment.yml
               conda activate facet-develop
-              cd /home/vsts/work/1/s/pytools/
-              export PYTHONPATH=./src/
-              pip install pytest-azurepipelines
-              coverage run -m pytest test/test/
+              git config --global credential.helper
+              MY_PAT=$(READ_ONLY_PAT)
+              B64_PATH=$(echo ":$MY_PAT" | base64)
+              git -c http.extraHeader="Authorization: Basic ${B64_PAT}" fetch
+              cd $(System.DefaultWorkingDirectory)/pytools/
+              make package
               coverage xml
               coverage html
-          displayName: "Install env and run pytest"
+          displayName: "Install env and build conda package"
 
         - task: PublishTestResults@2
           condition: succeededOrFailed()
