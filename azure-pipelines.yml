@@ -54,7 +54,7 @@ stages:
 
 
         - task: Bash@3
-          script: |
-            conda activate facet-develop
-            make package
-          displayName: "Build conda package"
+            script: |
+              conda activate facet-develop
+              make package
+            displayName: "Build conda package"
