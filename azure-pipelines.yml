@@ -2,8 +2,8 @@ resources:
   repositories:
     - repository: facet
       type: github
-      endpoint: https://github.com/konst-int-i/
-      name: facet
+      endpoint: konst-int-i
+      name: konst-int-i/facet
       ref: develop
 
 
