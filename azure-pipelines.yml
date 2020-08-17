@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- releases/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -29,15 +30,10 @@ steps:
     targetType: 'inline'
     script: |
       eval "$(conda shell.bash hook)"
-      conda install -n root conda-build
+      conda install -n --yes root conda-build
       make package
-    displayName: "Build conda package"
-#
-#- script: |
-#    e
-#    make package
-#  displayName: 'Build conda package'
-#
+  displayName: "Build conda package"
+
 #- script: |
 #    pip install pytest pytest-azurepipelines
 #    pytest test/
