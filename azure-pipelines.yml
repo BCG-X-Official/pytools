@@ -11,7 +11,7 @@ trigger:
 - releases/*
 
 stages:
-  - stage: 'Setup & testing'
+  - stage: 'Setup_and_testing'
     displayName: 'Setup & testing'
 
     jobs:
