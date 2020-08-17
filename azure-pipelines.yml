@@ -22,7 +22,7 @@ strategy:
       python.version: '3.7'
 
 stages:
-  stage:
+  - stage:
     displayName: 'Setup'
     steps:
       - task: UsePythonVersion@0
@@ -34,7 +34,7 @@ stages:
       - checkout: facet
       - script: dir $(Build.SourcesDirectory)
 
-  stage:
+  - stage:
     displayName: 'Run Pytest'
     steps:
       - task: Bash@3
