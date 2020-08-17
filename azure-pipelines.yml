@@ -50,6 +50,7 @@ stages:
               cd $(System.DefaultWorkingDirectory)/facet/
               conda env create -f environment.yml
               conda activate facet-develop
+              cd $(System.DefaultWorkingDirectory)/facet/
               make package
               coverage xml
               coverage html
