@@ -23,11 +23,21 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- script: |
-    make package
-  displayName: 'Build conda package'
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest test/
-  displayName: 'Run pytest'
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      eval "$(conda shell.bash hook)"
+      make package
+    displayName: "Build conda package"
+#
+#- script: |
+#    e
+#    make package
+#  displayName: 'Build conda package'
+#
+#- script: |
+#    pip install pytest pytest-azurepipelines
+#    pytest test/
+#  displayName: 'Run pytest'
