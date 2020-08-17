@@ -29,11 +29,9 @@ steps:
     versionSpec: '$(python.version)'
   displayName: 'Use Python $(python.version)'
 
-- task:
-  - checkout: self
-  - checkout: facet
-  - script: dir $(Build.SourcesDirectory)
-  displayName: 'Check out GitHub repos'
+- checkout: self
+- checkout: facet
+- script: dir $(Build.SourcesDirectory)
 
 
 - task: Bash@3
