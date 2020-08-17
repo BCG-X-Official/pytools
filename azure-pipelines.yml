@@ -7,8 +7,6 @@ resources:
       ref: develop
 
 
-
-
 trigger:
 - master
 - releases/*
@@ -48,10 +46,12 @@ stages:
             script: |
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)/facet/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/
               conda env create -f environment.yml
               conda activate facet-develop
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
+              coverage run -m pytest test/test/
               coverage xml
               coverage html
           displayName: "Install env and build conda package"
