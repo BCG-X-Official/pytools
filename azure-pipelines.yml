@@ -44,8 +44,10 @@ stages:
               cd $(System.DefaultWorkingDirectory)/facet/
               conda env create -f environment.yml
               conda activate facet-develop
+              echo "Setting username ($GH_USER)"
+              git config --global user.name "$(GH_USER)"
               git config --global credential.helper
-              MY_PAT=$(READ_ONLY_PAT)
+              MY_PAT=$(GH_PAT)
               B64_PATH=$(echo ":$MY_PAT" | base64)
               git -c http.extraHeader="Authorization: Basic ${B64_PAT}" fetch
               cd $(System.DefaultWorkingDirectory)/pytools/
