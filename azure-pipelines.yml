@@ -43,10 +43,10 @@ steps:
       conda env create -f environment.yml
       conda activate facet-develop
       cd /home/vsts/work/1/s/pytools/
-      pytest
+      export PYTHONPATH=./src/
+      pip install pytest-azurepipelines
+      pytest test/test/
   displayName: "Run pytest"
 
-- script: |
-    pip install pytest pytest-azurepipelines
-    pytest test/
-  displayName: 'Run pytest'
+#- task: Bash@3
+#  displayName: "Build conda package"
