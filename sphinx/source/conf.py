@@ -47,7 +47,7 @@ log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = 'pytools'
-copyright = '2020, pytools team'
+copyright = '2020, The Boston Consulting Group (BCG)'
 author = 'pytools team'
 
 
