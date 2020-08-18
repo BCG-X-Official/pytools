@@ -4,8 +4,7 @@ resources:
       type: github
       endpoint: konst-int-i # todo - update to final github org
       name: konst-int-i/facet # todo - update to final github org
-      ref: develop
-
+      ref: develop # todo - update to stable release
 
 trigger:
 - master
@@ -101,7 +100,7 @@ stages:
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
-              conda create --name test python=$(FACET_V_PYTHON_BUILD)
+              conda create --yes --name test python=$(FACET_V_PYTHON_BUILD)
               conda activate test
               conda install conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
