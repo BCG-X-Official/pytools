@@ -12,29 +12,20 @@ trigger:
 - releases/*
 
 stages:
-  - stage: 'Setup_and_testing'
-    displayName: 'Setup & testing'
+  - stage: 'Quick_env_test'
+    displayName: 'Quick environment build & pytest'
 
     jobs:
     - job:
       displayName: 'Setup & testing'
 
-      variables:
-      - group: git-credentials
       pool:
           vmImage: 'ubuntu-latest'
-      strategy:
-        matrix:
-          Python35:
-            python.version: '3.5'
-          Python38:
-            python.version: '3.8'
-
       steps:
         - task: UsePythonVersion@0
           inputs:
-            versionSpec: '$(python.version)'
-          displayName: 'Use Python $(python.version)'
+            versionSpec: '3.7'
+          displayName: 'Use Python 3.7'
 
         - checkout: self
         - checkout: facet
@@ -51,7 +42,6 @@ stages:
               conda activate facet-develop
               cd $(System.DefaultWorkingDirectory)/pytools/
               pip install pytest-azurepipelines
-              make package
               coverage run -m pytest test/test/
               coverage xml
               coverage html
@@ -69,3 +59,48 @@ stages:
             codeCoverageTool: Cobertura
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
+
+  # THOROUGH CONDA ENV BUILD TEST
+  # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
+  - stage: 'Conda_build_test'
+    dependsOn:
+      - 'Quick_env_test'
+    displayName: 'Test multiple builds of the conda environment'
+
+    jobs:
+    - job:
+      displayName: 'Setup & testing'
+
+      pool:
+          vmImage: 'ubuntu-latest'
+      strategy:
+        matrix:
+          Python35:
+            FACET_V_PYTHON_BUILD: '3.5'
+            FACET_V_PANDAS: '0.24'
+          Python38:
+            FACET_V_PYTHON_BUILD: '3.8'
+            FACET_V_PANDAS: '1.0.0'
+
+
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(FACET_V_PYTHON_BUILD)'
+          displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
+
+        - checkout: self
+        - checkout: facet
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              eval "$(conda shell.bash hook)"
+              cd $(System.DefaultWorkingDirectory)/facet/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              conda activate facet-develop
+              cd $(System.DefaultWorkingDirectory)/pytools/
+              make package
+          displayName: "Build conda package"
