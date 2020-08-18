@@ -1,0 +1,107 @@
+resources:
+  repositories:
+    - repository: facet
+      type: github
+      endpoint: konst-int-i # todo - update to final github org
+      name: konst-int-i/facet # todo - update to final github org
+      ref: develop # todo - update to stable release
+
+trigger:
+- master
+- releases/*
+
+stages:
+  - stage: 'Quick_env_test'
+    displayName: 'Environment build & pytest'
+
+    jobs:
+    - job:
+      displayName: 'Setup & testing'
+
+      pool:
+          vmImage: 'ubuntu-latest'
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.7'
+          displayName: 'Use Python 3.7'
+
+        - checkout: self
+        - checkout: facet
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              eval "$(conda shell.bash hook)"
+              cd $(System.DefaultWorkingDirectory)/facet/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              conda env create -f environment.yml
+              conda activate facet-develop
+              cd $(System.DefaultWorkingDirectory)/pytools/
+              pip install pytest-azurepipelines
+              coverage run -m pytest test/test/
+              coverage xml
+              coverage html
+          displayName: 'Pytest'
+
+        - task: PublishTestResults@2
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFiles: '$(System.DefaultWorkingDirectory)/pytools/*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)/pytools/'
+            testRunTitle: 'Publish test results'
+
+        - task: PublishCodeCoverageResults@1
+          inputs:
+            codeCoverageTool: Cobertura
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
+            reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
+
+  # THOROUGH CONDA ENV BUILD TEST
+  # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
+  - stage: 'Conda_build_test'
+    dependsOn:
+      - 'Quick_env_test'
+    displayName: 'Test multiple conda environment builds'
+
+    jobs:
+    - job:
+      displayName: 'Setup & testing'
+
+      pool:
+          vmImage: 'ubuntu-latest'
+      strategy:
+        matrix:
+          Python35:
+            FACET_V_PYTHON_BUILD: '3.6'
+            FACET_V_PANDAS: '==0.24'
+          Python38:
+            FACET_V_PYTHON_BUILD: '3.8'
+            FACET_V_PANDAS: '==1.0.0'
+
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(FACET_V_PYTHON_BUILD)'
+          displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
+
+        - checkout: self
+        - checkout: facet
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              eval "$(conda shell.bash hook)"
+              cd $(System.DefaultWorkingDirectory)/facet/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
+              export FACET_V_PANDAS=$(FACET_V_PANDAS)
+              conda activate facet-develop
+              conda install -y conda-build
+              cd $(System.DefaultWorkingDirectory)/pytools/
+              make package
+          displayName: "Build conda package"
