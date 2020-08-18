@@ -101,7 +101,7 @@ stages:
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               conda activate facet-develop
-              conda install conda-build
+              conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
           displayName: "Build conda package"
