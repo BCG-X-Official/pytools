@@ -13,7 +13,7 @@ trigger:
 
 stages:
   - stage: 'Quick_env_test'
-    displayName: 'Quick environment build & pytest'
+    displayName: 'Environment build & pytest'
 
     jobs:
     - job:
@@ -45,7 +45,7 @@ stages:
               coverage run -m pytest test/test/
               coverage xml
               coverage html
-          displayName: "Install env and build conda package"
+          displayName: 'Pytest'
 
         - task: PublishTestResults@2
           condition: succeededOrFailed()
@@ -65,7 +65,7 @@ stages:
   - stage: 'Conda_build_test'
     dependsOn:
       - 'Quick_env_test'
-    displayName: 'Test multiple builds of the conda environment'
+    displayName: 'Test multiple conda environment builds'
 
     jobs:
     - job:
@@ -77,11 +77,10 @@ stages:
         matrix:
           Python35:
             FACET_V_PYTHON_BUILD: '3.5'
-            FACET_V_PANDAS: '0.24'
+            FACET_V_PANDAS: '==0.24'
           Python38:
             FACET_V_PYTHON_BUILD: '3.8'
-            FACET_V_PANDAS: '1.0.0'
-
+            FACET_V_PANDAS: '==1.0.0'
 
       steps:
         - task: UsePythonVersion@0
@@ -100,6 +99,8 @@ stages:
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)/facet/
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
+              export FACET_V_PANDAS=$(FACET_V_PANDAS)
               conda create --name test python=$(FACET_V_PYTHON_BUILD)
               conda activate test
               conda install conda-build
