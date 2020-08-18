@@ -100,8 +100,7 @@ stages:
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
-              conda create --yes --name test python=$(FACET_V_PYTHON_BUILD)
-              conda activate test
+              conda activate facet-develop
               conda install conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
