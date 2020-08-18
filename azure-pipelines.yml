@@ -100,7 +100,9 @@ stages:
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)/facet/
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
-              conda activate facet-develop
+              conda create --name test python=$(FACET_V_PYTHON_BUILD)
+              conda activate test
+              conda install conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
           displayName: "Build conda package"
