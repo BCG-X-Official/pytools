@@ -38,14 +38,6 @@ from pytools.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
 
-__all__ = [
-    "BaseDendrogramMatplotStyle",
-    "DendrogramHeatmapStyle",
-    "DendrogramLineStyle",
-    "DendrogramReportStyle",
-    "DendrogramStyle",
-]
-
 
 #
 # Classes

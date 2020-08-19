@@ -11,8 +11,6 @@ from ._viz import DrawStyle
 
 log = logging.getLogger(__name__)
 
-__all__ = ["TextStyle"]
-
 
 class TextStyle(DrawStyle, metaclass=ABCMeta):
     """

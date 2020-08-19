@@ -24,15 +24,6 @@ from pytools.viz import (
 
 log = logging.getLogger(__name__)
 
-__all__ = [
-    "MatrixDrawer",
-    "MatrixMatplotStyle",
-    "MatrixReportStyle",
-    "MatrixStyle",
-    "PercentageMatrixMatplotStyle",
-]
-
-
 #
 # Style classes
 #

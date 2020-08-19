@@ -17,8 +17,6 @@ from pytools.viz.dendrogram._style import (
 
 log = logging.getLogger(__name__)
 
-__all__ = ["DendrogramDrawer"]
-
 
 class _SubtreeInfo(NamedTuple):
     labels: List[str]
