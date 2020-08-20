@@ -28,7 +28,7 @@ pytools.data
 
 
 pytools.data.simulation
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.data.simulation
    :members:
@@ -46,7 +46,7 @@ pytools.expression
 
 
 pytools.expression.operator
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.expression.operator
    :members:
@@ -82,7 +82,7 @@ pytools.viz
 
 
 pytools.viz.dendrogram
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.viz.dendrogram
    :members:
@@ -91,7 +91,7 @@ pytools.viz.dendrogram
 
 
 pytools.viz.distribution
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.viz.distribution
    :members:
@@ -100,7 +100,7 @@ pytools.viz.distribution
 
 
 pytools.viz.matrix
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.viz.matrix
    :members:
@@ -109,7 +109,7 @@ pytools.viz.matrix
 
 
 pytools.viz.text
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. automodule:: pytools.viz.text
    :members:
