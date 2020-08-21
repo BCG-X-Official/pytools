@@ -9,7 +9,7 @@ BUILDDIR              = build
 TEMPLATEDIR           = "${SOURCEDIR}/_templates"
 
 SPHINXOPTS            =
-SPHINXAPIDOCOPTS      = -e -t ${TEMPLATEDIR} --no-toc -o $(SOURCEDIR) -f
+SPHINXAPIDOCOPTS      = -e -t ${TEMPLATEDIR} --no-toc -o $(SOURCEDIR)/api/ -f
 
 # Put it first so that "make" without argument is like "make help".
 help:
