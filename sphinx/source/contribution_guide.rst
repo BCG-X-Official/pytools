@@ -8,13 +8,18 @@ Setup
 
 Python environment
 ~~~~~~~~~~~~~~~~~~~~~~
-There is a ``environment.yml`` provided in the repository root, which installs all required development
-dependencies in the ``pytools-development`` environment.
+There is a ``environment.yml`` provided in the repository root, which installs all
+required development dependencies in the ``pytools-develop`` environment.
 
 .. code-block:: RST
 
-	conda env create -f environment.yml
-	conda activate pytools-develop
+	./dev-setup.sh
+
+This command will:
+
+- Install the conda environment
+- Install pre-commit hooks
+
 
 Pytest
 ~~~~~~~~~~~~~~~
