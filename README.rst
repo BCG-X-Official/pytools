@@ -5,8 +5,15 @@ by BCG Gamma
 
 .. image:: _static/gamma_logo.jpg
 
-Pytools is an open source library that includes common functions for a number of tasks
-including:
+Pytools is an open source library containing general machine learning and visualisation
+utilities for reuse, including:
+
+- Basic tools for API development, supporting documentation, deprecation, and run-time validation
+- Support for simulating classification and regression data
+- Utilities for constructing complex expressions and rendering them as indented strings
+- Support for fitting objects to data, and testing whether an object is fitted
+- Parallelization based on the joblib package
+- A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
 TODO - add git badges as substitutions
 
