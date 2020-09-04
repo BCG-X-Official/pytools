@@ -11,7 +11,7 @@ from matplotlib import cm, text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Colormap, Normalize, to_rgba
+from matplotlib.colors import Colormap, LinearSegmentedColormap, Normalize, to_rgba
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
@@ -149,7 +149,9 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     and the color bar acts as the legend for this color gradient.
     """
 
-    DEFAULT_COLORMAP = "plasma"
+    DEFAULT_COLORMAP = LinearSegmentedColormap.from_list(
+        "facet", ["#3d3a40", "#295e7e", "#30c1d7", "#43fda2"]
+    )
 
     def __init__(
         self,
