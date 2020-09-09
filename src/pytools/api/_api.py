@@ -50,9 +50,9 @@ class AllTracker:
         :raise RuntimeError: if ``__all__`` is not as expected
         """
         all_expected = [
-            item
-            for item in self.globals_
-            if item[0].isalpha() and item not in self.imported
+            symbol
+            for symbol in self.globals_
+            if not symbol.startswith("_") and symbol not in self.imported
         ]
         if set(self.globals_.get("__all__", [])) != set(all_expected):
             raise RuntimeError(
