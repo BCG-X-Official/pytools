@@ -40,6 +40,7 @@ def _set_paths() -> None:
     print(f"working dir is '{os.getcwd()}'")
     for module_path in module_paths:
         if module_path not in sys.path:
+            # noinspection PyUnboundLocalVariable
             sys.path.insert(0, os.path.abspath(f"{cwd}/{os.pardir}/{module_path}/src"))
             print(f"added `{sys.path[0]}` to python paths")
 
@@ -51,10 +52,9 @@ log.info(f"sys.path = {sys.path}")
 
 # -- Project information -----------------------------------------------------
 
-project = 'Pytools'
-copyright = '2020, The Boston Consulting Group (BCG)'
-author = 'BCG Gamma Pytools Team'
-
+project = "pytools"
+copyright = "2020, The Boston Consulting Group (BCG)"
+author = "FACET Team"
 
 # -- General configuration ---------------------------------------------------
 
@@ -68,22 +68,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
-    "sphinx_automodapi.automodapi",
-    "sphinx_automodapi.smart_resolver",
 ]
-# -- Options for automodapi ------------------------------------------------------------
-
-# required by default to avoid generating duplicate documentation
-numpydoc_show_class_members = False
-
-# document all members from superclasses
-automodsumm_inherited_members = True
-
-# draw class inheritance diagrams with GraphViz
-automodapi_inheritance_diagram = True
-
-# write generated rst files to disk (for debugging only - no impact on final output)
-automodsumm_writereprocessed = False
 
 # -- Options for autodoc / autosummary -------------------------------------------------
 
@@ -93,11 +78,13 @@ autosummary_generate = True
 # always overwrite generated autosummaries with newly generated versions
 autosummary_generate_overwrite = True
 
-#autodoc_default_options = {
-    #"ignore-module-all": True,
-    # "inherited-members": True,
-    # "show-inheritance": False
-#}
+autodoc_default_options = {
+    "no-ignore-module-all": True,
+    "inherited-members": True,
+    "imported-members": True,
+    "no-show-inheritance": True,
+    "member-order": "groupwise",
+}
 
 nbsphinx_allow_errors = True
 nbsphinx_timeout = 60 * 15  # 15 minutes due to tutorial/model notebook
@@ -105,12 +92,11 @@ nbsphinx_timeout = 60 * 15  # 15 minutes due to tutorial/model notebook
 # add intersphinx mapping
 intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "matplotlib": ("https://matplotlib.org/", None),
+    "matplotlib": ("https://matplotlib.org", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "python": ("https://docs.python.org/3.6", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "shap": ("https://shap.readthedocs.io/en/latest/", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
 }
 
@@ -123,9 +109,9 @@ intersphinx_collapsible_submodules = {
 }
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md", ".ipynb"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -147,12 +133,12 @@ imgmath_use_preview = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'pydata_sphinx_theme'
+html_theme = "pydata_sphinx_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 html_logo = "_static/gamma_logo.jpg"
 latex_logo = html_logo
 
@@ -233,11 +219,8 @@ def add_inheritance(
 
 _intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = [
     *[
-        (
-            re.compile(r"(`~?)" + old.replace(".", r"\.") ),
-            f"\\1{new}",
-        )
-        for old,new in intersphinx_collapsible_submodules.items()
+        (re.compile(r"(`~?)" + old.replace(".", r"\.")), f"\\1{new}")
+        for old, new in intersphinx_collapsible_submodules.items()
     ],
     (re.compile(r"(`~?(?:(?!_)\w+\.)+)(_\w*\.)+"), r"\1"),
 ]
@@ -277,7 +260,7 @@ def _class_name(cls: type) -> str:
 def _class_module(cls: type) -> str:
     module_name = _class_attr(cls=cls, attr="__module__", default=lambda: "")
 
-    collapsed_module= intersphinx_collapsible_submodules.get(module_name, None)
+    collapsed_module = intersphinx_collapsible_submodules.get(module_name, None)
     if collapsed_module:
         return collapsed_module
 
