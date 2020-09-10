@@ -14,7 +14,12 @@ from pytools.api import AllTracker, get_generic_bases, inheritdoc
 
 log = logging.getLogger(__name__)
 
-__all__ = ["SphinxCallback", "AddInheritance", "CollapseModulePaths"]
+__all__ = [
+    "SphinxCallback",
+    "AutodocProcessor",
+    "AddInheritance",
+    "CollapseModulePaths",
+]
 
 
 #: Mock type declaration: Sphinx application object
