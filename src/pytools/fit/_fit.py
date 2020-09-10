@@ -5,6 +5,8 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 
+from ..api import AllTracker
+
 log = logging.getLogger(__name__)
 
 
@@ -12,19 +14,21 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-
-
+__all__ = ["FittableMixin"]
 
 #
 # type variables
 #
 
 
-T_Self = TypeVar("T_Self")
-#: Type variable representing ``self`` in :meth:`~pytools.common.fit.FittableMixin`
-#: and its subclasses
-
+T = TypeVar("T")
 T_Data = TypeVar("T_Data")
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
 
 #
 # class definitions
@@ -37,7 +41,7 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def fit(self: T_Self, _x: T_Data, **fit_params) -> T_Self:
+    def fit(self: T, _x: T_Data, **fit_params) -> T:
         """
         Fit this object to the given data
         :param _x: the data to fit this object to
@@ -56,3 +60,6 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
         # raise a runtime exception if this object is not fitted
         if not self.is_fitted:
             raise RuntimeError(f"{type(self).__name__} is not fitted")
+
+
+__tracker.validate()

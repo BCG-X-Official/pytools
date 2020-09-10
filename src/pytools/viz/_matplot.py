@@ -16,9 +16,24 @@ from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
 from ._viz import DrawStyle
+from ..api import AllTracker
 
 log = logging.getLogger(__name__)
 
+__all__ = [
+    "RgbaColor",
+    "RGBA_BLACK",
+    "RGBA_WHITE",
+    "MatplotStyle",
+    "ColorbarMatplotStyle",
+    "PercentageFormatter",
+]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
 
 #
 # Type definitions
@@ -254,3 +269,6 @@ class PercentageFormatter(Formatter):
 
     def __call__(self, x, pos=None) -> str:
         return f"{x * 100.0:.3g}%"
+
+
+__tracker.validate()

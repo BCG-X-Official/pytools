@@ -7,7 +7,25 @@ from abc import ABCMeta, abstractmethod
 from threading import Lock
 from typing import *
 
+from ..api import AllTracker
+
 log = logging.getLogger(__name__)
+
+__all__ = ["DrawStyle", "Drawer"]
+
+#
+# Type variables
+#
+
+T_Model = TypeVar("T_Model")
+# noinspection PyTypeChecker
+T_Style = TypeVar("T_Style", bound="DrawStyle")
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
 
 
 #
@@ -47,10 +65,6 @@ class DrawStyle(metaclass=ABCMeta):
 #
 # controller: class Drawer
 #
-
-# type variables
-T_Model = TypeVar("T_Model")
-T_Style = TypeVar("T_Style", bound=DrawStyle)
 
 
 class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
@@ -118,3 +132,6 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     @abstractmethod
     def _draw(self, data: T_Model) -> None:
         pass
+
+
+__tracker.validate()

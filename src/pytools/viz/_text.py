@@ -8,8 +8,21 @@ from abc import ABCMeta
 from typing import TextIO
 
 from ._viz import DrawStyle
+from ..api import AllTracker
 
 log = logging.getLogger(__name__)
+
+__all__ = ["TextStyle"]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+#
+# Classes
+#
 
 
 class TextStyle(DrawStyle, metaclass=ABCMeta):
@@ -50,3 +63,6 @@ class TextStyle(DrawStyle, metaclass=ABCMeta):
         The maximum width of the text to be produced.
         """
         return self._width
+
+
+__tracker.validate()
