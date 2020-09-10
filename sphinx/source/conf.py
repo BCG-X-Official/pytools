@@ -48,7 +48,6 @@ _set_paths()
 
 log.info(f"sys.path = {sys.path}")
 
-
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
@@ -144,6 +143,7 @@ latex_logo = html_logo
 # Class documentation to include docstrings both global to the class, and from __init__
 autoclass_content = "both"
 
+
 # -- End of options section ------------------------------------------------------------
 
 
@@ -161,12 +161,10 @@ def setup(app: Sphinx) -> None:
 
     from pytools.sphinx import AddInheritance, CollapseModulePaths
 
-    app.connect(
-        "autodoc-process-docstring",
-        AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules),
+    AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
+        app=app
     )
-    app.connect(
-        "autodoc-process-docstring",
-        CollapseModulePaths(collapsible_submodules=intersphinx_collapsible_submodules),
-        priority=100000,
-    )
+
+    CollapseModulePaths(
+        collapsible_submodules=intersphinx_collapsible_submodules
+    ).connect(app=app, priority=100000)
