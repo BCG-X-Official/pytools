@@ -10,6 +10,7 @@ from typing import *
 
 import numpy as np
 import pandas as pd
+import typing_inspect
 
 log = logging.getLogger(__name__)
 
@@ -21,6 +22,7 @@ __all__ = [
     "to_set",
     "validate_type",
     "validate_element_types",
+    "get_generic_bases",
     "deprecated",
     "deprecation_warning",
     "inheritdoc",
@@ -60,10 +62,18 @@ class AllTracker:
             )
 
 
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
 __tracker = AllTracker(globals())
 # we forget that class AllTracker itself is already defined, because we want to include
 # it in the __all__ statement
 __tracker.imported.remove(AllTracker.__name__)
+
+#
+# Functions
+#
 
 
 def is_list_like(obj: Any) -> bool:
@@ -77,17 +87,16 @@ def is_list_like(obj: Any) -> bool:
     As an exception, the following types are not considered list-like despite
     implementing the methods above:
 
-    - ``str``
-    - ``bytes``
+    - :class:`str`
+    - :class:`bytes`
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
         iterating a data frame yields the values of the column index, while the length \
         of a data frame is its number of rows
     - :class:`pandas.Panel`: similar behaviour as for data frames
     - :class:`numpy.ndarray` instances with 0 dimensions
 
-
-    :param obj The object to check
-    :return ``True`` if ``obj`` has list-like properties
+    :param obj: The object to check
+    :return: ``True`` if ``obj`` has list-like properties, ``False`` otherwise
     """
 
     return (
@@ -238,7 +247,8 @@ def validate_type(
     name: Optional[str] = None,
 ) -> None:
     """
-    Validate that a value implements the expected type
+    Validate that a value implements the expected type.
+
     :param value: an arbitrary object
     :param expected_type: the type to check for
     :param optional: if ``True``, accept ``None`` as a valid value \
@@ -269,6 +279,7 @@ def validate_element_types(
 ) -> None:
     """
     Validate that all elements in the given iterable implement the expected type
+
     :param iterable: an iterable
     :param expected_type: the type to check for
     :param name: optional name of the entity to which the elements were passed. \
@@ -288,6 +299,26 @@ def validate_element_types(
                 f"{message_head} instances of {expected_type.__name__} "
                 f"but got a {type(element).__name__}"
             )
+
+
+def get_generic_bases(cls: type) -> Tuple[type, ...]:
+    """
+    Bugfix version of :func:`typing_inspect.get_generic_bases` that prevents
+    getting the generic bases of the parent class if not defined for the given class.
+
+    :param cls: class to get the generic bases for
+    :return: the resulting generic base classes
+    """
+    bases = typing_inspect.get_generic_bases(cls)
+    if bases is typing_inspect.get_generic_bases(super(cls, cls)):
+        return ()
+    else:
+        return bases
+
+
+#
+# Decorators
+#
 
 
 def deprecated(function: Callable = None, *, message: str = None):
@@ -352,15 +383,23 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     Decorator to inherit docstrings of overridden methods.
 
     Usage:
-    .. code-block::
-      @inheritdoc(match="[see superclass]")
-      class A(B):
-        def my_function(self) -> None:
-        \"""[see superclass]\"""
-        …
 
-        def my_other_function(self) -> None:
-        \"""This docstring will not be replaced.\"""
+    .. code-block:: python
+
+      class A:
+          def my_function(self) -> None:
+          \"""Some documentation\"""
+          # …
+
+      @inheritdoc(match="[see superclass]")
+      class B(A):
+          def my_function(self) -> None:
+          \"""[see superclass]\"""
+          # …
+
+          def my_other_function(self) -> None:
+          \"""This docstring will not be replaced\"""
+          # …
 
     In this example, the docstring of the ``my_function`` will be replaced with the
     docstring of the overridden function of the same name, or with ``None`` if no
