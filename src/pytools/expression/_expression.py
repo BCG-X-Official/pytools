@@ -141,6 +141,7 @@ class Expression(metaclass=ABCMeta):
     def or_(self, other: "Expression") -> "Operation":
         """
         Create a logical "or" expression using this and another expression as operands.
+
         :param other: other operand to combine with this expression using a logical "or"
         :return: the logical "or" expression
         """
@@ -149,6 +150,7 @@ class Expression(metaclass=ABCMeta):
     def and_(self, other: "Expression") -> "Operation":
         """
         Create a logical "and" expression using this and another expression as operands.
+
         :param other: other operand to combine with this expression using a logical \
             "and"
         :return: the logical "and" expression
@@ -158,6 +160,7 @@ class Expression(metaclass=ABCMeta):
     def not_(self) -> "UnaryOperation":
         """
         Create a logical "not" expression using this expression as the operand.
+
         :return: the logical "not" expression
         """
         return UnaryOperation(op.NOT, self)
@@ -383,6 +386,7 @@ def make_expression(value: Any) -> Expression:
     Convert a python object into an expression.
 
     Conversions:
+
     - expressions are returned as themselves
     - standard containers are turned into their expression equivalents
     - strings are turned into literals
@@ -431,7 +435,8 @@ def make_expression(value: Any) -> Expression:
 
 def freeze(expression: Expression) -> FrozenExpression:
     """
-    Convenience function to freeze an expression
+    Convenience function to freeze an expression.
+
     :param expression: the expression to freeze
     :return: the resulting frozen expression
     """
@@ -535,7 +540,7 @@ class _IdentifierMeta(ABCMeta):
 
 class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     """
-    An identifier
+    An identifier.
     """
 
     def __init__(self, name: Any) -> None:
@@ -618,7 +623,9 @@ class BracketPair(NamedTuple):
     A pair of brackets.
     """
 
+    #: the opening bracket
     opening: str
+    #: the closing bracket
     closing: str
 
 
@@ -818,10 +825,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         return self.prefix_.eq_(other.prefix_) and self.body_.eq_(other.body_)
 
     def hash_(self) -> int:
-        """
-        [see superclass]
-        :return:
-        """
+        """[see superclass]"""
         return hash(
             (type(self), self.prefix_.hash_(), self.separator_, self.body_.hash_())
         )
@@ -855,7 +859,7 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
 
 class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     """
-    A unary operation
+    A unary operation.
     """
 
     def __init__(self, operator: UnaryOperator, operand: Any):
@@ -894,7 +898,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
 # noinspection DuplicatedCode
 class KeywordArgument(BasePrefixExpression):
     """
-    A keyword argument, used by functions
+    A keyword argument, used by functions.
     """
 
     _PRECEDENCE = op.EQ.precedence
@@ -906,7 +910,7 @@ class KeywordArgument(BasePrefixExpression):
     @property
     def name_(self) -> str:
         """
-        The name of this keyword argument
+        The name of this keyword argument.
         """
         return self._name
 
@@ -935,7 +939,7 @@ class KeywordArgument(BasePrefixExpression):
 # noinspection DuplicatedCode
 class DictEntry(BasePrefixExpression):
     """
-    Two expressions separated by a colon, used in dictionaries and lambda expressions
+    Two expressions separated by a colon, used in dictionaries and lambda expressions.
     """
 
     _PRECEDENCE = op.COLON.precedence
@@ -946,7 +950,7 @@ class DictEntry(BasePrefixExpression):
     @property
     def key_(self) -> Expression:
         """
-        The key of this dictionary entry
+        The key of this dictionary entry.
         """
         return self.prefix_
 
@@ -960,7 +964,7 @@ class DictEntry(BasePrefixExpression):
     @property
     def value_(self) -> Expression:
         """
-        The value of this dictionary entry
+        The value of this dictionary entry.
         """
         return self.body_
 
@@ -975,7 +979,7 @@ class DictEntry(BasePrefixExpression):
 class BaseInvocation(PrefixExpression):
     """
     An invocation in the shape of ``<expression>(<expression>)`` or
-    ``<expression>[<expression>]``
+    ``<expression>[<expression>]``.
     """
 
     _PRECEDENCE = op.DOT.precedence
@@ -1008,7 +1012,7 @@ class BaseInvocation(PrefixExpression):
 
 class Call(BaseInvocation):
     """
-    A function invocation
+    A function invocation.
     """
 
     def __init__(self, callee: Any, *args: Any, **kwargs: Any):
@@ -1034,7 +1038,7 @@ class Call(BaseInvocation):
 
 class Index(BaseInvocation):
     """
-    An indexing operation in the shape of ``x[i]``
+    An indexing operation in the shape of ``x[i]``.
     """
 
     def __init__(self, collection: Any, key: Any):
@@ -1045,7 +1049,7 @@ class Index(BaseInvocation):
 # noinspection DuplicatedCode
 class LambdaDefinition(BasePrefixExpression):
     """
-    function arguments and body separated by a colon, used inside lambda expressions
+    function arguments and body separated by a colon, used inside lambda expressions.
     """
 
     _PRECEDENCE = op.LAMBDA.precedence
@@ -1056,7 +1060,7 @@ class LambdaDefinition(BasePrefixExpression):
     @property
     def params_(self) -> Expression:
         """
-        The parameters of the lambda expression
+        The parameters of the lambda expression.
         """
         return self.prefix_
 
@@ -1150,7 +1154,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
 
 class Operation(InfixExpression, BaseOperation):
     """
-    A operation with at least two operands
+    A operation with at least two operands.
     """
 
     def __init__(self, operator: BinaryOperator, *operands: Any):
@@ -1214,7 +1218,7 @@ class Operation(InfixExpression, BaseOperation):
 
 class Attr(Operation):
     """
-    The "dot" operation to reference an attribute of an object
+    The "dot" operation to reference an attribute of an object.
     """
 
     def __init__(self, obj: Any, attribute: Union[Id, str]) -> None:
@@ -1260,6 +1264,7 @@ class ExpressionAlias(SingletonExpression):
     def set_expression_(self, expression: Expression) -> None:
         """
         Set the expression represented by this ExpressionAlias.
+
         :param expression: the expression to be set
         """
         self._expression = expression
