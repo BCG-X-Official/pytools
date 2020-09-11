@@ -27,7 +27,7 @@ build:
 	# run the Sphinx build for html
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-html: apidoc build
+html: build # need to include apidoc if we want to distribute docs across files
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).

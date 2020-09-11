@@ -6,6 +6,8 @@ from typing import *
 
 import joblib
 
+from ..api import AllTracker
+
 log = logging.getLogger(__name__)
 
 
@@ -13,7 +15,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-
+__all__ = ["ParallelizableMixin"]
 
 
 #
@@ -22,6 +24,12 @@ log = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
 
 #
 # class definitions
@@ -85,3 +93,6 @@ class ParallelizableMixin:
         function: Callable[..., T]
     ) -> Callable[..., Tuple[Callable[..., T], List, Mapping]]:
         return joblib.delayed(function)
+
+
+__tracker.validate()
