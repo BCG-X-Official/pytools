@@ -6,7 +6,6 @@ import logging
 import re
 from abc import ABCMeta, abstractmethod
 from typing import *
-from typing import List
 
 import typing_inspect
 
@@ -23,7 +22,7 @@ __all__ = [
 
 
 #: Mock type declaration: Sphinx application object
-Sphinx = "sphinx.application.Sphinx"
+Sphinx = Any
 
 __tracker = AllTracker(globals())
 
@@ -32,8 +31,8 @@ class SphinxCallback(metaclass=ABCMeta):
     """
     Abstract base class for autodoc processors.
 
-    Can be passed to :meth:`~sphinx.Sphinx.connect` as a callback for an event.
-
+    Can be passed to :meth:`~sphinx.application.Sphinx.connect` as a callback for an
+    event.
     """
 
     def __call__(
@@ -93,12 +92,12 @@ class SphinxCallback(metaclass=ABCMeta):
 
     def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
         """
-        Register this callback to be called when arg ``event`` is emitted.
+        Register this callback to be called when :attr:`.event` is emitted.
 
         :param app:
         :param priority:
         :return: a "listener ID" that can be used as an argument to \
-            :meth:`sphinx.application.Sphinx.disconnect`.
+            :meth:`~sphinx.application.Sphinx.disconnect`.
         """
         if priority is None:
             return app.connect(event=self.event, callback=self)
