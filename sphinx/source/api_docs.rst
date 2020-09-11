@@ -24,14 +24,6 @@ pytools.data
    :undoc-members:
 
 
-pytools.data.simulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pytools.data.simulation
-   :members:
-   :undoc-members:
-
-
 pytools.expression
 -------------------------
 
