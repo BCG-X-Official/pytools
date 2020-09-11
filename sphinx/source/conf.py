@@ -96,6 +96,7 @@ intersphinx_mapping = {
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master", None),
 }
 
 intersphinx_collapsible_submodules = {
