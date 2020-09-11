@@ -27,15 +27,6 @@ pytools.data
    :show-inheritance:
 
 
-pytools.data.simulation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: pytools.data.simulation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 pytools.expression
 -------------------------
 
