@@ -64,6 +64,14 @@ pytools.parallelization
    :undoc-members:
 
 
+pytools.sphinx
+-------------------------
+
+.. automodule:: pytools.sphinx
+   :members:
+   :undoc-members:
+
+
 pytools.viz
 -------------------------
 
