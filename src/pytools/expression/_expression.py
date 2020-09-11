@@ -223,7 +223,7 @@ class Expression(metaclass=ABCMeta):
 
     def __pow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
-            raise NotImplementedError("modulo is not supported")
+            return NotImplemented
         return Operation(op.POW, self, power)
 
     def __lshift__(self, other: Any) -> "Operation":
@@ -264,7 +264,7 @@ class Expression(metaclass=ABCMeta):
 
     def __rpow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
-            raise NotImplementedError("modulo is not supported")
+            return NotImplemented
         return Operation(op.POW, (power, self))
 
     def __rlshift__(self, other: Any) -> "Operation":
