@@ -73,7 +73,7 @@ extensions = [
 # generate autosummary even if no references
 autosummary_generate = True
 
-# always overwrite generated autosummaries with newly generated versions
+# always overwrite generated auto summaries with newly generated versions
 autosummary_generate_overwrite = True
 
 autodoc_default_options = {
@@ -145,12 +145,6 @@ autoclass_content = "both"
 
 
 # -- End of options section ------------------------------------------------------------
-
-
-# noinspection PyUnusedLocal
-
-
-# noinspection PyUnusedLocal
 
 
 def setup(app: Sphinx) -> None:
