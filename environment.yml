@@ -27,10 +27,10 @@ dependencies:
   - sphinx = 3.1.*
   - sphinx-autodoc-typehints = 1.11.*
   - sphinx-automodapi = 0.12.*
+  - typing_inspect = 0.6.*
   - xlrd = 1.2.*
   - yaml = 0.1.*
   - pip:
       - pre_commit == 1.16.*
       - punch.py==1.6.*
       - pydata-sphinx-theme == 0.3.*
-      - typing-inspect == 0.4.*

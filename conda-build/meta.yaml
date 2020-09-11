@@ -23,6 +23,7 @@ requirements:
     - matplotlib{{ environ.get('FACET_V_MATPLOT', '>=3') }}
     - pyyaml>=5
     - scipy{{ environ.get('FACET_V_SCIPY', '>=1.2') }}
+    - typing_inspect>=0.4
 test:
   imports:
     - pytools
