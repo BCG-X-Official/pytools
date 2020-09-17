@@ -12,11 +12,8 @@ CMD_SPHINXBUILD = "sphinx-build"
 CMD_SPHINXAPIDOC = "sphinx-apidoc"
 
 # define directories:
-FACET_SOURCEDIR = os.path.join(pwd, os.pardir, "src")
 SOURCEDIR = os.path.join(pwd, "source")
-SOURCEAPIDIR = os.path.join(SOURCEDIR, "api")
 BUILDDIR = os.path.join(pwd, "build")
-SCRIPTSDIR = os.path.join(SOURCEDIR, "scripts")
 
 
 class MakeCommand(NamedTuple):
@@ -34,22 +31,6 @@ def fun_clean():
     print_running_command(cmd=clean)
     if os.path.exists(BUILDDIR):
         shutil.rmtree(path=BUILDDIR,)
-
-
-def fun_apidoc():
-    """ Runs Sphinx apidoc. """
-    print_running_command(cmd=apidoc)
-    sphinxapidocopts = [
-        "-e",
-        f"-t {quote_path(TEMPLATEDIR)}",
-        "--no-toc",
-        f"-o {quote_path(SOURCEAPIDIR)}",
-        "-f",
-        quote_path(FACET_SOURCEDIR),
-    ]
-    subprocess.run(
-        args=f"{CMD_SPHINXAPIDOC} {' '.join(sphinxapidocopts)}", shell=True, check=True
-    )
 
 
 def fun_html():
@@ -73,12 +54,6 @@ clean = MakeCommand(
     python_target=fun_clean,
     depends_on=(),
 )
-apidoc = MakeCommand(
-    command="apidoc",
-    description="generate Sphinx apidoc from sources.",
-    python_target=fun_apidoc,
-    depends_on=(clean,),
-)
 html = MakeCommand(
     command="html",
     description="build pytools Sphinx docs as HTML",
@@ -86,7 +61,7 @@ html = MakeCommand(
     depends_on=(clean,),
 )
 
-available_cmds = (clean, apidoc, html)
+available_cmds = (clean, html)
 
 
 def run_make():
