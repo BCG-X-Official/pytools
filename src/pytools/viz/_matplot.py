@@ -166,7 +166,8 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     """
 
     DEFAULT_COLORMAP = LinearSegmentedColormap.from_list(
-        "facet", ["#3d3a40", "#295e7e", "#30c1d7", "#43fda2"]
+        "facet",
+        [(0, "#3d3a40"), (0.25, "#295e7e"), (0.65, "#30c1d7"), (1.0, "#43fda2")],
     )
 
     def __init__(
