@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import os
-import sys
-from typing import Callable, NamedTuple, Tuple
 import shutil
 import subprocess
+import sys
+from typing import Callable, NamedTuple, Tuple
 
 pwd = os.path.realpath(os.path.dirname(__file__))
 
@@ -30,18 +30,14 @@ def fun_clean():
     """ Cleans the Sphinx build directory. """
     print_running_command(cmd=clean)
     if os.path.exists(BUILDDIR):
-        shutil.rmtree(path=BUILDDIR,)
+        shutil.rmtree(path=BUILDDIR)
 
 
 def fun_html():
     """ Runs a Sphinx build for pytools generating HTML. """
     print_running_command(cmd=html)
     os.makedirs(BUILDDIR, exist_ok=True)
-    sphinx_html_opts = [
-        "-M html",
-        quote_path(SOURCEDIR),
-        quote_path(BUILDDIR),
-    ]
+    sphinx_html_opts = ["-M html", quote_path(SOURCEDIR), quote_path(BUILDDIR)]
     subprocess.run(
         args=f"{CMD_SPHINXBUILD} {' '.join(sphinx_html_opts)}", shell=True, check=True
     )
