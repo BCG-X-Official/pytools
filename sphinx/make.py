@@ -9,8 +9,7 @@ import subprocess
 import sys
 from typing import Callable, NamedTuple, Tuple
 
-
-pwd = os.path.realpath(os.path.dirname(__file__))
+cwd = os.getcwd()
 
 # define Sphinx-commands:
 CMD_SPHINXBUILD = "sphinx-build"
@@ -18,11 +17,11 @@ CMD_SPHINXAPIDOC = "sphinx-apidoc"
 
 # define directories:
 # todo: check which ones are eventually obsolete
-SKLEARNDF_SOURCEDIR = os.path.join(pwd, os.pardir, "src")
-SOURCEDIR = os.path.join(pwd, "source")
-AUXILIARYDIR = os.path.join(pwd, "auxiliary")
+SKLEARNDF_SOURCEDIR = os.path.join(cwd, os.pardir, "src")
+SOURCEDIR = os.path.join(cwd, "source")
+AUXILIARYDIR = os.path.join(cwd, "auxiliary")
 SOURCEAPIDIR = os.path.join(SOURCEDIR, "api")
-BUILDDIR = os.path.join(pwd, "build")
+BUILDDIR = os.path.join(cwd, "build")
 TEMPLATEDIR = os.path.join(SOURCEDIR, "_templates")
 SCRIPTSDIR = os.path.join(SOURCEDIR, "scripts")
 TUTORIALDIR = os.path.join(SOURCEDIR, "tutorial")
