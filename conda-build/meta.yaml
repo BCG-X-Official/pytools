@@ -12,25 +12,26 @@ build:
 requirements:
   host:
     - pip
-    - python={{ environ.get('FACET_V_PYTHON_BUILD', '3.7') }}
+    - python={{ environ.get('FACET_V_PYTHON_BUILD', '3.8') }}
   run:
-    - python>=3.6,<3.8
+    - python>=3.6,<4.0
     - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24') }}
     - numpy{{ environ.get('FACET_V_NUMPY', '>=1.16') }}
     - joblib{{ environ.get('FACET_V_JOBLIB', '>=0.13') }}
-    - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24') }}
-    - numpy{{ environ.get('FACET_V_NUMPY', '>=1.16') }}
-    - matplotlib{{ environ.get('FACET_V_MATPLOT', '>=3') }}
-    - pyyaml>=5
+    - matplotlib{{ environ.get('FACET_V_MATPLOT', '>=3.1') }}
     - scipy{{ environ.get('FACET_V_SCIPY', '>=1.2') }}
+    - pyyaml>=5
     - typing_inspect>=0.4
 test:
   imports:
     - pytools
     - pytools.api
-    - pytools.viz
+    - pytools.data
     - pytools.expression
     - pytools.fit
+    - pytools.parallelization
+    - pytools.sphinx
+    - pytools.viz
   requires:
     - pytest=5.2
   commands:

@@ -1,14 +1,11 @@
-resources:
-  repositories:
-    - repository: facet
-      type: github
-      endpoint: BCG-Gamma
-      name: BCG-Gamma/facet
-      ref: develop # todo - update to stable release
+# RUN TESTS AND FULL CONDA BUILD MATRIX EVERY NIGHT AT 4AM
+schedules:
+- cron: "0 4 * * *"
+  displayName: Nightly full build
+  branches:
+    include:
+    - develop
 
-trigger:
-- master
-- releases/*
 
 stages:
   - stage: 'Quick_env_test'
@@ -27,7 +24,8 @@ stages:
           displayName: 'Use Python 3.7'
 
         - checkout: self
-        - checkout: facet
+          path: pytools
+
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
@@ -35,10 +33,10 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              cd $(System.DefaultWorkingDirectory)/facet/
+              cd $(System.DefaultWorkingDirectory)/pytools/
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               conda env create -f environment.yml
-              conda activate facet-develop
+              conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)/pytools/
               pip install pytest-azurepipelines
               coverage run -m pytest test/test/
@@ -59,27 +57,32 @@ stages:
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
 
-  # THOROUGH CONDA ENV BUILD TEST
+  # CONDA ENV BUILD TEST
   # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
+  # - FOR RELEASE BRANCH: 3 BUILD TESTS
+  # - OTHERWISE: 1 BUILD TEST
   - stage: 'Conda_build_test'
     dependsOn:
       - 'Quick_env_test'
-    displayName: 'Test multiple conda environment builds'
+    displayName: 'Test conda environment builds'
 
     jobs:
     - job:
-      displayName: 'Setup & testing'
+      displayName: 'Setup & testing: Single build'
+      condition: |
+        not(or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        eq(variables['Build.Reason'], 'Schedule')))
 
       pool:
           vmImage: 'ubuntu-latest'
       strategy:
         matrix:
-          Python35:
-            FACET_V_PYTHON_BUILD: '3.6'
-            FACET_V_PANDAS: '==0.24'
-          Python38:
+          maximum_dependencies:
             FACET_V_PYTHON_BUILD: '3.8'
             FACET_V_PANDAS: '==1.0.0'
+            FACET_V_NUMPY: '=>1.16'
+            FACET_V_JOBLIB: '>=0.13'
 
       steps:
         - task: UsePythonVersion@0
@@ -88,7 +91,8 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
-        - checkout: facet
+          path: pytools
+
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
@@ -96,11 +100,66 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              cd $(System.DefaultWorkingDirectory)/facet/
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
-              conda activate facet-develop
+              export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
+              export FACET_V_NUMPY=$(FACET_V_NUMPY)
+              conda activate pytools-develop
+              conda install -y conda-build
+              cd $(System.DefaultWorkingDirectory)/pytools/
+              make package
+          displayName: "Build conda package"
+
+    - job:
+      displayName: 'Setup & testing: Full build matrix'
+      condition: |
+        or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        eq(variables['Build.Reason'], 'Schedule'))
+
+      pool:
+        vmImage: 'ubuntu-latest'
+      strategy:
+        matrix:
+          minimum_dependencies:
+            FACET_V_PYTHON_BUILD: '3.6'
+            FACET_V_PANDAS: '==0.24'
+            FACET_V_JOBLIB: '==0.13'
+            FACET_V_NUMPY: '==1.16'
+          maximum dependencies:
+            FACET_V_PYTHON_BUILD: '3.8'
+            FACET_V_PANDAS: '==1.0.0'
+            FACET_V_NUMPY: '=>1.16'
+            FACET_V_JOBLIB: '>=0.13'
+          unconstrained dependencies:
+            FACET_V_PYTHON_BUILD: '>=3.6'
+            FACET_V_PANDAS: '=>0.24'
+            FACET_V_JOBLIB: '=>0.13'
+            FACET_V_NUMPY: '=>1.16'
+
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '$(FACET_V_PYTHON_BUILD)'
+          displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
+
+        - checkout: self
+          path: pytools
+
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              eval "$(conda shell.bash hook)"
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
+              export FACET_V_PANDAS=$(FACET_V_PANDAS)
+              export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
+              export FACET_V_NUMPY=$(FACET_V_NUMPY)
+              conda activate pytools-develop
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
