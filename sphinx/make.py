@@ -7,7 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import Callable, NamedTuple, Tuple
+from typing import *
 
 cwd = os.getcwd()
 
@@ -27,11 +27,6 @@ SCRIPTSDIR = os.path.join(SOURCEDIR, "scripts")
 TUTORIALDIR = os.path.join(SOURCEDIR, "tutorial")
 NOTEBOOKDIR = os.path.join(SKLEARNDF_SOURCEDIR, os.pardir, "notebooks")
 TUTORIALBUILD = os.path.join(SCRIPTSDIR, "transform_notebook.py")
-
-
-# os.environ[
-#    "SPHINX_APIDOC_OPTIONS"
-# ] = "members,undoc-members,inherited-members,no-show-inheritance"
 
 
 class MakeCommand(NamedTuple):
@@ -86,6 +81,7 @@ def fun_html() -> None:
 
     # create interactive versions of all notebooks
 
+    sys.path.append(os.path.abspath(os.path.dirname(__file__)))
     # noinspection PyUnresolvedReferences
     from source.scripts.transform_notebook import docs_notebooks_to_interactive
 
