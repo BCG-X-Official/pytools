@@ -14,6 +14,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import logging
 import os
+import shutil
 import sys
 from typing import *
 
@@ -23,10 +24,10 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_root_dir = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+_conf_base_dir = os.path.abspath(os.path.dirname(__file__))
+_root_dir = os.path.normpath(
+    os.path.join(_conf_base_dir, os.pardir, os.pardir, os.pardir)
 )
-
 
 # noinspection PyShadowingNames
 def set_config(
@@ -37,8 +38,6 @@ def set_config(
     """
 
     _set_globals(project_=project, html_logo_=html_logo)
-
-    _log.info(f"working dir is '{os.getcwd()}'")
 
     modules = set(modules) | {"pytools"}
     for module in modules:
@@ -179,5 +178,19 @@ def setup(app: Sphinx) -> None:
         collapsible_submodules=intersphinx_collapsible_submodules
     ).connect(app=app, priority=100000)
 
-    app.add_css_file(filename="css/gamma.css")
-    app.add_js_file(filename="scripts/gamma.js")
+    _add_custom_css_and_js(app=app)
+
+
+def _add_custom_css_and_js(app: Sphinx):
+    # add custom css and js files, and copy them to the build/html/_static folder
+
+    css_rel_path = os.path.join("css", "gamma.css")
+    js_rel_path = os.path.join("js", "gamma.js")
+    app.add_css_file(filename=css_rel_path)
+    app.add_js_file(filename=js_rel_path)
+    src_root = os.path.join(_conf_base_dir, "_static_base")
+    dst_root = os.path.join(os.path.abspath(os.getcwd()), "build", "html", "_static")
+    for rel_path in [css_rel_path, js_rel_path]:
+        dst_dir = os.path.join(dst_root, os.path.dirname(rel_path))
+        os.makedirs(dst_dir, exist_ok=True)
+        shutil.copy(src=os.path.join(src_root, rel_path), dst=dst_dir)
