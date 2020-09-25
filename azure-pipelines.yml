@@ -34,7 +34,7 @@ stages:
               cd $(System.DefaultWorkingDirectory)/pytools/
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               conda env create -f environment.yml
-              conda activate facet-develop
+              conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)/pytools/
               pip install pytest-azurepipelines
               coverage run -m pytest test/test/
@@ -102,7 +102,7 @@ stages:
               export FACET_V_SKLEARN=$(FACET_V_SKLEARN)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
-              conda activate facet-develop
+              conda activate pytools-develop
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
@@ -154,7 +154,7 @@ stages:
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
-              conda activate facet-develop
+              conda activate pytools-develop
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)/pytools/
               make package
