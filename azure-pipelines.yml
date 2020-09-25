@@ -24,6 +24,8 @@ stages:
           displayName: 'Use Python 3.7'
 
         - checkout: self
+          path: pytools
+
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
@@ -89,6 +91,8 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
+          path: pytools
+
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
@@ -141,6 +145,8 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
+          path: pytools
+
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
