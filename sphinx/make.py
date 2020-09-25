@@ -105,7 +105,7 @@ apidoc = MakeCommand(
 )
 html = MakeCommand(
     command="html",
-    description="build sklearndf Sphinx docs as HTML",
+    description="build Sphinx docs as HTML",
     python_target=fun_html,
     depends_on=(clean,),
 )
