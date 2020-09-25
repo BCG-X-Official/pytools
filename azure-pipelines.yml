@@ -89,7 +89,6 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
-        - checkout: pytools
         - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
