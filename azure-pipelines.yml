@@ -99,7 +99,6 @@ stages:
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
-              export FACET_V_SKLEARN=$(FACET_V_SKLEARN)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
               conda activate pytools-develop
