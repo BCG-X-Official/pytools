@@ -38,3 +38,4 @@ test:
     - python -c 'import pytools;
                  import os;
                  assert pytools.__version__ == os.environ["PKG_VERSION"]'
+    - pytest -vs ${FACET_PATH}/pytools/test
