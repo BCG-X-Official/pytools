@@ -9,7 +9,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# documentation root, use os.path.realpath to make it absolute, like shown here.
 #
 
 import logging
@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_conf_base_dir = os.path.abspath(os.path.dirname(__file__))
+_conf_base_dir = os.path.dirname(os.path.realpath(__file__))
 _root_dir = os.path.normpath(
     os.path.join(_conf_base_dir, os.pardir, os.pardir, os.pardir)
 )
