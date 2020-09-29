@@ -11,16 +11,16 @@ stages:
   - stage: 'detect_conda_changes'
     displayName: 'detect conda changes'
 
-  jobs:
-    - job:
-      steps:
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              cd $(System.DefaultWorkingDirectory)
-              git diff-index --quiet develop conda-build
-              conda_build_config_changed=$?
+    jobs:
+      - job:
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd $(System.DefaultWorkingDirectory)
+                git diff-index --quiet develop conda-build
+                conda_build_config_changed=$?
 
   - stage:
     displayName: 'simple pytest'
