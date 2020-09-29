@@ -8,8 +8,9 @@ schedules:
 
 
 stages:
-  - stage: 'Quick_env_test'
+  - stage: 'quick_env_test'
     displayName: 'simple pytest'
+    condition: False # todo: delete this stage
 
     jobs:
     - job:
@@ -64,7 +65,7 @@ stages:
   - stage: 'Conda_build_test'
     # we are testing here so no need to run a separate pytest outside of the conda build
     # dependsOn:
-    #   - 'Quick_env_test'
+    #   - 'quick_env_test'
     displayName: 'conda build & pytest'
 
     jobs:
@@ -106,7 +107,7 @@ stages:
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
-              conda activate pytools-develop
+              # conda activate pytools-develop
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)
               make package
