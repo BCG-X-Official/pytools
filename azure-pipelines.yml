@@ -9,11 +9,11 @@ schedules:
 
 stages:
   - stage: 'Quick_env_test'
-    displayName: 'Environment build & pytest'
+    displayName: 'simple pytest'
 
     jobs:
     - job:
-      displayName: 'Setup & testing'
+      displayName: 'pytest @ develop environment'
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -62,13 +62,14 @@ stages:
   # - FOR RELEASE BRANCH: 3 BUILD TESTS
   # - OTHERWISE: 1 BUILD TEST
   - stage: 'Conda_build_test'
-    dependsOn:
-      - 'Quick_env_test'
-    displayName: 'Test conda environment builds'
+    # we are testing here so no need to run a separate pytest outside of the conda build
+    # dependsOn:
+    #   - 'Quick_env_test'
+    displayName: 'conda build & pytest0'
 
     jobs:
     - job:
-      displayName: 'Setup & testing: Single build'
+      displayName: 'single build & pytest'
       condition: |
         not(or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
@@ -109,10 +110,10 @@ stages:
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)
               make package
-          displayName: "Build conda package"
+          displayName: "build & test conda package"
 
     - job:
-      displayName: 'Setup & testing: Full build matrix'
+      displayName: 'matrix build & pytest'
       condition: |
         or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
@@ -163,4 +164,4 @@ stages:
               conda install -y conda-build
               cd $(System.DefaultWorkingDirectory)
               make package
-          displayName: "Build conda package"
+          displayName: "build & test conda package"
