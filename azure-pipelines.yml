@@ -8,13 +8,35 @@ schedules:
 
 
 stages:
-  - stage: 'quick_env_test'
-    displayName: 'simple pytest'
+  - stage: 'detect_conda_changes'
+    displayName: 'detect conda changes'
 
-    jobs:
+    - job:
+      steps:
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              cd $(System.DefaultWorkingDirectory)
+              git diff-index --quiet develop conda-build
+              conda_build_config_changed=$?
+
+  - stage:
+    displayName: 'simple pytest'
+    dependsOn: 'detect_conda_changes'
+        and(
+          not(
+            or(
+              contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+              eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+              eq(variables['Build.Reason'], 'Schedule')
+            )
+          ),
+          eq(variables.conda_build_config_changed, 0)
+        )
+
     - job:
       displayName: 'pytest @ develop environment'
-      condition: False # todo: delete this stage
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -43,7 +65,7 @@ stages:
               coverage run -m pytest test/test/
               coverage xml
               coverage html
-          displayName: 'Pytest'
+          displayName: 'pytest'
 
         - task: PublishTestResults@2
           condition: succeededOrFailed()
@@ -62,19 +84,24 @@ stages:
   # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
   # - FOR RELEASE BRANCH: 3 BUILD TESTS
   # - OTHERWISE: 1 BUILD TEST
-  - stage: 'Conda_build_test'
-    # we are testing here so no need to run a separate pytest outside of the conda build
-    # dependsOn:
-    #   - 'quick_env_test'
+  - stage:
     displayName: 'conda build & pytest'
+    dependsOn: 'detect_conda_changes'
 
     jobs:
     - job:
-      displayName: 'single build & pytest'
+      displayName: '(single)'
       condition: |
-        not(or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        eq(variables['Build.Reason'], 'Schedule')))
+        and(
+          not(
+            or(
+              contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+              eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+              eq(variables['Build.Reason'], 'Schedule')
+            )
+          ),
+          ne(variables.conda_build_config_changed, 0)
+        )
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -114,7 +141,7 @@ stages:
           displayName: "build & test conda package"
 
     - job:
-      displayName: 'matrix build & pytest'
+      displayName: '(matrix)'
       condition: |
         or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
