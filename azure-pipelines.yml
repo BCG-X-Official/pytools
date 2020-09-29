@@ -10,11 +10,11 @@ schedules:
 stages:
   - stage: 'quick_env_test'
     displayName: 'simple pytest'
-    condition: False # todo: delete this stage
 
     jobs:
     - job:
       displayName: 'pytest @ develop environment'
+      condition: False # todo: delete this stage
 
       pool:
           vmImage: 'ubuntu-latest'
