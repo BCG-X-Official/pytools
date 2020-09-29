@@ -11,6 +11,7 @@ stages:
   - stage: 'detect_conda_changes'
     displayName: 'detect conda changes'
 
+  jobs:
     - job:
       steps:
         - task: Bash@3
@@ -35,7 +36,8 @@ stages:
           eq(variables.conda_build_config_changed, 0)
         )
 
-    - job:
+    jobs:
+    - job: '
       displayName: 'pytest @ develop environment'
 
       pool:
