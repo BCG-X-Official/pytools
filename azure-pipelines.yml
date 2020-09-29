@@ -65,7 +65,7 @@ stages:
     # we are testing here so no need to run a separate pytest outside of the conda build
     # dependsOn:
     #   - 'Quick_env_test'
-    displayName: 'conda build & pytest0'
+    displayName: 'conda build & pytest'
 
     jobs:
     - job:
