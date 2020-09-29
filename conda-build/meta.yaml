@@ -13,9 +13,6 @@ requirements:
   host:
     - pip
     - python={{ environ.get('FACET_V_PYTHON_BUILD', '3.8') }}
-  build:
-    - setuptools
-    - numpy>=1.16
   run:
     - python>=3.6,<4.0
     - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24') }}
