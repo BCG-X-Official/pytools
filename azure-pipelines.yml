@@ -33,11 +33,11 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              cd $(System.DefaultWorkingDirectory)/pytools/
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              cd $(System.DefaultWorkingDirectory)
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
               conda activate pytools-develop
-              cd $(System.DefaultWorkingDirectory)/pytools/
+              cd $(System.DefaultWorkingDirectory)
               pip install pytest-azurepipelines
               coverage run -m pytest test/test/
               coverage xml
@@ -47,15 +47,15 @@ stages:
         - task: PublishTestResults@2
           condition: succeededOrFailed()
           inputs:
-            testResultsFiles: '$(System.DefaultWorkingDirectory)/pytools/*.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)/pytools/'
+            testResultsFiles: '$(System.DefaultWorkingDirectory)/*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
             testRunTitle: 'Publish test results'
 
         - task: PublishCodeCoverageResults@1
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
-            reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
+            reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
   # CONDA ENV BUILD TEST
   # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
@@ -100,14 +100,14 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
               conda activate pytools-develop
               conda install -y conda-build
-              cd $(System.DefaultWorkingDirectory)/pytools/
+              cd $(System.DefaultWorkingDirectory)
               make package
           displayName: "Build conda package"
 
@@ -154,13 +154,13 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
               conda activate pytools-develop
               conda install -y conda-build
-              cd $(System.DefaultWorkingDirectory)/pytools/
+              cd $(System.DefaultWorkingDirectory)
               make package
           displayName: "Build conda package"
