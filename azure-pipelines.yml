@@ -25,16 +25,16 @@ stages:
   - stage:
     displayName: 'simple pytest'
     dependsOn: 'detect_conda_changes'
-    condition: |
+    condition: >
       and(
-        not(
-          or(
-            contains(variables['Build.SourceBranch'], 'refs/heads/release'),
-            eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-            eq(variables['Build.Reason'], 'Schedule')
-          )
-        ),
-        eq(variables.conda_build_config_changed, 0)
+      not(
+      or(
+      contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+      eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+      eq(variables['Build.Reason'], 'Schedule')
+      )
+      ),
+      eq(variables.conda_build_config_changed, 0)
       )
 
     jobs:
@@ -94,16 +94,16 @@ stages:
     jobs:
     - job:
       displayName: '(single)'
-      condition: |
+      condition: >
         and(
-          not(
-            or(
-              contains(variables['Build.SourceBranch'], 'refs/heads/release'),
-              eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-              eq(variables['Build.Reason'], 'Schedule')
-            )
-          ),
-          ne(variables.conda_build_config_changed, 0)
+        not(
+        or(
+        contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+        eq(variables['Build.Reason'], 'Schedule')
+        )
+        ),
+        ne(variables.conda_build_config_changed, 0)
         )
 
       pool:
@@ -145,10 +145,12 @@ stages:
 
     - job:
       displayName: '(matrix)'
-      condition: |
-        or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
+      condition: >
+        or(
+        contains(variables['Build.SourceBranch'], 'refs/heads/release'),
         eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        eq(variables['Build.Reason'], 'Schedule'))
+        eq(variables['Build.Reason'], 'Schedule')
+        )
 
       pool:
         vmImage: 'ubuntu-latest'
