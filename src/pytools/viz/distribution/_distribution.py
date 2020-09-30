@@ -4,14 +4,13 @@ Core implementation of :mod:`pytools.viz.distribution`
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import NamedTuple, Type, Optional, Mapping, Sequence, Union
+from typing import Mapping, NamedTuple, Optional, Sequence, Type, Union
 
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
 from pytools.viz import DrawStyle, Drawer, MatplotStyle
-
 
 log = logging.getLogger(__name__)
 

@@ -7,18 +7,18 @@ import logging
 import warnings
 from functools import wraps
 from typing import (
-    TypeVar,
-    Type,
-    Set,
-    Iterable,
-    Optional,
-    Dict,
-    Collection,
-    List,
     Any,
-    Union,
-    Tuple,
     Callable,
+    Collection,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
 )
 
 import numpy as np

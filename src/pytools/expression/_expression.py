@@ -6,14 +6,14 @@ import itertools
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import (
-    NamedTuple,
-    TypeVar,
-    Iterable,
-    Optional,
+    Any,
     Dict,
     Generic,
-    Any,
+    Iterable,
+    NamedTuple,
+    Optional,
     Tuple,
+    TypeVar,
     Union,
 )
 from weakref import WeakValueDictionary

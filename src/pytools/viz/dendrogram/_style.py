@@ -20,8 +20,8 @@ inclusion in text reports.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence, Union
-from typing import TextIO
+from typing import Optional, Sequence, TextIO, Union
+
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
@@ -425,9 +425,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._char_matrix[
             line_y + is_in_between_line,
             self._x_pos(bottom, tree_height) : self._x_pos(top, tree_height),
-        ] = (
-            "_" if is_in_between_line else "-"
-        )
+        ] = ("_" if is_in_between_line else "-")
 
         # if we're in a leaf, we can draw the weight next to he label
         if bottom == 0:
