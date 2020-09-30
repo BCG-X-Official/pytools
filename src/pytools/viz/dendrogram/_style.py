@@ -22,7 +22,6 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import *
 from typing import TextIO
-
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
@@ -275,7 +274,7 @@ class DendrogramHeatmapStyle(BaseDendrogramMatplotStyle):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
-        :param tree_height: the total height of the tree        
+        :param tree_height: the total height of the tree
         """
         self._draw_hbar(
             x=bottom,
@@ -385,8 +384,8 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
     def draw_leaf_labels(self, labels: Sequence[str]) -> None:
         """
         Draw the feature labels in the drawing.
-        
-        :param labels: the name of the features 
+
+        :param labels: the name of the features
         """
         matrix = self._char_matrix
         n_labels = len(labels)
@@ -426,7 +425,9 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._char_matrix[
             line_y + is_in_between_line,
             self._x_pos(bottom, tree_height) : self._x_pos(top, tree_height),
-        ] = ("_" if is_in_between_line else "-")
+        ] = (
+            "_" if is_in_between_line else "-"
+        )
 
         # if we're in a leaf, we can draw the weight next to he label
         if bottom == 0:

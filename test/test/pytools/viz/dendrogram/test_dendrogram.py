@@ -8,8 +8,10 @@ import logging
 from io import StringIO
 
 import numpy as np
+
 # noinspection PyPackageRequirements
 import pytest
+
 # noinspection PyPackageRequirements
 import scipy.cluster.hierarchy as hc
 
