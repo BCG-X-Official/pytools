@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import *
+from typing import Iterable, Optional
 
 from sphinx.application import Sphinx
 
@@ -28,6 +28,7 @@ _conf_base_dir = os.path.abspath(os.path.dirname(__file__))
 _root_dir = os.path.normpath(
     os.path.join(_conf_base_dir, os.pardir, os.pardir, os.pardir)
 )
+
 
 # noinspection PyShadowingNames
 def set_config(
@@ -55,7 +56,7 @@ def _set_globals(project_: str, html_logo_: Optional[str]) -> None:
     global project, html_logo
 
     project = project_
-    html_logo = latex_logo = html_logo_
+    html_logo = html_logo_
 
 
 _log.info(f"sys.path = {sys.path}")

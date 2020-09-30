@@ -34,7 +34,7 @@ def delete_cells_for_interactive(notebook: Dict[str, Any]) -> Dict[str, Any]:
     notebook[K_CELLS] = [
         c
         for c in notebook[K_CELLS]
-        if (not K_METADATA in c)
+        if (K_METADATA not in c)
         or not c[K_METADATA].get("delete_for_interactive", False)
     ]
     return notebook
