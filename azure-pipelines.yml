@@ -134,7 +134,7 @@ stages:
             FACET_V_PANDAS: '==1.1'
             FACET_V_NUMPY: '==1.19'
             FACET_V_SCIPY: '==1.5'
-            FACET_V_MATPLOT: '==3'
+            FACET_V_MATPLOT: '==3.3'
             FACET_V_JOBLIB: '==0.16'
 
       steps:
@@ -178,7 +178,7 @@ stages:
           minimum_dependencies:
             FACET_V_PYTHON_BUILD: '==3.6'
             FACET_V_PANDAS: '==0.24'
-            FACET_V_MATPLOT: '==3.0'
+            FACET_V_MATPLOT: '==3.1'
             FACET_V_NUMPY: '==1.16'
             FACET_V_SCIPY: '==1.2'
             FACET_V_JOBLIB: '==0.13'
@@ -187,14 +187,14 @@ stages:
             FACET_V_PANDAS: '==1.1'
             FACET_V_NUMPY: '==1.19'
             FACET_V_SCIPY: '==1.5'
-            FACET_V_MATPLOT: '==3'
+            FACET_V_MATPLOT: '==3.3'
             FACET_V_JOBLIB: '==0.16'
           unconstrained_dependencies:
             FACET_V_PYTHON_BUILD: '>=3.6,<4'
             FACET_V_PANDAS: '>=0.24'
             FACET_V_NUMPY: '>=1.16'
             FACET_V_SCIPY: '>=1.2'
-            FACET_V_MATPLOT: '>=3'
+            FACET_V_MATPLOT: '>=3.1'
             FACET_V_JOBLIB: '>=0.13'
       steps:
         - task: UsePythonVersion@0
