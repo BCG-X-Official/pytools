@@ -4,7 +4,7 @@ Core implementation of :mod:`pytools.viz.matrix`
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Type, Optional, Mapping, Any, Union, Tuple, Callable
 
 import numpy as np
 import pandas as pd
@@ -105,7 +105,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         )
 
         if max_ticks is not None and not (
-            isinstance(max_ticks, Tuple) and len(max_ticks) == 2
+                isinstance(max_ticks, Tuple) and len(max_ticks) == 2
         ):
             raise ValueError(
                 f"arg n_labels={max_ticks} expected to be a tuple of size 2"

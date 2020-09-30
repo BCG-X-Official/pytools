@@ -4,7 +4,7 @@ Matplot styles for the Gamma visualization library
 
 import logging
 from abc import ABCMeta
-from typing import *
+from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 from matplotlib import cm, text as mt

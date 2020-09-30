@@ -4,7 +4,7 @@ String representations of expressions
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import NamedTuple, List, Tuple
 
 import pytools.expression.operator as op
 from pytools.api import AllTracker

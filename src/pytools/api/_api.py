@@ -6,7 +6,7 @@ import inspect
 import logging
 import warnings
 from functools import wraps
-from typing import *
+from typing import TypeVar, Type, Set, Iterable, Optional, Dict, Collection, List, Any, Union, Tuple, Callable
 
 import numpy as np
 import pandas as pd

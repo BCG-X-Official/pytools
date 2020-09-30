@@ -5,7 +5,7 @@ strings; useful for generating representations of complex Python objects.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import NamedTuple, TypeVar, Iterable, Optional, Dict, Generic, Any, Tuple, Union
 from weakref import WeakValueDictionary
 
 from pytools.api import AllTracker, to_list

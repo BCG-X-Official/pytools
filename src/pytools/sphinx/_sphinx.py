@@ -5,7 +5,7 @@ import itertools
 import logging
 import re
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import cast, Set, Optional, Generic, List, Mapping, Any, Callable, Tuple, Generator
 
 import typing_inspect
 

@@ -3,7 +3,7 @@ Core implementation of :mod:`pytools.fit`
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import TypeVar, Generic
 
 from ..api import AllTracker
 

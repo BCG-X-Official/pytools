@@ -4,7 +4,7 @@ Core implementation of :mod:`pytools.viz.distribution`
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import NamedTuple, Type, Optional, Mapping, Sequence, Union
 
 import numpy as np
 import pandas as pd
