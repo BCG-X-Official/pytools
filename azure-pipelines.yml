@@ -124,7 +124,8 @@ stages:
         displayName: 'flake8'
         steps:
           - script: |
-              flake8 --config flake8.ini
+              python -m pip install flake8
+              flake8 --config flake8.ini .
             displayName: 'Run flake8 (code style analysis)'
 
 
