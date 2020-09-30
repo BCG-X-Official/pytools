@@ -1,3 +1,6 @@
+# set the build name
+name: $[ variables['branchName'] ]
+
 # RUN TESTS AND FULL CONDA BUILD MATRIX EVERY NIGHT AT 4AM
 schedules:
 - cron: "0 4 * * *"
@@ -6,17 +9,63 @@ schedules:
     include:
     - develop
 
+variables:
+  ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
+    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
+  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
+    branchName: $[ replace(variables['System.PullRequest.TargetBranch'], 'refs/heads/', '') ]
+  master_or_release: >
+    ${{ or(
+    startsWith(variables['branchName'], 'release'),
+    eq(variables['branchName'], 'master'),
+    eq(variables['Build.Reason'], 'Schedule')
+    )
+    }}
 
 stages:
-  - stage: 'Quick_env_test'
-    displayName: 'Environment build & pytest'
+  - stage: detect_conda_changes
+    displayName: 'detect conda changes'
+
+    jobs:
+
+      - job: checkout_and_diff
+        steps:
+          - checkout: self
+
+          - task: Bash@3
+            name: diff
+            inputs:
+              targetType: 'inline'
+              script: |
+                cd $(Build.Repository.LocalPath)
+                git diff-index --exit-code "origin/$(branchName)" conda-build
+                build_changed="$?"
+                if [ "$build_changed" = 1 ]; then
+                echo "conda build config has been changed"
+                else
+                echo "conda build config is unchanged"
+                fi
+                echo "##vso[task.setvariable variable=conda_build_config_changed;isOutput=true]$build_changed"
+
+
+  - stage:
+    displayName: 'simple pytest'
+    dependsOn: 'detect_conda_changes'
+    variables:
+      conda_build_config_changed: $[ stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
 
     jobs:
     - job:
-      displayName: 'Setup & testing'
+      displayName: 'pytest @ develop environment'
+      condition: >
+        and(
+        ne(variables.master_or_release, 'True'),
+        eq(stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
+        )
 
       pool:
           vmImage: 'ubuntu-latest'
+
       steps:
         - task: UsePythonVersion@0
           inputs:
@@ -33,56 +82,61 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              cd $(System.DefaultWorkingDirectory)/pytools/
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+              cd $(System.DefaultWorkingDirectory)
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
               conda activate pytools-develop
-              cd $(System.DefaultWorkingDirectory)/pytools/
+              cd $(System.DefaultWorkingDirectory)
               pip install pytest-azurepipelines
               coverage run -m pytest test/test/
               coverage xml
               coverage html
-          displayName: 'Pytest'
+          displayName: 'pytest'
 
         - task: PublishTestResults@2
           condition: succeededOrFailed()
           inputs:
-            testResultsFiles: '$(System.DefaultWorkingDirectory)/pytools/*.xml'
-            searchFolder: '$(System.DefaultWorkingDirectory)/pytools/'
+            testResultsFiles: '$(Build.Repository.LocalPath)/*.xml'
+            searchFolder: '$(Build.Repository.LocalPath)'
             testRunTitle: 'Publish test results'
 
         - task: PublishCodeCoverageResults@1
           inputs:
             codeCoverageTool: Cobertura
-            summaryFileLocation: '$(System.DefaultWorkingDirectory)/pytools/coverage.xml'
-            reportDirectory: '$(System.DefaultWorkingDirectory)/pytools/htmlcov'
+            summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
+            reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
   # CONDA ENV BUILD TEST
   # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
   # - FOR RELEASE BRANCH: 3 BUILD TESTS
   # - OTHERWISE: 1 BUILD TEST
-  - stage: 'Conda_build_test'
-    dependsOn:
-      - 'Quick_env_test'
-    displayName: 'Test conda environment builds'
+  - stage:
+    displayName: 'conda build & pytest'
+    dependsOn: 'detect_conda_changes'
+    variables:
+      conda_build_config_changed: $[ stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
 
     jobs:
     - job:
-      displayName: 'Setup & testing: Single build'
-      condition: |
-        not(or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        eq(variables['Build.Reason'], 'Schedule')))
+      displayName: '(single)'
+      condition: >
+        and(
+        ne(variables.master_or_release, 'True'),
+        ne(stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
+        )
 
       pool:
           vmImage: 'ubuntu-latest'
       strategy:
         matrix:
           maximum_dependencies:
-            FACET_V_PYTHON_BUILD: '3.8'
-            FACET_V_PANDAS: '==1.0.0'
-            FACET_V_NUMPY: '=>1.16'
-            FACET_V_JOBLIB: '>=0.13'
+            FACET_V_PYTHON_BUILD: '=3.8.*'
+            FACET_V_PYTHON: '=3.8.*'
+            FACET_V_PANDAS: '=1.1.*'
+            FACET_V_NUMPY: '=1.19.*'
+            FACET_V_SCIPY: '=1.5.*'
+            FACET_V_MATPLOT: '=3.3.*'
+            FACET_V_JOBLIB: '=0.16.*'
 
       steps:
         - task: UsePythonVersion@0
@@ -100,44 +154,52 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
-              conda activate pytools-develop
+
               conda install -y conda-build
-              cd $(System.DefaultWorkingDirectory)/pytools/
+
+              cd $(System.DefaultWorkingDirectory)
+
               make package
-          displayName: "Build conda package"
+          displayName: "build & test conda package"
 
     - job:
-      displayName: 'Setup & testing: Full build matrix'
-      condition: |
-        or(contains(variables['Build.SourceBranch'], 'refs/heads/release'),
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        eq(variables['Build.Reason'], 'Schedule'))
+      displayName: '(matrix)'
+      condition: eq(variables.master_or_release, 'True')
 
       pool:
         vmImage: 'ubuntu-latest'
       strategy:
         matrix:
           minimum_dependencies:
-            FACET_V_PYTHON_BUILD: '3.6'
-            FACET_V_PANDAS: '==0.24'
-            FACET_V_JOBLIB: '==0.13'
-            FACET_V_NUMPY: '==1.16'
-          maximum dependencies:
-            FACET_V_PYTHON_BUILD: '3.8'
-            FACET_V_PANDAS: '==1.0.0'
-            FACET_V_NUMPY: '=>1.16'
+            FACET_V_PYTHON_BUILD: '=3.6.*'
+            FACET_V_PYTHON: '=3.6.*'
+            FACET_V_PANDAS: '=0.24.*'
+            FACET_V_MATPLOT: '=3.0.*'
+            FACET_V_NUMPY: '=1.16.*'
+            FACET_V_SCIPY: '=1.2.*'
+            FACET_V_JOBLIB: '=0.13.*'
+          maximum_dependencies:
+            FACET_V_PYTHON_BUILD: '=3.8.*'
+            FACET_V_PYTHON: '=3.8.*'
+            FACET_V_PANDAS: '=1.1.*'
+            FACET_V_NUMPY: '=1.19.*'
+            FACET_V_SCIPY: '=1.5.*'
+            FACET_V_MATPLOT: '=3.3.*'
+            FACET_V_JOBLIB: '=0.16.*'
+          unconstrained_dependencies:
+            FACET_V_PYTHON_BUILD: '>=3.6,<4'
+            FACET_V_PYTHON: '>=3.6,<4'
+            FACET_V_PANDAS: '>=0.24'
+            FACET_V_NUMPY: '>=1.16'
+            FACET_V_SCIPY: '>=1.2'
+            FACET_V_MATPLOT: '>=3.0'
             FACET_V_JOBLIB: '>=0.13'
-          unconstrained dependencies:
-            FACET_V_PYTHON_BUILD: '>=3.6'
-            FACET_V_PANDAS: '=>0.24'
-            FACET_V_JOBLIB: '=>0.13'
-            FACET_V_NUMPY: '=>1.16'
-
       steps:
         - task: UsePythonVersion@0
           inputs:
@@ -154,13 +216,17 @@ stages:
             targetType: 'inline'
             script: |
               eval "$(conda shell.bash hook)"
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src/
+
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               export FACET_V_PYTHON_BUILD=$(FACET_V_PYTHON_BUILD)
               export FACET_V_PANDAS=$(FACET_V_PANDAS)
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
-              conda activate pytools-develop
+
               conda install -y conda-build
-              cd $(System.DefaultWorkingDirectory)/pytools/
+
+              cd $(System.DefaultWorkingDirectory)
+
               make package
-          displayName: "Build conda package"
+
+          displayName: "build & test conda package"
