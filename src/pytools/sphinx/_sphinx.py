@@ -35,23 +35,6 @@ class SphinxCallback(metaclass=ABCMeta):
     event.
     """
 
-    def __call__(
-        self,
-        app: Sphinx,
-        what: str,
-        name: str,
-        obj: object,
-        options: object,
-        lines: List[str],
-    ):
-        try:
-            self.process(
-                app=app, what=what, name=name, obj=obj, options=options, lines=lines
-            )
-        except Exception as e:
-            log.error(e)
-            raise
-
     @property
     @abstractmethod
     def event(self) -> str:
@@ -61,32 +44,6 @@ class SphinxCallback(metaclass=ABCMeta):
         Used to connect this callback to sphinx in method :meth:`.connect`.
 
         :return: name of the event
-        """
-        pass
-
-    @abstractmethod
-    def process(
-        self,
-        app: Sphinx,
-        what: str,
-        name: str,
-        obj: object,
-        options: object,
-        lines: List[str],
-    ) -> None:
-        """
-        Process an event.
-
-        :param app: the Sphinx application object
-        :param what: the type of the object which the docstring belongs to (one of \
-            "module", "class", "exception", "function", "method", "attribute")
-        :param name: the fully qualified name of the object
-        :param obj: the object itself
-        :param options: the options given to the directive: an object with attributes \
-            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and \
-            ``noindex`` that are ``True`` if the flag option of same name was given to \
-            the auto directive
-        :param lines: the lines of the docstring
         """
         pass
 
@@ -117,6 +74,49 @@ class AutodocProcessor(SphinxCallback, metaclass=ABCMeta):
         """
         return "autodoc-process-docstring"
 
+    @abstractmethod
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        lines: List[str],
+    ) -> None:
+        """
+        Process an event.
+
+        :param app: the Sphinx application object
+        :param what: the type of the object which the docstring belongs to (one of \
+            "module", "class", "exception", "function", "method", "attribute")
+        :param name: the fully qualified name of the object
+        :param obj: the object itself
+        :param options: the options given to the directive: an object with attributes \
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and \
+            ``noindex`` that are ``True`` if the flag option of same name was given to \
+            the auto directive
+        :param lines: the lines of the docstring
+        """
+        pass
+
+    def __call__(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        lines: List[str],
+    ):
+        try:
+            self.process(
+                app=app, what=what, name=name, obj=obj, options=options, lines=lines
+            )
+        except Exception as e:
+            log.error(e)
+            raise
+
 
 @inheritdoc(match="[see superclass]")
 class AddInheritance(AutodocProcessor):
@@ -126,6 +126,7 @@ class AddInheritance(AutodocProcessor):
     """
 
     def __init__(self, collapsible_submodules: Mapping[str, str]):
+        super().__init__()
         self.collapsible_submodules = collapsible_submodules
         self.classes_visited: Set[type] = set()
 
@@ -243,9 +244,9 @@ class AddInheritance(AutodocProcessor):
                 for arg in typing_inspect.get_args(cls, evaluate=True)
             ]
 
-            generic_arg_str = f'[{", ".join(generic_args)}]' if generic_args else ""
+            generic_arg_str = f' [{", ".join(generic_args)}]' if generic_args else ""
 
-            return f":class:`~{self._full_name(cls)}` {generic_arg_str}"
+            return f":class:`~{self._full_name(cls)}`{generic_arg_str}"
 
     def _get_bases(self, child_class: type) -> Generator[type, None, None]:
         # get the names of the immediate base classes of arg child_class
@@ -298,6 +299,7 @@ class CollapseModulePaths(AutodocProcessor):
         :param collapsible_submodules: mapping from module paths to their public \
             prefix, e.g., ``{"pandas.core.frame": "pandas"}``
         """
+        super().__init__()
         self._classes_visited: Set[type] = set()
 
         self._intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = [
