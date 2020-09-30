@@ -23,6 +23,29 @@ variables:
     }}
 
 stages:
+  # Temporarily putting this stage on top to accelerate testing iterations over its correctness
+  - stage:
+    displayName: 'Code quality'
+    jobs:
+      - job:
+        displayName: 'black'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.7'
+            displayName: 'Use Python 3.7'
+          - script: |
+              python -m pip install black
+              python -m black --check .
+            displayName: 'black'
+      - job:
+        displayName: 'flake8'
+        steps:
+          - script: |
+          # python -m pip install flake8
+              python -m flake8 --verbose 1 .
+            displayName: 'Run flake8 (code style analysis)'
+
   - stage: detect_conda_changes
     displayName: 'detect conda changes'
 
@@ -105,28 +128,6 @@ stages:
             codeCoverageTool: Cobertura
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
-
-  - stage:
-    displayName: 'Code quality'
-    jobs:
-      - job:
-        displayName: 'black'
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: '3.7'
-            displayName: 'Use Python 3.7'
-          - script: |
-              python -m pip install black
-              python -m black --check .
-            displayName: 'black'
-      - job:
-        displayName: 'flake8'
-        steps:
-          - script: |
-              python -m pip install flake8
-              python -m flake8 --config flake8.ini .
-            displayName: 'Run flake8 (code style analysis)'
 
 
   # CONDA ENV BUILD TEST
