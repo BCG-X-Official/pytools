@@ -25,4 +25,4 @@ from conf_base import *
 
 # ----- custom configuration -----
 
-set_config(project="pytools", modules=["pytools"])
+set_config(globals(), project="pytools", modules=["pytools"])
