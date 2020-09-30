@@ -8,7 +8,7 @@ Linkage Tree.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Optional, Iterable, List, Sequence, Any, Tuple
 
 import numpy as np
 
@@ -154,11 +154,11 @@ class LinkageTree:
     F_N_DESCENDANTS = 3
 
     def __init__(
-        self,
-        scipy_linkage_matrix: np.ndarray,
-        leaf_labels: Iterable[str],
-        leaf_weights: Iterable[float],
-        max_distance: Optional[float] = None,
+            self,
+            scipy_linkage_matrix: np.ndarray,
+            leaf_labels: Iterable[str],
+            leaf_weights: Iterable[float],
+            max_distance: Optional[float] = None,
     ) -> None:
         # one row of the linkage matrix is a quadruple:
         # (

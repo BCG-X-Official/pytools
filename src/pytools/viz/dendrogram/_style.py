@@ -20,7 +20,7 @@ inclusion in text reports.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Optional, Sequence, Union
 from typing import TextIO
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
