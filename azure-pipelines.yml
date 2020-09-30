@@ -24,7 +24,7 @@ variables:
 
 stages:
   # Temporarily putting this stage on top to accelerate testing iterations over its correctness
-  - stage:
+  - stage: code_quality_checks
     displayName: 'Code quality'
     jobs:
       - job:
@@ -41,8 +41,11 @@ stages:
       - job:
         displayName: 'flake8'
         steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.7'
+            displayName: 'Use Python 3.7'
           - script: |
-          # python -m pip install flake8
               python -m flake8 --verbose 1 .
             displayName: 'Run flake8 (code style analysis)'
 
