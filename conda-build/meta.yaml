@@ -15,11 +15,11 @@ requirements:
     - python={{ environ.get('FACET_V_PYTHON_BUILD', '3.8') }}
   run:
     - python>=3.6,<4.0
-    - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24') }}
-    - numpy{{ environ.get('FACET_V_NUMPY', '>=1.16') }}
-    - joblib{{ environ.get('FACET_V_JOBLIB', '>=0.13') }}
-    - matplotlib{{ environ.get('FACET_V_MATPLOT', '>=3.1') }}
-    - scipy{{ environ.get('FACET_V_SCIPY', '>=1.2') }}
+    - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24,<=1.1') }}
+    - numpy{{ environ.get('FACET_V_NUMPY', '>=1.16,<=1.19') }}
+    - matplotlib{{ environ.get('FACET_V_MATPLOT', '==3') }}
+    - joblib{{ environ.get('FACET_V_JOBLIB', '>=0.13,<=1.16') }}
+    - scipy{{ environ.get('FACET_V_SCIPY', '>=1.2,<=1.5') }}
     - pyyaml>=5
     - typing_inspect>=0.4
 test:
@@ -35,6 +35,7 @@ test:
   requires:
     - pytest=5.2
   commands:
+    - conda list
     - python -c 'import pytools;
                  import os;
                  assert pytools.__version__ == os.environ["PKG_VERSION"]'
