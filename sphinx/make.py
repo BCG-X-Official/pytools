@@ -81,7 +81,7 @@ def fun_html() -> None:
 
     # create interactive versions of all notebooks
 
-    sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
     # noinspection PyUnresolvedReferences
     from source.scripts.transform_notebook import docs_notebooks_to_interactive
 

@@ -65,7 +65,7 @@ stages:
               targetType: 'inline'
               script: |
                 cd $(Build.Repository.LocalPath)
-                git diff-index --quiet "origin/$(branchName)" conda-build
+                git diff-index --exit-code "origin/$(branchName)" conda-build
                 build_changed="$?"
                 if [ "$build_changed" = 1 ]; then
                 echo "conda build config has been changed"
@@ -133,7 +133,6 @@ stages:
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
-
   # CONDA ENV BUILD TEST
   # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
   # - FOR RELEASE BRANCH: 3 BUILD TESTS
@@ -158,12 +157,13 @@ stages:
       strategy:
         matrix:
           maximum_dependencies:
-            FACET_V_PYTHON_BUILD: '==3.8'
-            FACET_V_PANDAS: '==1.1'
-            FACET_V_NUMPY: '==1.19'
-            FACET_V_SCIPY: '==1.5'
-            FACET_V_MATPLOT: '==3.3'
-            FACET_V_JOBLIB: '==0.16'
+            FACET_V_PYTHON_BUILD: '=3.8.*'
+            FACET_V_PYTHON: '=3.8.*'
+            FACET_V_PANDAS: '=1.1.*'
+            FACET_V_NUMPY: '=1.19.*'
+            FACET_V_SCIPY: '=1.5.*'
+            FACET_V_MATPLOT: '=3.3.*'
+            FACET_V_JOBLIB: '=0.16.*'
 
       steps:
         - task: UsePythonVersion@0
@@ -204,25 +204,28 @@ stages:
       strategy:
         matrix:
           minimum_dependencies:
-            FACET_V_PYTHON_BUILD: '==3.6'
-            FACET_V_PANDAS: '==0.24'
-            FACET_V_MATPLOT: '==3.1'
-            FACET_V_NUMPY: '==1.16'
-            FACET_V_SCIPY: '==1.2'
-            FACET_V_JOBLIB: '==0.13'
+            FACET_V_PYTHON_BUILD: '=3.6.*'
+            FACET_V_PYTHON: '=3.6.*'
+            FACET_V_PANDAS: '=0.24.*'
+            FACET_V_MATPLOT: '=3.0.*'
+            FACET_V_NUMPY: '=1.16.*'
+            FACET_V_SCIPY: '=1.2.*'
+            FACET_V_JOBLIB: '=0.13.*'
           maximum_dependencies:
-            FACET_V_PYTHON_BUILD: '==3.8'
-            FACET_V_PANDAS: '==1.1'
-            FACET_V_NUMPY: '==1.19'
-            FACET_V_SCIPY: '==1.5'
-            FACET_V_MATPLOT: '==3.3'
-            FACET_V_JOBLIB: '==0.16'
+            FACET_V_PYTHON_BUILD: '=3.8.*'
+            FACET_V_PYTHON: '=3.8.*'
+            FACET_V_PANDAS: '=1.1.*'
+            FACET_V_NUMPY: '=1.19.*'
+            FACET_V_SCIPY: '=1.5.*'
+            FACET_V_MATPLOT: '=3.3.*'
+            FACET_V_JOBLIB: '=0.16.*'
           unconstrained_dependencies:
             FACET_V_PYTHON_BUILD: '>=3.6,<4'
+            FACET_V_PYTHON: '>=3.6,<4'
             FACET_V_PANDAS: '>=0.24'
             FACET_V_NUMPY: '>=1.16'
             FACET_V_SCIPY: '>=1.2'
-            FACET_V_MATPLOT: '>=3.1'
+            FACET_V_MATPLOT: '>=3.0'
             FACET_V_JOBLIB: '>=0.13'
       steps:
         - task: UsePythonVersion@0

@@ -9,7 +9,7 @@ https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# documentation root, use os.path.realpath to make it absolute, like shown here.
 #
 
 import logging
@@ -24,20 +24,29 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_conf_base_dir = os.path.abspath(os.path.dirname(__file__))
+_conf_base_dir = os.path.dirname(os.path.realpath(__file__))
 _root_dir = os.path.normpath(
     os.path.join(_conf_base_dir, os.pardir, os.pardir, os.pardir)
 )
 
+
 # noinspection PyShadowingNames
 def set_config(
-    *, project: str, modules: Iterable[str], html_logo: Optional[str] = None
+    globals_: Dict[str, Any],
+    *,
+    project: str,
+    modules: Iterable[str],
+    html_logo: Optional[str] = None,
 ) -> None:
     """
     Add required modules to the python path, and set custom configuration options
     """
 
-    _set_globals(project_=project, html_logo_=html_logo)
+    globals_["project"] = project
+
+    if html_logo:
+        globals_["html_logo"] = html_logo
+        globals_["latex_logo"] = html_logo
 
     modules = set(modules) | {"pytools"}
     for module in modules:
@@ -46,16 +55,6 @@ def set_config(
             # noinspection PyUnboundLocalVariable
             sys.path.insert(0, module_path)
             _log.info(f"added `{module_path}` to python paths")
-
-
-def _set_globals(project_: str, html_logo_: Optional[str]) -> None:
-    """
-    Set global configuration parameters
-    """
-    global project, html_logo
-
-    project = project_
-    html_logo = latex_logo = html_logo_
 
 
 _log.info(f"sys.path = {sys.path}")
