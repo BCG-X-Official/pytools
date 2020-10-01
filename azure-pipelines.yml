@@ -63,11 +63,12 @@ stages:
 
   # detect whether the conda build config was changed -> then we must run a build test
   - stage: detect_conda_changes
-    displayName: 'detect conda changes'
+    displayName: 'Conda build config'
 
     jobs:
 
       - job: checkout_and_diff
+        displayName: 'detect changes'
         steps:
           - checkout: self
 
@@ -88,14 +89,14 @@ stages:
 
 
   - stage:
-    displayName: 'simple pytest'
+    displayName: 'Unit tests'
     dependsOn: 'detect_conda_changes'
     variables:
       conda_build_config_changed: $[ stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
 
     jobs:
     - job:
-      displayName: 'pytest @ develop environment'
+      displayName: 'in develop environment'
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
@@ -150,14 +151,14 @@ stages:
   # - FOR RELEASE BRANCH: 3 BUILD TESTS
   # - OTHERWISE: 1 BUILD TEST
   - stage:
-    displayName: 'conda build & pytest'
+    displayName: 'Conda build & test'
     dependsOn: 'detect_conda_changes'
     variables:
       conda_build_config_changed: $[ stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
 
     jobs:
     - job:
-      displayName: '(single)'
+      displayName: 'single'
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
@@ -208,7 +209,7 @@ stages:
           displayName: "build & test conda package"
 
     - job:
-      displayName: '(matrix)'
+      displayName: 'matrix'
       condition: eq(variables.master_or_release, 'True')
 
       pool:
