@@ -4,7 +4,6 @@ line-length = 88
 target_version = ['py36']
 include = '\.pyi?$'
 exclude = '''
-
 (
   /(
       \.eggs         # exclude a few common directories in the
@@ -20,3 +19,12 @@ exclude = '''
   )/
 )
 '''
+
+[tool.isort]
+profile = "black"
+src_paths = ["src", "test"]
+known_local_folder = ["pytools"]
+known_first_party = []
+known_third_party = [
+    "numpy", "pandas", "joblib", "sklearn", "matplot"
+]
