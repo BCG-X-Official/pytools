@@ -2,7 +2,7 @@
 Core implementation of :mod:`pytools.viz.distribution`
 """
 import logging
-from typing import *
+from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd

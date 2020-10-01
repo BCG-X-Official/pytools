@@ -3,7 +3,7 @@ Drawing dendrograms
 """
 
 import logging
-from typing import NamedTuple, Type, List, Mapping
+from typing import List, Mapping, NamedTuple, Type
 
 import numpy as np
 

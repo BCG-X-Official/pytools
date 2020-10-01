@@ -8,7 +8,7 @@ Linkage Tree.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Iterable, List, Sequence, Any, Tuple
+from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
