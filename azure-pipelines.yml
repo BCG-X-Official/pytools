@@ -23,7 +23,7 @@ variables:
     }}
 
 stages:
-  # Temporarily putting this stage on top to accelerate testing iterations over its correctness
+  # Check code quality first to fail fast if fail need be. Checks flake8 code style standards and black code formatting
   - stage: code_quality_checks
     displayName: 'Code quality'
     jobs:
@@ -37,7 +37,7 @@ stages:
           - script: |
               python -m pip install black
               python -m black --check .
-            displayName: 'black'
+            displayName: 'Run black'
       - job:
         displayName: 'flake8'
         steps:
@@ -49,7 +49,7 @@ stages:
               python -m pip install flake8
               python -m pip install flake8-import-order
               python -m flake8 --config flake8.ini .
-            displayName: 'Run flake8 (code style analysis)'
+            displayName: 'Run flake8'
 
   - stage: detect_conda_changes
     displayName: 'detect conda changes'
