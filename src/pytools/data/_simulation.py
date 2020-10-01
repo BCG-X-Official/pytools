@@ -7,9 +7,10 @@ import numpy as np
 import pandas as pd
 from scipy.linalg import toeplitz
 
+from ..api import AllTracker
+
 __all__ = ["sim_data"]
 
-from pytools.api import AllTracker
 
 __tracker = AllTracker(globals())
 

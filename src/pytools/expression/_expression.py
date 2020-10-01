@@ -6,21 +6,13 @@ import itertools
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import (
-    NamedTuple,
-    TypeVar,
-    Iterable,
-    Optional,
-    Dict,
-    Generic,
-    Any,
-    Tuple,
-    Union,
+    Any, Dict, Generic, Iterable, NamedTuple, Optional, Tuple, TypeVar, Union,
 )
 from weakref import WeakValueDictionary
 
-from pytools.api import AllTracker, to_list
 from . import operator as op
 from .operator import BinaryOperator, MAX_PRECEDENCE, Operator, UnaryOperator
+from ..api import AllTracker, to_list
 
 log = logging.getLogger(__name__)
 

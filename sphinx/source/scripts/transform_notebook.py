@@ -7,7 +7,7 @@ import glob
 import json
 import os
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 # Jupyter's field keys:
 
