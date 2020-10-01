@@ -47,7 +47,8 @@ stages:
             displayName: 'Use Python 3.7'
           - script: |
               python -m pip install flake8
-              python -m flake8 --config flake8.ini --verbose 1 .
+              python -m pip install flake8-import-order
+              python -m flake8 --config flake8.ini .
             displayName: 'Run flake8 (code style analysis)'
 
   - stage: detect_conda_changes
