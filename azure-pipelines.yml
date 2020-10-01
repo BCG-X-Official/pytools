@@ -48,7 +48,7 @@ stages:
           - script: |
               python -m pip install flake8
               python -m pip install flake8-import-order
-              python -m flake8 --config flake8.ini .
+              python -m flake8 --config flake8.ini -v --import-order-style pycharm .
             displayName: 'Run flake8'
 
   - stage: detect_conda_changes
