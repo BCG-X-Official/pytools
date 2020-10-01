@@ -35,7 +35,7 @@ stages:
               versionSpec: '3.7'
             displayName: 'Use Python 3.7'
           - script: |
-              python -m pip install --version 20.8b1 black
+              python -m pip install black
               python -m black --check .
             displayName: 'black'
       - job:
