@@ -46,9 +46,6 @@ log = logging.getLogger(__name__)
 class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
     """
     Base class for dendrogram drawing styles.
-
-    Implementations must define ``draw_leaf_labels``, ``draw_title``, ``draw_link_leg`` \
-    and ``draw_link_connector``.
     """
 
     @abstractmethod
