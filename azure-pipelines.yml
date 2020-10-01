@@ -36,7 +36,7 @@ stages:
             displayName: 'use Python 3.7'
           - script: |
               python -m pip install isort==5.5.4
-              python -m isort --check .
+              python -m isort --check --diff .
             displayName: 'isort'
       - job:
         displayName: 'black'
