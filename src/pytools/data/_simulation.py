@@ -186,9 +186,9 @@ def sim_data(
     if linear_vars > 0:
         if linear_var_coef is None:
             lin_coef = np.linspace(linear_vars, 1, num=linear_vars) / 4
-            neg_idx = [_ for _ in range(1, linear_vars, 2)]
-            lin_coef[neg_idx] = lin_coef[neg_idx] * -1
-            lp = lp + tmp_data[lin_cols].dot(lin_coef)
+            neg_idx = list(range(1, linear_vars, 2))
+            lin_coef[neg_idx] *= -1
+            lp += tmp_data[lin_cols].dot(lin_coef)
 
         elif linear_var_coef is not None:
             if linear_vars != len(linear_var_coef):
@@ -196,11 +196,11 @@ def sim_data(
                     "User defined linear feature coefficient list must be of length "
                     f"{linear_vars}"
                 )
-            lp = lp + tmp_data[lin_cols].dot(linear_var_coef)
+            lp += tmp_data[lin_cols].dot(linear_var_coef)
 
     # add binary feature to the linear predictor if required
     if bin_var_p > 0:
-        lp = lp + bin_coef * tmp_data["Binary1"]
+        lp += bin_coef * tmp_data["Binary1"]
         tmp_data["Binary1_prime"] = 1 - tmp_data["Binary1"]
 
     # create classification outcome from linear predictor
