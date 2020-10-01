@@ -2,7 +2,7 @@
 Core implementation of :mod:`pytools.parallelization`
 """
 import logging
-from typing import *
+from typing import TypeVar, Optional, List, Mapping, Union, Callable, Tuple
 
 import joblib
 

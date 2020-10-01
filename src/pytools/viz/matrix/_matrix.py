@@ -4,7 +4,7 @@ Core implementation of :mod:`pytools.viz.matrix`
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Any, Callable, Mapping, Optional, Tuple, Type, Union
 
 import numpy as np
 import pandas as pd

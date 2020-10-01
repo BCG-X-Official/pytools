@@ -1,6 +1,6 @@
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import Mapping, Optional, Set, Tuple
 
 from pytools.api import AllTracker
 

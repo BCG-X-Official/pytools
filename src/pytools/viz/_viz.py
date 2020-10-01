@@ -5,7 +5,7 @@ different styles, e.g., as charts or plain text.
 import logging
 from abc import ABCMeta, abstractmethod
 from threading import Lock
-from typing import *
+from typing import FrozenSet, Generic, Mapping, Type, TypeVar, Union, cast
 
 from ..api import AllTracker
 

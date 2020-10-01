@@ -1,7 +1,7 @@
 """
 Utilities for creating simulated data sets.
 """
-from typing import *
+from typing import Sequence
 
 import numpy as np
 import pandas as pd

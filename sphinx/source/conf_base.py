@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import *
+from typing import Any, Dict, Iterable, Optional
 
 from sphinx.application import Sphinx
 
