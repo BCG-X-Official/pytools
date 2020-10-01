@@ -7,8 +7,8 @@ import sys
 from abc import ABCMeta
 from typing import TextIO
 
-from ._viz import DrawStyle
 from ..api import AllTracker
+from ._viz import DrawStyle
 
 log = logging.getLogger(__name__)
 

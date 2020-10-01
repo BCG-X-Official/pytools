@@ -7,7 +7,8 @@ from abc import ABCMeta
 from typing import Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
-from matplotlib import cm, text as mt
+from matplotlib import cm
+from matplotlib import text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
@@ -15,8 +16,8 @@ from matplotlib.colors import Colormap, LinearSegmentedColormap, Normalize, to_r
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
-from ._viz import DrawStyle
 from ..api import AllTracker
+from ._viz import DrawStyle
 
 log = logging.getLogger(__name__)
 

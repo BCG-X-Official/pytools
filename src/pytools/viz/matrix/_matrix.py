@@ -14,11 +14,11 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.viz import (
-    ColorbarMatplotStyle,
-    DrawStyle,
-    Drawer,
-    PercentageFormatter,
     RGBA_WHITE,
+    ColorbarMatplotStyle,
+    Drawer,
+    DrawStyle,
+    PercentageFormatter,
     TextStyle,
 )
 

@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from pytools.viz import DrawStyle, Drawer, MatplotStyle
+from pytools.viz import Drawer, DrawStyle, MatplotStyle
 
 log = logging.getLogger(__name__)
 
@@ -130,10 +130,11 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             Matplotlib (default: ``"matplot"``).
         :param iqr_multiple: iqr multiple to determine outliers. If ``None``, then no \
             outliers and far outliers are computed (default: 1.5).
-        :param iqr_multiple_far: iqr multiple to determine far outliers. If ``None``, then \
-            no far outliers are computed. Should be greater than ``iqr_multiple`` when both \
-            are defined (default: 3.0).
-        :param hide_far_outliers: if ``True``, do not plot far outliers (default: ``False``)
+        :param iqr_multiple_far: iqr multiple to determine far outliers. If ``None``, \
+            then no far outliers are computed. Should be greater than ``iqr_multiple`` \
+            when both are defined (default: 3.0).
+        :param hide_far_outliers: if ``True``, do not plot far outliers \
+            (default: ``False``)
         """
         super().__init__(style=style)
 

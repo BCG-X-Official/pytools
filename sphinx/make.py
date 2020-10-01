@@ -7,7 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
-from typing import NamedTuple, Callable, Tuple
+from typing import Callable, NamedTuple, Tuple
 
 cwd = os.getcwd()
 

@@ -15,9 +15,7 @@ import numpy as np
 
 class BaseNode(metaclass=ABCMeta):
     """
-    BaseNode of a :class:`LinkageTree`.
-
-    Implementations must define ``children_distance``, ``weight``, ``label``, ``is_leaf``.
+    Base class for nodes of a :class:`LinkageTree`.
     """
 
     __slots__ = ["_index"]

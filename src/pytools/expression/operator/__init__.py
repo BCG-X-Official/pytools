@@ -45,4 +45,3 @@ __all__ = [
     "MIN_PRECEDENCE",
     "MAX_PRECEDENCE",
 ]
-
