@@ -23,7 +23,6 @@ variables:
     }}
 
 stages:
-  -
   # Check code quality first to fail fast (isort, flake8, black)
   - stage: code_quality_checks
     displayName: 'Code quality'
@@ -62,6 +61,7 @@ stages:
               python -m flake8 --config flake8.ini -v .
             displayName: 'Run flake8'
 
+  # detect whether the conda build config was changed -> then we must run a build test
   - stage: detect_conda_changes
     displayName: 'detect conda changes'
 
