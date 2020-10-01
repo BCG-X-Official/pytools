@@ -26,7 +26,11 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
 from pytools.viz import (
-    ColorbarMatplotStyle, DrawStyle, MatplotStyle, PercentageFormatter, RGBA_WHITE,
+    RGBA_WHITE,
+    ColorbarMatplotStyle,
+    DrawStyle,
+    MatplotStyle,
+    PercentageFormatter,
     TextStyle,
 )
 from pytools.viz.text import CharacterMatrix

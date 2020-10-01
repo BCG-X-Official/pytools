@@ -6,12 +6,20 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import List, NamedTuple, Tuple
 
-from . import (
-    AtomicExpression, BRACKETS_ROUND, BracketPair, BracketedExpression,
-    EPSILON, Expression, ExpressionAlias, ExpressionFormatter, InfixExpression,
-    PrefixExpression, operator as op,
-)
 from ..api import AllTracker
+from . import (
+    BRACKETS_ROUND,
+    EPSILON,
+    AtomicExpression,
+    BracketedExpression,
+    BracketPair,
+    Expression,
+    ExpressionAlias,
+    ExpressionFormatter,
+    InfixExpression,
+    PrefixExpression,
+)
+from . import operator as op
 
 log = logging.getLogger(__name__)
 

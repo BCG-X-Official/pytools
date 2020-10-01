@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
-from pytools.viz import DrawStyle, Drawer, MatplotStyle
+from pytools.viz import Drawer, DrawStyle, MatplotStyle
 
 log = logging.getLogger(__name__)
 
