@@ -56,6 +56,11 @@ def set_config(
             sys.path.insert(0, module_path)
             _log.info(f"added `{module_path}` to python paths")
 
+    # Update global variables
+    globals_.update(
+        (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
+    )
+
 
 _log.info(f"sys.path = {sys.path}")
 
