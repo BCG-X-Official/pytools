@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Facet build script
+Facet build script wrapping conda-build
 """
 
 import os
