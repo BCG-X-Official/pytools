@@ -50,7 +50,7 @@ class AllTracker:
     Track global symbols defined in a module and validate that all eligible symbols have
     been included in the ``__all__`` variable.
 
-    Eligible symbols are all symbols starting with a letter, but not with "Base".
+    Eligible symbols are all symbols that do not start with an underscore character.
     """
 
     def __init__(self, globals_: Dict[str, Any]):
