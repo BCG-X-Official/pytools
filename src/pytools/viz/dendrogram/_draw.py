@@ -7,6 +7,7 @@ from typing import List, Mapping, NamedTuple, Type
 
 import numpy as np
 
+from pytools.api import AllTracker
 from pytools.viz import Drawer
 from pytools.viz.dendrogram._linkage import BaseNode, LinkageTree
 from pytools.viz.dendrogram._style import (
@@ -16,6 +17,25 @@ from pytools.viz.dendrogram._style import (
 )
 
 log = logging.getLogger(__name__)
+
+
+#
+# exported names
+#
+
+__all__ = ["DendrogramDrawer"]
+
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+
+#
+# class definitions
+#
 
 
 class _SubtreeInfo(NamedTuple):
@@ -111,3 +131,6 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
 
         tree_info = _draw_node(node=data.root, y=0, width=data.max_distance)
         self.style.draw_leaf_labels(tree_info.labels)
+
+
+__tracker.validate()

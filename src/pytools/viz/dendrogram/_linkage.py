@@ -12,6 +12,25 @@ from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
+from pytools.api import AllTracker
+
+#
+# exported names
+#
+
+__all__ = ["BaseNode", "LinkageNode", "LeafNode", "LinkageTree"]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+
+#
+# class definitions
+#
+
 
 class BaseNode(metaclass=ABCMeta):
     """
@@ -257,3 +276,6 @@ class LinkageTree:
 
     def __getitem__(self, item: int) -> BaseNode:
         return self._nodes[item]
+
+
+__tracker.validate()
