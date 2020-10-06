@@ -39,7 +39,27 @@ log = logging.getLogger(__name__)
 
 
 #
-# Classes
+# exported names
+#
+
+__all__ = [
+    "DendrogramStyle",
+    "BaseDendrogramMatplotStyle",
+    "DendrogramLineStyle",
+    "DendrogramHeatmapStyle",
+    "DendrogramReportStyle",
+]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+from pytools.api import AllTracker
+
+__tracker = AllTracker(globals())
+
+
+#
+# class definitions
 #
 
 
@@ -479,3 +499,6 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         # calculate the horizontal position in the character grid,
         # ensuring that h=h_max still yields a position inside the grid (factor 0.99999)
         return self._dendrogram_left + int(self._dendrogram_right * h / h_max * 0.99999)
+
+
+__tracker.validate()
