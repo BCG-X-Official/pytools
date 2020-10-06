@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
+import pathlib
 
 ALL_PROJECTS_QUALIFIER = "all"
 
@@ -18,7 +19,7 @@ CONDA_BLD_PATH_ENV = "CONDA_BLD_PATH"
 BLD_PATH_SUFFIX = "dist/conda"
 
 
-def make_build_path(project:str)->str:
+def make_build_path(project: str) -> str:
     """
     Return the target build path for Conda-build.
     """
@@ -43,7 +44,7 @@ def build(project: str) -> None:
     set_up(project)
 
     def _mk_conda_channel_arg(_project):
-        return f"""-c "file:/{make_build_path(_project)}" """
+        return f"""-c "{pathlib.Path(make_build_path(_project)).as_uri()}" """
 
     build_path = make_build_path(project)
     os.environ[CONDA_BLD_PATH_ENV] = build_path
