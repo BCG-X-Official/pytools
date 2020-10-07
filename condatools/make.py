@@ -4,10 +4,10 @@ Facet build script wrapping conda-build
 """
 
 import os
+import pathlib
 import shutil
 import subprocess
 import sys
-import pathlib
 
 ALL_PROJECTS_QUALIFIER = "all"
 
