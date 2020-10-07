@@ -4,15 +4,17 @@ Sphinx documentation build script
 """
 
 import os
+import re
 import shutil
 import subprocess
 import sys
-from typing import Callable, NamedTuple, Tuple
+from abc import ABCMeta, abstractmethod
+from typing import Dict, Iterable, List, Set, Tuple, Type
 
 cwd = os.getcwd()
 
 # Sphinx commands
-CMD_SPHINXBUILD = "sphinx-build"
+CMD_SPHINX_BUILD = "sphinx-build"
 CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
@@ -32,126 +34,170 @@ DIR_NOTEBOOKS = os.path.join(DIR_PACKAGE_SRC, os.pardir, "notebooks")
 ENV_PYTHON_PATH = "PYTHONPATH"
 
 
-class MakeCommand(NamedTuple):
+class Command(metaclass=ABCMeta):
     """ Defines an available command that can be launched from this module."""
 
-    command: str
-    description: str
-    python_target: Callable[[], None]
-    depends_on: Tuple["MakeCommand", ...]
+    __RE_CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
+
+    @classmethod
+    def get_name(cls) -> str:
+        try:
+            return cls.__name
+        except AttributeError:
+            cls.__name = cls.__RE_CAMEL_TO_SNAKE.sub("_", cls.__name__).lower()
+            return cls.__name
+
+    @classmethod
+    @abstractmethod
+    def get_description(cls) -> str:
+        pass
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        return ()
+
+    @classmethod
+    def get_prerequisites(cls) -> Iterable[Type["Command"]]:
+        dependencies_extended: List[Type["Command"]] = []
+
+        for dependency in cls.get_dependencies():
+            dependencies_inherited = dependency.get_dependencies()
+            if cls in dependencies_inherited:
+                raise ValueError(
+                    f"circular dependency: {dependency.get_name()} "
+                    f"depends on {cls.get_name()}"
+                )
+            dependencies_extended.extend(
+                dependency
+                for dependency in dependencies_inherited
+                if dependency not in dependencies_extended
+            )
+            dependencies_extended.append(dependency)
+
+        return dependencies_extended
+
+    @classmethod
+    def run(cls) -> None:
+        print(f"Running command {cls.get_name()} – {cls.get_description()}")
+        cls._run()
+
+    @classmethod
+    @abstractmethod
+    def _run(cls) -> None:
+        pass
 
 
-# Define Python target callables:
-def fun_clean() -> None:
-    """
-    Clean the Sphinx build directory.
-    """
-    print_running_command(cmd=clean)
-    if os.path.exists(DIR_SPHINX_BUILD):
-        shutil.rmtree(path=DIR_SPHINX_BUILD)
+#
+# commands
+#
 
 
-def fun_apidoc() -> None:
-    """
-    Run Sphinx apidoc.
-    """
-    print_running_command(cmd=apidoc)
+class Clean(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "remove Sphinx build output"
 
-    packages = "\n   ".join(
-        package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
-    )
+    @classmethod
+    def _run(cls) -> None:
+        if os.path.exists(DIR_SPHINX_BUILD):
+            shutil.rmtree(path=DIR_SPHINX_BUILD)
 
-    autosummary_rst = f""".. autosummary::
-   :toctree: ../apidoc
-   :template: custom-module-template.rst
-   :recursive:
 
-   {packages}
-"""
+class ApiDoc(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "generate Sphinx API documentation from sources"
 
-    with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
-        f.writelines(autosummary_rst)
+    @classmethod
+    def _run(cls) -> None:
+        packages = "\n   ".join(
+            package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
+        )
+        # noinspection SpellCheckingInspection
+        autosummary_rst = f""".. autosummary::
+           :toctree: ../apidoc
+           :template: custom-module-template.rst
+           :recursive:
 
-    autogen_options = " ".join(
-        [
-            # template path
-            "-t",
-            quote_path(DIR_SPHINX_TEMPLATES),
-            # include imports
-            "-i",
-            # the autosummary source file
-            quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
+           {packages}
+        """
+
+        with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
+            f.writelines(autosummary_rst)
+        autogen_options = " ".join(
+            [
+                # template path
+                "-t",
+                quote_path(DIR_SPHINX_TEMPLATES),
+                # include imports
+                "-i",
+                # the autosummary source file
+                quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
+            ]
+        )
+        if os.path.exists(DIR_SPHINX_API_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
+        old_python_path = os.environ.get(ENV_PYTHON_PATH, None)
+        try:
+            os.environ[ENV_PYTHON_PATH] = DIR_PACKAGE_SRC
+
+            subprocess.run(
+                args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True
+            )
+        finally:
+            if old_python_path is None:
+                del os.environ[ENV_PYTHON_PATH]
+            else:
+                os.environ[ENV_PYTHON_PATH] = old_python_path
+
+
+class Html(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "build Sphinx docs as HTML"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        return Clean, ApiDoc
+
+    @classmethod
+    def _run(cls) -> None:
+        os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
+
+        sphinx_html_opts = [
+            "-M html",
+            quote_path(DIR_SPHINX_SOURCE),
+            quote_path(DIR_SPHINX_BUILD),
         ]
-    )
-
-    if os.path.exists(DIR_SPHINX_API_GENERATED):
-        shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
-
-    old_python_path = os.environ.get(ENV_PYTHON_PATH, None)
-    try:
-        os.environ[ENV_PYTHON_PATH] = DIR_PACKAGE_SRC
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True
+            args=f"{CMD_SPHINX_BUILD} {' '.join(sphinx_html_opts)}",
+            shell=True,
+            check=True,
         )
-    finally:
-        if old_python_path is None:
-            del os.environ[ENV_PYTHON_PATH]
-        else:
-            os.environ[ENV_PYTHON_PATH] = old_python_path
+
+        # create interactive versions of all notebooks
+        sys.path.append(DIR_MAKE_PY)
+
+        # noinspection PyUnresolvedReferences
+        from source.scripts.transform_notebook import docs_notebooks_to_interactive
+
+        for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
+            if os.path.isdir(notebook_source_dir):
+                docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
 
 
-def fun_html() -> None:
-    """
-    Run a Sphinx build for generating HTML.
-    """
+class Help(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "print this help message"
 
-    print_running_command(cmd=html)
-    os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
-    sphinx_html_opts = [
-        "-M html",
-        quote_path(DIR_SPHINX_SOURCE),
-        quote_path(DIR_SPHINX_BUILD),
-    ]
-    subprocess.run(
-        args=f"{CMD_SPHINXBUILD} {' '.join(sphinx_html_opts)}", shell=True, check=True
-    )
-
-    # create interactive versions of all notebooks
-
-    sys.path.append(DIR_MAKE_PY)
-    # noinspection PyUnresolvedReferences
-    from source.scripts.transform_notebook import docs_notebooks_to_interactive
-
-    for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
-        if os.path.isdir(notebook_source_dir):
-            docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
+    @classmethod
+    def _run(cls) -> None:
+        print_usage()
 
 
-# Define MakeCommands
-clean = MakeCommand(
-    command="clean",
-    description="remove Sphinx build output",
-    python_target=fun_clean,
-    depends_on=(),
-)
-apidoc = MakeCommand(
-    command="apidoc",
-    description="generate Sphinx apidoc from sources.",
-    python_target=fun_apidoc,
-    depends_on=(),
-)
-html = MakeCommand(
-    command="html",
-    description="build Sphinx docs as HTML",
-    python_target=fun_html,
-    depends_on=(clean, apidoc),
-)
-
-available_cmds = (clean, apidoc, html)
-
-
-def run_make() -> None:
+def make() -> None:
     """
     Run this make script with the given arguments.
     """
@@ -160,24 +206,23 @@ def run_make() -> None:
 
     commands_passed = sys.argv[1:]
 
-    # check all given commands:
-    for selected_cmd in commands_passed:
-        if selected_cmd not in {c.command for c in available_cmds}:
-            print(f"Unknown build command: {selected_cmd}")
-            print_usage()
-            exit(1)
+    unknown_commands = set(commands_passed) - available_commands.keys()
+
+    if unknown_commands:
+        print(f"Unknown build commands: {' '.join(unknown_commands)}\n")
+        print_usage()
+        exit(1)
 
     # run all given commands:
-    executed_commands = set()
+    executed_commands: Set[Type[Command]] = set()
     for selected_cmd in commands_passed:
-        for known_cmd in available_cmds:
-            if selected_cmd == known_cmd.command:
-                for dependant_on_cmd in known_cmd.depends_on:
-                    if dependant_on_cmd not in executed_commands:
-                        dependant_on_cmd.python_target()
+        known_cmd: Type[Command] = available_commands[selected_cmd]
+        for prerequisite in known_cmd.get_prerequisites():
+            if prerequisite not in executed_commands:
+                prerequisite.run()
 
-                known_cmd.python_target()
-                executed_commands.add(known_cmd)
+        known_cmd.run()
+        executed_commands.add(known_cmd)
 
 
 def quote_path(path: str) -> str:
@@ -191,24 +236,21 @@ def quote_path(path: str) -> str:
 
 
 def print_usage() -> None:
-    """
-    Print a help string to explain the usage of this script.
-    """
     usage = """Sphinx documentation build script
 =================================
 
 Available program arguments:
 """
-
-    usage += "\n".join([f"\t{c.command} – {c.description}" for c in available_cmds])
-
+    usage += "\n".join(
+        f"\t{name} – {command.get_description()}"
+        for name, command in available_commands.items()
+    )
     print(usage)
 
 
-def print_running_command(cmd: MakeCommand) -> None:
-    """ Prints info on a started command. """
-    print(f"Running command {cmd.command} – {cmd.description}")
-
+available_commands: Dict[str, Type[Command]] = {
+    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help)
+}
 
 if __name__ == "__main__":
-    run_make()
+    make()
