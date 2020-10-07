@@ -13,9 +13,4 @@ Table of contents
    API reference <apidoc/pytools>
    contribution_guide
    faqs
-
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+   genindex
