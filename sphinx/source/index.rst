@@ -9,7 +9,7 @@ Table of contents
    :maxdepth: 1
    :titlesonly:
 
-   getting_started
+   Getting started <getting_started>
    API reference <apidoc/pytools>
    contribution_guide
    faqs
