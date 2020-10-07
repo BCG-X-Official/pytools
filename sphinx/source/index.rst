@@ -1,10 +1,9 @@
 .. image:: _static/pytools_logo.png
 
-Gamma pytools API Documentation
-==================================
+|
 
 Table of contents
---------------------------------------
+-----------------
 
 .. toctree::
    :maxdepth: 1
