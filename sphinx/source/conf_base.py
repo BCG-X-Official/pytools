@@ -61,6 +61,10 @@ def set_config(
         (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
     )
 
+    globals_.update(
+        (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
+    )
+
 
 _log.info(f"sys.path = {sys.path}")
 
@@ -78,6 +82,7 @@ author = "FACET Team"
 extensions = [
     "nbsphinx",
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.imgmath",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
@@ -86,17 +91,22 @@ extensions = [
 
 # -- Options for autodoc / autosummary -------------------------------------------------
 
+# prevent numpydoc from interfering with autosummary
+numpydoc_show_class_members = False
+
 # generate autosummary even if no references
-autosummary_generate = True
+autosummary_generate = False
 
 # always overwrite generated auto summaries with newly generated versions
 autosummary_generate_overwrite = True
 
+autosummary_imported_members = True
+
 autodoc_default_options = {
-    "no-ignore-module-all": True,
+    "ignore-module-all": False,
     "inherited-members": True,
-    "imported-members": True,
-    "no-show-inheritance": True,
+    "imported-members": False,
+    "show-inheritance": False,
     "member-order": "groupwise",
 }
 
@@ -172,7 +182,7 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
-    from pytools.sphinx import AddInheritance, CollapseModulePaths
+    from pytools.sphinx import AddInheritance, CollapseModulePaths, SkipIndirectImports
 
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
         app=app
@@ -181,6 +191,8 @@ def setup(app: Sphinx) -> None:
     CollapseModulePaths(
         collapsible_submodules=intersphinx_collapsible_submodules
     ).connect(app=app, priority=100000)
+
+    SkipIndirectImports().connect(app=app)
 
     _add_custom_css_and_js(app=app)
 

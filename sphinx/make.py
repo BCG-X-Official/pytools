@@ -11,22 +11,25 @@ from typing import Callable, NamedTuple, Tuple
 
 cwd = os.getcwd()
 
-# define Sphinx-commands:
+# Sphinx commands
 CMD_SPHINXBUILD = "sphinx-build"
-CMD_SPHINXAPIDOC = "sphinx-apidoc"
+CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
-# define directories:
-# todo: check which ones are eventually obsolete
-SKLEARNDF_SOURCEDIR = os.path.join(cwd, os.pardir, "src")
-SOURCEDIR = os.path.join(cwd, "source")
-AUXILIARYDIR = os.path.join(cwd, "auxiliary")
-SOURCEAPIDIR = os.path.join(SOURCEDIR, "api")
-BUILDDIR = os.path.join(cwd, "build")
-TEMPLATEDIR = os.path.join(SOURCEDIR, "_templates")
-SCRIPTSDIR = os.path.join(SOURCEDIR, "scripts")
-TUTORIALDIR = os.path.join(SOURCEDIR, "tutorial")
-NOTEBOOKDIR = os.path.join(SKLEARNDF_SOURCEDIR, os.pardir, "notebooks")
-TUTORIALBUILD = os.path.join(SCRIPTSDIR, "transform_notebook.py")
+# File paths
+DIR_MAKE_PY = os.path.dirname(os.path.realpath(__file__))
+DIR_PACKAGE_SRC = os.path.join(cwd, os.pardir, "src")
+DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
+DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
+DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
+DIR_SPHINX_BUILD = os.path.join(cwd, "build")
+DIR_SPHINX_TEMPLATES = os.path.join(DIR_MAKE_PY, "source", "_templates")
+DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
+DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
+DIR_NOTEBOOKS = os.path.join(DIR_PACKAGE_SRC, os.pardir, "notebooks")
+
+# Environment variables
+# noinspection SpellCheckingInspection
+ENV_PYTHON_PATH = "PYTHONPATH"
 
 
 class MakeCommand(NamedTuple):
@@ -44,8 +47,8 @@ def fun_clean() -> None:
     Clean the Sphinx build directory.
     """
     print_running_command(cmd=clean)
-    if os.path.exists(BUILDDIR):
-        shutil.rmtree(path=BUILDDIR)
+    if os.path.exists(DIR_SPHINX_BUILD):
+        shutil.rmtree(path=DIR_SPHINX_BUILD)
 
 
 def fun_apidoc() -> None:
@@ -53,18 +56,49 @@ def fun_apidoc() -> None:
     Run Sphinx apidoc.
     """
     print_running_command(cmd=apidoc)
-    sphinxapidocopts = [
-        "-e",
-        f"-t {quote_path(TEMPLATEDIR)}",
-        "--no-toc",
-        f"-o {quote_path(SOURCEAPIDIR)}",
-        "-f",
-        quote_path(SKLEARNDF_SOURCEDIR),
-    ]
-    os.environ["SPHINX_APIDOC_OPTIONS"] = ",".join(["members", "undoc-members"])
-    subprocess.run(
-        args=f"{CMD_SPHINXAPIDOC} {' '.join(sphinxapidocopts)}", shell=True, check=True
+
+    packages = "\n   ".join(
+        package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
     )
+
+    autosummary_rst = f""".. autosummary::
+   :toctree: ../apidoc
+   :template: custom-module-template.rst
+   :recursive:
+
+   {packages}
+"""
+
+    with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
+        f.writelines(autosummary_rst)
+
+    autogen_options = " ".join(
+        [
+            # template path
+            "-t",
+            quote_path(DIR_SPHINX_TEMPLATES),
+            # include imports
+            "-i",
+            # the autosummary source file
+            quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
+        ]
+    )
+
+    if os.path.exists(DIR_SPHINX_API_GENERATED):
+        shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
+
+    old_python_path = os.environ.get(ENV_PYTHON_PATH, None)
+    try:
+        os.environ[ENV_PYTHON_PATH] = DIR_PACKAGE_SRC
+
+        subprocess.run(
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True
+        )
+    finally:
+        if old_python_path is None:
+            del os.environ[ENV_PYTHON_PATH]
+        else:
+            os.environ[ENV_PYTHON_PATH] = old_python_path
 
 
 def fun_html() -> None:
@@ -73,27 +107,31 @@ def fun_html() -> None:
     """
 
     print_running_command(cmd=html)
-    os.makedirs(BUILDDIR, exist_ok=True)
-    sphinx_html_opts = ["-M html", quote_path(SOURCEDIR), quote_path(BUILDDIR)]
+    os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
+    sphinx_html_opts = [
+        "-M html",
+        quote_path(DIR_SPHINX_SOURCE),
+        quote_path(DIR_SPHINX_BUILD),
+    ]
     subprocess.run(
         args=f"{CMD_SPHINXBUILD} {' '.join(sphinx_html_opts)}", shell=True, check=True
     )
 
     # create interactive versions of all notebooks
 
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+    sys.path.append(DIR_MAKE_PY)
     # noinspection PyUnresolvedReferences
     from source.scripts.transform_notebook import docs_notebooks_to_interactive
 
-    for notebook_source_dir in [TUTORIALDIR, AUXILIARYDIR]:
+    for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
         if os.path.isdir(notebook_source_dir):
-            docs_notebooks_to_interactive(notebook_source_dir, NOTEBOOKDIR)
+            docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
 
 
 # Define MakeCommands
 clean = MakeCommand(
     command="clean",
-    description=f"remove Sphinx build output in {BUILDDIR}",
+    description=f"remove Sphinx build output",
     python_target=fun_clean,
     depends_on=(),
 )
@@ -101,13 +139,13 @@ apidoc = MakeCommand(
     command="apidoc",
     description="generate Sphinx apidoc from sources.",
     python_target=fun_apidoc,
-    depends_on=(clean,),
+    depends_on=(),
 )
 html = MakeCommand(
     command="html",
     description="build Sphinx docs as HTML",
     python_target=fun_html,
-    depends_on=(clean,),
+    depends_on=(clean, apidoc),
 )
 
 available_cmds = (clean, apidoc, html)
@@ -143,9 +181,11 @@ def run_make() -> None:
 
 
 def quote_path(path: str) -> str:
-    """ Quotes a filepath that contains spaces."""
-    if " " in path:
-        return '"' + path + '"'
+    """
+    Quote a file path if it contains whitespace.
+    """
+    if " " in path or "\t" in path:
+        return f'"{path}"'
     else:
         return path
 

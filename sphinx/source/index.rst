@@ -8,10 +8,11 @@ Table of contents
 --------------------------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+   :titlesonly:
 
    getting_started
-   api_docs
+   API reference <apidoc/pytools>
    contribution_guide
    faqs
 
