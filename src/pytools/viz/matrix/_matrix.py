@@ -13,6 +13,7 @@ from matplotlib.axis import Axis
 from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
+from pytools.api import AllTracker
 from pytools.viz import (
     RGBA_WHITE,
     ColorbarMatplotStyle,
@@ -24,8 +25,28 @@ from pytools.viz import (
 
 log = logging.getLogger(__name__)
 
+
 #
-# Style classes
+# exported names
+#
+
+__all__ = [
+    "MatrixStyle",
+    "MatrixMatplotStyle",
+    "PercentageMatrixMatplotStyle",
+    "MatrixReportStyle",
+    "MatrixDrawer",
+]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+
+#
+# class definitions
 #
 
 
@@ -316,3 +337,6 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     def _draw(self, data: pd.DataFrame) -> None:
         # draw the matrix
         self.style.draw_matrix(data)
+
+
+__tracker.validate()

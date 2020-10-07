@@ -10,15 +10,47 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
+from pytools.api import AllTracker
 from pytools.viz import Drawer, DrawStyle, MatplotStyle
 
 log = logging.getLogger(__name__)
+
+
+#
+# exported names
+#
+
+__all__ = [
+    "DEFAULT_COLOR_OUTLIER",
+    "DEFAULT_COLOR_FAR_OUTLIER",
+    "DEFAULT_IQR_MULTIPLE",
+    "DEFAULT_IQR_MULTIPLE_FAR",
+    "ECDFStyle",
+    "ECDFMatplotStyle",
+    "ECDFDrawer",
+]
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+
+#
+# constant definitions
+#
 
 DEFAULT_COLOR_OUTLIER = "orange"
 DEFAULT_COLOR_FAR_OUTLIER = "purple"
 
 DEFAULT_IQR_MULTIPLE = 1.5
 DEFAULT_IQR_MULTIPLE_FAR = 3.0
+
+
+#
+# class definitions
+#
 
 
 class _XYSeries(NamedTuple):
@@ -250,3 +282,6 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             if self._hide_far_outliers
             else _XYSeries(x[far_out_mask], y[far_out_mask]),
         )
+
+
+__tracker.validate()

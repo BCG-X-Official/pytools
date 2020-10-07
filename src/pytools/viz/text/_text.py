@@ -7,9 +7,36 @@ from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import pandas as pd
 
+from pytools.api import AllTracker
+
 log = logging.getLogger(__name__)
 
+
+#
+# exported names
+#
+
+__all__ = ["TextCoordinates", "CharacterMatrix", "format_table"]
+
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
+__tracker = AllTracker(globals())
+
+
+#
+# type definitions
+#
+
+
 TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
+
+
+#
+# class definitions
+#
 
 
 class CharacterMatrix:
@@ -184,3 +211,6 @@ def format_table(
             "",
         )
     )
+
+
+__tracker.validate()
