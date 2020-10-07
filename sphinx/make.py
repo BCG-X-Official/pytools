@@ -131,7 +131,7 @@ def fun_html() -> None:
 # Define MakeCommands
 clean = MakeCommand(
     command="clean",
-    description=f"remove Sphinx build output",
+    description="remove Sphinx build output",
     python_target=fun_clean,
     depends_on=(),
 )
