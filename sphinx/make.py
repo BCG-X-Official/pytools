@@ -118,7 +118,7 @@ class ApiDoc(Command):
            :toctree: ../apidoc
            :template: custom-module-template.rst
            :recursive:
-        
+
            {packages}
         """
 
