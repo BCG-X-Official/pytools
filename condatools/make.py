@@ -32,9 +32,9 @@ def set_up(project) -> None:
     """
     Set up for a build – set FACET_PATH (parent folder of all projects) and clean.
     """
-    facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+    facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir, os.pardir))
     os.environ[FACET_PATH_ENV] = facet_path
-    shutil.rmtree(make_build_path(project))
+    shutil.rmtree(make_build_path(project), ignore_errors=True)
 
 
 def build(project: str) -> None:
