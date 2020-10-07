@@ -1,3 +1,7 @@
+.. image:: _static/pytools_logo.png
+
+|
+
 `pytools` is an open source library containing general machine learning and visualisation
 utilities for reuse, including:
 
