@@ -78,7 +78,7 @@ Available program arguments:
                 Use "all" to build pytools, sklearndf and facet.
 
 Example usage:
-    ./make.py sklearndf    
+    ./make.py sklearndf
 
 """
     print(usage)
