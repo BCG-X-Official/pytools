@@ -26,9 +26,11 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "SphinxCallback",
-    "AutodocProcessor",
+    "AutodocLinesProcessor",
+    "AutodocSkipMember",
     "AddInheritance",
     "CollapseModulePaths",
+    "SkipIndirectImports",
 ]
 
 
@@ -73,9 +75,9 @@ class SphinxCallback(metaclass=ABCMeta):
             return app.connect(event=self.event, callback=self, priority=priority)
 
 
-class AutodocProcessor(SphinxCallback, metaclass=ABCMeta):
+class AutodocLinesProcessor(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc processor.
+    An autodoc processor for processing lines.
     """
 
     @property
@@ -119,7 +121,7 @@ class AutodocProcessor(SphinxCallback, metaclass=ABCMeta):
         obj: object,
         options: object,
         lines: List[str],
-    ):
+    ) -> None:
         try:
             self.process(
                 app=app, what=what, name=name, obj=obj, options=options, lines=lines
@@ -129,8 +131,70 @@ class AutodocProcessor(SphinxCallback, metaclass=ABCMeta):
             raise
 
 
+class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
+    """
+    An autodoc-skip-member processor.
+    """
+
+    @property
+    def event(self) -> str:
+        """
+        ``"autodoc-skip-member"``
+        """
+        return "autodoc-skip-member"
+
+    @abstractmethod
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        skip: bool,
+        options: object,
+    ) -> Optional[bool]:
+        """
+        Decide whether a member should be included in the documentation.
+
+        :param app: the Sphinx application object
+        :param what: the type of the object which the docstring belongs to (one of \
+            "module", "class", "exception", "function", "method", "attribute")
+        :param name: the fully qualified name of the object
+        :param obj: the object itself
+        :param skip: a boolean indicating if autodoc will skip this member if the user \
+            handler does not override the decision
+        :param options: the options given to the directive: an object with attributes \
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and \
+            ``noindex`` that are ``True`` if the flag option of same name was given to \
+            the auto directive
+        :return: ``True`` if the member should be excluded; ``False`` if the member \
+            should be included; ``None`` to fall back to the skipping behavior of \
+            autodoc and other enabled extensions
+
+
+        """
+        pass
+
+    def __call__(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        skip: bool,
+        options: object,
+    ) -> Optional[bool]:
+        try:
+            return self.process(
+                app=app, what=what, name=name, obj=obj, skip=skip, options=options
+            )
+        except Exception as e:
+            log.error(e)
+            raise
+
+
 @inheritdoc(match="[see superclass]")
-class AddInheritance(AutodocProcessor):
+class AddInheritance(AutodocLinesProcessor):
     """
     Add list of base classes as the first line of the docstring. Ignore builtin
     classes and classes that were already visited once
@@ -299,7 +363,8 @@ class AddInheritance(AutodocProcessor):
         )
 
 
-class CollapseModulePaths(AutodocProcessor):
+@inheritdoc(match="[see superclass")
+class CollapseModulePaths(AutodocLinesProcessor):
     """
     Replace private module paths with their public prefix so that object references
     can be matched by _intersphinx_.
@@ -335,6 +400,28 @@ class CollapseModulePaths(AutodocProcessor):
         for expanded, collapsed in self._intersphinx_collapsible_prefixes:
             for i, line in enumerate(lines):
                 lines[i] = expanded.sub(collapsed, line)
+
+
+@inheritdoc(match="[see superclass")
+class SkipIndirectImports(AutodocSkipMember):
+    """
+    Skip members imported by a private package.
+    """
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        skip: bool,
+        options: object,
+    ) -> Optional[bool]:
+        """[see superclass]"""
+        if not skip:
+            if what == "module" and name.startswith("_"):
+                log.info(f"skipping: {what}: {name}")
+                return False
 
 
 __tracker.validate()
