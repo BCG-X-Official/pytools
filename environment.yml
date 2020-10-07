@@ -39,3 +39,4 @@ dependencies:
       - pre_commit == 1.16.*
       - punch.py == 1.6.*
       - pydata-sphinx-theme == 0.3.*
+      - versioneer >= 0.18
