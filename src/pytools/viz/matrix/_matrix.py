@@ -30,8 +30,13 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["MatrixStyle"]
-
+__all__ = [
+    "MatrixStyle",
+    "MatrixMatplotStyle",
+    "PercentageMatrixMatplotStyle",
+    "MatrixReportStyle",
+    "MatrixDrawer",
+]
 
 #
 # Ensure all symbols introduced below are included in __all__

@@ -20,8 +20,15 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["ECDFStyle"]
-
+__all__ = [
+    "DEFAULT_COLOR_OUTLIER",
+    "DEFAULT_COLOR_FAR_OUTLIER",
+    "DEFAULT_IQR_MULTIPLE",
+    "DEFAULT_IQR_MULTIPLE_FAR",
+    "ECDFStyle",
+    "ECDFMatplotStyle",
+    "ECDFDrawer",
+]
 
 #
 # Ensure all symbols introduced below are included in __all__
