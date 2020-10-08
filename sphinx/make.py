@@ -19,15 +19,18 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
 DIR_MAKE_PY = os.path.dirname(os.path.realpath(__file__))
-DIR_PACKAGE_SRC = os.path.join(cwd, os.pardir, "src")
+DIR_REPO_ROOT = os.path.join(cwd, os.pardir)
+DIR_REPO_PARENT = os.path.join(DIR_REPO_ROOT, os.pardir)
+DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
-DIR_SPHINX_TEMPLATES = os.path.join(DIR_MAKE_PY, "source", "_templates")
+DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
+DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_MAKE_PY, "source", "_templates")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_NOTEBOOKS = os.path.join(DIR_PACKAGE_SRC, os.pardir, "notebooks")
+DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
 
 # Environment variables
 # noinspection SpellCheckingInspection
@@ -110,45 +113,44 @@ class ApiDoc(Command):
 
     @classmethod
     def _run(cls) -> None:
-        packages = "\n   ".join(
+        packages = [
             package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
-        )
+        ]
+        print(f"Generating api documentation for {', '.join(packages)}")
+
+        package_lines = "\n   ".join(packages)
         # noinspection SpellCheckingInspection
         autosummary_rst = f""".. autosummary::
-           :toctree: ../apidoc
-           :template: custom-module-template.rst
-           :recursive:
+   :toctree: ../apidoc
+   :template: custom-module-template.rst
+   :recursive:
 
-           {packages}
-        """
+   {package_lines}
+"""
 
+        os.makedirs(os.path.dirname(DIR_SPHINX_AUTOSUMMARY_TEMPLATE), exist_ok=True)
         with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
             f.writelines(autosummary_rst)
         autogen_options = " ".join(
             [
                 # template path
                 "-t",
-                quote_path(DIR_SPHINX_TEMPLATES),
+                quote_path(DIR_SPHINX_TEMPLATES_BASE),
                 # include imports
                 "-i",
                 # the autosummary source file
                 quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
             ]
         )
+
         if os.path.exists(DIR_SPHINX_API_GENERATED):
             shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
-        old_python_path = os.environ.get(ENV_PYTHON_PATH, None)
-        try:
-            os.environ[ENV_PYTHON_PATH] = DIR_PACKAGE_SRC
 
-            subprocess.run(
-                args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True
-            )
-        finally:
-            if old_python_path is None:
-                del os.environ[ENV_PYTHON_PATH]
-            else:
-                os.environ[ENV_PYTHON_PATH] = old_python_path
+        subprocess.run(
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
+            shell=True,
+            check=True,
+        )
 
 
 class Html(Command):
@@ -197,7 +199,7 @@ class Help(Command):
         print_usage()
 
 
-def make() -> None:
+def make(*, modules: List[str]) -> None:
     """
     Run this make script with the given arguments.
     """
@@ -213,16 +215,30 @@ def make() -> None:
         print_usage()
         exit(1)
 
+    # set up the Python path
+    module_paths = [
+        os.path.abspath(os.path.join(DIR_REPO_PARENT, module, "src"))
+        for module in modules
+    ]
+    if ENV_PYTHON_PATH in os.environ:
+        module_paths.append(os.environ[ENV_PYTHON_PATH])
+    os.environ[ENV_PYTHON_PATH] = os.pathsep.join(module_paths)
+
     # run all given commands:
     executed_commands: Set[Type[Command]] = set()
-    for selected_cmd in commands_passed:
-        known_cmd: Type[Command] = available_commands[selected_cmd]
-        for prerequisite in known_cmd.get_prerequisites():
-            if prerequisite not in executed_commands:
-                prerequisite.run()
 
-        known_cmd.run()
-        executed_commands.add(known_cmd)
+    for next_command_name in commands_passed:
+
+        next_command: Type[Command] = available_commands[next_command_name]
+
+        for prerequisite_command in next_command.get_prerequisites():
+
+            if prerequisite_command not in executed_commands:
+                prerequisite_command.run()
+                executed_commands.add(prerequisite_command)
+
+        next_command.run()
+        executed_commands.add(next_command)
 
 
 def quote_path(path: str) -> str:
@@ -253,4 +269,4 @@ available_commands: Dict[str, Type[Command]] = {
 }
 
 if __name__ == "__main__":
-    make()
+    make(modules=["pytools"])
