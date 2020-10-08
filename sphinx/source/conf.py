@@ -21,7 +21,7 @@ sys.path.append(
     )
 )
 
-from conf_base import set_config
+from sphinx.base.conf_base import set_config
 
 # ----- custom configuration -----
 

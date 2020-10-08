@@ -204,8 +204,10 @@ def _add_custom_css_and_js(app: Sphinx):
     js_rel_path = os.path.join("js", "gamma.js")
     app.add_css_file(filename=css_rel_path)
     app.add_js_file(filename=js_rel_path)
-    src_root = os.path.join(_conf_base_dir, "_static_base")
-    dst_root = os.path.join(os.path.abspath(os.getcwd()), "build", "html", "_static")
+    src_root = os.path.join(_conf_base_dir, "../source/_static_base")
+    dst_root = os.path.join(
+        os.path.abspath(os.getcwd()), "build", "html", "../source/_static"
+    )
     for rel_path in [css_rel_path, js_rel_path]:
         dst_dir = os.path.join(dst_root, os.path.dirname(rel_path))
         os.makedirs(dst_dir, exist_ok=True)
