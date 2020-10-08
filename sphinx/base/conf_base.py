@@ -24,10 +24,11 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_conf_base_dir = os.path.dirname(os.path.realpath(__file__))
-_root_dir = os.path.normpath(
-    os.path.join(_conf_base_dir, os.pardir, os.pardir, os.pardir)
+_dir_conf_base = os.path.dirname(os.path.realpath(__file__))
+_dir_repo_root = os.path.normpath(
+    os.path.join(_dir_conf_base, os.pardir, os.pardir, os.pardir)
 )
+_dir_sphinx = os.path.abspath(os.getcwd())
 
 
 # noinspection PyShadowingNames
@@ -50,7 +51,7 @@ def set_config(
 
     modules = set(modules) | {"pytools"}
     for module in modules:
-        module_path = os.path.normpath(os.path.join(_root_dir, module, "src"))
+        module_path = os.path.normpath(os.path.join(_dir_repo_root, module, "src"))
         if module_path not in sys.path:
             # noinspection PyUnboundLocalVariable
             sys.path.insert(0, module_path)
@@ -204,11 +205,15 @@ def _add_custom_css_and_js(app: Sphinx):
     js_rel_path = os.path.join("js", "gamma.js")
     app.add_css_file(filename=css_rel_path)
     app.add_js_file(filename=js_rel_path)
-    src_root = os.path.join(_conf_base_dir, "../source/_static_base")
-    dst_root = os.path.join(
-        os.path.abspath(os.getcwd()), "build", "html", "../source/_static"
+    src_root = os.path.normpath(
+        os.path.join(_dir_conf_base, os.pardir, "source", "_static_base")
+    )
+    dst_html = os.path.normpath(
+        os.path.join(_dir_sphinx, os.pardir, "build", "html", "_static")
     )
     for rel_path in [css_rel_path, js_rel_path]:
-        dst_dir = os.path.join(dst_root, os.path.dirname(rel_path))
+        dst_dir = os.path.join(dst_html, os.path.dirname(rel_path))
         os.makedirs(dst_dir, exist_ok=True)
-        shutil.copy(src=os.path.join(src_root, rel_path), dst=dst_dir)
+        src_file = os.path.join(src_root, rel_path)
+        print(f"copying {src_file} to {dst_dir}")
+        shutil.copy(src=src_file, dst=dst_dir)
