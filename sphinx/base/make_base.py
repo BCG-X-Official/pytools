@@ -18,7 +18,7 @@ CMD_SPHINX_BUILD = "sphinx-build"
 CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
-DIR_MAKE_PY = os.path.dirname(os.path.realpath(__file__))
+DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.join(cwd, os.pardir)
 DIR_REPO_PARENT = os.path.join(DIR_REPO_ROOT, os.pardir)
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
@@ -27,7 +27,9 @@ DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
-DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_MAKE_PY, "../source", "_templates")
+DIR_SPHINX_TEMPLATES_BASE = os.path.join(
+    DIR_MAKE_BASE, os.pardir, "source", "_templates"
+)
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
@@ -183,10 +185,10 @@ class Html(Command):
         )
 
         # create interactive versions of all notebooks
-        sys.path.append(DIR_MAKE_PY)
+        sys.path.append(DIR_MAKE_BASE)
 
         # noinspection PyUnresolvedReferences
-        from source.scripts.transform_notebook import docs_notebooks_to_interactive
+        from transform_notebook import docs_notebooks_to_interactive
 
         for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
             if os.path.isdir(notebook_source_dir):
