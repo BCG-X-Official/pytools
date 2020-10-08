@@ -104,12 +104,19 @@ class Clean(Command):
     def _run(cls) -> None:
         if os.path.exists(DIR_SPHINX_BUILD):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
+        if os.path.exists(DIR_SPHINX_API_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
 
 
 class ApiDoc(Command):
     @classmethod
     def get_description(cls) -> str:
         return "generate Sphinx API documentation from sources"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        # noinspection PyRedundantParentheses
+        return (Clean,)
 
     @classmethod
     def _run(cls) -> None:
@@ -142,9 +149,6 @@ class ApiDoc(Command):
                 quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
             ]
         )
-
-        if os.path.exists(DIR_SPHINX_API_GENERATED):
-            shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
 
         subprocess.run(
             args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
