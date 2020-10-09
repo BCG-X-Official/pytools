@@ -50,7 +50,7 @@ def build(project: str) -> None:
     os.environ[CONDA_BLD_PATH_ENV] = build_path
 
     recipe_path = os.path.abspath(
-        os.path.join(os.environ[FACET_PATH_ENV], project, "conda-build")
+        os.path.join(os.environ[FACET_PATH_ENV], project, "condabuild")
     )
 
     local_channels = [
