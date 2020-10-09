@@ -1,4 +1,6 @@
-Getting Started
-===============
+.. _getting-started:
 
-.. include:: readme.rst
+Getting started with
+====================
+
+.. include:: ../../README.rst
