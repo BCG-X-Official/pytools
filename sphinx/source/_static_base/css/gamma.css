@@ -65,6 +65,14 @@ dl.py + dl.py {
     border-left-color: #29BA74;
 }
 
+img.team-pic {
+    height: 200px;
+    padding-top: 5pt;
+    padding-bottom: 5pt;
+    padding-left: 5pt;
+    padding-right: 5pt;
+}
+
 /*
 .py.class {
     margin-top: 32pt;
