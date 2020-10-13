@@ -1,8 +1,8 @@
-{% set data = load_setup_py_data() %}
+{% set setup_py_data = load_setup_py_data() %}
 
 package:
   name: gamma-pytools
-  version: {{ data.get('version') }}
+  version: {{ setup_py_data.get('version') }}
 
 source:
   git_url: {{FACET_PATH}}/pytools #todo: change to final
