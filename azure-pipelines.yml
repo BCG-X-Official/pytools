@@ -1,7 +1,7 @@
 # set the build name
 name: $[ variables['branchName'] ]
 
-# RUN TESTS AND FULL CONDA BUILD MATRIX EVERY NIGHT AT 4AM
+# run tests and full conda build matrix every night at 4am
 schedules:
 - cron: "0 4 * * *"
   displayName: Nightly full build
