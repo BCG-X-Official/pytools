@@ -16,7 +16,7 @@ SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 KNOWN_PROJECTS = ("pytools", "sklearndf", "facet")
 FACET_PATH_ENV = "FACET_PATH"
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
-BLD_PATH_SUFFIX = os.path.join("dist", "conda")
+BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 
 
 def make_build_path(project: str) -> str:
@@ -24,7 +24,7 @@ def make_build_path(project: str) -> str:
     Return the target build path for Conda-build.
     """
     return os.path.abspath(
-        os.path.join(os.environ[FACET_PATH_ENV], project, BLD_PATH_SUFFIX)
+        os.path.join(os.environ[FACET_PATH_ENV], project, BUILD_PATH_SUFFIX)
     )
 
 
