@@ -78,7 +78,7 @@ stages:
               targetType: 'inline'
               script: |
                 cd $(Build.Repository.LocalPath)
-                git diff-index --exit-code "origin/$(branchName)" conda-build
+                git diff-index --exit-code "origin/$(branchName)" condabuild
                 build_changed="$?"
                 if [ "$build_changed" = 1 ]; then
                 echo "conda build config has been changed"
@@ -202,7 +202,7 @@ stages:
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
 
-              conda install -y conda-build
+              conda install -y condabuild
 
               cd $(System.DefaultWorkingDirectory)
 
@@ -264,7 +264,7 @@ stages:
               export FACET_V_JOBLIB=$(FACET_V_JOBLIB)
               export FACET_V_NUMPY=$(FACET_V_NUMPY)
 
-              conda install -y conda-build
+              conda install -y condabuild
 
               cd $(System.DefaultWorkingDirectory)
 
