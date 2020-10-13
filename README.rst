@@ -12,7 +12,9 @@ utilities for reuse, including:
 - Parallelization based on the joblib package
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
-TODO - add git badges as substitutions
+|azure_pypi| |azure_conda| |azure_devops_master_ci| |code_cov|
+|python_versions| |code_style| |documentation_status|
+|made_with_sphinx_doc| |License_badge|
 
 Installation
 ---------------------
@@ -44,3 +46,24 @@ Acknowledgements
 ---------------------------
 
 TBD
+
+.. |azure_conda| image::
+    :target:
+.. |azure_pypi| image::
+    :target:
+.. |azure_devops_master_ci| image::
+    :target:
+.. |code_cov| image::
+    :target:
+.. |documentation_status| image::
+    :target:
+
+.. |python_versions| image:: https://img.shields.io/badge/python-3.7|3.8-blue.svg
+    :target: https://www.python.org/downloads/release/python-380/
+
+.. |code_style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+.. |made_with_sphinx_doc| image:: https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg
+    :target: https://www.sphinx-doc.org/
+.. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
+    :target: https://opensource.org/licenses/Apache-2.0
