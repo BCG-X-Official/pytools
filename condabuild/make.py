@@ -15,8 +15,8 @@ CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 KNOWN_PROJECTS = ("pytools", "sklearndf", "facet")
 FACET_PATH_ENV = "FACET_PATH"
-CONDA_BLD_PATH_ENV = "CONDA_BLD_PATH"
-BLD_PATH_SUFFIX = "dist/conda"
+CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
+BLD_PATH_SUFFIX = os.path.join("dist", "conda")
 
 
 def make_build_path(project: str) -> str:
@@ -47,7 +47,7 @@ def build(project: str) -> None:
         return f"""-c "{pathlib.Path(make_build_path(_project)).as_uri()}" """
 
     build_path = make_build_path(project)
-    os.environ[CONDA_BLD_PATH_ENV] = build_path
+    os.environ[CONDA_BUILD_PATH_ENV] = build_path
 
     recipe_path = os.path.abspath(
         os.path.join(os.environ[FACET_PATH_ENV], project, "condabuild")
