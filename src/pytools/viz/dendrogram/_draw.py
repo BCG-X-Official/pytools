@@ -9,12 +9,13 @@ import numpy as np
 
 from pytools.api import AllTracker
 from pytools.viz import Drawer
-from pytools.viz.dendrogram._linkage import BaseNode, LinkageTree
+from pytools.viz.dendrogram._linkage import LinkageTree
 from pytools.viz.dendrogram._style import (
     DendrogramHeatmapStyle,
     DendrogramReportStyle,
     DendrogramStyle,
 )
+from pytools.viz.dendrogram.base import BaseNode
 
 log = logging.getLogger(__name__)
 
