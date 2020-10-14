@@ -10,12 +10,8 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
 from pytools.api import AllTracker
-from pytools.viz import (
-    ColorbarMatplotStyle,
-    DrawStyle,
-    MatplotStyle,
-    PercentageFormatter,
-)
+from pytools.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle
+from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
 
