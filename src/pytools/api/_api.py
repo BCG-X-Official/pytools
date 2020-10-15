@@ -426,12 +426,38 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         if not type(_cls):
             _raise_type_error(_cls)
 
+        match_found = False
+
+        def _get_docstring(m: Any) -> str:
+            try:
+                return m.__func__.__doc__
+            except AttributeError:
+                return m.__doc__
+
+        def _set_docstring(m: Any, d: str) -> None:
+            try:
+                m.__func__.__doc__ = d
+            except AttributeError:
+                m.__doc__ = d
+
         for name, member in vars(_cls).items():
-            if member.__doc__ and match == member.__doc__:
+            doc = _get_docstring(m=member)
+            if doc == match:
                 parents = inspect.getmro(_cls)[1:]
-                member.__doc__ = (
-                    getattr(parents[0], name, None).__doc__ if parents else None
+                _set_docstring(
+                    m=member,
+                    d=(
+                        _get_docstring(m=getattr(parents[0], name, None))
+                        if parents
+                        else None
+                    ),
                 )
+                match_found = True
+
+        if not match_found:
+            log.warning(
+                f"no match found for docstring {repr(match)} in class {_cls.__name__}"
+            )
 
         return _cls
 
