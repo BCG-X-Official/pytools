@@ -14,14 +14,9 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker
-from pytools.viz import (
-    RGBA_WHITE,
-    ColorbarMatplotStyle,
-    Drawer,
-    DrawStyle,
-    PercentageFormatter,
-    TextStyle,
-)
+from pytools.viz import ColorbarMatplotStyle, Drawer, DrawStyle, TextStyle
+from pytools.viz.colors import RGBA_WHITE
+from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
 
@@ -237,7 +232,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                     )
 
         # hide spines
-        for edge, spine in ax.spines.items():
+        for _, spine in ax.spines.items():
             spine.set_visible(False)
 
         # create a white grid using minor tick positions

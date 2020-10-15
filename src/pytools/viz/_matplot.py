@@ -12,22 +12,23 @@ from matplotlib import text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Colormap, LinearSegmentedColormap, Normalize, to_rgba
+from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
 from ._viz import DrawStyle
+from .colors import COLORMAP_FACET, RGBA_BLACK, RGBA_WHITE, RgbaColor
 
 log = logging.getLogger(__name__)
 
+#
+# exported names
+#
+
 __all__ = [
-    "RgbaColor",
-    "RGBA_BLACK",
-    "RGBA_WHITE",
     "MatplotStyle",
     "ColorbarMatplotStyle",
-    "PercentageFormatter",
 ]
 
 #
@@ -36,20 +37,6 @@ __all__ = [
 
 __tracker = AllTracker(globals())
 
-#
-# Type definitions
-#
-
-# Rgba color type for use in  MatplotStyles
-RgbaColor = Tuple[float, float, float, float]
-
-#
-# Constants
-#
-
-# color constants
-RGBA_BLACK: RgbaColor = to_rgba("black")
-RGBA_WHITE: RgbaColor = to_rgba("white")
 
 #
 # Class definitions
@@ -166,11 +153,6 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     and the color bar acts as the legend for this color gradient.
     """
 
-    DEFAULT_COLORMAP = LinearSegmentedColormap.from_list(
-        "facet",
-        [(0, "#3d3a40"), (0.25, "#295e7e"), (0.65, "#30c1d7"), (1.0, "#43fda2")],
-    )
-
     def __init__(
         self,
         *,
@@ -203,7 +185,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
             self.colormap = colormap
         else:
             if colormap is None:
-                colormap = ColorbarMatplotStyle.DEFAULT_COLORMAP
+                colormap = COLORMAP_FACET
             self.colormap = cm.get_cmap(name=colormap)
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize
@@ -253,25 +235,6 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         #     else 1 - math.log(weight) / math.log(self._min_weight)
         # )
         return self.colormap(self.colormap_normalize(z))
-
-
-class PercentageFormatter(Formatter):
-    """
-    Formats floats as a percentages with 3 digits precision, omitting trailing zeros.
-
-    Formatting examples:
-
-    - ``0.0`` is formatted as ``0%``
-    - ``0.1`` is formatted as ``10%``
-    - ``1.0`` is formatted as ``100%``
-    - ``0.01555`` is formatted as ``1.56%``
-    - ``0.01555`` is formatted as ``1.56%``
-    - ``0.1555`` is formatted as ``15.6%``
-    - ``1.555`` is formatted as ``156%``
-    """
-
-    def __call__(self, x, pos=None) -> str:
-        return f"{x * 100.0:.3g}%"
 
 
 __tracker.validate()
