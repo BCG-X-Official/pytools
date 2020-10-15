@@ -15,7 +15,8 @@ from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker
 from pytools.viz import ColorbarMatplotStyle, Drawer, DrawStyle, TextStyle
-from pytools.viz.util import RGBA_WHITE, PercentageFormatter
+from pytools.viz.colors import RGBA_WHITE
+from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
 

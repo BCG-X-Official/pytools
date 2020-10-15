@@ -22,9 +22,9 @@ import logging
 from typing import Optional, Sequence, TextIO
 
 from pytools.viz import TextStyle
+from pytools.viz.colors import RGBA_WHITE
 from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
 from pytools.viz.text import CharacterMatrix
-from pytools.viz.util import RGBA_WHITE
 
 log = logging.getLogger(__name__)
 

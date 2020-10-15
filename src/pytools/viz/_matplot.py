@@ -18,7 +18,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
 from ._viz import DrawStyle
-from .util import FACET_COLORMAP, RGBA_BLACK, RGBA_WHITE, RgbaColor
+from .colors import COLORMAP_FACET, RGBA_BLACK, RGBA_WHITE, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -185,7 +185,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
             self.colormap = colormap
         else:
             if colormap is None:
-                colormap = FACET_COLORMAP
+                colormap = COLORMAP_FACET
             self.colormap = cm.get_cmap(name=colormap)
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize

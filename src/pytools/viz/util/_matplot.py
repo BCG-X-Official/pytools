@@ -3,9 +3,7 @@ Utilities related to matplotlib.
 """
 
 import logging
-from typing import Tuple
 
-from matplotlib.colors import LinearSegmentedColormap, to_rgba
 from matplotlib.ticker import Formatter
 
 from pytools.api import AllTracker
@@ -13,45 +11,13 @@ from pytools.api import AllTracker
 log = logging.getLogger(__name__)
 
 
-__all__ = [
-    "RgbaColor",
-    "RGBA_BLACK",
-    "RGBA_WHITE",
-    "FACET_COLORMAP",
-    "PercentageFormatter",
-]
+__all__ = ["PercentageFormatter"]
 
 #
 # Ensure all symbols introduced below are included in __all__
 #
 
 __tracker = AllTracker(globals())
-
-
-#
-# Type definitions
-#
-
-#: RGBA color type for use in ``MatplotStyle`` classes
-RgbaColor = Tuple[float, float, float, float]
-
-#
-# Constants
-#
-
-# color constants
-
-#: color constant for black
-RGBA_BLACK: RgbaColor = to_rgba("black")
-
-#: color constant for white
-RGBA_WHITE: RgbaColor = to_rgba("white")
-
-#: standard colormap for Facet
-FACET_COLORMAP = LinearSegmentedColormap.from_list(
-    name="facet",
-    colors=[(0, "#3d3a40"), (0.25, "#295e7e"), (0.65, "#30c1d7"), (1.0, "#43fda2")],
-)
 
 
 #
@@ -77,3 +43,8 @@ class PercentageFormatter(Formatter):
 
     def __call__(self, x, pos=None) -> str:
         return f"{x * 100.0:.3g}%"
+
+
+# check consistency of __all__
+
+__tracker.validate()
