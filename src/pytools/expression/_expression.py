@@ -112,6 +112,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
     def to_expression(self) -> "Expression":
         """
         Render this object as an expression
+
         :return: the expression representing this object
         """
         pass
@@ -136,8 +137,7 @@ class Expression(metaclass=ABCMeta):
     @abstractmethod
     def precedence_(self) -> int:
         """
-        :return: the precedence of this expression, used to determine the need for \
-            parentheses
+        The precedence of this expression, used to determine the need for parentheses
         """
         pass
 
@@ -323,6 +323,10 @@ class Expression(metaclass=ABCMeta):
         return Operation(op.LE, self, other)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
+        """
+        Generate a :class:`.Call` expression.
+        :return: the resulting expression
+        """
         return Call(
             self,
             *(make_expression(arg) for arg in args),
@@ -380,6 +384,7 @@ class FrozenExpression(HasExpressionRepr):
     def to_expression(self) -> "Expression":
         """
         Get the underlying un-frozen expression.
+
         :return: the underlying un-frozen expression
         """
         return self._expression
@@ -820,7 +825,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def body_(self) -> Expression:
         """
-        The prefix of this expression
+        The body of this expression
         """
         pass
 
