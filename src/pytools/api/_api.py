@@ -456,6 +456,7 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
 
         if not match_found:
             log.warning(
+                f"{inheritdoc.__name__}:"
                 f"no match found for docstring {repr(match)} in class {_cls.__name__}"
             )
 
