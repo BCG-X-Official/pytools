@@ -203,7 +203,6 @@ class AddInheritance(AutodocLinesProcessor):
     def __init__(self, collapsible_submodules: Mapping[str, str]):
         super().__init__()
         self.collapsible_submodules = collapsible_submodules
-        self.classes_visited: Set[type] = set()
 
     def process(
         self,
@@ -216,11 +215,7 @@ class AddInheritance(AutodocLinesProcessor):
     ) -> None:
         """[see superclass]"""
 
-        if what == "class" and obj not in self.classes_visited:
-            # visit each class only once (this method will be called twice if there are
-            # docstrings both for the class, and for __init__)
-
-            self.classes_visited.add(cast(type, obj))
+        if what == "class":
 
             # add bases and generics documentation to class
 
@@ -243,12 +238,12 @@ class AddInheritance(AutodocLinesProcessor):
             bases_lines = [""]
             if bases:
                 base_names = (self._class_name_with_generics(base) for base in bases)
-                bases_lines.append(f':Bases: {", ".join(base_names)}')
+                bases_lines.append(f'Bases: {", ".join(base_names)}')
                 bases_lines.append("")
 
             generics: List[str] = self._get_generics(class_)
             if generics:
-                generic_type_variables = f':Generic Types: {", ".join(generics)}'
+                generic_type_variables = f'Generic types: {", ".join(generics)}'
                 bases_lines.append(generic_type_variables)
                 bases_lines.append("")
 
