@@ -363,7 +363,7 @@ class AddInheritance(AutodocLinesProcessor):
         )
 
 
-@inheritdoc(match="[see superclass")
+@inheritdoc(match="[see superclass]")
 class CollapseModulePaths(AutodocLinesProcessor):
     """
     Replace private module paths with their public prefix so that object references
@@ -402,7 +402,7 @@ class CollapseModulePaths(AutodocLinesProcessor):
                 lines[i] = expanded.sub(collapsed, line)
 
 
-@inheritdoc(match="[see superclass")
+@inheritdoc(match="[see superclass]")
 class SkipIndirectImports(AutodocSkipMember):
     """
     Skip members imported by a private package.
