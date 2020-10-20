@@ -17,7 +17,7 @@ there you could also try posting on `stackoverflow <https://stackoverflow.com/>`
     We welcome contributors! If you have minor changes in mind that would like to
     contribute, please feel free to create a pull request and be sure to follow the
     developer guidelines. For large or extensive changes please feel free to open an
-    issue, or reach out to us at our mailing list (add link) first to discuss.
+    issue, or reach out to us at FacetTeam@bcg.com to discuss.
 
 Citation
 --------
