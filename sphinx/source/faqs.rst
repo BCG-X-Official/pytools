@@ -10,7 +10,7 @@ there you could also try posting on `stackoverflow <https://stackoverflow.com/>`
 
     For bug reports or feature requests please use our
     `GitHub issue tracker <https://github.com/BCG-Gamma/pytools/issues>`_.
-    For any other enquiries please feel free to contact us at our mailing list (add link).
+    For any other enquiries please feel free to contact us at FacetTeam@bcg.com.
 
 2. **How can I contribute?**
 
