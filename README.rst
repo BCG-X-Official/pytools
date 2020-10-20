@@ -41,6 +41,10 @@ Development Guidelines
 
 TBD - link to long section in documentation
 
+FAQ
+---------------------------
+
+Please contact FacetTeam@bcg.com if you have any questions.
 
 Acknowledgements
 ---------------------------
