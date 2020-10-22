@@ -155,7 +155,9 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
+            shell=True,
+            check=True,
         )
 
 
@@ -179,8 +181,11 @@ class FetchPkgVersions(Command):
         version_tags = [
             vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
         ]
+
+        version_tags.sort()
+        version_tags.reverse()
         version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
-        latest_non_rc_version = sorted(version_tags_non_rc)[-1]
+        latest_non_rc_version = version_tags_non_rc[0]
 
         print("Found the following version tags: ", version_tags)
         print("Latest non-RC version: ", latest_non_rc_version)
