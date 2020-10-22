@@ -2,7 +2,7 @@
 """
 Sphinx documentation build script
 """
-
+import json
 import os
 import re
 import shutil
@@ -33,6 +33,8 @@ DIR_SPHINX_TEMPLATES_BASE = os.path.join(
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
+DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE, "_static_base")
+JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 
 # Environment variables
 # noinspection SpellCheckingInspection
@@ -153,10 +155,48 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
-            shell=True,
-            check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
         )
+
+
+class FetchPkgVersions(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "fetch available package versions with docs"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        return (Clean,)
+
+    @classmethod
+    def _run(cls) -> None:
+        os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
+        start_from_version_tag = "1.0.0"
+        sp = subprocess.run(
+            args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
+        )
+        version_tags = sp.stdout.decode("UTF-8").split("\n")
+        version_tags = [
+            vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
+        ]
+        version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
+        latest_non_rc_version = sorted(version_tags_non_rc)[-1]
+
+        print("Found the following version tags: ", version_tags)
+        print("Latest non-RC version: ", latest_non_rc_version)
+
+        version_data = {
+            "current": latest_non_rc_version,
+            "non_rc": version_tags_non_rc,
+            "all": version_tags,
+        }
+
+        version_data_as_js = f"const versions = {json.dumps(version_data, indent=4,)}"
+
+        with open(JS_VERSIONS_FILE, "wt") as f:
+            f.write(version_data_as_js)
+
+        print(f"Version data written into: {JS_VERSIONS_FILE}")
 
 
 class Html(Command):
@@ -166,7 +206,7 @@ class Html(Command):
 
     @classmethod
     def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        return Clean, ApiDoc
+        return Clean, FetchPkgVersions, ApiDoc
 
     @classmethod
     def _run(cls) -> None:
@@ -193,6 +233,10 @@ class Html(Command):
         for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
             if os.path.isdir(notebook_source_dir):
                 docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
+
+        # empty versions file to blank template
+        with open(JS_VERSIONS_FILE, "wt") as f:
+            f.write("")
 
 
 class Help(Command):
@@ -271,5 +315,5 @@ Available program arguments:
 
 
 available_commands: Dict[str, Type[Command]] = {
-    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help)
+    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help, FetchPkgVersions)
 }
