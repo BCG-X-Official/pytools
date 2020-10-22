@@ -196,7 +196,7 @@ class FetchPkgVersions(Command):
             "all": version_tags,
         }
 
-        version_data_as_js = f"const versions = {json.dumps(version_data, indent=4,)}"
+        version_data_as_js = f"const DOCS_VERSIONS = {json.dumps(version_data, indent=4,)}"
 
         with open(JS_VERSIONS_FILE, "wt") as f:
             f.write(version_data_as_js)
