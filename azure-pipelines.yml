@@ -226,7 +226,7 @@ stages:
 
               cd $(System.DefaultWorkingDirectory)
 
-              ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
+              python make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
           displayName: "build & test conda package"
 
@@ -308,6 +308,6 @@ stages:
 
               cd $(System.DefaultWorkingDirectory)
 
-              ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
+              python make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
           displayName: "build & test conda package"
