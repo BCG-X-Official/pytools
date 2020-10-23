@@ -2,7 +2,7 @@
 """
 Sphinx documentation build script
 """
-
+import json
 import os
 import re
 import shutil
@@ -26,6 +26,7 @@ DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
+DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
 DIR_SPHINX_TEMPLATES_BASE = os.path.join(
     DIR_MAKE_BASE, os.pardir, "source", "_templates"
@@ -33,6 +34,9 @@ DIR_SPHINX_TEMPLATES_BASE = os.path.join(
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
+DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE, "_static_base")
+JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
+DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 
 # Environment variables
 # noinspection SpellCheckingInspection
@@ -153,10 +157,53 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
-            shell=True,
-            check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
         )
+
+
+class FetchPkgVersions(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "fetch available package versions with docs"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        return ()
+
+    @classmethod
+    def _run(cls) -> None:
+        os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
+        start_from_version_tag = "1.0.0"
+        sp = subprocess.run(
+            args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
+        )
+        version_tags = sp.stdout.decode("UTF-8").split("\n")
+        version_tags = [
+            vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
+        ]
+
+        version_tags.sort()
+        version_tags.reverse()
+        version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
+        latest_non_rc_version = version_tags_non_rc[0]
+
+        print("Found the following version tags: ", version_tags)
+        print("Latest non-RC version: ", latest_non_rc_version)
+
+        version_data = {
+            "current": latest_non_rc_version,
+            "non_rc": version_tags_non_rc,
+            "all": version_tags,
+        }
+
+        version_data_as_js = (
+            f"const DOCS_VERSIONS = {json.dumps(version_data, indent=4,)}"
+        )
+
+        with open(JS_VERSIONS_FILE, "wt") as f:
+            f.write(version_data_as_js)
+
+        print(f"Version data written into: {JS_VERSIONS_FILE}")
 
 
 class Html(Command):
@@ -166,7 +213,7 @@ class Html(Command):
 
     @classmethod
     def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        return Clean, ApiDoc
+        return Clean, FetchPkgVersions, ApiDoc
 
     @classmethod
     def _run(cls) -> None:
@@ -193,6 +240,27 @@ class Html(Command):
         for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
             if os.path.isdir(notebook_source_dir):
                 docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
+
+        # create copy of this build for the docs archive
+        version_built = get_package_version()
+        dir_path_this_build = os.path.join(
+            DIR_ALL_DOCS_VERSIONS, version_string_to_url(version_built)
+        )
+
+        os.makedirs(DIR_ALL_DOCS_VERSIONS, exist_ok=True)
+        if os.path.exists(dir_path_this_build):
+            shutil.rmtree(dir_path_this_build)
+
+        shutil.copytree(
+            src=DIR_SPHINX_BUILD_HTML, dst=dir_path_this_build,
+        )
+
+        if not is_azure_build():
+            shutil.move(src=DIR_ALL_DOCS_VERSIONS, dst=DIR_SPHINX_BUILD_HTML)
+
+        # empty versions file to blank template
+        with open(JS_VERSIONS_FILE, "wt") as f:
+            f.write("")
 
 
 class Help(Command):
@@ -257,6 +325,38 @@ def quote_path(path: str) -> str:
         return path
 
 
+def get_package_version() -> str:
+    """
+    Retrieve package version for this build from a setup.py
+    """
+    setup_py_path = os.path.join(DIR_REPO_ROOT, "setup.py")
+
+    sp = subprocess.run(
+        args=f"python {setup_py_path} --version",
+        shell=True,
+        check=True,
+        stdout=subprocess.PIPE,
+    )
+
+    return sp.stdout.decode("ASCII").strip()
+
+
+def is_azure_build() -> bool:
+    """
+    Check if this is an Azure DevOps pipelines build
+    """
+    return "BUILD_REASON" in os.environ
+
+
+def version_string_to_url(version: str) -> str:
+    """
+    Make a Python package version string safe for URLs/folders.
+
+    Our convention is to only replace all dots with dashes.
+    """
+    return version.replace(".", "-")
+
+
 def print_usage() -> None:
     usage = """Sphinx documentation build script
 =================================
@@ -271,5 +371,5 @@ Available program arguments:
 
 
 available_commands: Dict[str, Type[Command]] = {
-    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help)
+    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help, FetchPkgVersions)
 }
