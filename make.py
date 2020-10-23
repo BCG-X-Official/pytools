@@ -218,5 +218,4 @@ def run_make() -> None:
 
 
 if __name__ == "__main__":
-    print(sys.executable)
     run_make()
