@@ -162,9 +162,9 @@ stages:
   # - OTHERWISE: 1 BUILD TEST
   - stage:
     displayName: 'Conda build & test'
-    dependsOn: 'detect_conda_changes'
+    dependsOn: 'detect_build_config_changes'
     variables:
-      conda_build_config_changed: $[ stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
+      conda_build_config_changed: $[ stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
 
     jobs:
     - job:
@@ -172,7 +172,7 @@ stages:
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
-        ne(stageDependencies.detect_conda_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
+        ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
         )
 
       pool:
