@@ -29,7 +29,7 @@ const buildVersionSelector = function() {
 
 const getActiveDocsVersion = function() {
     const currentLocation = window.location + "";
-    if (currentLocation.indexOf("index.html") > 0) {
+    if (currentLocation.indexOf("docs-version") === -1) {
         return DOCS_VERSIONS.current;
     } else {
         const rExp = /.*docs-version\/(\d-\d-\d.*)\/.*/g;
@@ -37,25 +37,22 @@ const getActiveDocsVersion = function() {
         if (matches && matches.length > 1) {
             // convert back from URL to real version string
             return matches[1].split("-").join(".");
+        } else{
+            return DOCS_VERSIONS.current;
         }
     }
-    return DOCS_VERSIONS.current;
 }
 
 const navigateToDocsVersion = function(targetVersion) {
     const currentLocation = window.location + "";
     let newLocation = currentLocation;
 
-    if (targetVersion === DOCS_VERSIONS.current) {
-        newLocation = "index.html";
+    const subUrl = "docs-version/" + targetVersion.split(".").join("-") + "/index.html";
+    if (currentLocation.indexOf("docs-version/") > 0) {
+        const startIndex = currentLocation.indexOf("docs-version/")
+        newLocation = currentLocation.substring(0, startIndex) + subUrl
     } else {
-        const subUrl = "docs-version/" + targetVersion.split(".").join("-") + "/";
-        if (currentLocation.indexOf("docs-version/") > 0) {
-            const startIndex = currentLocation.indexOf("docs-version/")
-            newLocation = currentLocation.substring(0, startIndex) + subUrl
-        } else {
-            newLocation = subUrl
-        }
+        newLocation = subUrl
     }
 
     window.location = newLocation;
