@@ -1,3 +1,68 @@
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "pytools"
+author = "" # todo: define
+home-page = "https://github.com/BCG-Gamma/pytools"
+description-file = "README.rst"
+
+requires = [
+    "pandas >= 0.24,<1.2",
+    "numpy  >= 1.16,<1.20",
+    "matplotlib >= 3.0,<3.4",
+    "joblib >= 0.13,<1.17",
+    "scipy  >= 1.2,<1.6",
+    "typing_inspect >= 0.4",
+    "pyyaml >= 5.0"
+]
+
+requires-python = ">=3.6,<4"
+
+[tool.flit.metadata.requires-extra]
+# todo: define precisely as in environment.yml, use in tox./Azure pipeline
+testing = [
+    "pytest-cov",
+    "pytest",
+    "xlrd",
+    "flake8",
+    "xlwt",
+]
+# todo: define, use in tox./Azure pipeline
+docs = [
+    "sphinx >= 2.0.0, < 3",
+    "sphinx_rtd_theme",
+]
+
+[tool.flit.metadata.urls]
+Documentation = "https://bcg-gamma.github.io/pytools/"
+Repository = "https://github.com/BCG-Gamma/pytools"
+
+[build.matrix.min]
+python      =  "=3.6.*"
+pandas      =  "=0.24.*"
+matplotlib  =  "=3.0.*"
+numpy       =  "=1.16.*"
+scipy       =  "=1.2.*"
+joblib      =  "=0.13.*"
+
+[build.matrix.max]
+python      =  "=3.8.*"
+pandas      =  "=1.1.*"
+matplotlib  =  "=3.3.*"
+numpy       =  "=1.19.*"
+scipy       =  "=1.5.*"
+joblib      =  "=0.16.*"
+
+[build.matrix.unconstrained]
+python      =  ">=3.6,<4"
+pandas      =  ">=0.24"
+matplotlib  =  ">=1.16"
+numpy       =  ">=1.2"
+scipy       =  ">=1.2"
+joblib      =  ">=0.13"
+
 [tool.black]
 # quiet = "True"
 line-length = 88
