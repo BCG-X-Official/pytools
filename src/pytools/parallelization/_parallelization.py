@@ -92,7 +92,7 @@ class ParallelizableMixin:
     @staticmethod
     def _delayed(
         function: Callable[..., T]
-    ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict]]:
+    ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict[str, Any]]]:
         return joblib.delayed(function)
 
 
