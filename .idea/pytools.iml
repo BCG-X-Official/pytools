@@ -7,6 +7,7 @@
       <sourceFolder url="file://$MODULE_DIR$/sphinx/source" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/sphinx/base" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
+      <excludeFolder url="file://$MODULE_DIR$/.tox" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sphinx/build" />
       <excludeFolder url="file://$MODULE_DIR$/sphinx/source/_templates_base" />
