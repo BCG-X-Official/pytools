@@ -294,7 +294,7 @@ stages:
 
         - script: |
             python -m pip install "toml==0.10.*"
-            python -m pip install "flit==3.0.*"*"
+            python -m pip install "flit==3.0.*"
             flit --version
           displayName: 'Install flit & toml'
 
