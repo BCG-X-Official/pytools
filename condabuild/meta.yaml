@@ -15,7 +15,7 @@ requirements:
   host:
     - pip>=19.1
     - python {{ environ.get('FACET_V_PYTHON', '=3.8.*') }}
-    - flit_core>=3.0.*
+    - flit-core>=3.0.*
   run:
     - python{{ environ.get('FACET_V_PYTHON') }}
     - pandas{{ environ.get('FACET_V_PANDAS') }}
