@@ -151,7 +151,7 @@ def print_usage() -> None:
     usage = """Facet Build script
 =================================
 Available program arguments:
-    <project> <build-system> <dependencies> 
+    <project> <build-system> <dependencies>
         create the Conda package for given project.
 
     Available arguments:
