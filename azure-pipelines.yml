@@ -227,7 +227,7 @@ stages:
 
               ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
-          displayName: "build & test conda package"
+          displayName: "build & test conda&pip package"
 
     - job:
       displayName: 'matrix'
@@ -308,4 +308,4 @@ stages:
 
               ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
-          displayName: "build & test conda package"
+          displayName: "build & test conda&pip package"
