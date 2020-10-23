@@ -200,27 +200,24 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            eval "$(conda shell.bash hook)"
-            conda install -y conda-build
-          displayName: 'Install conda-build'
+            conda install -y conda-build toml=0.10.* flit=3.0.*
+          displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
-
-        - script: |
-            python -m pip install "tox==3.20.*"
-            tox --version
-          displayName: 'Install tox'
-          condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - script: |
             python -m pip install "toml==0.10.*"
             python -m pip install "flit==3.0.*"
             flit --version
-          displayName: 'Install flit & toml'
+            python -m pip install "tox==3.20.*"
+            tox --version
+          displayName: 'Install tox, flit & toml'
+          condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - task: Bash@3
           inputs:
             targetType: 'inline'
             script: |
+              if [ "$BUILD_SYSTEM" = "conda" ] ; then eval "$(conda shell.bash hook)" ; fi
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
 
               cd $(System.DefaultWorkingDirectory)
@@ -281,27 +278,24 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            eval "$(conda shell.bash hook)"
-            conda install -y conda-build
-          displayName: 'Install conda-build'
+            conda install -y conda-build toml=0.10.* flit=3.0.*
+          displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
-
-        - script: |
-            python -m pip install "tox==3.20.*"
-            tox --version
-          displayName: 'Install tox'
-          condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - script: |
             python -m pip install "toml==0.10.*"
             python -m pip install "flit==3.0.*"
             flit --version
-          displayName: 'Install flit & toml'
+            python -m pip install "tox==3.20.*"
+            tox --version
+          displayName: 'Install tox, flit & toml'
+          condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - task: Bash@3
           inputs:
             targetType: 'inline'
             script: |
+              if [ "$BUILD_SYSTEM" = "conda" ] ; then eval "$(conda shell.bash hook)" ; fi
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
 
               cd $(System.DefaultWorkingDirectory)
