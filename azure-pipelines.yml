@@ -199,6 +199,22 @@ stages:
 
         - script: dir $(Build.SourcesDirectory)
 
+        - script: |
+            conda install -y conda-build
+          displayName: 'Install conda-build'
+          condition: eq(variables['BUILD_SYSTEM'], 'conda')
+
+        - script: |
+            python -m pip install "tox==3.20.*"
+            tox --version
+          displayName: 'Install tox'
+          condition: eq(variables['BUILD_SYSTEM'], 'tox')
+
+        - script: |
+            python -m pip install "flit==3.0.*" "toml==0.10.*"
+            flit --version
+          displayName: 'Install flit & toml'
+
         - task: Bash@3
           inputs:
             targetType: 'inline'
@@ -206,8 +222,6 @@ stages:
               eval "$(conda shell.bash hook)"
 
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
-
-              conda install -y conda-build
 
               cd $(System.DefaultWorkingDirectory)
 
@@ -266,6 +280,22 @@ stages:
 
         - script: dir $(Build.SourcesDirectory)
 
+        - script: |
+            conda install -y conda-build
+          displayName: 'Install conda-build'
+          condition: eq(variables['BUILD_SYSTEM'], 'conda')
+
+        - script: |
+            python -m pip install "tox==3.20.*"
+            tox --version
+          displayName: 'Install tox'
+          condition: eq(variables['BUILD_SYSTEM'], 'tox')
+
+        - script: |
+            python -m pip install "flit==3.0.*" "toml==0.10.*"
+            flit --version
+          displayName: 'Install flit & toml'
+
         - task: Bash@3
           inputs:
             targetType: 'inline'
@@ -273,8 +303,6 @@ stages:
               eval "$(conda shell.bash hook)"
 
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
-
-              conda install -y conda-build
 
               cd $(System.DefaultWorkingDirectory)
 

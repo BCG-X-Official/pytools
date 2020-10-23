@@ -32,5 +32,6 @@ dependencies:
   - sphinx-autodoc-typehints = 1.11.*
   - typing_inspect = 0.6.*
   - toml = 0.10.*
+  - tox = 3.20.*
   - xlrd = 1.2.*
   - yaml = 0.1.*
