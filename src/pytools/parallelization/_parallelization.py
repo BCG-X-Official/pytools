@@ -2,7 +2,7 @@
 Core implementation of :mod:`pytools.parallelization`
 """
 import logging
-from typing import Callable, List, Mapping, Optional, Tuple, TypeVar, Union
+from typing import Callable, Dict, Optional, Tuple, TypeVar, Union
 
 import joblib
 
@@ -92,7 +92,7 @@ class ParallelizableMixin:
     @staticmethod
     def _delayed(
         function: Callable[..., T]
-    ) -> Callable[..., Tuple[Callable[..., T], List, Mapping]]:
+    ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict]]:
         return joblib.delayed(function)
 
 
