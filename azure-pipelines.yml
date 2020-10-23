@@ -200,6 +200,7 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
+            eval "$(conda shell.bash hook)"
             conda install -y conda-build
           displayName: 'Install conda-build'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
@@ -224,7 +225,7 @@ stages:
 
               cd $(System.DefaultWorkingDirectory)
 
-              python make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
+              ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
           displayName: "build & test conda package"
 
@@ -280,6 +281,7 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
+            eval "$(conda shell.bash hook)"
             conda install -y conda-build
           displayName: 'Install conda-build'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
@@ -304,6 +306,6 @@ stages:
 
               cd $(System.DefaultWorkingDirectory)
 
-              python make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
+              ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
           displayName: "build & test conda package"
