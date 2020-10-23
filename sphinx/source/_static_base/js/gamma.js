@@ -34,7 +34,7 @@ const getActiveDocsVersion = function() {
     } else {
         const rExp = /.*docs-version\/(\d-\d-\d.*)\/.*/g;
         const matches = rExp.exec(currentLocation);
-        if (matches.length > 1) {
+        if (matches && matches.length > 1) {
             // convert back from URL to real version string
             return matches[1].split("-").join(".");
         }
