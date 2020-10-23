@@ -220,8 +220,6 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-              eval "$(conda shell.bash hook)"
-
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
 
               cd $(System.DefaultWorkingDirectory)
@@ -302,8 +300,6 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-              eval "$(conda shell.bash hook)"
-
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
 
               cd $(System.DefaultWorkingDirectory)
