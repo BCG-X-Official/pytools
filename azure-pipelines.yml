@@ -211,7 +211,7 @@ stages:
           condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - script: |
-            python -m pip install "flit==3.0.*" "toml==0.10.*"
+            python -m pip install "flit==3.0.* toml==0.10.*"
             flit --version
           displayName: 'Install flit & toml'
 
@@ -292,7 +292,7 @@ stages:
           condition: eq(variables['BUILD_SYSTEM'], 'tox')
 
         - script: |
-            python -m pip install "flit==3.0.*" "toml==0.10.*"
+            python -m pip install "flit==3.0.* toml==0.10.*"
             flit --version
           displayName: 'Install flit & toml'
 
