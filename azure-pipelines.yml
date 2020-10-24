@@ -67,7 +67,7 @@ stages:
             displayName: 'use Python 3.7'
           - script: |
               python -m pip install flake8 flake8-comprehensions flake8-import-order
-              python -m flake8 --config flake8.ini -v .
+              python -m flake8 --config tox.ini -v .
             displayName: 'Run flake8'
 
   # detect whether the build config (pyproject.toml) was changed -> then we must run a build test
