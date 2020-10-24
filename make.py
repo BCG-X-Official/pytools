@@ -3,7 +3,7 @@
 Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
-
+import importlib
 import os
 import pathlib
 import shutil
@@ -33,6 +33,7 @@ UNCONSTRAINED_DEPS = "unconstrained"
 KNOWN_DEPENDENCY_TYPES = (DEFAULT_DEPS, MIN_DEPS, MAX_DEPS, UNCONSTRAINED_DEPS)
 
 FACET_PATH_ENV = "FACET_PATH"
+FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 
@@ -44,6 +45,31 @@ def make_build_path(project: str) -> str:
     return os.path.abspath(
         os.path.join(os.environ[FACET_PATH_ENV], project, BUILD_PATH_SUFFIX)
     )
+
+
+def get_package_version(project: str) -> str:
+    """
+    Retrieve the package version for the project from __init__ or _version
+    """
+    project_src = os.path.abspath(
+        os.path.join(os.environ[FACET_PATH_ENV], project, "src")
+    )
+
+    if project == "sklearndf":
+        # for sklearndf __init__ can't be trivially imported due to import dependencies
+        # Load the version as defined in sklearndf._version module
+        spec = importlib.util.spec_from_file_location(
+            "_version", os.path.join(project_src, "sklearndf", "_version.py")
+        )
+    else:
+        # pytools/facet: retrieve version from __init__.py
+        spec = importlib.util.spec_from_file_location(
+            "_version", os.path.join(project_src, project, "__init__.py")
+        )
+
+    version_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(version_module)
+    return version_module.__version__
 
 
 def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
@@ -97,6 +123,16 @@ def set_up(project: str, build_system: str, dependency_type: str) -> None:
     os.environ[FACET_PATH_ENV] = FACET_PATH
     shutil.rmtree(make_build_path(project), ignore_errors=True)
     expose_deps(project, build_system, dependency_type)
+    pkg_version = get_package_version(project)
+    os.environ[
+        FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
+    ] = pkg_version
+    print("==============================================")
+    print(
+        f"STARTING {build_system.upper()} BUILD FOR: {project},"
+        f" VERSION: {pkg_version}"
+    )
+    print("==============================================")
 
 
 def conda_build(project: str, dependency_type: str) -> None:
