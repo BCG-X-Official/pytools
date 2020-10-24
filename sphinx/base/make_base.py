@@ -19,8 +19,9 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
 DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
-DIR_REPO_ROOT = os.path.join(cwd, os.pardir)
-DIR_REPO_PARENT = os.path.join(DIR_REPO_ROOT, os.pardir)
+DIR_REPO_ROOT = os.path.realpath(os.path.join(DIR_MAKE_BASE, os.pardir, os.pardir))
+DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
+FACET_PROJECT = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
