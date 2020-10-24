@@ -2,6 +2,9 @@
 requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
+[tool.flit.sdist]
+exclude = [".idea", "tmp", "dist", ".tox", ".pytest_cache"]
+
 [tool.flit.metadata]
 module = "pytools"
 author = "" # todo: define
