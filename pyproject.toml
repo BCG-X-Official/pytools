@@ -10,6 +10,7 @@ module = "pytools"
 author = "" # todo: define
 home-page = "https://github.com/BCG-Gamma/pytools"
 description-file = "README.rst"
+dist-name = "gamma-pytools"
 
 requires = [
     "pandas >= 0.24,<1.2",
