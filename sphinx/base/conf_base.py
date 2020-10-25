@@ -72,7 +72,7 @@ _log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
-copyright = "2020, The Boston Consulting Group (BCG)"
+copyright = "2020, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
 # -- General configuration ---------------------------------------------------
