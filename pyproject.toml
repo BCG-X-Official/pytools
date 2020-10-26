@@ -25,18 +25,22 @@ requires = [
 requires-python = ">=3.6,<4"
 
 [tool.flit.metadata.requires-extra]
-# todo: define precisely as in environment.yml, use in tox./Azure pipeline
 testing = [
-    "pytest-cov",
-    "pytest",
-    "xlrd",
-    "flake8",
-    "xlwt",
+    "pytest >= 5.2.*",
+    "pytest-cov = 2.8.*",
+    "flake8 = 3.8.*",
+    "flake8-comprehensions = 3.2.*",
+    "isort = 5.5.*",
 ]
-# todo: define, use in tox./Azure pipeline
 docs = [
-    "sphinx >= 2.0.0, < 3",
-    "sphinx_rtd_theme",
+    "sphinx = 3.2.*",
+    "sphinx-autodoc-typehints = 1.11.*",
+    "pydata-sphinx-theme = 0.4.*",
+    "nbsphinx = 0.7.*",
+    "jupyter >= 1.0",
+    "docutils",
+    "xlrd = 1.2.*",
+    "m2r = 0.2.*"
 ]
 
 [tool.flit.metadata.urls]
