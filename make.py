@@ -4,6 +4,7 @@ Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
 import importlib
+import importlib.util
 import os
 import pathlib
 import shutil

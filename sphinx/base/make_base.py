@@ -3,6 +3,7 @@
 Sphinx documentation build script
 """
 import importlib
+import importlib.util
 import json
 import os
 import re
@@ -159,9 +160,7 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
-            shell=True,
-            check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
         )
 
 
@@ -262,8 +261,7 @@ class Html(Command):
             shutil.rmtree(dir_path_this_build)
 
         shutil.copytree(
-            src=DIR_SPHINX_BUILD_HTML,
-            dst=dir_path_this_build,
+            src=DIR_SPHINX_BUILD_HTML, dst=dir_path_this_build,
         )
 
         if not is_azure_build():
