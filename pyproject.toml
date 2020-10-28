@@ -56,7 +56,7 @@ scipy       =  "=1.2.*"
 joblib      =  "=0.13.*"
 
 [build.matrix.max]
-python      =  "=3.8.*"
+python      =  "=3.9.*"
 pandas      =  "=1.1.*"
 matplotlib  =  "=3.3.*"
 numpy       =  "=1.19.*"
@@ -66,8 +66,8 @@ joblib      =  "=0.16.*"
 [build.matrix.unconstrained]
 python      =  ">=3.6,<4"
 pandas      =  ">=0.24"
-matplotlib  =  ">=1.16"
-numpy       =  ">=1.2"
+matplotlib  =  ">=3.0"
+numpy       =  ">=1.16"
 scipy       =  ">=1.2"
 joblib      =  ">=0.13"
 
