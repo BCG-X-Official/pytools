@@ -2,6 +2,8 @@
 """
 Sphinx documentation build script
 """
+import importlib
+import importlib.util
 import json
 import os
 import re
@@ -19,8 +21,9 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
 DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
-DIR_REPO_ROOT = os.path.join(cwd, os.pardir)
-DIR_REPO_PARENT = os.path.join(DIR_REPO_ROOT, os.pardir)
+DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
+DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
+FACET_PROJECT = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
@@ -182,6 +185,12 @@ class FetchPkgVersions(Command):
             vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
         ]
 
+        # add version currently build into version_tags
+        version_built = get_package_version()
+
+        if version_built not in version_tags:
+            version_tags.append(version_built)
+
         version_tags.sort()
         version_tags.reverse()
         version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
@@ -327,18 +336,25 @@ def quote_path(path: str) -> str:
 
 def get_package_version() -> str:
     """
-    Retrieve package version for this build from a setup.py
+    Retrieve the package version for the project from __init__ or _version
     """
-    setup_py_path = os.path.join(DIR_REPO_ROOT, "setup.py")
+    project_src = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src"))
 
-    sp = subprocess.run(
-        args=f"python {setup_py_path} --version",
-        shell=True,
-        check=True,
-        stdout=subprocess.PIPE,
-    )
+    if FACET_PROJECT == "sklearndf":
+        # for sklearndf __init__ can't be trivially imported due to import dependencies
+        # Load the version as defined in sklearndf._version module
+        spec = importlib.util.spec_from_file_location(
+            "_version", os.path.join(project_src, FACET_PROJECT, "_version.py")
+        )
+    else:
+        # pytools/facet: retrieve version from __init__.py
+        spec = importlib.util.spec_from_file_location(
+            "_version", os.path.join(project_src, FACET_PROJECT, "__init__.py")
+        )
 
-    return sp.stdout.decode("ASCII").strip()
+    version_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(version_module)
+    return version_module.__version__
 
 
 def is_azure_build() -> bool:

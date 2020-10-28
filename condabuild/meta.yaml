@@ -1,29 +1,28 @@
-{% set setup_py_data = load_setup_py_data() %}
-
 package:
   name: gamma-pytools
-  version: {{ setup_py_data.get('version') }}
+  version: {{ environ.get('FACET_BUILD_PYTOOLS_VERSION') }}
 
 source:
   git_url: {{FACET_PATH}}/pytools #todo: change to final
 
 build:
   noarch: python
-  script: "python -m pip install . --no-deps --ignore-installed -vv "
+  script: "flit install --deps none"
 
 requirements:
   host:
-    - pip>=19.1
-    - python{{ environ.get('FACET_V_PYTHON_BUILD', '=3.8.*') }}
+    - pip>=20.*
+    - python {{ environ.get('FACET_V_PYTHON', '=3.8.*') }}
+    - flit>=3.0.*
   run:
-    - python{{ environ.get('FACET_V_PYTHON', '>=3.6,<4') }}
-    - pandas{{ environ.get('FACET_V_PANDAS', '>=0.24,<1.2') }}
-    - numpy{{ environ.get('FACET_V_NUMPY', '>=1.16,<1.20') }}
-    - matplotlib{{ environ.get('FACET_V_MATPLOT', '>=3.0,<3.4') }}
-    - joblib{{ environ.get('FACET_V_JOBLIB', '>=0.13,<1.17') }}
-    - scipy{{ environ.get('FACET_V_SCIPY', '>=1.2,<1.6') }}
-    - pyyaml>=5
-    - typing_inspect>=0.4
+    - python{{ environ.get('FACET_V_PYTHON') }}
+    - pandas{{ environ.get('FACET_V_PANDAS') }}
+    - numpy{{ environ.get('FACET_V_NUMPY') }}
+    - matplotlib{{ environ.get('FACET_V_MATPLOTLIB') }}
+    - joblib{{ environ.get('FACET_V_JOBLIB') }}
+    - scipy{{ environ.get('FACET_V_SCIPY') }}
+    - pyyaml{{ environ.get('FACET_V_PYYAML') }}
+    - typing_inspect{{ environ.get('FACET_V_TYPING_INSPECT') }}
 test:
   imports:
     - pytools
