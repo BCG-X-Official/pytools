@@ -141,7 +141,8 @@ def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
             )
 
     for d_name, d_version in dependencies_to_expose.items():
-        env_var_key = f"FACET_V_{d_name}".upper().strip()
+        # bash ENV variables can not use dash, replace it to _
+        env_var_key = f"FACET_V_{d_name.replace('-','_')}".upper().strip()
         env_var_value = d_version.strip()
         print(f"Exposing: '{env_var_key}' as: '{env_var_value}'")
         os.environ[env_var_key] = env_var_value
