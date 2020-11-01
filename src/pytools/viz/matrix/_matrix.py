@@ -3,7 +3,6 @@ Core implementation of :mod:`pytools.viz.matrix`
 """
 
 import logging
-from abc import ABCMeta, abstractmethod
 from typing import Any, Callable, Dict, Mapping, Optional, Tuple, Type, Union
 
 import numpy as np
@@ -14,14 +13,9 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import (
-    ColorbarMatplotStyle,
-    Drawer,
-    DrawingStyle,
-    TextStyle,
-    text_contrast_color,
-)
+from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle, text_contrast_color
 from pytools.viz.colors import RGBA_WHITE
+from pytools.viz.matrix.base import MatrixStyle
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
@@ -32,7 +26,6 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "MatrixStyle",
     "MatrixMatplotStyle",
     "PercentageMatrixMatplotStyle",
     "MatrixReportStyle",
@@ -47,23 +40,8 @@ __tracker = AllTracker(globals())
 
 
 #
-# class definitions
+# Classes
 #
-
-
-class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
-    """
-    Base class for matrix drawer styles.
-    """
-
-    @abstractmethod
-    def draw_matrix(self, matrix: pd.DataFrame) -> None:
-        """
-        Draw the matrix.
-
-        :param matrix: the matrix represented as a data frame
-        """
-        pass
 
 
 @inheritdoc(match="[see superclass]")
