@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["DendrogramDrawer"]
@@ -31,7 +31,7 @@ __tracker = AllTracker(globals())
 
 
 #
-# class definitions
+# Classes
 #
 
 

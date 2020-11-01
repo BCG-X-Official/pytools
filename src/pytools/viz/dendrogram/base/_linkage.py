@@ -24,6 +24,11 @@ __all__ = ["Node", "LeafNode", "LinkageNode"]
 __tracker = AllTracker(globals())
 
 
+#
+# Classes
+#
+
+
 class Node(metaclass=ABCMeta):
     """
     Base class for nodes of a :class:`.LinkageTree`.

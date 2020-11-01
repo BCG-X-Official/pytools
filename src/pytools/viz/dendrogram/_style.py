@@ -21,6 +21,7 @@ inclusion in text reports.
 import logging
 from typing import Optional, Sequence, TextIO
 
+from pytools.api import AllTracker, inheritdoc
 from pytools.text import CharacterMatrix
 from pytools.viz import TextStyle, text_contrast_color
 from pytools.viz.colors import RGBA_WHITE
@@ -30,7 +31,7 @@ log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = [
@@ -39,16 +40,16 @@ __all__ = [
     "DendrogramReportStyle",
 ]
 
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
-from pytools.api import AllTracker, inheritdoc
 
 __tracker = AllTracker(globals())
 
 
 #
-# class definitions
+# Classes
 #
 
 

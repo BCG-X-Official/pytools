@@ -12,13 +12,20 @@ from ._viz import DrawingStyle
 
 log = logging.getLogger(__name__)
 
+
+#
+# Exported names
+#
+
 __all__ = ["TextStyle"]
+
 
 #
 # Ensure all symbols introduced below are included in __all__
 #
 
 __tracker = AllTracker(globals())
+
 
 #
 # Classes

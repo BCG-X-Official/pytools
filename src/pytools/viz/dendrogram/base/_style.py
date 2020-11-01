@@ -16,7 +16,7 @@ from pytools.viz.util import PercentageFormatter
 log = logging.getLogger(__name__)
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["DendrogramStyle", "DendrogramMatplotStyle"]
@@ -27,6 +27,11 @@ __all__ = ["DendrogramStyle", "DendrogramMatplotStyle"]
 #
 
 __tracker = AllTracker(globals())
+
+
+#
+# Classes
+#
 
 
 class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):

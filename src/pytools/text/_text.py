@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["CharacterMatrix", "format_table"]
@@ -27,15 +27,14 @@ __tracker = AllTracker(globals())
 
 
 #
-# type definitions
+# Type definitions
 #
-
 
 _TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
 
 #
-# class definitions
+# Classes
 #
 
 

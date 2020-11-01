@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = [
@@ -30,6 +30,7 @@ __all__ = [
     "ECDFDrawer",
 ]
 
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
@@ -38,7 +39,7 @@ __tracker = AllTracker(globals())
 
 
 #
-# constant definitions
+# Constants
 #
 
 DEFAULT_COLOR_OUTLIER = "orange"
@@ -49,7 +50,7 @@ DEFAULT_IQR_MULTIPLE_FAR = 3.0
 
 
 #
-# class definitions
+# Classes
 #
 
 

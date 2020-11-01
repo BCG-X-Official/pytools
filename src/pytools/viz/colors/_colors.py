@@ -12,6 +12,10 @@ from pytools.api import AllTracker
 log = logging.getLogger(__name__)
 
 
+#
+# Exported names
+#
+
 __all__ = [
     "RgbaColor",
     "RGBA_BLACK",
@@ -37,6 +41,7 @@ __tracker = AllTracker(globals())
 
 #: RGBA color type for use in ``MatplotStyle`` classes
 RgbaColor = Tuple[float, float, float, float]
+
 
 #
 # Constants

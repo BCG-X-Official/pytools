@@ -23,10 +23,11 @@ from .colors import COLORMAP_FACET, RGBA_BLACK, RGBA_WHITE, RgbaColor
 log = logging.getLogger(__name__)
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["MatplotStyle", "ColorbarMatplotStyle", "text_contrast_color"]
+
 
 #
 # Ensure all symbols introduced below are included in __all__

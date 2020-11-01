@@ -15,10 +15,11 @@ from pytools.api import AllTracker, to_tuple
 from pytools.viz.dendrogram.base import LeafNode, LinkageNode, Node
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["LinkageTree"]
+
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -28,7 +29,7 @@ __tracker = AllTracker(globals())
 
 
 #
-# class definitions
+# Class definitions
 #
 
 

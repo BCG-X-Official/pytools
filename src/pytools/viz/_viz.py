@@ -22,7 +22,13 @@ from ..api import AllTracker
 
 log = logging.getLogger(__name__)
 
+
+#
+# Exported names
+#
+
 __all__ = ["DrawingStyle", "Drawer"]
+
 
 #
 # Type variables
@@ -32,6 +38,7 @@ T_Model = TypeVar("T_Model")
 # noinspection PyTypeChecker
 T_Style = TypeVar("T_Style", bound="DrawStyle")
 
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
@@ -40,8 +47,11 @@ __tracker = AllTracker(globals())
 
 
 #
-# view: class DrawStyle
+# Classes
 #
+
+
+# View: class DrawStyle
 
 
 class DrawingStyle(metaclass=ABCMeta):
@@ -94,9 +104,7 @@ class DrawingStyle(metaclass=ABCMeta):
         pass
 
 
-#
-# controller: class Drawer
-#
+# Controller: class Drawer
 
 
 class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):

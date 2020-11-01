@@ -12,7 +12,7 @@ from pytools.viz import DrawingStyle
 log = logging.getLogger(__name__)
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["XYSeries", "ECDF", "ECDFStyle"]
