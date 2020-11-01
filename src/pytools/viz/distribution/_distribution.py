@@ -3,16 +3,16 @@ Core implementation of :mod:`pytools.viz.distribution`
 """
 
 import logging
-from abc import ABCMeta, abstractmethod
-from typing import Mapping, NamedTuple, Optional, Sequence, Type, Union
+from typing import Mapping, Optional, Sequence, Type, Union
 
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
 from pytools.api import AllTracker
-from pytools.viz import Drawer, DrawStyle, MatplotStyle
+from pytools.viz import Drawer, MatplotStyle
 from pytools.viz.colors import RgbaColor
+from pytools.viz.distribution.base import ECDF, ECDFStyle, XYSeries
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,6 @@ __all__ = [
     "DEFAULT_COLOR_FAR_OUTLIER",
     "DEFAULT_IQR_MULTIPLE",
     "DEFAULT_IQR_MULTIPLE_FAR",
-    "ECDFStyle",
     "ECDFMatplotStyle",
     "ECDFDrawer",
 ]
@@ -52,39 +51,6 @@ DEFAULT_IQR_MULTIPLE_FAR = 3.0
 #
 # class definitions
 #
-
-
-class _XYSeries(NamedTuple):
-    """
-    Series of x and y coordinates for plotting; x and y values are held in two
-    separate sequences of the same length.
-    """
-
-    x: Sequence[float]
-    y: Sequence[float]
-
-
-class _Ecdf(NamedTuple):
-    """
-    Three sets of coordinates for plotting an ECDF: inliers, outliers, and far
-    outliers.
-    """
-
-    inliers: _XYSeries
-    outliers: _XYSeries
-    far_outliers: _XYSeries
-
-
-class ECDFStyle(DrawStyle, metaclass=ABCMeta):
-    """
-    The base drawing style for ECDFs
-    """
-
-    @abstractmethod
-    def _draw_ecdf(
-        self, ecdf: _Ecdf, x_label: str, iqr_multiple: float, iqr_multiple_far: float
-    ) -> None:
-        pass
 
 
 class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
@@ -119,7 +85,11 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
     def _draw_ecdf(
-        self, ecdf: _Ecdf, x_label: str, iqr_multiple: float, iqr_multiple_far: float
+        self,
+        ecdf: ECDF,
+        x_label: str,
+        iqr_multiple: float,
+        iqr_multiple_far: float,
     ) -> None:
         def _iqr_annotation(multiple: float) -> str:
             return f"(> {multiple:.3g} * IQR)"
@@ -232,7 +202,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             iqr_multiple_far=self.iqr_multiple_far,
         )
 
-    def _ecdf(self, data: Sequence[float]) -> _Ecdf:
+    def _ecdf(self, data: Sequence[float]) -> ECDF:
         """
         Compute ECDF for scalar values.
 
@@ -292,12 +262,14 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             outlier_mask = []
             far_out_mask = []
 
-        return _Ecdf(
-            _XYSeries(x[inlier_mask], y[inlier_mask]),
-            _XYSeries(x[outlier_mask], y[outlier_mask]),
-            _XYSeries([], [])
-            if self.hide_far_outliers
-            else _XYSeries(x[far_out_mask], y[far_out_mask]),
+        return ECDF(
+            inliers=XYSeries(x=x[inlier_mask], y=y[inlier_mask]),
+            outliers=XYSeries(x=x[outlier_mask], y=y[outlier_mask]),
+            far_outliers=(
+                XYSeries(x=[], y=[])
+                if self.hide_far_outliers
+                else XYSeries(x=x[far_out_mask], y=y[far_out_mask])
+            ),
         )
 
 
