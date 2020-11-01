@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["TextCoordinates", "CharacterMatrix", "format_table"]
+__all__ = ["CharacterMatrix", "format_table"]
 
 
 #
@@ -31,7 +31,7 @@ __tracker = AllTracker(globals())
 #
 
 
-TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
+_TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
 
 
 #
@@ -78,7 +78,7 @@ class CharacterMatrix:
         return ("".join(line) for line in self._matrix)
 
     @staticmethod
-    def _key_as_slices(key: TextCoordinates) -> Tuple[slice, slice]:
+    def __key_as_slices(key: _TextCoordinates) -> Tuple[slice, slice]:
         def _to_slice(index: Union[int, slice]) -> slice:
             if isinstance(index, int):
                 return slice(index, index + 1)
@@ -97,12 +97,12 @@ class CharacterMatrix:
     def __len__(self) -> int:
         return self.n_rows
 
-    def __getitem__(self, key: TextCoordinates):
-        rows, columns = self._key_as_slices(key)
+    def __getitem__(self, key: _TextCoordinates):
+        rows, columns = self.__key_as_slices(key)
         return "\n".join("".join(line[columns]) for line in self._matrix[rows])
 
-    def __setitem__(self, key: TextCoordinates, value: Any) -> None:
-        rows, columns = self._key_as_slices(key)
+    def __setitem__(self, key: _TextCoordinates, value: Any) -> None:
+        rows, columns = self.__key_as_slices(key)
         value = str(value)
         single_char = len(value) == 1
         positions = range(*columns.indices(self.n_columns))
