@@ -10,7 +10,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle
+from pytools.viz import ColorbarMatplotStyle, DrawingStyle, MatplotStyle
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
@@ -29,7 +29,7 @@ __all__ = ["DendrogramStyle", "DendrogramMatplotStyle"]
 __tracker = AllTracker(globals())
 
 
-class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
+class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class for dendrogram drawing styles.
     """

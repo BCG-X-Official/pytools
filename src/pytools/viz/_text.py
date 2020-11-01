@@ -8,7 +8,7 @@ from abc import ABCMeta
 from typing import TextIO
 
 from ..api import AllTracker
-from ._viz import DrawStyle
+from ._viz import DrawingStyle
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class TextStyle(DrawStyle, metaclass=ABCMeta):
+class TextStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class of plain text drawing styles.
     """

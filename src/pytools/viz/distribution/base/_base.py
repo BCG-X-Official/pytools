@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from typing import NamedTuple, Sequence
 
 from pytools.api import AllTracker
-from pytools.viz import DrawStyle
+from pytools.viz import DrawingStyle
 
 log = logging.getLogger(__name__)
 
@@ -51,7 +51,7 @@ class ECDF(NamedTuple):
     far_outliers: XYSeries
 
 
-class ECDFStyle(DrawStyle, metaclass=ABCMeta):
+class ECDFStyle(DrawingStyle, metaclass=ABCMeta):
     """
     The base drawing style for ECDFs
     """

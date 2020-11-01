@@ -17,7 +17,7 @@ from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
-from ._viz import DrawStyle
+from ._viz import DrawingStyle
 from .colors import COLORMAP_FACET, RGBA_BLACK, RGBA_WHITE, RgbaColor
 
 log = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class MatplotStyle(DrawStyle, metaclass=ABCMeta):
+class MatplotStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class of drawing styles using :mod:`matplotlib`.
     """

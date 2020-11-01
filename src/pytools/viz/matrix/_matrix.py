@@ -17,7 +17,7 @@ from pytools.api import AllTracker, inheritdoc
 from pytools.viz import (
     ColorbarMatplotStyle,
     Drawer,
-    DrawStyle,
+    DrawingStyle,
     TextStyle,
     text_contrast_color,
 )
@@ -51,7 +51,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class MatrixStyle(DrawStyle, metaclass=ABCMeta):
+class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class for matrix drawer styles.
     """

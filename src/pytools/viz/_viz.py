@@ -22,7 +22,7 @@ from ..api import AllTracker
 
 log = logging.getLogger(__name__)
 
-__all__ = ["DrawStyle", "Drawer"]
+__all__ = ["DrawingStyle", "Drawer"]
 
 #
 # Type variables
@@ -44,7 +44,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class DrawStyle(metaclass=ABCMeta):
+class DrawingStyle(metaclass=ABCMeta):
     """
     Base style class for a :class:`.Drawer`.
 
@@ -130,12 +130,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             self.style = _get_style_cls("matplot")()
         elif isinstance(style, str):
             self.style = _get_style_cls(style)()
-        elif isinstance(style, DrawStyle):
+        elif isinstance(style, DrawingStyle):
             self.style = style
         else:
             raise TypeError(
                 "arg style expected to be a string, or an instance of class "
-                f"{DrawStyle.__name__}"
+                f"{DrawingStyle.__name__}"
             )
 
     @classmethod
