@@ -26,10 +26,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = [
-    "MatplotStyle",
-    "ColorbarMatplotStyle",
-]
+__all__ = ["MatplotStyle", "ColorbarMatplotStyle", "text_contrast_color"]
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -39,14 +36,13 @@ __tracker = AllTracker(globals())
 
 
 #
-# Class definitions
+# Classes
 #
 
 
 class MatplotStyle(DrawStyle, metaclass=ABCMeta):
-    """Matplotlib drawer style.
-
-    Implementations must define :meth:`~DrawStyle.draw_title`.
+    """
+    Base class of drawing styles using :mod:`matplotlib`.
     """
 
     def __init__(self, *, ax: Optional[Axes] = None, **kwargs) -> None:
@@ -61,7 +57,7 @@ class MatplotStyle(DrawStyle, metaclass=ABCMeta):
     @property
     def ax(self) -> Axes:
         """
-        The matplot :class:`~matplotlib.axes.Axes` object to draw the chart in.
+        The matplotlib :class:`~matplotlib.axes.Axes` object to draw the chart in.
         """
         ax = self._ax
         if ax is None:
@@ -79,34 +75,26 @@ class MatplotStyle(DrawStyle, metaclass=ABCMeta):
             self._renderer = renderer = get_renderer(self.ax.figure)
         return renderer
 
-    def _drawing_start(self, title: str) -> None:
-        """
-        Called once by the drawer when starting to draw a new chart.
-        :param title: the title of the chart
-        """
-        self.ax.set_title(label=title)
-
-    def _drawing_finalize(self) -> None:
-        pass
-
-    def text_size(
+    def text_dimensions(
         self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
     ) -> Tuple[float, float]:
         """
-        Calculate the horizontal and vertical size of the given text in axis units.
-        Constructs a :class:`matplotlib.text.Text` artist then calculates it size
-        relative to the axis managed by this style object (attribute ``ax``)
-        For non-linear axis scales text size differs depending on placement,
-        so the intended placement (in data coordinates) should be provided
+        Calculate the horizontal and vertical dimensions of the given text in axis
+        units.
 
-        :param text: text to calculate the size for
-        :param x: intended horizontal text placement (optional, defaults to left of
+        Constructs a :class:`matplotlib.text.Text` artist then calculates it size
+        relative to the axis :attr:`.ax` managed by this style object.
+        For non-linear axis scales, text size differs depending on placement,
+        so the intended placement (in data coordinates) should be provided.
+
+        :param text: text to calculate the dimensions for
+        :param x: intended horizontal text placement (optional, defaults to left of \
             view)
-        :param y: intended vertical text placement (optional, defaults to bottom of
+        :param y: intended vertical text placement (optional, defaults to bottom of \
             view)
-        :param kwargs: additional arguments to use when constructing the
+        :param kwargs: additional keyword arguments to use when constructing the \
             :class:`~matplotlib.text.Text` artist, e.g., rotation
-        :return: tuple `(width, height)` in absolute axis units
+        :return: tuple `(width, height)` in axis units
         """
 
         ax = self.ax
@@ -128,26 +116,14 @@ class MatplotStyle(DrawStyle, metaclass=ABCMeta):
 
         return abs(x1 - x0), abs(y1 - y0)
 
-    @staticmethod
-    def text_contrast_color(bg_color: RgbaColor) -> RgbaColor:
-        """
-        Return a text color that maximises contrast with the given background color.
-
-        Returns while for background luminance < 50%, and black otherwise. The alpha
-        channel of the background color is ignored, and the text color is returned as
-        fully opaque.
-
-        :param bg_color: RGBA encoded colour for the background
-        :return: the contrasting text color
-        """
-        fill_luminance = sum(bg_color[:3]) / 3
-        text_color = RGBA_WHITE if fill_luminance < 0.5 else RGBA_BLACK
-        return text_color
+    def _drawing_start(self, title: str, **kwargs) -> None:
+        # Set the title of the matplot chart to the given title.
+        self.ax.set_title(label=title)
 
 
 class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     """
-    Matplot style with added support for a color bar.
+    Matplotlib style with added support for a color bar.
 
     The associated plot uses a color gradient to indicate a scalar value,
     and the color bar acts as the legend for this color gradient.
@@ -159,25 +135,24 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         ax: Optional[Axes] = None,
         colormap: Optional[Union[str, Colormap]] = None,
         colormap_normalize: Normalize = None,
-        colorbar_label: Optional[str] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         **kwargs,
     ):
         """
         :param colormap: the color map to use; either a name or a \
-            :class:`~matplotlib.colors.Colorbar` instance (default: ``"plasma"``). \
-            For an overview of named color maps, see \
+            :class:`~matplotlib.colors.Colorbar` instance
+            (default: :attr:`.colors.COLORMAP_FACET`). \
+            For an overview of matplotlib's named color maps, see \
             `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_
         :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object \
-            that maps values to color indices; if ``None``, use a plain linear \
-            :class:`~matplotlib.colors.Normalize` object with autoscaling \
+            that maps values to color indices; if ``None``, use a plain \
+            :class:`~matplotlib.colors.Normalize` object with linear autoscaling \
             (default: ``None``)
-        :param colorbar_label: test to use as the label for the color bar (optional)
         :param colorbar_major_formatter: major tick formatter for the color bar \
             (optional)
         :param colorbar_minor_formatter: minor tick formatter for the color bar \
-            (optional)
+            (optional; requires that also a major formatter is specified)
         """
         super().__init__(ax=ax, **kwargs)
 
@@ -192,10 +167,9 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         )
         if colorbar_minor_formatter is not None and colorbar_major_formatter is None:
             raise ValueError(
-                "arg colorbar_minor_formatter defined without defining "
+                "arg colorbar_minor_formatter passed without passing "
                 "arg colorbar_major_formatter"
             )
-        self.colorbar_label = colorbar_label
         self.colorbar_major_formatter = colorbar_major_formatter
         self.colorbar_minor_formatter = colorbar_minor_formatter
 
@@ -203,15 +177,27 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def _drawing_finalize(self) -> None:
-        super()._drawing_finalize()
+    def color_for_value(self, z: float) -> RgbaColor:
+        """
+        Return the color bar associated with a given scalar, based on the normalization
+        defined for this style
+
+        :param z: the scalar to be color-encoded
+        :return: the color as a RGBA tuple
+        """
+        return self.colormap(self.colormap_normalize(z))
+
+    def _drawing_finalize(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
+        # add the colorbar to the chart
+
+        super()._drawing_finalize(**kwargs)
 
         cax, _ = make_axes(self.ax)
         self.colorbar = ColorbarBase(
             cax,
             cmap=self.colormap,
             norm=self.colormap_normalize,
-            label="" if self.colorbar_label is None else self.colorbar_label,
+            label="" if colorbar_label is None else colorbar_label,
             orientation="vertical",
         )
 
@@ -221,20 +207,27 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
 
-    def value_color(self, z: float) -> RgbaColor:
-        """
-        Return the color associated with a given scalar, based on the normalization
-        defined for this style
 
-        :param z: the scalar to be color-encoded
-        :return: the color as a RGBA tuple
-        """
-        # return self._cm(
-        #     0
-        #     if weight <= self._min_weight
-        #     else 1 - math.log(weight) / math.log(self._min_weight)
-        # )
-        return self.colormap(self.colormap_normalize(z))
+#
+# Functions
+#
+
+
+def text_contrast_color(bg_color: RgbaColor) -> RgbaColor:
+    """
+    Return a text color that maximises contrast with the given background color.
+
+    Returns white for background luminance < 50%, and black otherwise.
+    The alpha channel of the text color is the same as the background color's.
+
+    :param bg_color: RGBA encoded colour for the background
+    :return: the contrasting text color
+    """
+    fill_luminance = sum(bg_color[:3]) / 3
+    text_color = RGBA_WHITE if fill_luminance < 0.5 else RGBA_BLACK
+    if len(bg_color) > 3:
+        text_color = (*text_color[:3], bg_color[3])
+    return text_color
 
 
 __tracker.validate()

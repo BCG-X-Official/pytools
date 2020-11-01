@@ -6,7 +6,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import Optional
 
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 # exported names
 #
 
-__all__ = ["BaseNode", "LeafNode", "LinkageNode"]
+__all__ = ["Node", "LeafNode", "LinkageNode"]
 
 
 #
@@ -24,14 +24,15 @@ __all__ = ["BaseNode", "LeafNode", "LinkageNode"]
 __tracker = AllTracker(globals())
 
 
-class BaseNode(metaclass=ABCMeta):
+class Node(metaclass=ABCMeta):
     """
-    Base class for nodes of a :class:`LinkageTree`.
+    Base class for nodes of a :class:`.LinkageTree`.
     """
-
-    __slots__ = ["_index"]
 
     def __init__(self, index: int) -> None:
+        """
+        :param index: the index of this node in the linkage tree
+        """
         self._index = index
 
     @property
@@ -42,25 +43,31 @@ class BaseNode(metaclass=ABCMeta):
     @property
     @abstractmethod
     def children_distance(self) -> float:
-        """Distance from the node to its children."""
+        """
+        Distance of this node from its children.
+        """
         pass
 
     @property
     @abstractmethod
     def weight(self) -> float:
-        """Weight of the node."""
+        """
+        Weight of this node.
+        """
         pass
 
     @property
     @abstractmethod
-    def label(self) -> str:
-        """Label of the node."""
+    def name(self) -> str:
+        """
+        Name of this node.
+        """
         pass
 
     @property
     @abstractmethod
     def is_leaf(self) -> bool:
-        """True if the node is a leaf, False otherwise."""
+        """``True`` if the node is a leaf, ``False`` otherwise."""
         pass
 
     def _type_error(self, property_name: str) -> TypeError:
@@ -70,81 +77,90 @@ class BaseNode(metaclass=ABCMeta):
         return f"{self.__class__.__name__}_{self._index}"
 
 
-class LinkageNode(BaseNode):
+@inheritdoc(match="[see superclass]")
+class LinkageNode(Node):
     """
-    Internal node in a :class:`LinkageTree`.
-
-    :param children_distance: distance from the node to its children
+    Inner node in a :class:`.LinkageTree`.
     """
-
-    __slots__ = ["_children_distance"]
 
     def __init__(self, index: int, children_distance: Optional[float]) -> None:
+        """
+        :param children_distance: the distance between this node and its children
+        """
         super().__init__(index=index)
         self._children_distance = children_distance
 
+    __init__.__doc__ = Node.__init__.__doc__ + __init__.__doc__
+
     @property
     def children_distance(self) -> float:
-        """Distance to the children."""
+        """[see superclass]"""
         return self._children_distance
 
     @property
     def weight(self) -> float:
-        """Undefined, should not be called."""
+        """
+        Undefined, raises :class:`TypeError`.
+        """
         raise self._type_error("weight")
 
     @property
-    def label(self) -> str:
-        """Undefined, should not be called."""
-        raise self._type_error("label")
+    def name(self) -> str:
+        """
+        Undefined, raises :class:`TypeError`.
+        """
+        raise self._type_error("name")
 
     @property
     def is_leaf(self) -> bool:
-        """``True`` if the node is a leaf, ``False`` otherwise."""
+        """``False``"""
         return False
 
     def __repr__(self) -> str:
         return f"{super().__repr__()}[dist={self.children_distance * 100:.0f}%]"
 
 
-class LeafNode(BaseNode):
+@inheritdoc(match="[see superclass]")
+class LeafNode(Node):
     """
-    Leaf in a linkage tree.
-
-    :param index: the leaf index
-    :param label: the leaf label
-    :param weight: the leaf weight
+    A leaf in a linkage tree.
     """
 
-    __slots__ = ["_weight", "_label"]
-
-    def __init__(self, index: int, label: str, weight: float) -> None:
+    def __init__(self, index: int, name: str, weight: float) -> None:
+        """
+        :param name: the name of the leaf
+        :param weight: the weight of the leaf
+        """
         super().__init__(index=index)
-        self._label = label
+        self._name = name
         self._weight = weight
+
+    __init__.__doc__ = Node.__init__.__doc__ + __init__.__doc__
 
     @property
     def children_distance(self) -> float:
-        """Distance to the children."""
+        """
+        Undefined, raises :class:`TypeError`.
+        """
         raise self._type_error("children_distance")
 
     @property
-    def label(self) -> str:
-        """Label of the node."""
-        return self._label
+    def name(self) -> str:
+        """[see superclass]"""
+        return self._name
 
     @property
     def weight(self) -> float:
-        """Importance of the node."""
+        """[see superclass]"""
         return self._weight
 
     @property
     def is_leaf(self) -> bool:
-        """True."""
+        """``True``"""
         return True
 
     def __repr__(self) -> str:
-        return f"{super().__repr__()}[label={self.label}, weight={self.weight}]"
+        return f"{super().__repr__()}[name={self.name}, weight={self.weight}]"
 
 
 __tracker.validate()

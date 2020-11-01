@@ -9,7 +9,7 @@ from typing import Optional, Sequence, Union
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap, LogNorm
 
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, DrawStyle, MatplotStyle
 from pytools.viz.util import PercentageFormatter
 
@@ -35,10 +35,15 @@ class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def draw_leaf_labels(self, labels: Sequence[str]) -> None:
-        """Render the labels for all leaves.
+    def draw_leaf_names(
+        self,
+        *,
+        names: Sequence[str],
+    ) -> None:
+        """
+        Render the names for all leaves.
 
-        :param labels: labels of the leaves
+        :param names: the names of all leaves
         """
         pass
 
@@ -47,14 +52,14 @@ class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
         self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
         """
-        Draw a leaf of the linkage tree.
+        Draw a "leg" connecting two levels of the linkage tree hierarchy.
 
-        :param tree_height:
-        :param bottom: the x coordinate of the child node
-        :param top: the x coordinate of the parent node
-        :param leaf: the index of the leaf where the link leg should be drawn (may be a
-            float, indicating a position in between two leaves)
+        :param bottom: the height of the child node in the linkage tree
+        :param top: the height of the parent node in the linkage tree
+        :param leaf: the index of the leaf where the link leg should be drawn (may be \
+            a ``float``, indicating a position in between two leaves)
         :param weight: the weight of the child node
+        :param tree_height: the total height of the linkage tree
         """
         pass
 
@@ -70,26 +75,25 @@ class DendrogramStyle(DrawStyle, metaclass=ABCMeta):
         tree_height: float,
     ) -> None:
         """
-        Draw a connector between two child nodes and their parent node.
+        Draw a connector between two sub-trees and their parent node.
 
-        :param bottom: the clustering level (i.e. similarity) of the child nodes
-        :param top: the clustering level (i.e. similarity) of the parent node
+        :param bottom: the height (i.e. cluster distance) of the sub-trees
+        :param top: the height of the parent node
         :param first_leaf: the index of the first leaf in the left sub-tree
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
-        :param tree_height: the total height of the tree
+        :param tree_height: the total height of the linkage tree
         """
         pass
 
 
+@inheritdoc(match="[see superclass]")
 class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=ABCMeta):
     """
-    Base class for Matplotlib styles for dendrogram.
+    Base class for Matplotlib styles for dendrograms.
 
-    Provide basic support for plotting a color legend for feature importance,
-    and providing the ``Axes`` object for plotting the actual dendrogram including
-    tick marks for the feature distance axis.
+    Includes support for plotting a color legend for feature importance.
     """
 
     _PERCENTAGE_FORMATTER = PercentageFormatter()
@@ -98,12 +102,12 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         self,
         *,
         ax: Optional[Axes] = None,
-        min_weight: float = 0.01,
         colormap: Optional[Union[str, Colormap]] = None,
+        min_weight: float = 0.01,
     ) -> None:
         """
-        :param min_weight: the min weight on the feature importance color scale; must \
-            be greater than 0 and smaller than 1 (default: 0.01)
+        :param min_weight: the min weight on the logarithmic feature importance color \
+            scale; must be greater than 0 and smaller than 1 (default: 0.01)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
@@ -112,27 +116,37 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
             ax=ax,
             colormap=colormap,
             colormap_normalize=LogNorm(min_weight, 1),
-            colorbar_label="feature importance",
             colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
             colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def _drawing_finalize(self) -> None:
-        super()._drawing_finalize()
+    def draw_leaf_names(self, *, names: Sequence[str]) -> None:
+        """[see superclass]"""
+        ax = self.ax
+        y_axis = ax.yaxis
+        y_axis.set_ticks(ticks=range(len(names)))
+        y_axis.set_ticklabels(ticklabels=names)
+
+    def _drawing_finalize(
+        self,
+        *,
+        labels_name: Optional[str] = None,
+        distance_name: Optional[str] = None,
+        weights_name: Optional[str] = None,
+        **kwargs,
+    ) -> None:
+        super()._drawing_finalize(colorbar_label=weights_name, **kwargs)
+
+        ax = self.ax
 
         # configure the axes
-        ax = self.ax
-        ax.set_xlabel("feature distance")
-        ax.set_ylabel("feature")
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
-
-    def draw_leaf_labels(self, labels: Sequence[str]) -> None:
-        """Draw leaf labels on the dendrogram."""
-        y_axis = self.ax.yaxis
-        y_axis.set_ticks(ticks=range(len(labels)))
-        y_axis.set_ticklabels(ticklabels=labels)
+        if distance_name:
+            ax.set_xlabel(distance_name)
+        if labels_name:
+            ax.set_ylabel(labels_name)
 
 
 __tracker.validate()

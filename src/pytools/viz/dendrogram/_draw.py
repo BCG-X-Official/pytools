@@ -3,7 +3,7 @@ Drawing dendrograms
 """
 
 import logging
-from typing import List, Mapping, NamedTuple, Type
+from typing import Any, List, Mapping, NamedTuple, Type
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from pytools.api import AllTracker
 from pytools.viz import Drawer
 from pytools.viz.dendrogram._linkage import LinkageTree
 from pytools.viz.dendrogram._style import DendrogramHeatmapStyle, DendrogramReportStyle
-from pytools.viz.dendrogram.base import BaseNode, DendrogramStyle
+from pytools.viz.dendrogram.base import DendrogramStyle, Node
 
 log = logging.getLogger(__name__)
 
@@ -36,15 +36,13 @@ __tracker = AllTracker(globals())
 
 
 class _SubtreeInfo(NamedTuple):
-    labels: List[str]
+    names: List[str]
     weight: float
 
 
 class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
     Class to draw a ``LinkageTree`` as a dendrogram.
-
-    The class has a public method :meth:`~.draw` which draws the dendrogram.
     """
 
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
@@ -53,13 +51,21 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
         return DendrogramDrawer._STYLES
 
+    def _get_style_attributes(self, data: LinkageTree) -> Mapping[str, Any]:
+        return dict(
+            labels_name=data.labels_name,
+            distance_name=data.distance_name,
+            weights_name=data.weights_name,
+            **super()._get_style_attributes(data=data),
+        )
+
     def _draw(self, data: LinkageTree) -> None:
         # draw the linkage tree
 
         node_weight = np.zeros(len(data), float)
 
-        def _calculate_weights(n: BaseNode) -> (float, int):
-            """calculate the weight of a node and number of leaves under it"""
+        def _calculate_weights(n: Node) -> (float, int):
+            # calculate the weight of a node and number of leaves below
             if n.is_leaf:
                 weight = n.weight
                 n_leaves = 1
@@ -72,16 +78,17 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
             node_weight[n.index] = weight / n_leaves
             return weight, n_leaves
 
-        def _draw_node(node: BaseNode, y: int, width: float) -> _SubtreeInfo:
-            """
-            Recursively draw the part of the dendrogram under a node.
+        def _draw_node(node: Node, y: int, width: float) -> _SubtreeInfo:
+            # Recursively draw the part of the dendrogram under a node.
+            #
+            # Arguments:
+            # - node:  the node to be drawn
+            # - y:     the value determining the position of the node with respect to
+            #          the leaves of the tree
+            # - width: width difference in the tree covered by the node
+            #
+            # Returns: _SubtreeInfo instance with labels and weights
 
-            :param node: the node to be drawn
-            :param y: the value determining the position of the node with respect to the
-              leaves of the tree
-            :param width: width difference in the tree covered by the node
-            :return info: ``_SubtreeInfo`` which contains weights and labels
-            """
             if node.is_leaf:
                 self.style.draw_link_leg(
                     bottom=0.0,
@@ -91,7 +98,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                     tree_height=data.max_distance,
                 )
 
-                return _SubtreeInfo(labels=[node.label], weight=node.weight)
+                return _SubtreeInfo(names=[node.name], weight=node.weight)
 
             else:
                 child_left, child_right = data.children(node=node)
@@ -103,12 +110,12 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                 )
                 info_right = _draw_node(
                     node=child_right,
-                    y=y + len(info_left.labels),
+                    y=y + len(info_left.names),
                     width=node.children_distance,
                 )
 
                 info = _SubtreeInfo(
-                    labels=info_left.labels + info_right.labels,
+                    names=info_left.names + info_right.names,
                     weight=info_left.weight + info_right.weight,
                 )
 
@@ -116,8 +123,8 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                     bottom=node.children_distance,
                     top=width,
                     first_leaf=y,
-                    n_leaves_left=len(info_left.labels),
-                    n_leaves_right=len(info_right.labels),
+                    n_leaves_left=len(info_left.names),
+                    n_leaves_right=len(info_right.names),
                     weight=info.weight,
                     tree_height=data.max_distance,
                 )
@@ -127,7 +134,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
         _calculate_weights(data.root)
 
         tree_info = _draw_node(node=data.root, y=0, width=data.max_distance)
-        self.style.draw_leaf_labels(tree_info.labels)
+        self.style.draw_leaf_names(names=tree_info.names)
 
 
 __tracker.validate()

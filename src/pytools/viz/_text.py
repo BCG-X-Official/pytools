@@ -27,42 +27,34 @@ __tracker = AllTracker(globals())
 
 class TextStyle(DrawStyle, metaclass=ABCMeta):
     """
-    Plain text drawing style.
-
-    :param width: the maximum width available to render the text, defaults to 80
-    :param out: the output stream this style instance writes to, or ``stdout`` if \
-      ``None`` is passed (defaults to ``None``)
+    Base class of plain text drawing styles.
     """
 
+    #: The output stream this style instance writes to
+    out: TextIO
+
+    #: The maximum width of the text to be produced
+    width: int
+
     def __init__(self, out: TextIO = None, width: int = 80, **kwargs) -> None:
+        """
+        :param width: the maximum width available to render the text, defaults to 80
+        :param out: the output stream this style instance writes to, or ``stdout`` if \
+          ``None`` is passed (defaults to ``None``)
+        """
+
         super().__init__(**kwargs)
 
         if width <= 0:
             raise ValueError(
                 f"arg width expected to be positive integer but is {width}"
             )
-        self._out = sys.stdout if out is None else out
-        self._width = width
+        self.out = sys.stdout if out is None else out
+        self.width = width
 
-    def _drawing_start(self, title: str) -> None:
-        """
-        Write the title to :attr:`.out`.
-        """
-        print(title, file=self.out)
-
-    @property
-    def out(self) -> TextIO:
-        """
-        The output stream this style instance writes to.
-        """
-        return self._out
-
-    @property
-    def width(self) -> int:
-        """
-        The maximum width of the text to be produced.
-        """
-        return self._width
+    def _drawing_start(self, title: str, **kwargs) -> None:
+        # Write the title to :attr:`.out`.
+        print(f"{f' {title} ':*^{self.width}s}", file=self.out)
 
 
 __tracker.validate()
