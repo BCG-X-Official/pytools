@@ -1,5 +1,5 @@
 """
-Utilities for text rendering.
+Utilities for rendering text.
 """
 
 from ._text import *

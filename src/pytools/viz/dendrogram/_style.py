@@ -21,10 +21,10 @@ inclusion in text reports.
 import logging
 from typing import Optional, Sequence, TextIO
 
+from pytools.text import CharacterMatrix
 from pytools.viz import TextStyle, text_contrast_color
 from pytools.viz.colors import RGBA_WHITE
 from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
-from pytools.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
 

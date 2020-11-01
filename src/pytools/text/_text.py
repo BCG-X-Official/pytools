@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.viz.distribution`
+Utilities for rendering text.
 """
 import logging
 from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union
