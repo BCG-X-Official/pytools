@@ -32,20 +32,20 @@ def linkage_tree(linkage_matrix: np.ndarray) -> LinkageTree:
     """Create a linkage tree for drawing tests."""
     return LinkageTree(
         scipy_linkage_matrix=linkage_matrix,
-        leaf_labels=list("ABCDEFGH"),
+        leaf_names=list("ABCDEFGH"),
         leaf_weights=[(w + 1) / 36 for w in range(8)],
     )
 
 
 def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
     checksum_dendrogram_report = "2d94fe5966d1fb77b4216c16e9845da6"
-    leaf_labels = list("ABCDEFGH")
+    leaf_names = list("ABCDEFGH")
     leaf_weights = [(w + 1) / 36 for w in range(8)]
 
     with pytest.raises(ValueError) as value_error:
         LinkageTree(
             scipy_linkage_matrix=linkage_matrix,
-            leaf_labels=leaf_labels,
+            leaf_names=leaf_names,
             leaf_weights=leaf_weights,
             max_distance=1,
         )
@@ -56,8 +56,11 @@ def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
 
     linkage_tree = LinkageTree(
         scipy_linkage_matrix=linkage_matrix,
-        leaf_labels=list("ABCDEFGH"),
+        leaf_names=leaf_names,
         leaf_weights=[(w + 1) / 36 for w in range(8)],
+        distance_label="distance",
+        leaf_label="label",
+        weight_label="weight",
     )
 
     with StringIO() as out:

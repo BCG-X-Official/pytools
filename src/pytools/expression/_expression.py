@@ -24,6 +24,11 @@ from .operator import MAX_PRECEDENCE, BinaryOperator, Operator, UnaryOperator
 
 log = logging.getLogger(__name__)
 
+
+#
+# Exported names
+#
+
 __all__ = [
     "ExpressionFormatter",
     "HasExpressionRepr",
@@ -64,7 +69,17 @@ __all__ = [
     "ExpressionAlias",
 ]
 
+
+#
+# Type variables
+#
+
 T = TypeVar("T")
+
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
 
 __tracker = AllTracker((globals()))
 

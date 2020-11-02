@@ -24,6 +24,11 @@ from pytools.api import AllTracker, get_generic_bases, inheritdoc
 
 log = logging.getLogger(__name__)
 
+
+#
+# Exported names
+#
+
 __all__ = [
     "SphinxCallback",
     "AutodocLinesProcessor",
@@ -34,10 +39,24 @@ __all__ = [
 ]
 
 
+#
+# Type variables
+#
+
 #: Mock type declaration: Sphinx application object
 Sphinx = Any
 
+
+#
+# Ensure all symbols introduced below are included in __all__
+#
+
 __tracker = AllTracker(globals())
+
+
+#
+# Classes
+#
 
 
 class SphinxCallback(metaclass=ABCMeta):
