@@ -49,7 +49,11 @@ please open a PR addressing the issue.
 We do ask that for any major changes please discuss these with us first via an issue or
 at our team email: FacetTeam <at> bcg <dot> com.
 
-For further information on contributing please see our :ref:`contribution-guide`.
+For further information on contributing please see our `contribution guide
+<https://github.gamma.bcg.com/pages/facet/facet/contribution_guide.html>`_ (todo:
+replace with RTD link once published).
+
+
 
 License
 ---------------------------
@@ -65,7 +69,9 @@ TBD
 BCG GAMMA
 ---------------------------
 
-If you would like to know more about the team behind pytools please see our :ref:`about_us` page.
+If you would like to know more about the team behind pytools please see our `about us
+page <https://github.gamma.bcg.com/pages/facet/facet/about_us.html>`_ (todo: replace
+with RTD link once published).
 
 We are always on the lookout for passionate and talented data scientists to join the
 BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
