@@ -36,16 +36,43 @@ Pip
     pip install gamma-pytools
 
 
-Development Guidelines
+Contributing
 ---------------------------
 
-TBD - link to long section in documentation
+Pytools is stable and is being supported long-term.
 
+Contributions to pytools are welcome and appreciated.
+For any bug reports or feature requests/enhancements please use the appropriate
+`GitHub form <https://github.com/BCG-Gamma/pytools/issues>`_, and if you wish to do so,
+please open a PR addressing the issue.
+
+We do ask that for any major changes please discuss these with us first via an issue or
+at our team email: FacetTeam <at> bcg <dot> com.
+
+For further information on contributing please see our :ref:`contribution-guide`.
+
+License
+---------------------------
+
+Pytools is licensed under Apache 2.0 as described in the
+`LICENSE <https://github.com/BCG-Gamma/pytools/LICENSE>`_ file.
 
 Acknowledgements
 ---------------------------
 
 TBD
+
+BCG GAMMA
+---------------------------
+
+If you would like to know more about the team behind pytools please see our :ref:`about_us` page.
+
+We are always on the lookout for passionate and talented data scientists to join the
+BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
+`here <https://www.bcg.com/en-gb/beyond-consulting/bcg-gamma/default>`_,
+or have a look at
+`career opportunities <https://www.bcg.com/en-gb/beyond-consulting/bcg-gamma/careers>`_.
+
 
 .. |azure_conda| image:: https://
     :target: https://
