@@ -11,7 +11,12 @@ from pytools.api import AllTracker
 log = logging.getLogger(__name__)
 
 
+#
+# Exported names
+#
+
 __all__ = ["PercentageFormatter"]
+
 
 #
 # Ensure all symbols introduced below are included in __all__

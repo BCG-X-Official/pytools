@@ -3,21 +3,22 @@ Core implementation of :mod:`pytools.viz.distribution`
 """
 
 import logging
-from abc import ABCMeta, abstractmethod
-from typing import Mapping, NamedTuple, Optional, Sequence, Type, Union
+from typing import Mapping, Optional, Sequence, Type, Union
 
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
 from pytools.api import AllTracker
-from pytools.viz import Drawer, DrawStyle, MatplotStyle
+from pytools.viz import Drawer, MatplotStyle
+from pytools.viz.colors import RgbaColor
+from pytools.viz.distribution.base import ECDF, ECDFStyle, XYSeries
 
 log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = [
@@ -25,10 +26,10 @@ __all__ = [
     "DEFAULT_COLOR_FAR_OUTLIER",
     "DEFAULT_IQR_MULTIPLE",
     "DEFAULT_IQR_MULTIPLE_FAR",
-    "ECDFStyle",
     "ECDFMatplotStyle",
     "ECDFDrawer",
 ]
+
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -38,7 +39,7 @@ __tracker = AllTracker(globals())
 
 
 #
-# constant definitions
+# Constants
 #
 
 DEFAULT_COLOR_OUTLIER = "orange"
@@ -49,70 +50,47 @@ DEFAULT_IQR_MULTIPLE_FAR = 3.0
 
 
 #
-# class definitions
+# Classes
 #
-
-
-class _XYSeries(NamedTuple):
-    """
-    Series of x and y coordinates for plotting; x and y values are held in two
-    separate lists of the same length.
-    """
-
-    x: Sequence[float]
-    y: Sequence[float]
-
-
-class _Ecdf(NamedTuple):
-    """
-    Three sets of coordinates for plotting an ECDF: inliers, outliers, and far
-    outliers.
-    """
-
-    inliers: _XYSeries
-    outliers: _XYSeries
-    far_outliers: _XYSeries
-
-
-class ECDFStyle(DrawStyle, metaclass=ABCMeta):
-    """
-    The base drawing style for ECDFs
-    """
-
-    @abstractmethod
-    def _draw_ecdf(
-        self, ecdf: _Ecdf, x_label: str, iqr_multiple: float, iqr_multiple_far: float
-    ) -> None:
-        pass
 
 
 class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
     """
     Plot an ECDF as a Matplotlib plot.
-
-    :param ax: optional axes object to draw on; if ``Null`` use pyplot's current axes
-    :param color_non_outlier: the color for non outlier points (default: blue)
-    :param color_outlier: the color for outlier points (default: orange)
-    :param color_far_outlier: the color for far outlier points (default: red)
     """
+
+    # ; color for plotting outliers
+    color_outlier: Union[RgbaColor, str]
+
+    # ; color for plotting far outliers
+    color_far_outlier: Union[RgbaColor, str]
 
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
-        color_outlier: str = DEFAULT_COLOR_OUTLIER,
-        color_far_outlier: str = DEFAULT_COLOR_FAR_OUTLIER,
+        color_outlier: Union[RgbaColor, str] = DEFAULT_COLOR_OUTLIER,
+        color_far_outlier: Union[RgbaColor, str] = DEFAULT_COLOR_FAR_OUTLIER,
         **kwargs,
     ):
+        """
+        :param color_outlier: the color for plotting outliers \
+            (default: orange)
+        :param color_far_outlier: the color color for plotting far outliers \
+            (default: red)
+        """
         super().__init__(ax=ax, **kwargs)
-        self._color_outlier = color_outlier
-        self._color_far_outlier = color_far_outlier
+        self.color_outlier = color_outlier
+        self.color_far_outlier = color_far_outlier
 
-    def _drawing_start(self, title: str) -> None:
-        super()._drawing_start(title=title)
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
     def _draw_ecdf(
-        self, ecdf: _Ecdf, x_label: str, iqr_multiple: float, iqr_multiple_far: float
+        self,
+        ecdf: ECDF,
+        x_label: str,
+        iqr_multiple: float,
+        iqr_multiple_far: float,
     ) -> None:
         def _iqr_annotation(multiple: float) -> str:
             return f"(> {multiple:.3g} * IQR)"
@@ -123,14 +101,14 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         ax.plot(
             ecdf.outliers.x,
             ecdf.outliers.y,
-            color=self._color_outlier,
+            color=self.color_outlier,
             label=f"outlier {_iqr_annotation(multiple=iqr_multiple)}",
             **matplotlib_kwargs,
         )
         ax.plot(
             ecdf.far_outliers.x,
             ecdf.far_outliers.y,
-            color=self._color_far_outlier,
+            color=self.color_far_outlier,
             label=f"far outlier {_iqr_annotation(multiple=iqr_multiple_far)}",
             **matplotlib_kwargs,
         )
@@ -148,23 +126,31 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
 
     _STYLES = {"matplot": ECDFMatplotStyle}
 
+    #: iqr multiple to determine outliers;
+    #: if ``None``, then no outliers and far outliers are computed
+    iqr_multiple: Optional[float]
+
+    #: iqr multiple to determine far outliers;
+    #: if ``None``, then no far outliers are computed, otherwise
+    #: must be greater than ``iqr_multiple``
+    iqr_multiple_far: Optional[float]
+
+    #: if ``True``, do not plot far outliers
+    hide_far_outliers: bool
+
     def __init__(
         self,
-        style: Union[ECDFStyle, str] = "matplot",
+        style: Optional[Union[ECDFStyle, str]] = None,
         iqr_multiple: Optional[float] = DEFAULT_IQR_MULTIPLE,
         iqr_multiple_far: Optional[float] = DEFAULT_IQR_MULTIPLE_FAR,
-        hide_far_outliers: Optional[bool] = False,
+        hide_far_outliers: bool = False,
     ) -> None:
         """
-        :param style: the style of the chart; either as a \
-            :class:`pytools.viz.distribution.ECDFStyle` instance, or as the name of a \
-            default style. Permissible names include "matplot" for a style supporting \
-            Matplotlib (default: ``"matplot"``).
-        :param iqr_multiple: iqr multiple to determine outliers. If ``None``, then no \
+        :param iqr_multiple: iqr multiple to determine outliers; if ``None``, then no \
             outliers and far outliers are computed (default: 1.5).
-        :param iqr_multiple_far: iqr multiple to determine far outliers. If ``None``, \
-            then no far outliers are computed. Should be greater than ``iqr_multiple`` \
-            when both are defined (default: 3.0).
+        :param iqr_multiple_far: iqr multiple to determine far outliers; if ``None``, \
+            then no far outliers are computed, otherwise must be greater than
+            ``iqr_multiple`` (default: 3.0).
         :param hide_far_outliers: if ``True``, do not plot far outliers \
             (default: ``False``)
         """
@@ -182,9 +168,11 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
                     f"arg iqr_multiple_far={iqr_multiple_far}"
                 )
 
-        self._iqr_multiple = iqr_multiple
-        self._iqr_multiple_far = iqr_multiple_far
-        self._hide_far_outliers = hide_far_outliers
+        self.iqr_multiple = iqr_multiple
+        self.iqr_multiple_far = iqr_multiple_far
+        self.hide_far_outliers = hide_far_outliers
+
+    __init__.__doc__ = Drawer.__init__.__doc__ + __init__.__doc__
 
     def draw(self, data: Sequence[float], title: Optional[str] = None) -> None:
         """
@@ -211,11 +199,11 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         self.style._draw_ecdf(
             ecdf=ecdf,
             x_label=x_label,
-            iqr_multiple=self._iqr_multiple,
-            iqr_multiple_far=self._iqr_multiple_far,
+            iqr_multiple=self.iqr_multiple,
+            iqr_multiple_far=self.iqr_multiple_far,
         )
 
-    def _ecdf(self, data: Sequence[float]) -> _Ecdf:
+    def _ecdf(self, data: Sequence[float]) -> ECDF:
         """
         Compute ECDF for scalar values.
 
@@ -248,8 +236,8 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         # y-data for the ECDF: y
         y = np.arange(1, n + 1)
 
-        iqr_multiple = self._iqr_multiple
-        iqr_multiple_far = self._iqr_multiple_far
+        iqr_multiple = self.iqr_multiple
+        iqr_multiple_far = self.iqr_multiple_far
         if iqr_multiple:
             # outliers
             q1, q3 = np.percentile(x, [25, 75])
@@ -275,12 +263,14 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             outlier_mask = []
             far_out_mask = []
 
-        return _Ecdf(
-            _XYSeries(x[inlier_mask], y[inlier_mask]),
-            _XYSeries(x[outlier_mask], y[outlier_mask]),
-            _XYSeries([], [])
-            if self._hide_far_outliers
-            else _XYSeries(x[far_out_mask], y[far_out_mask]),
+        return ECDF(
+            inliers=XYSeries(x=x[inlier_mask], y=y[inlier_mask]),
+            outliers=XYSeries(x=x[outlier_mask], y=y[outlier_mask]),
+            far_outliers=(
+                XYSeries(x=[], y=[])
+                if self.hide_far_outliers
+                else XYSeries(x=x[far_out_mask], y=y[far_out_mask])
+            ),
         )
 
 

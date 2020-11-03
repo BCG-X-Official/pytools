@@ -12,14 +12,14 @@ log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["ParallelizableMixin"]
 
 
 #
-# type variables
+# Type variables
 #
 
 T = TypeVar("T")
@@ -31,8 +31,9 @@ T = TypeVar("T")
 
 __tracker = AllTracker(globals())
 
+
 #
-# class definitions
+# Classes
 #
 
 

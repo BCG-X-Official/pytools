@@ -9,20 +9,20 @@ from ..api import AllTracker
 
 log = logging.getLogger(__name__)
 
-
 #
-# exported names
+# Exported names
 #
 
 __all__ = ["FittableMixin"]
 
-#
-# type variables
-#
 
+#
+# Type variables
+#
 
 T = TypeVar("T")
 T_Data = TypeVar("T_Data")
+
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -30,8 +30,9 @@ T_Data = TypeVar("T_Data")
 
 __tracker = AllTracker(globals())
 
+
 #
-# class definitions
+# Classes
 #
 
 

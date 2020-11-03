@@ -21,16 +21,17 @@ inclusion in text reports.
 import logging
 from typing import Optional, Sequence, TextIO
 
-from pytools.viz import TextStyle
+from pytools.api import AllTracker, inheritdoc
+from pytools.text import CharacterMatrix
+from pytools.viz import TextStyle, text_contrast_color
 from pytools.viz.colors import RGBA_WHITE
 from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
-from pytools.viz.text import CharacterMatrix
 
 log = logging.getLogger(__name__)
 
 
 #
-# exported names
+# Exported names
 #
 
 __all__ = [
@@ -39,16 +40,16 @@ __all__ = [
     "DendrogramReportStyle",
 ]
 
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
-from pytools.api import AllTracker, inheritdoc
 
 __tracker = AllTracker(globals())
 
 
 #
-# class definitions
+# Classes
 #
 
 
@@ -94,7 +95,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
     def _draw_line(
         self, x1: float, x2: float, y1: float, y2: float, weight: float
     ) -> None:
-        self.ax.plot((x1, x2), (y1, y2), color=self.value_color(weight))
+        self.ax.plot((x1, x2), (y1, y2), color=self.color_for_value(weight))
 
 
 @inheritdoc(match="[see superclass]")
@@ -102,14 +103,6 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
     """
     Plot dendrograms with a heat map style.
     """
-
-    def _drawing_start(self, title: str) -> None:
-        """
-        Called once by the drawer when starting to draw a new dendrogram.
-        :param title: the title of the dendrogram
-        """
-        super()._drawing_start(title=title)
-        self.ax.margins(0, 0)
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: int, weight: float, tree_height: float
@@ -136,8 +129,12 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
             weight=weight,
         )
 
+    def _drawing_start(self, title: str, **kwargs) -> None:
+        super()._drawing_start(title=title, **kwargs)
+        self.ax.margins(0, 0)
+
     def _draw_hbar(self, x: float, y: float, w: float, h: float, weight: float) -> None:
-        fill_color = self.value_color(weight)
+        fill_color = self.color_for_value(weight)
 
         self.ax.barh(
             y=[y - 0.5],
@@ -159,7 +156,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
 
         x_text = x + w / 2
         y_text = y + (h - 1) / 2
-        text_width, _ = self.text_size(text=label, x=x_text, y=y_text)
+        text_width, _ = self.text_dimensions(text=label, x=x_text, y=y_text)
 
         if text_width <= w:
             self.ax.text(
@@ -168,16 +165,25 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
                 label,
                 ha="center",
                 va="center",
-                color=self.text_contrast_color(fill_color),
+                color=text_contrast_color(fill_color),
             )
 
 
+@inheritdoc(match="[see superclass]")
 class DendrogramReportStyle(TextStyle, DendrogramStyle):
     """
     Dendrogram rendered as text.
     """
 
-    _DEFAULT_LABEL_WIDTH = 20
+    __DEFAULT_LABEL_WIDTH = 20
+
+    #: the number of characters that will be allocated for the label column,
+    #: including the weight
+    label_width: int
+
+    #: maximum number of text lines to output including the title;
+    #: additional lines of the dendrogram will be clipped (optional)
+    max_height: int
 
     def __init__(
         self,
@@ -186,6 +192,13 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         label_width: Optional[int] = None,
         max_height: int = 100,
     ) -> None:
+        """
+        :param label_width: the number of characters that will be allocated for the \
+            label column, including the weight (optional; defaults to 20 characters or \
+            half of arg width, whichever is smaller)
+        :param max_height: maximum number of text lines to output including the title; \
+            additional lines of the dendrogram will be clipped (default: 100)
+        """
         super().__init__(out=out, width=width)
         if max_height <= 0:
             raise ValueError(
@@ -197,65 +210,33 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
                 f"arg label_width={label_width} must be half or less of arg "
                 f"width={width}"
             )
-        self._max_height = max_height
-        self._dendrogram_left = (
-            min(DendrogramReportStyle._DEFAULT_LABEL_WIDTH, width // 2)
+        self.max_height = max_height
+        self.label_width = (
+            min(DendrogramReportStyle.__DEFAULT_LABEL_WIDTH, width // 2)
             if label_width is None
             else label_width
         )
-        self._dendrogram_right = width - self._dendrogram_left
+        self._dendrogram_right = width - self.label_width
         self._char_matrix = None
         self._n_labels = None
 
-    def _drawing_start(self, title: str) -> None:
-        # write the title
-        self.out.write(f"{f' {title} ':*^{self.width}s}\n")
-        self._char_matrix = CharacterMatrix(
-            n_rows=self._max_height, n_columns=self.width
-        )
+    def draw_leaf_names(self, *, names: Sequence[str]) -> None:
+        """[see superclass]"""
 
-    def _drawing_finalize(self) -> None:
-        """Finalize writing the text."""
-        try:
-            super()._drawing_finalize()
-            for row in reversed(range(self._n_labels + 1)):
-                self.out.write(f"{self._char_matrix[row, :]}\n")
-        finally:
-            self._char_matrix = None
-            self._n_labels = None
-
-    def draw_leaf_labels(self, labels: Sequence[str]) -> None:
-        """
-        Draw the feature labels in the drawing.
-
-        :param labels: the name of the features
-        """
         matrix = self._char_matrix
-        n_labels = len(labels)
-        if n_labels > self._max_height:
-            n_labels = self._max_height - 1
+        n_labels = len(names)
+        if n_labels > self.max_height:
+            n_labels = self.max_height - 1
             matrix[n_labels, :] = f"{'clipped':~^{self.width}s}\n"
         self._n_labels = n_labels
-        label_width = self._weight_column
-        for row, label in enumerate(labels[:n_labels]):
+        label_width = self.__weight_column
+        for row, label in enumerate(names[:n_labels]):
             matrix[row, :label_width] = label + " "
-
-    @property
-    def _weight_column(self) -> int:
-        return self._dendrogram_left - 5
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
-        """
-        Draw a horizontal link in the dendrogram between a node and one of its children.
-
-        :param tree_height:
-        :param bottom: the x coordinate of the child node
-        :param top: the x coordinate of the parent node
-        :param leaf: the index of the first leaf in the current sub-tree
-        :param weight: the weight of the child node
-        """
+        """[see superclass]"""
 
         # determine the y coordinate in the character matrix
         line_y = int(leaf)
@@ -275,7 +256,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         # if we're in a leaf, we can draw the weight next to he label
         if bottom == 0:
             self._char_matrix[
-                line_y, self._weight_column : self._dendrogram_left
+                line_y, self.__weight_column : self.label_width
             ] = f"{weight * 100:3.0f}%"
 
     def draw_link_connector(
@@ -288,20 +269,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         weight: float,
         tree_height: float,
     ) -> None:
-        """
-        Draw a vertical link between two sibling nodes and the outgoing vertical line.
-
-        See :func:`.DendrogramStyle
-        .draw_link_connector` for the documentation of the abstract method.
-
-        :param bottom: the clustering level (i.e. similarity) of the child nodes
-        :param top: the clustering level (i.e. similarity) of the parent node
-        :param first_leaf: the index of the first leaf in the left sub-tree
-        :param n_leaves_left: the number of leaves in the left sub-tree
-        :param n_leaves_right: the number of leaves in the right sub-tree
-        :param weight: the weight of the parent node
-        :param tree_height: the total height of the tree
-        """
+        """[see superclass]"""
 
         y1 = first_leaf + n_leaves_left // 2
         y2 = first_leaf + n_leaves_left + (n_leaves_right - 1) // 2
@@ -321,10 +289,29 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         matrix[y1, x] = "/"
         matrix[y2, x] = "\\"
 
+    def _drawing_start(self, title: str, **kwargs) -> None:
+        super()._drawing_start(title=title, **kwargs)
+        self._char_matrix = CharacterMatrix(
+            n_rows=self.max_height, n_columns=self.width
+        )
+
+    def _drawing_finalize(self, **kwargs) -> None:
+        try:
+            super()._drawing_finalize(**kwargs)
+            for row in reversed(range(self._n_labels + 1)):
+                self.out.write(f"{self._char_matrix[row, :]}\n")
+        finally:
+            self._char_matrix = None
+            self._n_labels = None
+
     def _x_pos(self, h: float, h_max: float) -> int:
         # calculate the horizontal position in the character grid,
         # ensuring that h=h_max still yields a position inside the grid (factor 0.99999)
-        return self._dendrogram_left + int(self._dendrogram_right * h / h_max * 0.99999)
+        return self.label_width + int(self._dendrogram_right * h / h_max * 0.99999)
+
+    @property
+    def __weight_column(self) -> int:
+        return self.label_width - 5
 
 
 __tracker.validate()
