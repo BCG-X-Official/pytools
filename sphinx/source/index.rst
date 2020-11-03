@@ -1,4 +1,4 @@
-.. image:: _static/pytools_logo.png
+.. image:: _static/gamma_pytools_logo.png
 
 |
 
