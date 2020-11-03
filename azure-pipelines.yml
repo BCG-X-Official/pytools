@@ -105,7 +105,7 @@ stages:
 
     jobs:
     - job:
-      displayName: 'in develop environment'
+      displayName: 'pytest @ develop environment'
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
@@ -125,6 +125,15 @@ stages:
           path: pytools
 
         - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              set -e
+              pip install flit
+              flit build
+          displayName: 'Quick build test'
 
         - task: Bash@3
           inputs:
