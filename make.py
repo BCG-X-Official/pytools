@@ -12,6 +12,7 @@ import subprocess
 import sys
 from glob import glob
 from typing import Any, Dict, List
+from urllib.request import pathname2url
 
 import toml
 
@@ -35,6 +36,7 @@ UNCONSTRAINED_DEPS = "unconstrained"
 KNOWN_DEPENDENCY_TYPES = (DEFAULT_DEPS, MIN_DEPS, MAX_DEPS, UNCONSTRAINED_DEPS)
 
 FACET_PATH_ENV = "FACET_PATH"
+FACET_PATH_URI_ENV = "FACET_PATH_URI"
 FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
@@ -174,6 +176,7 @@ def set_up(project: str, build_system: str, dependency_type: str) -> None:
     Set up for a build – set FACET_PATH (parent folder of all projects) and clean.
     """
     os.environ[FACET_PATH_ENV] = FACET_PATH
+    os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(FACET_PATH)}"
     clean(project, build_system)
     expose_deps(project, build_system, dependency_type)
     pkg_version = get_package_version(project)
