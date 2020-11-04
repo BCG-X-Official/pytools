@@ -63,13 +63,13 @@ stages:
               set -e
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
               conda activate pytools-develop
-              cd $(System.DefaultWorkingDirectory)/pytools/sphinx/
+              cd $(System.DefaultWorkingDirectory)/sphinx/
               python make.py html
-              mkdir $(System.DefaultWorkingDirectory)/pytools/docs/
-              mv $(System.DefaultWorkingDirectory)/pytools/sphinx/build/html/* $(System.DefaultWorkingDirectory)/pytools/docs/
+              mkdir $(System.DefaultWorkingDirectory)/docs/
+              mv $(System.DefaultWorkingDirectory)/sphinx/build/html/* $(System.DefaultWorkingDirectory)/docs/
           displayName: 'render docs'
 
         - task: Bash@3
