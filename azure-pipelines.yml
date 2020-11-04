@@ -70,7 +70,15 @@ stages:
               python make.py html
               mkdir $(System.DefaultWorkingDirectory)/docs/
               mv $(System.DefaultWorkingDirectory)/sphinx/build/html/* $(System.DefaultWorkingDirectory)/docs/
-          displayName: 'render docs'
+              touch $(System.DefaultWorkingDirectory)/docs/.nojekyll
+          displayName: 'Render docs'
+
+        - task: InstallSSHKey@0
+          inputs:
+            knownHostsEntry: 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=='
+            sshPublicKey: 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICPIrZWnxJjycCOpCHNTXRrNM+EFGZOB+cHLW0tH2wwo azuredevops@microsoft.com'
+            sshKeySecureFile: 'deploy_docs'
+          displayName: 'Install the deploy SSH key'
 
         - task: Bash@3
           condition: succeededOrFailed()
@@ -80,8 +88,8 @@ stages:
               echo "Current directory contents:"
               dir
               echo "Adjusting git credentials"
-              git config --local user.name "Azure Pipelines"
-              git config --local user.email "azuredevops@microsoft.com"
+              git config --global user.name "Azure Pipelines"
+              git config --global user.email "azuredevops@microsoft.com"
               git checkout -b doc/github_pages
               git status
               git add docs/*
@@ -89,5 +97,5 @@ stages:
               git status
               git commit -m "Publishing GitHub Pages  ***NO_CI***"
               echo "Committed to local branch doc/github_pages"
-              echo "Missing step: git push --set-upstream origin doc/github_pages"
-          displayName: 'publish docs'
+              git push --set-upstream origin doc/github_pages
+          displayName: 'Publish docs'
