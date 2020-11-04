@@ -77,13 +77,17 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-              ls
-              cd docs
-              ls
+              echo "Current directory contents:"
+              dir
+              echo "Adjusting git credentials"
               git config --local user.name "Azure Pipelines"
               git config --local user.email "azuredevops@microsoft.com"
               git checkout -b doc/github_pages
+              git status
               git add .
+              echo "Staged docs HTML build"
+              git status
               git commit -m "Publishing GitHub Pages  ***NO_CI***"
-              git push --set-upstream origin doc/github_pages
+              echo "Committed to local branch doc/github_pages"
+              echo "Missing step: git push --set-upstream origin doc/github_pages"
           displayName: 'publish docs'
