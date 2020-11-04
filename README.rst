@@ -26,7 +26,7 @@ Anaconda
 
 .. code-block:: RST
 
-    conda install gamma-pytools
+    conda install -c bcg_gamma gamma-pytools
 
 Pip
 ~~~~~~~~~~~~~~~~~~~~~
