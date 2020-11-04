@@ -52,6 +52,7 @@ stages:
           displayName: 'use Python 3.7'
 
         - checkout: self
+          path: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
@@ -62,13 +63,13 @@ stages:
               set -e
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/src
               conda env create -f environment.yml
               conda activate pytools-develop
-              cd $(System.DefaultWorkingDirectory)/sphinx/
+              cd $(System.DefaultWorkingDirectory)/pytools/sphinx/
               python make.py html
-              mkdir $(System.DefaultWorkingDirectory)/docs/
-              mv $(System.DefaultWorkingDirectory)/sphinx/build/html/* $(System.DefaultWorkingDirectory)/docs/
+              mkdir $(System.DefaultWorkingDirectory)/pytools/docs/
+              mv $(System.DefaultWorkingDirectory)/pytools/sphinx/build/html/* $(System.DefaultWorkingDirectory)/pytools/docs/
           displayName: 'render docs'
 
         - task: Bash@3

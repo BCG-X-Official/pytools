@@ -17,7 +17,7 @@ def make() -> None:
     sys.path.insert(
         0,
         os.path.normpath(
-            os.path.join(cwd, "base")
+            os.path.join(cwd, os.pardir, os.pardir, "pytools", "sphinx", "base")
         ),
     )
     # noinspection PyUnresolvedReferences
