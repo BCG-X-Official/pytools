@@ -90,7 +90,7 @@ stages:
               echo "Adjusting git credentials"
               git config --global user.name "Azure Pipelines"
               git config --global user.email "azuredevops@microsoft.com"
-              
+              git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout -b doc/github_pages
               git status
               git add docs/*
