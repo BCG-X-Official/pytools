@@ -68,9 +68,6 @@ stages:
               conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)/sphinx/
               python make.py html
-              mkdir $(System.DefaultWorkingDirectory)/docs/
-              mv $(System.DefaultWorkingDirectory)/sphinx/build/html/* $(System.DefaultWorkingDirectory)/docs/
-              touch $(System.DefaultWorkingDirectory)/docs/.nojekyll
           displayName: 'Render docs'
 
         - task: InstallSSHKey@0
@@ -91,12 +88,18 @@ stages:
               git config --global user.name "Azure Pipelines"
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-              git checkout -b doc/github_pages
+              git checkout --track origin/doc/github_pages
+              mkdir -p docs/docs-version/
+              mv docs/docs-version/ /tmp/
+              rm -r docs/
+              cp -r sphinx/build/html/ docs/
+              mv /tmp/docs-version/ docs/docs-version/
+              touch docs/.nojekyll
               git status
               git add docs
               echo "Staged docs HTML build"
               git status
-              git commit -m "Publishing GitHub Pages  ***NO_CI***"
+              git commit -m "Publishing GitHub Pages [skip ci]"
               echo "Committed to local branch doc/github_pages"
               git push --set-upstream origin doc/github_pages
           displayName: 'Publish docs'
