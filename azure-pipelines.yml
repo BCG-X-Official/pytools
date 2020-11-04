@@ -93,7 +93,7 @@ stages:
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout -b doc/github_pages
               git status
-              git add docs/*
+              git add docs
               echo "Staged docs HTML build"
               git status
               git commit -m "Publishing GitHub Pages  ***NO_CI***"
