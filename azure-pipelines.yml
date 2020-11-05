@@ -87,13 +87,13 @@ stages:
               git config --global user.name "Azure Pipelines"
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-              git checkout --track origin/gh-pages
+              git checkout --track origin/github-pages
               python sphinx/make.py prepare_docs_deployment
               git status
               git add docs
               echo "Staged docs HTML build"
               git status
               git commit -m "Publishing GitHub Pages [skip ci]"
-              echo "Committed to local branch gh-pages"
-              git push --set-upstream origin gh-pages
+              echo "Committed to local branch github-pages"
+              git push --set-upstream origin github-pages
           displayName: 'Publish docs'
