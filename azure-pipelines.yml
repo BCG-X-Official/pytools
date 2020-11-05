@@ -88,6 +88,7 @@ stages:
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout --track origin/github-pages
+              eval "$(conda shell.bash hook)"
               conda activate pytools-develop
               python sphinx/make.py prepare_docs_deployment
               git status
