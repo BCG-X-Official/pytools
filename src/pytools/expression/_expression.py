@@ -1015,6 +1015,11 @@ class BaseInvocation(PrefixExpression):
     _PRECEDENCE = op.DOT.precedence
 
     def __init__(self, prefix: Any, brackets: BracketPair, args: Iterable[Any]):
+        """
+        :param prefix: the expression representing the object being invoked
+        :param brackets: the brackets surrounding the invocation argument(s)
+        :param args: the invocation arguments (can also be empty)
+        """
         self._prefix = make_expression(prefix)
         self._invocation = _Invocation(brackets, args=args)
 
