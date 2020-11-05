@@ -81,6 +81,7 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
+              set -e
               echo "Current directory contents:"
               dir
               echo "Adjusting git credentials"
