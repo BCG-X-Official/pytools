@@ -93,6 +93,7 @@ stages:
               mv docs/docs-version/ /tmp/
               rm -r docs/
               cp -r sphinx/build/html/ docs/
+              cp -r sphinx/build/html/ docs/docs-version/latest/
               mv /tmp/docs-version/ docs/docs-version/
               touch docs/.nojekyll
               rm docs/.buildinfo
