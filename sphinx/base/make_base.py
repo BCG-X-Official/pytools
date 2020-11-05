@@ -357,7 +357,9 @@ def get_package_version() -> str:
         )
 
     version_module = importlib.util.module_from_spec(spec)
+    # noinspection PyUnresolvedReferences
     spec.loader.exec_module(version_module)
+    # noinspection PyUnresolvedReferences
     return version_module.__version__
 
 
