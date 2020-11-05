@@ -47,8 +47,8 @@ stages:
       steps:
         - task: UsePythonVersion@0
           inputs:
-            versionSpec: '3.7.*'
-          displayName: 'use Python 3.7'
+            versionSpec: '3.8.*'
+          displayName: 'use Python 3.8'
 
         - checkout: self
           path: pytools
@@ -88,6 +88,7 @@ stages:
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout --track origin/github-pages
+              conda activate pytools-develop
               python sphinx/make.py prepare_docs_deployment
               git status
               git add docs
