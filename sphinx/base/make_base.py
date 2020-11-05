@@ -25,6 +25,7 @@ DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 FACET_PROJECT = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
+DIR_DOCS = os.path.join(DIR_REPO_ROOT, 'docs')
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
@@ -215,6 +216,51 @@ class FetchPkgVersions(Command):
         print(f"Version data written into: {JS_VERSIONS_FILE}")
 
 
+class PrepareDocsDeployment(Command):
+    @classmethod
+    def get_description(cls) -> str:
+        return "update versions of rendered documentation"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        return ()
+
+    @classmethod
+    def _run(cls) -> None:
+        # get current version of package in the form of folder/URL name (e.g., "1-0-0")
+        current_version = version_string_to_url(get_package_version())
+
+        # remove docs build currently deployed, except for the docs versions folder
+        assert is_azure_build(), "Only implemented for Azure Pipelines"
+        from tempfile import TemporaryDirectory
+        with TemporaryDirectory() as DIR_TMP:
+            shutil.move(src=os.path.join(DIR_DOCS, 'docs-version'), dst=DIR_TMP)
+            shutil.rmtree(path=DIR_DOCS)
+            os.makedirs(DIR_DOCS)
+            shutil.move(src=os.path.join(DIR_TMP, 'docs-version'), dst=DIR_DOCS)
+
+        # copy new docs version to deployment path
+        shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
+
+        # update latest version in docs history
+        shutil.rmtree(path=os.path.join(DIR_DOCS, 'docs-version', current_version))
+        shutil.copytree(
+            src=DIR_ALL_DOCS_VERSIONS,
+            dst=os.path.join(DIR_DOCS, 'docs-version'),
+            dirs_exist_ok=True
+        )
+
+        # remove .buildinfo which interferes with GitHub Pages build
+        if os.path.exists(os.path.join(DIR_DOCS, '.buildinfo')):
+            os.remove(os.path.join(DIR_DOCS, '.buildinfo'))
+
+        # create empty file to signal that no GitHub auto-rendering is required
+        open(os.path.join(DIR_DOCS, '.nojekyll'), 'a').close()
+
+        print("Docs moved to ./docs and historic versions updated")
+
+
+
 class Html(Command):
     @classmethod
     def get_description(cls) -> str:
@@ -387,5 +433,6 @@ Available program arguments:
 
 
 available_commands: Dict[str, Type[Command]] = {
-    cmd.get_name(): cmd for cmd in (Clean, ApiDoc, Html, Help, FetchPkgVersions)
+    cmd.get_name(): cmd for cmd in
+    (Clean, ApiDoc, Html, Help, FetchPkgVersions, PrepareDocsDeployment)
 }

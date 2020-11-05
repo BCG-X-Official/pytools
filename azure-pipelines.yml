@@ -66,8 +66,7 @@ stages:
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
               conda activate pytools-develop
-              cd $(System.DefaultWorkingDirectory)/sphinx/
-              python make.py html
+              python sphinx/make.py html
           displayName: 'Render docs'
 
         - task: InstallSSHKey@0
@@ -89,14 +88,7 @@ stages:
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout --track origin/doc/github_pages
-              mkdir -p docs/docs-version/
-              mv docs/docs-version/ /tmp/
-              rm -r docs/
-              cp -r sphinx/build/html/ docs/
-              cp -r sphinx/build/html/ docs/docs-version/latest/
-              mv /tmp/docs-version/ docs/docs-version/
-              touch docs/.nojekyll
-              rm docs/.buildinfo
+              python sphinx/make.py prepare_docs_deployment
               git status
               git add docs
               echo "Staged docs HTML build"
