@@ -1,12 +1,11 @@
 trigger:
-  - feature/github_pages
-#  - master
-#  - develop
-#  - release/*
+  - master
+  - develop
+  - release/*
 
-#pr:
-#  - master
-#  - develop
+pr:
+  - master
+  - develop
 
 # set the build name
 name: $[ variables['branchName'] ]
