@@ -95,6 +95,7 @@ stages:
               cp -r sphinx/build/html/ docs/
               mv /tmp/docs-version/ docs/docs-version/
               touch docs/.nojekyll
+              rm docs/.buildinfo
               git status
               git add docs
               echo "Staged docs HTML build"
