@@ -13,6 +13,8 @@ import sys
 from abc import ABCMeta, abstractmethod
 from typing import Dict, Iterable, List, Set, Tuple, Type
 
+from packaging import version as pkg_version
+
 cwd = os.getcwd()
 
 # Sphinx commands
@@ -225,6 +227,9 @@ class Html(Command):
 
     @classmethod
     def _run(cls) -> None:
+
+        check_sphinx_version()
+
         os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
 
         sphinx_html_opts = [
@@ -370,6 +375,14 @@ def version_string_to_url(version: str) -> str:
     Our convention is to only replace all dots with dashes.
     """
     return version.replace(".", "-")
+
+
+def check_sphinx_version() -> None:
+    import sphinx
+
+    sphinx_version = pkg_version.parse(sphinx.__version__)
+    if sphinx_version < pkg_version.parse("3.2.1"):
+        raise RuntimeError("please upgrade sphinx to version 3.2.1 or newer")
 
 
 def print_usage() -> None:
