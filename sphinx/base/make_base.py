@@ -243,7 +243,7 @@ class PrepareDocsDeployment(Command):
                 shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
 
         # copy new docs version to deployment path
-        os.makedirs(DIR_DOCS)
+        os.makedirs(DIR_DOCS, exist_ok=True)
         shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
 
         # update latest version in docs history
