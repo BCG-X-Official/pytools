@@ -25,7 +25,7 @@ DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 FACET_PROJECT = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
-DIR_DOCS = os.path.join(DIR_REPO_ROOT, 'docs')
+DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
@@ -161,7 +161,9 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
+            shell=True,
+            check=True,
         )
 
 
@@ -232,35 +234,35 @@ class PrepareDocsDeployment(Command):
         # remove docs build currently deployed, except for the docs versions folder
         # assert is_azure_build(), "Only implemented for Azure Pipelines"
         from tempfile import TemporaryDirectory
-        if os.path.exists(os.path.join(DIR_DOCS, 'docs-version')):
+
+        if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
             with TemporaryDirectory() as DIR_TMP:
-                shutil.move(src=os.path.join(DIR_DOCS, 'docs-version'), dst=DIR_TMP)
+                shutil.move(src=os.path.join(DIR_DOCS, "docs-version"), dst=DIR_TMP)
                 shutil.rmtree(path=DIR_DOCS)
                 os.makedirs(DIR_DOCS)
-                shutil.move(src=os.path.join(DIR_TMP, 'docs-version'), dst=DIR_DOCS)
+                shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
 
         # copy new docs version to deployment path
         os.makedirs(DIR_DOCS)
         shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
 
         # update latest version in docs history
-        if os.path.exists(os.path.join(DIR_DOCS, 'docs-version', current_version)):
-            shutil.rmtree(path=os.path.join(DIR_DOCS, 'docs-version', current_version))
+        if os.path.exists(os.path.join(DIR_DOCS, "docs-version", current_version)):
+            shutil.rmtree(path=os.path.join(DIR_DOCS, "docs-version", current_version))
         shutil.copytree(
             src=DIR_ALL_DOCS_VERSIONS,
-            dst=os.path.join(DIR_DOCS, 'docs-version'),
-            dirs_exist_ok=True
+            dst=os.path.join(DIR_DOCS, "docs-version"),
+            dirs_exist_ok=True,
         )
 
         # remove .buildinfo which interferes with GitHub Pages build
-        if os.path.exists(os.path.join(DIR_DOCS, '.buildinfo')):
-            os.remove(os.path.join(DIR_DOCS, '.buildinfo'))
+        if os.path.exists(os.path.join(DIR_DOCS, ".buildinfo")):
+            os.remove(os.path.join(DIR_DOCS, ".buildinfo"))
 
         # create empty file to signal that no GitHub auto-rendering is required
-        open(os.path.join(DIR_DOCS, '.nojekyll'), 'a').close()
+        open(os.path.join(DIR_DOCS, ".nojekyll"), "a").close()
 
         print("Docs moved to ./docs and historic versions updated")
-
 
 
 class Html(Command):
@@ -309,7 +311,8 @@ class Html(Command):
             shutil.rmtree(dir_path_this_build)
 
         shutil.copytree(
-            src=DIR_SPHINX_BUILD_HTML, dst=dir_path_this_build,
+            src=DIR_SPHINX_BUILD_HTML,
+            dst=dir_path_this_build,
         )
 
         if not is_azure_build():
@@ -435,6 +438,6 @@ Available program arguments:
 
 
 available_commands: Dict[str, Type[Command]] = {
-    cmd.get_name(): cmd for cmd in
-    (Clean, ApiDoc, Html, Help, FetchPkgVersions, PrepareDocsDeployment)
+    cmd.get_name(): cmd
+    for cmd in (Clean, ApiDoc, Html, Help, FetchPkgVersions, PrepareDocsDeployment)
 }
