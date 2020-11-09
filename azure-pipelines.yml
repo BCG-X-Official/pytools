@@ -316,6 +316,8 @@ stages:
   # Render docs and publish to GitHub Pages
   - stage:
     displayName: 'Docs'
+    variables:
+    - group: github_ssh
 
     jobs:
     - job:
@@ -350,8 +352,6 @@ stages:
           displayName: 'Render docs'
 
         - task: InstallSSHKey@0
-          variables:
-            - group: github_ssh
           inputs:
             knownHostsEntry: $(knownHostsEntry)
             sshPublicKey: $(sshPublicKey)
