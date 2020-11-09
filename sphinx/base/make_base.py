@@ -15,6 +15,8 @@ from glob import glob
 from tempfile import TemporaryDirectory
 from typing import Dict, Iterable, List, Set, Tuple, Type
 
+from packaging import version as pkg_version
+
 cwd = os.getcwd()
 
 # Sphinx commands
@@ -34,13 +36,12 @@ DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
-DIR_SPHINX_TEMPLATES_BASE = os.path.join(
-    DIR_MAKE_BASE, os.pardir, "source", "_templates"
-)
+DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
+DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_templates")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
-DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE, "_static_base")
+DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_base")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 
@@ -283,6 +284,9 @@ class Html(Command):
 
     @classmethod
     def _run(cls) -> None:
+
+        check_sphinx_version()
+
         os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
 
         sphinx_html_opts = [
@@ -411,7 +415,9 @@ def get_package_version() -> str:
         )
 
     version_module = importlib.util.module_from_spec(spec)
+    # noinspection PyUnresolvedReferences
     spec.loader.exec_module(version_module)
+    # noinspection PyUnresolvedReferences
     return version_module.__version__
 
 
@@ -429,6 +435,14 @@ def version_string_to_url(version: str) -> str:
     Our convention is to only replace all dots with dashes.
     """
     return version.replace(".", "-")
+
+
+def check_sphinx_version() -> None:
+    import sphinx
+
+    sphinx_version = pkg_version.parse(sphinx.__version__)
+    if sphinx_version < pkg_version.parse("3.2.1"):
+        raise RuntimeError("please upgrade sphinx to version 3.2.1 or newer")
 
 
 def print_usage() -> None:
