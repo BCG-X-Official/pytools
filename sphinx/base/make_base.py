@@ -11,6 +11,8 @@ import shutil
 import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
+from glob import glob
+from tempfile import TemporaryDirectory
 from typing import Dict, Iterable, List, Set, Tuple, Type
 
 cwd = os.getcwd()
@@ -229,12 +231,10 @@ class PrepareDocsDeployment(Command):
 
     @classmethod
     def _run(cls) -> None:
+        assert is_azure_build(), "Only implemented for Azure Pipelines"
         # get current version of package in the form of folder/URL name (e.g., "1-0-0")
         current_version = version_string_to_url(get_package_version())
         # remove docs build currently deployed, except for the docs versions folder
-        # assert is_azure_build(), "Only implemented for Azure Pipelines"
-        from tempfile import TemporaryDirectory
-
         if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
             with TemporaryDirectory() as DIR_TMP:
                 shutil.move(src=os.path.join(DIR_DOCS, "docs-version"), dst=DIR_TMP)
@@ -254,6 +254,13 @@ class PrepareDocsDeployment(Command):
             dst=os.path.join(DIR_DOCS, "docs-version"),
             dirs_exist_ok=True,
         )
+
+        # Replace all docs version lists with the most up-to-date to have all versions
+        # accessible also from older versions
+        new_versions_js = os.path.join(DIR_DOCS, "_static", "js", "versions.js")
+        for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
+            old_versions_js = os.path.join(d, "_static", "js", "versions.js")
+            shutil.copyfile(src=new_versions_js, dst=old_versions_js)
 
         # remove .buildinfo which interferes with GitHub Pages build
         if os.path.exists(os.path.join(DIR_DOCS, ".buildinfo")):
