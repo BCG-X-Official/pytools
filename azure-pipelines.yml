@@ -312,3 +312,73 @@ stages:
               ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
 
           displayName: "build & test conda&pip package"
+
+  # Render docs and publish to GitHub Pages
+  - stage:
+    displayName: 'Docs'
+    variables:
+    - group: github_ssh
+
+    jobs:
+    - job:
+      displayName: 'Build and publish docs'
+      condition: eq(variables.master_or_release, 'True')
+
+      pool:
+          vmImage: 'ubuntu-latest'
+
+      steps:
+        - task: UsePythonVersion@0
+          inputs:
+            versionSpec: '3.8.*'
+          displayName: 'use Python 3.8'
+
+        - checkout: self
+          path: pytools
+
+        - script: dir $(Build.SourcesDirectory)
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              set -e
+              eval "$(conda shell.bash hook)"
+              cd $(System.DefaultWorkingDirectory)
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+              conda env create -f environment.yml
+              conda activate pytools-develop
+              python sphinx/make.py html
+          displayName: 'Render docs'
+
+        - task: InstallSSHKey@0
+          inputs:
+            knownHostsEntry: $(knownHostsEntry)
+            sshPublicKey: $(sshPublicKey)
+            sshKeySecureFile: 'deploy_docs'
+          displayName: 'Install the deploy SSH key'
+
+        - task: Bash@3
+          condition: succeededOrFailed()
+          inputs:
+            targetType: 'inline'
+            script: |
+              set -e
+              echo "Current directory contents:"
+              dir
+              echo "Adjusting git credentials"
+              git config --global user.name "Azure Pipelines"
+              git config --global user.email "azuredevops@microsoft.com"
+              git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+              git checkout --track origin/github-pages
+              eval "$(conda shell.bash hook)"
+              conda activate pytools-develop
+              python sphinx/make.py prepare_docs_deployment
+              git status
+              git add docs
+              echo "Staged docs HTML build"
+              git status
+              git commit -m "Publishing GitHub Pages [skip ci]"
+              echo "Committed to local branch github-pages"
+              git push --set-upstream origin github-pages
+          displayName: 'Publish docs'
