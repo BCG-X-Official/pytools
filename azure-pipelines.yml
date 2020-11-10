@@ -342,7 +342,7 @@ stages:
     jobs:
       - job:
         displayName: 'Release'
-        condition: eq(variables['branchName'], 'master')
+        condition: eq(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'master')
 
         steps:
           - task: Bash@3
