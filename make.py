@@ -90,14 +90,14 @@ def get_package_version(project: str) -> str:
         os.path.join(os.environ[FACET_PATH_ENV], project, "src")
     )
 
-    if project == "sklearndf":
-        # for sklearndf __init__ can't be trivially imported due to import dependencies
-        # Load the version as defined in sklearndf._version module
+    if project in ("sklearndf", "flow"):
+        # for sklearndf and flow __init__ can't be trivially imported due to import
+        # dependencies. Load the version as defined in project._version module
         spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, "sklearndf", "_version.py")
+            "_version", os.path.join(project_src, project, "_version.py")
         )
     else:
-        # pytools/facet/flow: retrieve version from __init__.py
+        # pytools/facet: retrieve version from __init__.py
         spec = importlib.util.spec_from_file_location(
             "_version", os.path.join(project_src, project, "__init__.py")
         )
@@ -286,8 +286,8 @@ Available program arguments:
         create the Conda package for given project.
 
     Available arguments:
-        project:    i.e. pytools | sklearndf | facet.
-                    Use "build=all" to build pytools, sklearndf and facet.
+        project:    i.e. pytools | sklearndf | facet | flow.
+                    Use "build=all" to build pytools, sklearndf, facet and flow.
 
         build-system: conda | tox
 
