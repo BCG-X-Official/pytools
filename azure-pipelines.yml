@@ -32,7 +32,7 @@ variables:
     }}
 
 stages:
-  # Check code quality first to fail fast (isort, flake8, black)
+  # check code quality first to fail fast (isort, flake8, black)
   - stage: code_quality_checks
     displayName: 'Code quality'
     jobs:
@@ -165,10 +165,10 @@ stages:
             summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
             reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
-  # CONDA ENV & TOX BUILD TEST
-  # TESTING MATRIX OF PYTHON & SKLEARN VERSIONS
-  # - FOR RELEASE BRANCH: 3 BUILD TESTS
-  # - OTHERWISE: 1 BUILD TEST
+  # conda env & tox build test
+  # testing matrix of python & sklearn versions
+  # - for release branch: 3 build tests
+  # - otherwise: 1 build test
   - stage:
     displayName: 'Conda build & test'
     dependsOn: 'detect_build_config_changes'
@@ -332,10 +332,10 @@ stages:
             ArtifactName: $(BUILD_SYSTEM)_$(PKG_DEPENDENCIES)
             publishLocation: Container
 
-  # Render docs and publish to GitHub Pages
+  # render docs and publish to GitHub Pages
   - stage:
     displayName: 'Docs'
-    
+
     variables:
     - group: github_ssh
 
