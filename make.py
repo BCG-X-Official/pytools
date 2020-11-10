@@ -23,7 +23,7 @@ SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
 FACET_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
 KNOWN_COMMANDS = "build"
 
-KNOWN_PROJECTS = ("pytools", "sklearndf", "facet")
+KNOWN_PROJECTS = ("pytools", "sklearndf", "facet", "flow")
 
 B_CONDA = "conda"
 B_TOX = "tox"
@@ -97,7 +97,7 @@ def get_package_version(project: str) -> str:
             "_version", os.path.join(project_src, "sklearndf", "_version.py")
         )
     else:
-        # pytools/facet: retrieve version from __init__.py
+        # pytools/facet/flow: retrieve version from __init__.py
         spec = importlib.util.spec_from_file_location(
             "_version", os.path.join(project_src, project, "__init__.py")
         )
