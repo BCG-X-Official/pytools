@@ -402,9 +402,9 @@ def get_package_version() -> str:
     """
     project_src = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src"))
 
-    if FACET_PROJECT == "sklearndf":
-        # for sklearndf __init__ can't be trivially imported due to import dependencies
-        # Load the version as defined in sklearndf._version module
+    if FACET_PROJECT in ("sklearndf", "flow"):
+        # for sklearndf and flow __init__ can't be trivially imported due to import
+        # dependencies. Load the version as defined in FACET_PROJECT._version module
         spec = importlib.util.spec_from_file_location(
             "_version", os.path.join(project_src, FACET_PROJECT, "_version.py")
         )
