@@ -351,9 +351,14 @@ stages:
               script: |
                 cd $(System.DefaultWorkingDirectory)
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+                echo "Getting version"
                 version=$(python -c "import pytools; print(pytools.__version__)")
                 echo "Current version: $version"
+                echo "Detecting pre-release ('rc' in version)""
+                prerelease=False
+                [[ $version == *rc* ]] && prerelease=True && echo "Prerelease identified"
                 echo "##vso[task.setvariable variable=current_version]$version"
+                echo "##vso[task.setvariable variable=is_prerelease]$prerelease"
             displayName: "Get package version"
 
           - task: DownloadBuildArtifacts@0
@@ -387,7 +392,7 @@ stages:
                     conda install -c conda-forge gamma-pytools
 
               isDraft: false
-              isPreRelease: false
+              isPreRelease: $(is_prerelease)
               assets: |
                 $(System.ArtifactsDirectory)/tox_default/tox/gamma-pytools-*.tar.gz
                 $(System.ArtifactsDirectory)/conda_default/conda/noarch/gamma-pytools-*.tar.bz2
