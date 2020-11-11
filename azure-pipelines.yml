@@ -169,8 +169,8 @@ stages:
   # testing matrix of python & sklearn versions
   # - for release branch: 3 build tests
   # - otherwise: 1 build test
-  - stage:
-    displayName: 'Conda build & test'
+  - stage: conda_tox_build
+    displayName: 'Conda/tox build & test'
     dependsOn: 'detect_build_config_changes'
     variables:
       conda_build_config_changed: $[ stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'] ]
@@ -179,10 +179,10 @@ stages:
     - job:
       displayName: 'single'
       condition: >
-       and(
-       ne(variables.master_or_release, 'True'),
-       ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
-       )
+        and(
+        ne(variables.master_or_release, 'True'),
+        ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
+        )
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -336,8 +336,9 @@ stages:
   # - add release tag
   # - create GitHub release with changelog
   # - upload conda and pip packages as artifacts to GitHub
-  - stage:
+  - stage: release
     displayName: 'Release'
+    dependsOn: conda_tox_build
 
     jobs:
       - job:
@@ -400,6 +401,7 @@ stages:
   # render docs and publish to GitHub Pages
   - stage:
     displayName: 'Docs'
+    dependsOn: release
 
     variables:
     - group: github_ssh
