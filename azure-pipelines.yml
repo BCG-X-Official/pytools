@@ -408,7 +408,7 @@ stages:
     jobs:
     - job:
       displayName: 'Build and publish docs'
-      condition: eq(variables.master_or_release, 'True')
+      # condition: eq(variables.master_or_release, 'True')
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -424,6 +424,25 @@ stages:
 
         - script: dir $(Build.SourcesDirectory)
 
+        - task: InstallSSHKey@0
+          inputs:
+            knownHostsEntry: $(knownHostsEntry)
+            sshPublicKey: $(sshPublicKey)
+            sshKeySecureFile: 'deploy_docs'
+          displayName: 'Install the deploy SSH key'
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              set -e
+              git checkout --track origin/github-pages
+              echo "Current directory contents:"
+              tree
+              mkdir $(Build.ArtifactStagingDirectory)/old_docs
+              cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
+          displayName: 'Save current docs version'
+
         - task: Bash@3
           inputs:
             targetType: 'inline'
@@ -435,36 +454,41 @@ stages:
               conda env create -f environment.yml
               conda activate pytools-develop
               python sphinx/make.py html
-          displayName: 'Render docs'
-
-        - task: InstallSSHKey@0
-          inputs:
-            knownHostsEntry: $(knownHostsEntry)
-            sshPublicKey: $(sshPublicKey)
-            sshKeySecureFile: 'deploy_docs'
-          displayName: 'Install the deploy SSH key'
+              echo "Current directory contents:"
+              tree
+          displayName: 'Build new docs version'
 
         - task: Bash@3
-          condition: succeededOrFailed()
           inputs:
             targetType: 'inline'
             script: |
               set -e
+              cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
               echo "Current directory contents:"
-              dir
+              tree
+              python sphinx/make.py prepare_docs_deployment
+              echo "Current directory contents:"
+              tree
+              mkdir $(Build.ArtifactStagingDirectory)/new_docs
+              cp -r docs $(Build.ArtifactStagingDirectory)/new_docs
+          displayName: 'Update saved docs'
+
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              set -e
               echo "Adjusting git credentials"
               git config --global user.name "Azure Pipelines"
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-              git checkout --track origin/github-pages
-              eval "$(conda shell.bash hook)"
-              conda activate pytools-develop
-              python sphinx/make.py prepare_docs_deployment
+              git checkout github-pages
+              cp -r $(Build.ArtifactStagingDirectory)/new_docs/docs .
               git status
               git add docs
               echo "Staged docs HTML build"
               git status
-              git commit -m "Publishing GitHub Pages [skip ci]"
+              git commit -m "Publish GitHub Pages [skip ci]"
               echo "Committed to local branch github-pages"
               git push --set-upstream origin github-pages
           displayName: 'Publish docs'
