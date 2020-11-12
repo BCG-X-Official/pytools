@@ -47,8 +47,8 @@ about:
   license: Apache Software License v2.0
   license_file: LICENSE
   summary: |
-    Open source library containing general machine learning and visualisation
-    utilities for reuse
+    A collection of generic Python extensions and tools, used across Gamma's open-source
+    libraries
   dev_url: https://github.com/BCG-Gamma/pytools
   doc_url: https://pypi.org/project/gamma-pytools/ # TODO - replace with docs
   doc_source_url: https://github.com/BCG-Gamma/pytools/blob/develop/README.rst
