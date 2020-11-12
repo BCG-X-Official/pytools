@@ -13,7 +13,7 @@ utilities for reuse, including:
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
 |azure_pypi| |azure_conda| |azure_devops_master_ci| |code_cov|
-|python_versions| |code_style| ||made_with_sphinx_doc| |License_badge|
+|python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
 
 Installation
 ---------------------
