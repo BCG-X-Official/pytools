@@ -2,7 +2,7 @@
 
 |
 
-`pytools` is an open source library containing general machine learning and visualisation
+*pytools* is an open source library containing general machine learning and visualisation
 utilities for reuse, including:
 
 - Basic tools for API development, supporting documentation, deprecation, and run-time validation
@@ -13,13 +13,12 @@ utilities for reuse, including:
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
 |azure_pypi| |azure_conda| |azure_devops_master_ci| |code_cov|
-|python_versions| |code_style| |documentation_status|
-|made_with_sphinx_doc| |License_badge|
+|python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
 
 Installation
 ---------------------
 
-Pytools supports both PyPI and Anaconda
+*pytools*  supports both PyPI and Anaconda
 
 Anaconda
 ~~~~~~~~~~~~~~~~~~~~~
@@ -39,9 +38,9 @@ Pip
 Contributing
 ---------------------------
 
-Pytools is stable and is being supported long-term.
+*pytools* is stable and is being supported long-term.
 
-Contributions to pytools are welcome and appreciated.
+Contributions to *pytools* are welcome and appreciated.
 For any bug reports or feature requests/enhancements please use the appropriate
 `GitHub form <https://github.com/BCG-Gamma/pytools/issues>`_, and if you wish to do so,
 please open a PR addressing the issue.
@@ -58,20 +57,15 @@ replace with RTD link once published).
 License
 ---------------------------
 
-Pytools is licensed under Apache 2.0 as described in the
+*pytools* is licensed under Apache 2.0 as described in the
 `LICENSE <https://github.com/BCG-Gamma/pytools/LICENSE>`_ file.
-
-Acknowledgements
----------------------------
-
-TBD
 
 BCG GAMMA
 ---------------------------
 
-If you would like to know more about the team behind pytools please see our `about us
+If you would like to know more about the team behind *pytools* please see our `about us
 page <https://github.gamma.bcg.com/pages/facet/facet/about_us.html>`_ (todo: replace
-with RTD link once published).
+with link once published).
 
 We are always on the lookout for passionate and talented data scientists to join the
 BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
@@ -82,13 +76,14 @@ or have a look at
 
 .. |azure_conda| image:: https://
     :target: https://
+
 .. |azure_pypi| image:: https://
     :target: https://
+
 .. |azure_devops_master_ci| image:: https://
     :target: https://
+
 .. |code_cov| image:: https://
-    :target: https://
-.. |documentation_status| image:: https://
     :target: https://
 
 .. |python_versions| image:: https://img.shields.io/badge/python-3.7|3.8-blue.svg
@@ -96,7 +91,9 @@ or have a look at
 
 .. |code_style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
+
 .. |made_with_sphinx_doc| image:: https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg
     :target: https://www.sphinx-doc.org/
+
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0

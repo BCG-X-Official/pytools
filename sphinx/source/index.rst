@@ -13,4 +13,3 @@ Table of contents
    API reference <apidoc/pytools>
    contribution_guide
    faqs
-   genindex
