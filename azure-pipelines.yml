@@ -419,17 +419,17 @@ stages:
             versionSpec: '3.8.*'
           displayName: 'use Python 3.8'
 
-        - checkout: self
-          path: pytools
-
-        - script: dir $(Build.SourcesDirectory)
-
         - task: InstallSSHKey@0
           inputs:
             knownHostsEntry: $(knownHostsEntry)
             sshPublicKey: $(sshPublicKey)
             sshKeySecureFile: 'deploy_docs'
           displayName: 'Install the deploy SSH key'
+
+        - checkout: self
+          path: pytools
+
+        - script: dir $(Build.SourcesDirectory)
 
         - task: Bash@3
           inputs:
@@ -446,8 +446,6 @@ stages:
               cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
           displayName: 'Save current docs version'
 
-        - checkout: self
-
         - task: Bash@3
           inputs:
             targetType: 'inline'
@@ -455,6 +453,8 @@ stages:
               set -e
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)
+              git checkout $(Build.SourceBranchName)
+              git status
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
               conda activate pytools-develop
