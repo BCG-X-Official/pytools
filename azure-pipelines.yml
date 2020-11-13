@@ -445,6 +445,8 @@ stages:
               cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
           displayName: 'Save current docs version'
 
+        - checkout: self
+
         - task: Bash@3
           inputs:
             targetType: 'inline'
