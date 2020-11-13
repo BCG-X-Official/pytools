@@ -437,6 +437,7 @@ stages:
             script: |
               set -e
               git checkout --track origin/github-pages
+              mkdir -p docs
               sudo apt-get install tree 
               echo "Current directory contents:"
               tree
