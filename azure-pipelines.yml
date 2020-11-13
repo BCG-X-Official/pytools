@@ -453,7 +453,8 @@ stages:
               set -e
               eval "$(conda shell.bash hook)"
               cd $(System.DefaultWorkingDirectory)
-              git checkout $(Build.SourceBranchName)
+              echo "Checking out $(Build.SourceBranch)"
+              git checkout $(Build.SourceBranch)
               git status
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
               conda env create -f environment.yml
