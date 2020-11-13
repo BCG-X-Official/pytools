@@ -443,8 +443,8 @@ stages:
               git checkout --track origin/github-pages
               mkdir -p docs
               sudo apt-get install tree 
-              echo "Current directory contents:"
-              tree
+              echo "Current docs contents:"
+              tree docs
               mkdir $(Build.ArtifactStagingDirectory)/old_docs
               cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
           displayName: 'Save current docs version'
@@ -463,8 +463,8 @@ stages:
               conda env create -f environment.yml
               conda activate pytools-develop
               python sphinx/make.py html
-              echo "Current directory contents:"
-              tree
+              echo "Current docs contents:"
+              tree docs
           displayName: 'Build new docs version'
 
         - task: Bash@3
@@ -473,11 +473,13 @@ stages:
             script: |
               set -e
               cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
-              echo "Current directory contents:"
-              tree
+              echo "Current docs contents:"
+              tree docs
+              echo "Building sphinx docs"
+              conda activate pytools-develop
               python sphinx/make.py prepare_docs_deployment
-              echo "Current directory contents:"
-              tree
+              echo "Current docs contents:"
+              tree docs
               mkdir $(Build.ArtifactStagingDirectory)/new_docs
               cp -r docs $(Build.ArtifactStagingDirectory)/new_docs
           displayName: 'Update saved docs'
