@@ -437,6 +437,7 @@ stages:
             script: |
               set -e
               git checkout --track origin/github-pages
+              sudo apt-get install tree 
               echo "Current directory contents:"
               tree
               mkdir $(Build.ArtifactStagingDirectory)/old_docs
