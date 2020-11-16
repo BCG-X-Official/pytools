@@ -65,7 +65,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+sphinx/build/
 
 # PyBuilder
 target/
@@ -406,7 +406,3 @@ TSWLatexianTemp*
 #
 /tmp
 !/tmp/README.md
-
-# exclude docs while they are not yet stable
-/docs/**
-!/docs/README.md

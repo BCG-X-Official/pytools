@@ -23,7 +23,7 @@ This command will:
 
 Pytest
 ~~~~~~~~~~~~~~~
-Run ``pytest tests/`` from the pytools root folder or use the PyCharm test runner. To measure coverage, use ``pytest --cov=src/pytools tests/``. Note that the code coverage reports are also generated in the Azure Pipelines (see CI/CD section).
+Run ``pytest tests/`` from the *pytools* root folder or use the PyCharm test runner. To measure coverage, use ``pytest --cov=src/pytools tests/``. Note that the code coverage reports are also generated in the Azure Pipelines (see CI/CD section).
 
 Note that you will need to set the PYTHONPATH to the ``src/`` directory by running ``export PYTHONPATH=./src/`` from the repository root.
 
@@ -31,7 +31,7 @@ Note that you will need to set the PYTHONPATH to the ``src/`` directory by runni
 Sphinx Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-The generated Sphinx documentation for pytools is located at ``sphinx/build/html``. To build the
+The generated Sphinx documentation for *pytools* is located at ``sphinx/build/html``. To build the
 documentation, ensure that you have activated the ``pytools-develop``  environment.
 
 Let us mention the following extensions used in the conf.py sphinx configuration script:
@@ -225,13 +225,13 @@ Converting notebooks to documentation with nbsphinx
 
 
 
-Building and releasing pytools
---------------------------------
+Building and releasing *pytools*
+---------------------------------
 
 Release & Version management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-pytools version numbers follow the `Semantic versioning <https://semver.org/>`_ approach,
+*pytools* version numbers follow the `Semantic versioning <https://semver.org/>`_ approach,
 with the pattern ``MAJOR.MINOR.PATCH``. We are using
 `punch <https://punch.readthedocs.io/en/latest/>`_ to increase the version numbers
 for future releases.
@@ -262,7 +262,7 @@ Useful references:
 - `Conda build tutorial <https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/building-conda-packages.html>`_
 - `Conda build metadata reference <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_
 
-pytools uses a combination of ``conda-build`` and ``make`` (both further explained below),
+*pytools* uses a combination of ``conda-build`` and ``make`` (both further explained below),
 for which the necessary Conda build recipes are maintained under
 ``conda-build/meta.yaml``.
 
@@ -310,7 +310,7 @@ the root of the repository. Here, the ``--no-deps`` switch is passed, so that al
 dependencies to other libraries are managed by Conda and not pip.
 
 
-The **requirements** section specifies those dependencies that ``pytools`` has:
+The **requirements** section specifies those dependencies that *pytools* has:
 
 .. code-block:: RST
 
@@ -332,7 +332,7 @@ The **requirements** section specifies those dependencies that ``pytools`` has:
 The ``host`` section defines solely what is needed to carry out the build: Python and
 pip.
 
-The ``run`` section defines which Conda packages are required by ``pytools`` at runtime.
+The ``run`` section defines which Conda packages are required by *pytools* at runtime.
 You can see that we defined
 environment variables such as ``FACET_V_PYTHON_BUILD``. This allows us to test a matrix
 strategy of different combinations of dependencies in our ``azure-pipelines.yml`` on
@@ -358,20 +358,20 @@ build of the package:
           assert pytools.__version__ == os.environ["PKG_VERSION"]'
 
 In this case, we want to check that all required packages can be imported successfully
-and that the version of pytools is aligned with the ``PKG_VERSION``.
+and that the version of *pytools* is aligned with the ``PKG_VERSION``.
 
 **Makefile**
 
-A common ``Makefile`` helps to orchestrate the pytools build at a higher level, fully
+A common ``Makefile`` helps to orchestrate the *pytools* build at a higher level, fully
 relying on the Conda build recipes introduced above.
 
 **Local Building on macOS**
 
-As introduced above, local building of pytools is done using the Makefile that will in
+As introduced above, local building of *pytools* is done using the Makefile that will in
 turn orchestrate ``conda-build``.
 
 Please make sure to activate the ``pytools-develop`` environment such that
-``conda-build`` is available. When you are in the root of the ``pytools`` directory,
+``conda-build`` is available. When you are in the root of the *pytools* directory,
 you can build the package locally using
 
 .. code-block:: RST
@@ -429,7 +429,7 @@ Stage 1 - Development environment build and testing
 
 The "Environment build & Pytest" stage performs the following steps:
 
-- Checks out the ``pytools`` repository at the develop branch
+- Checks out the *pytools* repository at the develop branch
 - Creates the ``pytools-develop`` environment from the ``environment.yml``
 - Runs ``pytest`` and generates the code coverage reports for Azure DevOps. Note that these can be viewed on the Pipeline summary page.
 
@@ -439,9 +439,9 @@ Stage 2 - Matrix Strategy for Conda package build
 
 The "Test multiple conda environment builds" stage performs the following steps:
 
-- Checks out the ``pytools`` repository at the development branch
+- Checks out the *pytools* repository at the development branch
 - Sets the environment variables of the ubuntu-vm as specified in the matrix strategy
-- Runs ``make package`` for ``pytools`` for each combination of the following matrix:
+- Runs ``make package`` for *pytools* for each combination of the following matrix:
 
 .. code-block:: RST
 
