@@ -12,7 +12,7 @@ utilities for reuse, including:
 - Parallelization based on the joblib package
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
-|azure_pypi| |azure_conda| |azure_devops_master_ci| |code_cov|
+|pypi| |conda| |azure_devops_master_ci| |code_cov|
 |python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
 
 Installation
@@ -74,11 +74,11 @@ or have a look at
 `career opportunities <https://www.bcg.com/en-gb/beyond-consulting/bcg-gamma/careers>`_.
 
 
-.. |azure_conda| image:: https://
-    :target: https://
+.. |conda| image:: https://anaconda.org/bcg_gamma/gamma-pytools/badges/version.svg
+    :target: https://anaconda.org/BCG_Gamma/gamma-pytools
 
-.. |azure_pypi| image:: https://
-    :target: https://
+.. |pypi| image:: https://badge.fury.io/py/gamma-pytools.svg
+    :target: https://pypi.org/project/gamma-pytools/
 
 .. |azure_devops_master_ci| image:: https://
     :target: https://
