@@ -482,7 +482,7 @@ stages:
               echo "Current docs contents:"
               tree docs
               mkdir $(Build.ArtifactStagingDirectory)/new_docs
-              cp -r docs $(Build.ArtifactStagingDirectory)/new_docs
+              mv docs $(Build.ArtifactStagingDirectory)/new_docs
           displayName: 'Update saved docs'
 
         - task: Bash@3
