@@ -307,6 +307,7 @@ class Html(Command):
         # noinspection PyUnresolvedReferences
         from transform_notebook import docs_notebooks_to_interactive
 
+        os.makedirs(DIR_NOTEBOOKS, exist_ok=True)
         for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
             if os.path.isdir(notebook_source_dir):
                 docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
