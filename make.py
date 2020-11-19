@@ -10,6 +10,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import warnings
 from glob import glob
 from typing import Any, Dict, List
 from urllib.request import pathname2url
@@ -20,10 +21,27 @@ ALL_PROJECTS_QUALIFIER = "all"
 
 CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
-FACET_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+
+FACET_PATH_ENV = "FACET_PATH"
+FACET_PATH_URI_ENV = "FACET_PATH_URI"
+FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
+CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
+
+if FACET_PATH_ENV in os.environ and os.environ[FACET_PATH_ENV] != "":
+    FACET_PATH = os.environ[FACET_PATH_ENV]
+else:
+    FACET_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+
+if " " in FACET_PATH:
+    warnings.warn(
+        f"The build base path '{FACET_PATH}' contains spaces – this causes issues "
+        f"with conda-build. Consider to set a different path using the "
+        f"environment variable {FACET_PATH_ENV} ahead of running make.py"
+    )
+
 KNOWN_COMMANDS = "build"
 
-KNOWN_PROJECTS = ("pytools", "sklearndf", "facet")
+KNOWN_PROJECTS = ("pytools", "sklearndf", "facet", "flow")
 
 B_CONDA = "conda"
 B_TOX = "tox"
@@ -35,10 +53,6 @@ MAX_DEPS = "max"
 UNCONSTRAINED_DEPS = "unconstrained"
 KNOWN_DEPENDENCY_TYPES = (DEFAULT_DEPS, MIN_DEPS, MAX_DEPS, UNCONSTRAINED_DEPS)
 
-FACET_PATH_ENV = "FACET_PATH"
-FACET_PATH_URI_ENV = "FACET_PATH_URI"
-FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
-CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
@@ -90,11 +104,11 @@ def get_package_version(project: str) -> str:
         os.path.join(os.environ[FACET_PATH_ENV], project, "src")
     )
 
-    if project == "sklearndf":
-        # for sklearndf __init__ can't be trivially imported due to import dependencies
-        # Load the version as defined in sklearndf._version module
+    if project in ("sklearndf", "flow"):
+        # for sklearndf and flow __init__ can't be trivially imported due to import
+        # dependencies. Load the version as defined in project._version module
         spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, "sklearndf", "_version.py")
+            "_version", os.path.join(project_src, project, "_version.py")
         )
     else:
         # pytools/facet: retrieve version from __init__.py
@@ -286,8 +300,8 @@ Available program arguments:
         create the Conda package for given project.
 
     Available arguments:
-        project:    i.e. pytools | sklearndf | facet.
-                    Use "build=all" to build pytools, sklearndf and facet.
+        project:    i.e. pytools | sklearndf | facet | flow.
+                    Use "build=all" to build pytools, sklearndf, facet and flow.
 
         build-system: conda | tox
 

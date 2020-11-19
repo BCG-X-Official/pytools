@@ -21,7 +21,7 @@ there you could also try posting on `stackoverflow <https://stackoverflow.com/>`
 
 Citation
 --------
-If you use pytools in your work please cite us as follows:
+If you use *pytools* in your work please cite us as follows:
 
 Bibtex entry::
 
