@@ -40,7 +40,6 @@ DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
 DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_templates")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
 DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_base")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -303,14 +302,6 @@ class Html(Command):
 
         # create interactive versions of all notebooks
         sys.path.append(DIR_MAKE_BASE)
-
-        # noinspection PyUnresolvedReferences
-        from transform_notebook import docs_notebooks_to_interactive
-
-        os.makedirs(DIR_NOTEBOOKS, exist_ok=True)
-        for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
-            if os.path.isdir(notebook_source_dir):
-                docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
 
         # create copy of this build for the docs archive
         version_built = get_package_version()
