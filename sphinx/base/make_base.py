@@ -494,5 +494,6 @@ Available program arguments:
 
 available_commands: Dict[str, Type[Command]] = {
     cmd.get_name(): cmd
-    for cmd in (Clean, ApiDoc, GettingStartedDoc, Html, Help, FetchPkgVersions, PrepareDocsDeployment)
+    for cmd in (Clean, ApiDoc, GettingStartedDoc, Html, Help, FetchPkgVersions,
+                PrepareDocsDeployment)
 }
