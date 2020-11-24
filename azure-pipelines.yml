@@ -355,7 +355,7 @@ stages:
             displayName: 'use Python 3.7'
 
           - checkout: self
-            name: pytools
+            path: pytools
 
           - task: Bash@3
             inputs:
@@ -364,8 +364,8 @@ stages:
                 set -e
                 echo "Getting version"
                 pip install packaging
-                cd $(System.DefaultWorkingDirectory)/pytools/src
-                export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/sphinx/base
+                cd $(System.DefaultWorkingDirectory)/src
+                export PYTHONPATH=$(System.DefaultWorkingDirectory)/sphinx/base
                 version=$(python -c "import make_base; print(make_base.get_package_version())")
                 echo "Current version: $version"
                 echo "Detecting pre-release ('rc' in version)"
