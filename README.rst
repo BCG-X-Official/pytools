@@ -12,8 +12,12 @@ utilities for reuse, including:
 - Parallelization based on the joblib package
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
+.. Begin-Badges
+
 |pypi| |conda| |azure_build| |azure_code_cov|
 |python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
+
+.. End-Badges
 
 Installation
 ---------------------
@@ -73,6 +77,7 @@ BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
 or have a look at
 `career opportunities <https://www.bcg.com/en-gb/beyond-consulting/bcg-gamma/careers>`_.
 
+.. Sub-Start-Badges
 
 .. |conda| image:: https://anaconda.org/bcg_gamma/gamma-pytools/badges/version.svg
     :target: https://anaconda.org/BCG_Gamma/gamma-pytools
@@ -97,3 +102,5 @@ or have a look at
 
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0
+
+.. Sub-Stop-Badges
