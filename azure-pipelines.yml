@@ -181,11 +181,11 @@ stages:
     jobs:
     - job:
       displayName: 'single'
-      condition: >
-        and(
-        ne(variables.master_or_release, 'True'),
-        ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
-        )
+      # condition: >
+      #  and(
+      #  ne(variables.master_or_release, 'True'),
+      #  ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
+      #  )
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -195,11 +195,11 @@ stages:
           maximum_dependencies_conda:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'conda'
-            PKG_DEPENDENCIES: 'max'
+            PKG_DEPENDENCIES: 'default'
           maximum_dependencies_tox:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'tox'
-            PKG_DEPENDENCIES: 'max'
+            PKG_DEPENDENCIES: 'default'
       
       steps:
         - task: UsePythonVersion@0
@@ -346,21 +346,29 @@ stages:
     jobs:
       - job:
         displayName: 'Release'
-        condition: eq(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'master')
+        # condition: eq(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'master')
 
         steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.7.*'
+            displayName: 'use Python 3.7'
+
+          - checkout: self
+
           - task: Bash@3
             inputs:
               targetType: inline
               script: |
-                cd $(System.DefaultWorkingDirectory)
-                export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
                 echo "Getting version"
-                version=$(python -c "import pytools; print(pytools.__version__)")
+                pip install packaging
+                cd $(System.DefaultWorkingDirectory)/pytools/src
+                export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/sphinx/base
+                version=$(python -c "import make_base; print(make_base.get_package_version())")
                 echo "Current version: $version"
-                echo "Detecting pre-release ('rc' in version)""
+                echo "Detecting pre-release ('rc' in version)"
                 prerelease=False
-                [[ $version == *rc* ]] && prerelease=True && echo "Prerelease identified"
+                [[ $version == *rc* ]] && prerelease=True && echo "Pre-release identified"
                 echo "##vso[task.setvariable variable=current_version]$version"
                 echo "##vso[task.setvariable variable=is_prerelease]$prerelease"
             displayName: "Get package version"
@@ -375,13 +383,12 @@ stages:
 
           - task: GitHubRelease@1
             inputs:
-              gitHubConnection: github_release
-              repositoryName: $(Build.Repository.Name)
+              gitHubConnection: BCG-Gamma-test
+              repositoryName: rkdy/pytools # $(Build.Repository.Name)
               action: create
-              target: $(Build.SourceVersion)
+              target: develop # $(Build.SourceVersion)
               tagSource: userSpecifiedTag
               tag: $(current_version)
-              tagPattern: \d+\.\d+\.\d+(rc\d+)?
               title: pytools $(current_version)
               releaseNotesSource: inline
               releaseNotesInline: |
