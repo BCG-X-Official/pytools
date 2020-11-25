@@ -195,6 +195,7 @@ class GettingStartedDoc(Command):
 
         # modify links (step back needed as build will add sub directory to paths)
         readme_data = readme_data.replace('sphinx/source/', '../')
+        readme_data = readme_data.replace('sphinx/auxiliary/', '../')
         readme_data = re.sub(r'Begin-Badges.*End-Badges', '', readme_data, flags=re.S)
         readme_data = re.sub(r'Sub-Start-Badges.*Sub-Stop-Badges', '', readme_data,
                              flags=re.S)
