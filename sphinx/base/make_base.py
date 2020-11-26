@@ -33,6 +33,7 @@ DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
+DIR_SPHINX_GSTART_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
@@ -40,7 +41,6 @@ DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
 DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_templates")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_NOTEBOOKS = os.path.join(DIR_REPO_ROOT, "notebooks")
 DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_base")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -119,6 +119,8 @@ class Clean(Command):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
         if os.path.exists(DIR_SPHINX_API_GENERATED):
             shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
+        if os.path.exists(DIR_SPHINX_GSTART_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_GSTART_GENERATED)
 
 
 class ApiDoc(Command):
@@ -168,6 +170,51 @@ class ApiDoc(Command):
             shell=True,
             check=True,
         )
+
+
+class GettingStartedDoc(Command):
+
+    @classmethod
+    def get_description(cls) -> str:
+        return "generate getting started documentation from sources"
+
+    @classmethod
+    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+        # noinspection PyRedundantParentheses
+        return (Clean,)
+
+    @classmethod
+    def _run(cls) -> None:
+
+        # make dir if it does not exist
+        os.makedirs(DIR_SPHINX_GSTART_GENERATED, exist_ok=True)
+
+        # open the rst readme file
+        with open(os.path.join(DIR_REPO_ROOT, "README.rst"), 'r') as file:
+            readme_data = file.read()
+
+        # modify links (step back needed as build will add sub directory to paths)
+        readme_data = readme_data.replace('sphinx/source/', '../')
+        readme_data = readme_data.replace('sphinx/auxiliary/', '../')
+        readme_data = re.sub(
+            r'\.\. Begin-Badges.*?\.\. End-Badges',
+            '',
+            readme_data,
+            flags=re.S
+        )
+
+        # create a new getting_started.rst that combines the header from templates and
+        # adds an include for the README
+        with open(
+            os.path.join(DIR_SPHINX_TEMPLATES_BASE, "getting-started-header.rst"),
+            'r'
+        ) as file:
+            template_data = file.read()
+
+        with open(os.path.join(DIR_SPHINX_GSTART_GENERATED,
+                  "getting_started.rst"), "wt") as file:
+            file.writelines(template_data)
+            file.writelines(readme_data)
 
 
 class FetchPkgVersions(Command):
@@ -280,7 +327,7 @@ class Html(Command):
 
     @classmethod
     def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        return Clean, FetchPkgVersions, ApiDoc
+        return Clean, FetchPkgVersions, ApiDoc, GettingStartedDoc
 
     @classmethod
     def _run(cls) -> None:
@@ -303,13 +350,6 @@ class Html(Command):
 
         # create interactive versions of all notebooks
         sys.path.append(DIR_MAKE_BASE)
-
-        # noinspection PyUnresolvedReferences
-        from transform_notebook import docs_notebooks_to_interactive
-
-        for notebook_source_dir in [DIR_SPHINX_TUTORIAL, DIR_SPHINX_AUX]:
-            if os.path.isdir(notebook_source_dir):
-                docs_notebooks_to_interactive(notebook_source_dir, DIR_NOTEBOOKS)
 
         # create copy of this build for the docs archive
         version_built = get_package_version()
@@ -460,5 +500,6 @@ Available program arguments:
 
 available_commands: Dict[str, Type[Command]] = {
     cmd.get_name(): cmd
-    for cmd in (Clean, ApiDoc, Html, Help, FetchPkgVersions, PrepareDocsDeployment)
+    for cmd in (Clean, ApiDoc, GettingStartedDoc, Html, Help, FetchPkgVersions,
+                PrepareDocsDeployment)
 }
