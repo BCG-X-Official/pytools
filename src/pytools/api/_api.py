@@ -97,15 +97,13 @@ def is_list_like(obj: Any) -> bool:
     ``__getitem__``. These include, for example, lists, tuples, sets, NumPy arrays, and
     Pandas series and indices.
 
-    As an exception, the following types are not considered list-like despite
-    implementing the methods above:
+    As an exception, the following types are not considered list-like:
 
     - :class:`str`
     - :class:`bytes`
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
         iterating a data frame yields the values of the column index, while the length \
         of a data frame is its number of rows
-    - :class:`pandas.Panel`: similar behaviour as for data frames
     - :class:`numpy.ndarray` instances with 0 dimensions
 
     :param obj: The object to check
@@ -115,7 +113,9 @@ def is_list_like(obj: Any) -> bool:
     return (
         hasattr(obj, "__len__")
         and hasattr(obj, "__getitem__")
-        and not isinstance(obj, (str, bytes, pd.DataFrame, pd.Panel))
+        and not isinstance(obj, (str, bytes))
+        # pandas data objects with more than 1 dimension, e.g., data frames
+        and not (isinstance(obj, pd.NDFrame) and obj.ndim != 1)
         # exclude zero-dimensional numpy arrays, effectively scalars
         and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
     )
