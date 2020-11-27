@@ -101,8 +101,6 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
     Includes support for plotting a color legend for feature importance.
     """
 
-    _PERCENTAGE_FORMATTER = PercentageFormatter()
-
     def __init__(
         self,
         *,
@@ -117,12 +115,13 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
 
+        percentage_formatter = PercentageFormatter()
         super().__init__(
             ax=ax,
             colormap=colormap,
             colormap_normalize=LogNorm(min_weight, 1),
-            colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
-            colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_major_formatter=percentage_formatter,
+            colorbar_minor_formatter=percentage_formatter,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
