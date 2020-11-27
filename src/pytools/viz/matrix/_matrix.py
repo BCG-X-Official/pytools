@@ -270,18 +270,22 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         max_ticks: Optional[Tuple[int, int]] = None,
         **kwargs,
     ) -> None:
-        """[see superclass]"""
-        if any(
-            field in kwargs
-            for field in [
-                "colorbar_major_formatter",
-                "colorbar_minor_formatter",
-                "cell_format",
-            ]
-        ):
-            raise ValueError(
-                f"arg cell_format is not supported by class {type(self).__name__}"
-            )
+        """
+        :param max_ticks: the maximum number of ticks to put on the x and y axis;
+            ``None`` to determine the number of ticks automatically (default: ``None``)
+        """
+        _unsupported_fields = {
+            "colorbar_major_formatter",
+            "colorbar_minor_formatter",
+            "cell_format",
+        }.intersection(kwargs.keys())
+        if _unsupported_fields:
+            if len(_unsupported_fields) == 1:
+                _args = f"arg {next(iter(_unsupported_fields))} is"
+            else:
+                _args = f'args {", ".join(_unsupported_fields)} are'
+            raise ValueError(f"{_args} not supported by class {type(self).__name__}")
+
         super().__init__(
             ax=ax,
             colormap_normalize=colormap_normalize,
@@ -296,6 +300,8 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             ),
             **kwargs,
         )
+
+    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
 
 
 @inheritdoc(match="[see superclass]")
