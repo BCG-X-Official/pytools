@@ -178,10 +178,16 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         # Get a mapping from names to style classes.
         pass
 
-    def _get_style_attributes(self, data: T_Model) -> Mapping[str, Any]:
-        # using the given data object, derive attributes to be passed to the
-        # style's _drawing_start and _drawing_finalize methods
-        # Returns an empty mapping unless overloaded
+    def _get_style_kwargs(self, data: T_Model) -> Mapping[str, Any]:
+        """
+        Using the given data object, derive keyword arguments to be passed to the
+        style's :meth:`.Drawer._drawing_start` and
+        :meth:`.Drawer._drawing_finalize` methods.
+
+        :meta public:
+        :param data: the data to be rendered
+        :returns: the style attributes for the given data object
+        """
         return dict()
 
     @abstractmethod

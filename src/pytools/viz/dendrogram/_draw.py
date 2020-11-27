@@ -51,7 +51,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
         return DendrogramDrawer._STYLES
 
-    def _get_style_attributes(self, data: LinkageTree) -> Mapping[str, Any]:
+    def _get_style_kwargs(self, data: LinkageTree) -> Mapping[str, Any]:
         return dict(
             leaf_label=data.leaf_label,
             distance_label=data.distance_label,
