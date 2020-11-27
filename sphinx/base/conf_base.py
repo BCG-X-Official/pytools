@@ -196,7 +196,11 @@ def setup(app: Sphinx) -> None:
         app=app
     )
 
-    CollapseModulePaths(
+    CollapseModulePathsInDocstring(
+        collapsible_submodules=intersphinx_collapsible_submodules
+    ).connect(app=app, priority=100000)
+
+    CollapseModulePathsInSignature(
         collapsible_submodules=intersphinx_collapsible_submodules
     ).connect(app=app, priority=100000)
 
