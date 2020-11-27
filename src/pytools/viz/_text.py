@@ -5,7 +5,7 @@ Text styles for the Gamma visualization library
 import logging
 import sys
 from abc import ABCMeta
-from typing import TextIO
+from typing import Optional, TextIO
 
 from ..api import AllTracker
 from ._viz import DrawingStyle
@@ -43,7 +43,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
     #: The maximum width of the text to be produced
     width: int
 
-    def __init__(self, out: TextIO = None, width: int = 80, **kwargs) -> None:
+    def __init__(self, out: Optional[TextIO] = None, width: int = 80, **kwargs) -> None:
         """
         :param width: the maximum width available to render the text, defaults to 80
         :param out: the output stream this style instance writes to, or ``stdout`` if \
