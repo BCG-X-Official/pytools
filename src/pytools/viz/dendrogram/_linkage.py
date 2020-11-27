@@ -163,15 +163,23 @@ class LinkageTree:
 
         :return: ``None`` if the node is a leaf, otherwise the pair of children
         """
+
+        node_index = node.index
+        nodes = self._nodes
+
+        # check that the node is included in this tree
+        if node_index >= len(nodes) or node is not nodes[node_index]:
+            raise ValueError("arg node is not a node in this linkage tree")
+
         if node.is_leaf:
             return None
         else:
             # noinspection PyProtectedMember
-            node_linkage = self.scipy_linkage_matrix[node._index - self.n_leaves]
+            node_linkage = self.scipy_linkage_matrix[node_index - self.n_leaves]
             ix_c1, ix_c2 = node_linkage[
                 [LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]
             ].astype(int)
-            return self._nodes[ix_c1], self._nodes[ix_c2]
+            return nodes[ix_c1], nodes[ix_c2]
 
     @property
     def n_leaves(self) -> int:
