@@ -8,6 +8,8 @@ from abc import ABCMeta, abstractmethod
 from typing import (
     Any,
     Callable,
+    Dict,
+    ForwardRef,
     Generator,
     Generic,
     List,
@@ -15,12 +17,15 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    TypeVar,
+    Union,
     cast,
 )
 
 import typing_inspect
 
 from pytools.api import AllTracker, get_generic_bases, inheritdoc
+
 
 log = logging.getLogger(__name__)
 
@@ -31,13 +36,16 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "SphinxCallback",
-    "AutodocLinesProcessor",
+    "AutodocProcessDocstring",
+    "AutodocBeforeProcessSignature",
+    "AutodocProcessSignature",
     "AutodocSkipMember",
     "AddInheritance",
     "CollapseModulePaths",
+    "CollapseModulePathsInDocstring",
+    "CollapseModulePathsInSignature",
     "SkipIndirectImports",
 ]
-
 
 #
 # Type variables
@@ -94,9 +102,9 @@ class SphinxCallback(metaclass=ABCMeta):
             return app.connect(event=self.event, callback=self, priority=priority)
 
 
-class AutodocLinesProcessor(SphinxCallback, metaclass=ABCMeta):
+class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc processor for processing lines.
+    An autodoc processor for docstrings.
     """
 
     @property
@@ -148,6 +156,105 @@ class AutodocLinesProcessor(SphinxCallback, metaclass=ABCMeta):
         except Exception as e:
             log.error(e)
             raise
+
+
+class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
+    """
+      An autodoc processor invoked before processing signatures.
+      """
+
+    @property
+    def event(self) -> str:
+        """
+        ``"autodoc-before-process-signature"``
+        """
+        return "autodoc-before-process-signature"
+
+    @abstractmethod
+    def process(self, app: Sphinx, obj: object, bound_method: bool,) -> None:
+        """
+        Process an event.
+
+        :param app: the Sphinx application object
+        :param obj: the object itself
+        :param bound_method: a boolean indicates an object is bound method or not
+        """
+        pass
+
+    def __call__(
+        self, app: Sphinx, obj: object, bound_method: bool,
+    ) -> Optional[Tuple[str, str]]:
+        try:
+            return self.process(app=app, obj=obj, bound_method=bound_method)
+        except Exception as e:
+            log.error(e)
+
+
+class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
+    """
+      An autodoc processor for processing signatures.
+      """
+
+    @property
+    def event(self) -> str:
+        """
+        ``"autodoc-process-signature"``
+        """
+        return "autodoc-process-signature"
+
+    @abstractmethod
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[str, str]]:
+        """
+        Process an event.
+
+        :param app: the Sphinx application object
+        :param what: the type of the object which the docstring belongs to (one of
+            "module", "class", "exception", "function", "method", "attribute")
+        :param name: the fully qualified name of the object
+        :param obj: the object itself
+        :param options: the options given to the directive: an object with attributes
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and
+            ``noindex`` that are ``True`` if the flag option of same name was given to
+            the auto directive
+        :param signature: function signature, as a string of the form
+            ``(parameter_1, parameter_2)``, or ``None`` if introspection did not succeed
+            and signature was not specified in the directive
+        :param return_annotation: function return annotation as a string of the form
+            `` -> <annotation>``, or ``None`` if there is no return annotation
+        """
+        pass
+
+    def __call__(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[str, str]]:
+        try:
+            return self.process(
+                app=app,
+                what=what,
+                name=name,
+                obj=obj,
+                options=options,
+                signature=signature,
+                return_annotation=return_annotation,
+            )
+        except Exception as e:
+            log.error(e)
 
 
 class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
@@ -213,7 +320,7 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
 
 
 @inheritdoc(match="[see superclass]")
-class AddInheritance(AutodocLinesProcessor):
+class AddInheritance(AutodocProcessDocstring):
     """
     Add list of base classes as the first line of the docstring. Ignore builtin
     classes and classes that were already visited once
@@ -377,28 +484,69 @@ class AddInheritance(AutodocLinesProcessor):
         )
 
 
-@inheritdoc(match="[see superclass]")
-class CollapseModulePaths(AutodocLinesProcessor):
+
+class CollapseModulePaths(metaclass=ABCMeta):
     """
     Replace private module paths with their public prefix so that object references
-    can be matched by _intersphinx_.
+    can be matched by *intersphinx*.
     """
 
-    def __init__(self, collapsible_submodules: Mapping[str, str]):
+    def __init__(
+        self,
+        collapsible_submodules: Mapping[str, str],
+        collapse_private_modules: bool = True,
+    ):
         """
-        :param collapsible_submodules: mapping from module paths to their public \
+        :param collapsible_submodules: mapping from module paths to their public
             prefix, e.g., ``{"pandas.core.frame": "pandas"}``
+        :param collapse_private_modules: if ``True``, collapse module sub-paths
+            consisting of one or more protected modules (i.e. the module name starts
+            with an underscore)
         """
         super().__init__()
         self._classes_visited: Set[type] = set()
 
-        self._intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = [
-            *[
-                (re.compile(r"(`~?)" + old.replace(".", r"\.")), f"\\1{new}")
-                for old, new in collapsible_submodules.items()
-            ],
-            (re.compile(r"(`~?(?:(?!_)\w+\.)+)(_\w*\.)+"), r"\1"),
+        col = [
+            self._make_substitution_pattern(old.replace(".", r"\."), new)
+            for old, new in collapsible_submodules.items()
         ]
+        if collapse_private_modules:
+            col.append(
+                self._make_substitution_pattern(
+                    r"(?P<module>(?:(?!_)\w+\.)+)(?:_\w*\.)*", r"\g<module>"
+                )
+            )
+
+        self._intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = col
+        self._collapse_private_modules = collapse_private_modules
+
+    @abstractmethod
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+        # create the regex substitution rule given a raw match and replacement patterns
+        pass
+
+    def collapse_module_paths(self, line: Optional[str]) -> Optional[str]:
+        """
+        In the given line, replace all module paths with their collapsed version.
+
+        :param line: the line in which to collapse module paths
+        :return: the resulting line with collapsed module paths
+        """
+        if not line:
+            return line
+
+        for expanded, collapsed in self._intersphinx_collapsible_prefixes:
+            line = expanded.sub(collapsed, line)
+
+        return line
+
+
+@inheritdoc(match="[see superclass]")
+class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstring):
+    """
+    Replace private module paths in docstrings with their public prefix so that object
+    references can be matched by _intersphinx_.
+    """
 
     def process(
         self,
@@ -411,9 +559,39 @@ class CollapseModulePaths(AutodocLinesProcessor):
     ) -> None:
         """[see superclass]"""
 
-        for expanded, collapsed in self._intersphinx_collapsible_prefixes:
-            for i, line in enumerate(lines):
-                lines[i] = expanded.sub(collapsed, line)
+        for i, line in enumerate(lines):
+            lines[i] = self.collapse_module_paths(line)
+
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+        return re.compile(f"(`~?){old}"), f"\\1{new}"
+
+
+@inheritdoc(match="[see superclass]")
+class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignature):
+    """
+    Replace private module paths in signatures with their public prefix so that object
+    references can be matched by _intersphinx_.
+    """
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[str, str]]:
+        """[see superclass]"""
+        if signature or return_annotation:
+            return (
+                self.collapse_module_paths(signature),
+                self.collapse_module_paths(return_annotation),
+            )
+
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+        return re.compile(old), new
 
 
 @inheritdoc(match="[see superclass]")

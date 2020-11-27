@@ -185,7 +185,12 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
-    from pytools.sphinx import AddInheritance, CollapseModulePaths, SkipIndirectImports
+    from pytools.sphinx import (
+        AddInheritance,
+        CollapseModulePathsInDocstring,
+        CollapseModulePathsInSignature,
+        SkipIndirectImports,
+    )
 
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
         app=app
