@@ -3,11 +3,11 @@ Drawing dendrograms
 """
 
 import logging
-from typing import Any, List, Mapping, NamedTuple, Type
+from typing import Any, List, Mapping, NamedTuple, Optional, Type, Union
 
 import numpy as np
 
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 from pytools.viz import Drawer
 from pytools.viz.dendrogram._linkage import LinkageTree
 from pytools.viz.dendrogram._style import DendrogramHeatmapStyle, DendrogramReportStyle
@@ -40,12 +40,17 @@ class _SubtreeInfo(NamedTuple):
     weight: float
 
 
+@inheritdoc(match="[see superclass]")
 class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
     Class to draw a ``LinkageTree`` as a dendrogram.
     """
 
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
+
+    def __init__(self, style: Optional[Union[DendrogramStyle, str]] = None) -> None:
+        """[see superclass]"""
+        super().__init__(style=style)
 
     @classmethod
     def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
