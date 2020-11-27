@@ -1,5 +1,5 @@
 """
-Color definitions for Facet color scheme.
+Core implementation of :mod:`pytools.viz.colors`
 """
 
 import logging

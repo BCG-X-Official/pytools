@@ -34,7 +34,7 @@ __tracker = AllTracker(globals())
 
 class TextStyle(DrawingStyle, metaclass=ABCMeta):
     """
-    Base class of plain text drawing styles.
+    Base class of drawing styles producing plain text output.
     """
 
     #: The output stream this style instance writes to
@@ -46,8 +46,8 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
     def __init__(self, out: Optional[TextIO] = None, width: int = 80, **kwargs) -> None:
         """
         :param width: the maximum width available to render the text, defaults to 80
-        :param out: the output stream this style instance writes to, or ``stdout`` if \
-          ``None`` is passed (defaults to ``None``)
+        :param out: the output stream this style instance writes to
+            (defaults to :obj:`sys.stdout`)
         """
 
         super().__init__(**kwargs)

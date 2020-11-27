@@ -1,4 +1,4 @@
 """
-Color definitions for Facet color scheme.
+Color definitions.
 """
 from ._colors import *

@@ -50,7 +50,8 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     @abstractmethod
     def fit(self: T, _x: T_Data, **fit_params) -> T:
         """
-        Fit this object to the given data
+        Fit this object to the given data.
+
         :param _x: the data to fit this object to
         :param fit_params: optional fitting parameters
         :return: self
@@ -60,7 +61,9 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     @property
     @abstractmethod
     def is_fitted(self) -> bool:
-        """``True`` if this object is fitted, ``False`` otherwise."""
+        """
+        ``True`` if this object is fitted, ``False`` otherwise.
+        """
         pass
 
     def _ensure_fitted(self) -> None:

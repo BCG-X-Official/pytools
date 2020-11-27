@@ -43,7 +43,7 @@ class _SubtreeInfo(NamedTuple):
 @inheritdoc(match="[see superclass]")
 class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
-    Class to draw a ``LinkageTree`` as a dendrogram.
+    Draws dendrogram representations of :class:`.LinkageTree` objects.
     """
 
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}

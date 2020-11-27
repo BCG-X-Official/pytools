@@ -56,10 +56,10 @@ __tracker = AllTracker(globals())
 
 class DrawingStyle(metaclass=ABCMeta):
     """
-    Base style class for a :class:`.Drawer`.
+    Base class for styles used by :class:`.Drawer` objects.
 
     Provides low-level rendering methods used by specific type of :class:`.Drawer`.
-    Typically, there are several draw styles for one drawer type, offering the same
+    Typically, there are several drawing styles for one drawer type, offering the same
     rendering methods but implementing them differently (e.g., matplot output vs. text
     output).
     The style class and its rendering methods should not be aware of the actual object
@@ -71,8 +71,8 @@ class DrawingStyle(metaclass=ABCMeta):
     matrices.
     :class:`.MatrixStyle` is an abstract subclass of :class:`DrawingStyle` and has three
     implementations to output matrices as matplot charts or as a text report:
-    :class: `.MatrixMatplotStyle`, :class:`PercentageMatrixMatplotStyle`,
-    and :class:`MatrixReportStyle`.
+    :class:`.MatrixMatplotStyle`, :class:`.PercentageMatrixMatplotStyle`,
+    and :class:`.MatrixReportStyle`.
 
     Many style objects can be further parameterised to control how objects are rendered.
     """
@@ -88,19 +88,29 @@ class DrawingStyle(metaclass=ABCMeta):
 
     @abstractmethod
     def _drawing_start(self, title: str, **kwargs) -> None:
-        # Prepare the new chart for drawing, using the given title.
-        #
-        # Any additional drawer-specific attributes will be passed
-        # as additional keyword arguments.
-        pass
+        """
+        Prepare a new chart for drawing, using the given title.
+
+        Any additional drawer-specific attributes, obtained from
+        method :meth:`Drawer._get_style_kwargs`, will be passed
+        as keyword arguments.
+
+        :meta public:
+        :param title: the title of the chart
+        """
+
+    pass
 
     def _drawing_finalize(self, **kwargs) -> None:
-        # Finalize the drawing.
-        #
-        # Any additional drawer-specific attributes will be passed
-        # as additional keyword arguments.
-        #
-        # Does nothing unless overloaded.
+        """
+        Finalize the drawing.
+
+        Any additional drawer-specific attributes, obtained from
+        method :meth:`Drawer._get_style_kwargs`, will be passed
+        as keyword arguments.
+
+        :meta public:
+        """
         pass
 
 
@@ -111,9 +121,14 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     """
     Base class for drawers.
 
-    Drawers are associated with a :class:`.DrawStyle` object and are able to render
-    a on object of a specific type (the `model`), using the drawing methods provided
-    by the style object.
+    Drawers follow a `Model-View-Controller` design `(MVC)`.
+    Each :class:`Drawer` (the `controller`) is associated with a :class:`.DrawingStyle`
+    object (the `view`) and renders objects of a specific type (the `model`),
+    using the low-level drawing methods provided by the style object.
+
+    While the drawer controls the overall drawing process (e.g., drawing a tree or a
+    matrix), the style objects determines the format of the output, e.g., a text or
+    a line drawing.
     """
 
     #: The :class:`.DrawingStyle` used by this drawer
@@ -149,7 +164,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     @classmethod
     def get_named_styles(cls) -> FrozenSet[str]:
         """
-        The names of all default styles recognized by this drawer's initializer.
+        The names of all named styles recognized by this drawer's initializer.
         """
         return cast(FrozenSet, cls._get_style_dict().keys())
 
@@ -175,7 +190,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     @classmethod
     @abstractmethod
     def _get_style_dict(cls) -> Mapping[str, Type[T_Style]]:
-        # Get a mapping from names to style classes.
+        """
+        Get mapping of names to style classes available for this drawer type.
+
+        :meta public:
+        :returns: a mapping of names to style classes
+        """
         pass
 
     def _get_style_kwargs(self, data: T_Model) -> Mapping[str, Any]:
@@ -192,7 +212,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
 
     @abstractmethod
     def _draw(self, data: T_Model) -> None:
-        # core drawing method invoked my method draw(), to be implemented by subclasses
+        """
+        Core drawing method invoked my method :meth:`.draw`.
+
+        :meta public:
+        :param data: the data to be rendered
+        """
         pass
 
 

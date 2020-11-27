@@ -1,21 +1,5 @@
 """
 Dendrogram styles.
-
-The dendrogram styles are given as a parameter to a
-:class:`.DendrogramDrawer` and determine the style of the
-plot.
-
-:class:`~DendrogramMatplotStyle` is a an abstract base class for styles using
-matplotlib.
-
-:class:`~DendrogramLineStyle` renders dendrogram trees in the classical style as a line
-drawing.
-
-:class:`~DendrogramHeatmapStyle` renders dendrogram trees as a combination of tree and
-heatmap for better visibility of feature importance.
-
-:class:`~DendrogramReportStyle` renders dendrogram trees as ASCII graphics for
-inclusion in text reports.
 """
 
 import logging
@@ -57,7 +41,8 @@ __tracker = AllTracker(globals())
 @inheritdoc(match="[see superclass]")
 class DendrogramLineStyle(DendrogramMatplotStyle):
     """
-    Plot dendrograms in the classical style, as a coloured tree diagram.
+    Draws dendrograms as "classical" trees, using coloring lines along a color gradient
+    to indicate leaf/branch weights.
     """
 
     def draw_link_leg(
@@ -102,7 +87,8 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
 @inheritdoc(match="[see superclass]")
 class DendrogramHeatmapStyle(DendrogramMatplotStyle):
     """
-    Plot dendrograms with a heat map style.
+    Draws dendrograms as a tree composed of color tiles, coloring tiles as a heat map
+    indicating leaf/branch weights.
     """
 
     def draw_link_leg(
@@ -173,7 +159,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
 @inheritdoc(match="[see superclass]")
 class DendrogramReportStyle(TextStyle, DendrogramStyle):
     """
-    Dendrogram rendered as text.
+    Renders dendrograms as ASCII graphics for inclusion in plain-text reports.
     """
 
     __DEFAULT_LABEL_WIDTH = 20
@@ -194,10 +180,10 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         max_height: int = 100,
     ) -> None:
         """
-        :param label_width: the number of characters that will be allocated for the \
-            label column, including the weight (optional; defaults to 20 characters or \
-            half of arg width, whichever is smaller)
-        :param max_height: maximum number of text lines to output including the title; \
+        :param label_width: the number of characters that will be allocated for the
+            label column, including the weight (optional; defaults to 20 characters or
+            half of arg `width`, whichever is smaller)
+        :param max_height: maximum number of text lines to output including the title;
             additional lines of the dendrogram will be clipped (default: 100)
         """
         super().__init__(out=out, width=width)
@@ -220,6 +206,8 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._dendrogram_right = width - self.label_width
         self._char_matrix = None
         self._n_labels = None
+
+    __init__.__doc__ = TextStyle.__init__.__doc__ + __init__.__doc__
 
     def draw_leaf_names(self, *, names: Sequence[str]) -> None:
         """[see superclass]"""

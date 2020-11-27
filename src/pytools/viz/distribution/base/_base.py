@@ -32,7 +32,7 @@ __tracker = AllTracker(globals())
 
 class XYSeries(NamedTuple):
     """
-    Series of x and y coordinates for plotting; x and y values are held in two
+    Series of `x` and `y` coordinates for plotting; `x` and `y` values are stored in two
     separate sequences of the same length.
     """
 
@@ -53,7 +53,7 @@ class ECDF(NamedTuple):
 
 class ECDFStyle(DrawingStyle, metaclass=ABCMeta):
     """
-    The base drawing style for ECDFs
+    Base drawing style for ECDFs.
     """
 
     @abstractmethod

@@ -51,16 +51,24 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     """
     Matplot style for matrices.
 
-    Numerical values of matrix cells are rendered as colours, with a colour bar
-    attached as a legend.
+    Numerical values of matrix cells are rendered as colors from a color map,
+    with a color bar attached as a legend.
+
+    Matrix cells will be annotated with their values if a *cell format* is specified.
+    Cell formats can be defined in different ways:
+
+    - a new-style Python format string, e.g., ``{:.3g}``
+    - a function accepting the value to be formatted as its only positional argument,
+      e.g., ``lambda x: f"{x * 100:.3g}%"``
+    - a :class:`~matplotlib.ticker.Formatter` instance
     """
 
     #: the maximum number of ticks to put on the x and y axis;
     #: ``None`` to determine the number of ticks automatically
     max_ticks: Optional[Tuple[int, int]]
 
-    #: formatter for annotating each matrix cell with its value, if sufficient space
-    #: is available; if ``None``, no cells are annotated
+    #: formatter for annotating each matrix cell with its value; if ``None``,
+    #: no cells are annotated
     cell_formatter: Optional[Formatter]
 
     def __init__(
@@ -76,17 +84,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         **kwargs,
     ) -> None:
         """
-        :param max_ticks: the maximum number of ticks to put on the x and y axis; \
+        :param max_ticks: the maximum number of ticks to put on the x and y axis;
             ``None`` to determine the number of ticks automatically (default: ``None``)
-        :param cell_format: optional string format, function, or \
-            :class:`~matplotlib.ticker.Formatter` for annotating each matrix cell with \
-            its value, if sufficient space is available; if ``None``, no cells are \
-            annotated. \
-            String format should be a new-style python format string, e.g., ``{:.3g}``.\
-            Function must take one positional argument which is the value to be \
-            formatted, e.g., ``lambda x: f"{x * 100:.3g}%"``. \
-            If no colorbar major formatter is specified, the cell format is also used \
-            as the colorbar major formatter.
+        :param cell_format: format for annotating each matrix cell with
+            its value if sufficient space is available (optional – do not annotate
+            cells if omitted);
+            if no colorbar major formatter is specified, use the cell format also
+            as the colorbar major formatter
         """
         if cell_format is None:
             cell_formatter = None
@@ -250,10 +254,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.grid(which="minor", color=RGBA_WHITE, linestyle="-", linewidth=2)
         ax.tick_params(which="minor", bottom=False, left=False)
 
-    draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
 
-
-@inheritdoc(match="[see superclass]")
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
     """
     A matrix plot where all values are percentages.
@@ -314,8 +315,6 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         """[see superclass]"""
         matrix.to_string(buf=self.out, line_width=self.width)
 
-    draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
-
 
 #
 # Drawer classes
@@ -326,13 +325,13 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     """
     Drawer for matrices of numerical values.
 
-    Comes with three pre-defined styles:
-    - ``matplot``: matplotlib plot of the matrix using a default \
-        :class:`.MatrixMatplotStyle`
-    - ``matplot%``: matplotlib plot of matrix with percentage annotations, \
-        using a default :class:`.PercentageMatrixMatplotStyle`
-    - ``text``: print the matrix to stdout, using a default \
-        :class:`.MatrixReportStyle`
+    Supports the following pre-defined styles:
+
+    - ``"matplot"``: `matplotlib` plot of the matrix using a
+      :class:`.MatrixMatplotStyle`
+    - ``"matplot%"``: `matplotlib` plot of matrix with annotations formatted as
+      percentages, using a :class:`.PercentageMatrixMatplotStyle`
+    - ``"text"``: text representation of the matrix, using a :class:`.MatrixReportStyle`
     """
 
     _STYLES = {

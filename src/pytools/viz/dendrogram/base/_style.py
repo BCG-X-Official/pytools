@@ -61,7 +61,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
 
         :param bottom: the height of the child node in the linkage tree
         :param top: the height of the parent node in the linkage tree
-        :param leaf: the index of the leaf where the link leg should be drawn (may be \
+        :param leaf: the index of the leaf where the link leg should be drawn (may be
             a ``float``, indicating a position in between two leaves)
         :param weight: the weight of the child node
         :param tree_height: the total height of the linkage tree
@@ -96,9 +96,10 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
 @inheritdoc(match="[see superclass]")
 class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=ABCMeta):
     """
-    Base class for Matplotlib styles for dendrograms.
+    Base class for `matplotlib` styles for dendrograms.
 
-    Includes support for plotting a color legend for feature importance.
+    Supports color maps to indicate feature importance on a logarithmic scale,
+    and renders a color bar as a legend.
     """
 
     def __init__(
@@ -109,8 +110,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         min_weight: float = 0.01,
     ) -> None:
         """
-        :param min_weight: the min weight on the logarithmic feature importance color \
-            scale; must be greater than 0 and smaller than 1 (default: 0.01)
+        :param min_weight: the minimum weight on the logarithmic feature importance
+            color scale; must be greater than `0` and smaller than `1``
+            (default: `0.01`, i.e., 1%)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")

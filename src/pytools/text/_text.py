@@ -42,6 +42,20 @@ class CharacterMatrix:
     """
     A matrix of characters, indexed by rows and columns.
 
+    The matrix is initialised with space characters (`" "`).
+
+    Characters can be "painted" in the matrix using 2D index expressions:
+
+    - ``matrix[r, c] = chr`` assigns character `chr` at position `(r, c)`
+    - ``matrix[r, c1:c2] = str`` writes string `str` at positions
+      `(r, c1) … (r, c2 – 1)`; excess characters in `str` are clipped if ``len(s)`` is
+      greater than `c2 – c1`
+    - ``matrix[r, c1:c2] = chr`` (where `chr` is a single character) repeats `chr` at
+      every position `(r, c1) … (r, c2 – 1)`
+    - ``matrix[r1:r2, …] = …`` applies the same insertion at each of rows `r1 … r2 – 1`
+    - full slice notation is supported so even slices of shape ``start:stop:step`` work
+      as expected
+
     :param n_rows: the matrix height
     :param n_columns: the matrix width
     """
@@ -57,7 +71,7 @@ class CharacterMatrix:
     @property
     def n_rows(self) -> int:
         """
-        The height of this matrix.
+        The height of this matrix
 
         Same as ``len(self)``.
         """
@@ -66,13 +80,15 @@ class CharacterMatrix:
     @property
     def n_columns(self) -> int:
         """
-        The width of this matrix.
+        The width of this matrix
         """
         return self._n_columns
 
     def lines(self) -> Iterable[str]:
         """
-        :return: the lines in this matrix as strings
+        Get this character matrix as strings representing the matrix rows.
+
+        :return: the rows in this matrix as strings
         """
         return ("".join(line) for line in self._matrix)
 
@@ -124,10 +140,10 @@ def format_table(
     alignment: Optional[Sequence[Optional[str]]] = None,
 ) -> str:
     """
-    Print a formatted text table
+    Print a formatted text table.
 
     :param headings: the table headings
-    :param data: the table data, as a list-like with shape `[n_rows, n_columns]`
+    :param data: the table data, as an array-like with shape `[n_rows, n_columns]`
     :param formats: formatting strings for data in each row (optional); \
         uses ``str()`` conversion for any formatting strings stated as ``None``
     :param alignment: text alignment for each column (optional); use ``"<"`` to align

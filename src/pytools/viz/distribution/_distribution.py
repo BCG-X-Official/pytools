@@ -56,13 +56,13 @@ DEFAULT_IQR_MULTIPLE_FAR = 3.0
 
 class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
     """
-    Plot an ECDF as a Matplotlib plot.
+    Draws ECDF plots using `matplotlib`.
     """
 
-    # ; color for plotting outliers
+    #: color for plotting outliers
     color_outlier: Union[RgbaColor, str]
 
-    # ; color for plotting far outliers
+    #: color for plotting far outliers
     color_far_outlier: Union[RgbaColor, str]
 
     def __init__(
@@ -74,23 +74,21 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         **kwargs,
     ):
         """
-        :param color_outlier: the color for plotting outliers \
-            (default: orange)
-        :param color_far_outlier: the color color for plotting far outliers \
-            (default: red)
+        :param color_outlier: color for highlighting outliers \
+            (default: ``DEFAULT_COLOR_OUTLIER``)
+        :param color_far_outlier: color for highlighting far outliers \
+            (default: ``DEFAULT_COLOR_FAR_OUTLIER``)
         """
         super().__init__(ax=ax, **kwargs)
         self.color_outlier = color_outlier
         self.color_far_outlier = color_far_outlier
 
-    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__.replace(
+        "DEFAULT_COLOR_OUTLIER", repr(DEFAULT_COLOR_OUTLIER)
+    ).replace("DEFAULT_COLOR_FAR_OUTLIER", repr(DEFAULT_COLOR_FAR_OUTLIER))
 
     def _draw_ecdf(
-        self,
-        ecdf: ECDF,
-        x_label: str,
-        iqr_multiple: float,
-        iqr_multiple_far: float,
+        self, ecdf: ECDF, x_label: str, iqr_multiple: float, iqr_multiple_far: float
     ) -> None:
         def _iqr_annotation(multiple: float) -> str:
             return f"(> {multiple:.3g} * IQR)"
@@ -121,7 +119,19 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
 class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     """
-    Drawer for empirical cumulative density functions (ECDFs).
+    Drawer for empirical cumulative density functions (ECDFs), highlighting
+    outliers using Tukey's outlier test.
+
+    The drawer highlights samples as `outliers` or `far outliers`.
+
+    A sample is considered an outlier if it is outside the range
+    :math:`[q_1 - m * \\mathit{iqr}, q_3 + m * \\mathit{iqr}]`
+    where :math:`q_1` and :math:`q_3` are the lower and upper quartiles,
+    :math:`\\mathit{iqr} = q3 - q1` is the `inter-quartile range (IQR)`, and
+    :math:`m` is the `IQR multiple`.
+
+    By convention, common values for :math:`m` are :math:`m = 1.5` for outliers,
+    and :math:`m = 3` for far outliers.
     """
 
     _STYLES = {"matplot": ECDFMatplotStyle}
@@ -146,12 +156,12 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         hide_far_outliers: bool = False,
     ) -> None:
         """
-        :param iqr_multiple: iqr multiple to determine outliers; if ``None``, then no \
-            outliers and far outliers are computed (default: 1.5).
-        :param iqr_multiple_far: iqr multiple to determine far outliers; if ``None``, \
+        :param iqr_multiple: iqr multiple to determine outliers; if ``None``, then no
+            outliers and far outliers are computed (default: `1.5`).
+        :param iqr_multiple_far: iqr multiple to determine far outliers; if ``None``,
             then no far outliers are computed, otherwise must be greater than
-            ``iqr_multiple`` (default: 3.0).
-        :param hide_far_outliers: if ``True``, do not plot far outliers \
+            `iqr_multiple` (default: `3.0`).
+        :param hide_far_outliers: if ``True``, do not plot far outliers
             (default: ``False``)
         """
         super().__init__(style=style)
@@ -176,10 +186,12 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
 
     def draw(self, data: Sequence[float], title: Optional[str] = None) -> None:
         """
-        Draw the chart.
+        Draw the ECDF.
+
         :param data: the data to draw
-        :param title: the title of the chart (optional; defaults to "ECDF"; if arg \
-            ``data`` is a series then the default title will include name of the series)
+        :param title: the title of the chart (optional; defaults to ``"ECDF"``; if arg
+            `data` is a :class:`~.Series` or any other class with a `name`
+            attribute, then the default title will include the name)
         """
         if title is None:
             if hasattr(data, "name"):
@@ -208,18 +220,13 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         Compute ECDF for scalar values.
 
         Return the x and y values of an empirical cumulative distribution plot of the
-        values in ``data``. Outlier and far outlier points are returned in separate
+        values in arg `data`. Outlier and far outlier points are returned in separate
         lists.
 
-        A sample is considered an outlier if it is outside the range
-        :math:`[Q_1 - iqr\\_ multiple(Q_3-Q_1), Q_3 + iqr\\_ multiple(Q_3-Q_1)]`
-        where :math:`Q_1` and :math:`Q_3` are the lower and upper quartiles. The same
-        is used for far outliers with ``iqr_multiple`` replaced by ``iqr_multiple_far``.
-
         :param data: the series of values forming our sample
-        :return: x_inlier, y_inlier, x_outlier, y_outlier, x_far_outlier, \
-            y_far_outlier: \
-            lists of x and y coordinates for the ecdf plot for the inlier, outlier and \
+        :return: x_inlier, y_inlier, x_outlier, y_outlier, x_far_outlier,
+            y_far_outlier:
+            lists of x and y coordinates for the ecdf plot for the inlier, outlier and
             far outlier points.
         """
 
