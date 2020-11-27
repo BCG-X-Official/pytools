@@ -36,7 +36,7 @@ __all__ = ["DrawingStyle", "Drawer"]
 
 T_Model = TypeVar("T_Model")
 # noinspection PyTypeChecker
-T_Style = TypeVar("T_Style", bound="DrawStyle")
+T_Style = TypeVar("T_Style", bound="DrawingStyle")
 
 
 #
@@ -51,7 +51,7 @@ __tracker = AllTracker(globals())
 #
 
 
-# View: class DrawStyle
+# View: class DrawingStyle
 
 
 class DrawingStyle(metaclass=ABCMeta):
@@ -69,7 +69,7 @@ class DrawingStyle(metaclass=ABCMeta):
 
     For example, a :class:`.MatrixDrawer` requires a :class:`.MatrixStyle` to render
     matrices.
-    :class:`.MatrixStyle` is an abstract subclass of :class:`DrawStyle` and has three
+    :class:`.MatrixStyle` is an abstract subclass of :class:`DrawingStyle` and has three
     implementations to output matrices as matplot charts or as a text report:
     :class: `.MatrixMatplotStyle`, :class:`PercentageMatrixMatplotStyle`,
     and :class:`MatrixReportStyle`.
@@ -116,15 +116,15 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     by the style object.
     """
 
-    #: The :class:`.DrawStyle` object used by this drawer
+    #: The :class:`.DrawingStyle` used by this drawer
     style: T_Style
 
     def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:
         """
-        :param style: the style of the chart; either as a \
-            :class:`.DrawStyle` instance, or as the name of a default style. \
-            Permissible names include "matplot" for a style supporting Matplotlib, and \
-            "text" if text rendering is supported (default: ``"matplot"``)
+        :param style: the style to be used for drawing; either as a
+            :class:`.DrawingStyle` instance, or as the name of a default style.
+            Permissible names include ``"matplot"`` for a style supporting `matplotlib`,
+            and ``"text"`` if text rendering is supported (default: ``"matplot"``)
         """
 
         def _get_style_cls(_style_name) -> Type[T_Style]:
