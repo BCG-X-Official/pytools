@@ -151,8 +151,8 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         weight_percent = weight * 100
         label = (
             f"{weight_percent:.2g}%"
-            if round(weight_percent, 1) < 100
-            else f"{weight_percent:.3g}%"
+            if weight_percent < 99.5
+            else f"{round(weight_percent):.3g}%"
         )
 
         x_text = x + w / 2
