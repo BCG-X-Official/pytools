@@ -13,8 +13,9 @@ from matplotlib.colors import Colormap, Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle, text_contrast_color
+from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle
 from pytools.viz.colors import RGBA_WHITE
+from pytools.viz.colors._colors import text_contrast_color
 from pytools.viz.matrix.base import MatrixStyle
 from pytools.viz.util import PercentageFormatter
 
