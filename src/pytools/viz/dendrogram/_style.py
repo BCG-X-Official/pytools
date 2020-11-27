@@ -23,8 +23,9 @@ from typing import Optional, Sequence, TextIO
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.text import CharacterMatrix
-from pytools.viz import TextStyle, text_contrast_color
+from pytools.viz import TextStyle
 from pytools.viz.colors import RGBA_WHITE
+from pytools.viz.colors._colors import text_contrast_color
 from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
 
 log = logging.getLogger(__name__)
