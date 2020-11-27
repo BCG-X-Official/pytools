@@ -26,7 +26,6 @@ import typing_inspect
 
 from pytools.api import AllTracker, get_generic_bases, inheritdoc
 
-
 log = logging.getLogger(__name__)
 
 
@@ -91,9 +90,12 @@ class SphinxCallback(metaclass=ABCMeta):
         """
         Register this callback to be called when :attr:`.event` is emitted.
 
-        :param app:
-        :param priority:
-        :return: a "listener ID" that can be used as an argument to \
+        Registered callbacks will be invoked on event in the order of priority and
+        registration. The priority is ascending order.
+
+        :param app: the Sphinx application to register this processor with
+        :param priority: the priority of this processor
+        :return: a listener ID that can be used as an argument to
             :meth:`~sphinx.application.Sphinx.disconnect`.
         """
         if priority is None:
@@ -160,8 +162,8 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
     """
-      An autodoc processor invoked before processing signatures.
-      """
+    An autodoc processor invoked before processing signatures.
+    """
 
     @property
     def event(self) -> str:
@@ -171,7 +173,7 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         return "autodoc-before-process-signature"
 
     @abstractmethod
-    def process(self, app: Sphinx, obj: object, bound_method: bool,) -> None:
+    def process(self, app: Sphinx, obj: object, bound_method: bool) -> None:
         """
         Process an event.
 
@@ -182,7 +184,7 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         pass
 
     def __call__(
-        self, app: Sphinx, obj: object, bound_method: bool,
+        self, app: Sphinx, obj: object, bound_method: bool
     ) -> Optional[Tuple[str, str]]:
         try:
             return self.process(app=app, obj=obj, bound_method=bound_method)
@@ -192,8 +194,8 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
     """
-      An autodoc processor for processing signatures.
-      """
+    An autodoc processor for processing signatures.
+    """
 
     @property
     def event(self) -> str:
