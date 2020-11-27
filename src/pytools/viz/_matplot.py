@@ -18,7 +18,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
 from ._viz import DrawingStyle
-from .colors import COLORMAP_FACET, RGBA_BLACK, RGBA_WHITE, RgbaColor
+from .colors import COLORMAP_FACET, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["MatplotStyle", "ColorbarMatplotStyle", "text_contrast_color"]
+__all__ = ["MatplotStyle", "ColorbarMatplotStyle"]
 
 
 #
@@ -207,28 +207,6 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
-
-
-#
-# Functions
-#
-
-
-def text_contrast_color(bg_color: RgbaColor) -> RgbaColor:
-    """
-    Return a text color that maximises contrast with the given background color.
-
-    Returns white for background luminance < 50%, and black otherwise.
-    The alpha channel of the text color is the same as the background color's.
-
-    :param bg_color: RGBA encoded colour for the background
-    :return: the contrasting text color
-    """
-    fill_luminance = sum(bg_color[:3]) / 3
-    text_color = RGBA_WHITE if fill_luminance < 0.5 else RGBA_BLACK
-    if len(bg_color) > 3:
-        text_color = (*text_color[:3], bg_color[3])
-    return text_color
 
 
 __tracker.validate()

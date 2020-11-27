@@ -26,6 +26,7 @@ __all__ = [
     "RGBA_LIGHT_BLUE",
     "RGBA_LIGHT_GREEN",
     "COLORMAP_FACET",
+    "text_contrast_color",
 ]
 
 #
@@ -84,6 +85,28 @@ COLORMAP_FACET = LinearSegmentedColormap.from_list(
         (1.0, RGBA_LIGHT_GREEN),
     ],
 )
+
+
+#
+# Functions
+#
+
+
+def text_contrast_color(bg_color: RgbaColor) -> RgbaColor:
+    """
+    Get a text color that maximises contrast with the given background color.
+
+    Returns white for background luminance < 50%, and black otherwise.
+    The alpha channel of the text color is the same as the background color's.
+
+    :param bg_color: RGBA encoded background color
+    :return: the contrasting text color
+    """
+    fill_luminance = sum(bg_color[:3]) / 3
+    text_color = RGBA_WHITE if fill_luminance < 0.5 else RGBA_BLACK
+    if len(bg_color) > 3:
+        text_color = (*text_color[:3], bg_color[3])
+    return text_color
 
 
 # check consistency of __all__
