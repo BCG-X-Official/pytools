@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["FittableMixin"]
+__all__ = ["NotFittedError", "FittableMixin"]
 
 
 #
@@ -34,6 +34,12 @@ __tracker = AllTracker(globals())
 #
 # Classes
 #
+
+
+class NotFittedError(Exception):
+    """
+    Raised when a fittable object was expected to be fitted but was not fitted.
+    """
 
 
 class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
@@ -58,9 +64,14 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
         pass
 
     def _ensure_fitted(self) -> None:
-        # raise a runtime exception if this object is not fitted
+        """
+        Raise a :class:`.NotFittedError` if this object is not fitted.
+
+        :meta public:
+        :raise NotFittedError: this object is not fitted
+        """
         if not self.is_fitted:
-            raise RuntimeError(f"{type(self).__name__} is not fitted")
+            raise NotFittedError(f"{type(self).__name__} is not fitted")
 
 
 __tracker.validate()
