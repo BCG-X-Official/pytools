@@ -136,21 +136,28 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
     def _drawing_finalize(
         self,
         *,
-        labels_name: Optional[str] = None,
-        distance_name: Optional[str] = None,
-        weights_name: Optional[str] = None,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
         **kwargs,
     ) -> None:
-        super()._drawing_finalize(colorbar_label=weights_name, **kwargs)
+        """
+        Finalize the drawing.
+
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the weight axis
+        """
+        super()._drawing_finalize(colorbar_label=weight_label, **kwargs)
 
         ax = self.ax
 
         # configure the axes
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
-        if distance_name:
-            ax.set_xlabel(distance_name)
-        if labels_name:
-            ax.set_ylabel(labels_name)
+        if distance_label:
+            ax.set_xlabel(distance_label)
+        if leaf_label:
+            ax.set_ylabel(leaf_label)
 
 
 __tracker.validate()

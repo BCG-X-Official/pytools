@@ -53,10 +53,10 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
 
     def _get_style_attributes(self, data: LinkageTree) -> Mapping[str, Any]:
         return dict(
-            labels_name=data.labels_name,
-            distance_name=data.distance_name,
-            weights_name=data.weights_name,
-            **super()._get_style_attributes(data=data),
+            leaf_label=data.leaf_label,
+            distance_label=data.distance_label,
+            weight_label=data.weight_label,
+            **super()._get_style_kwargs(data=data),
         )
 
     def _draw(self, data: LinkageTree) -> None:

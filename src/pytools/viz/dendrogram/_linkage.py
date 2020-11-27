@@ -145,9 +145,9 @@ class LinkageTree:
             )
 
         self.max_distance = max_distance
-        self.labels_name = leaf_label
-        self.weights_name = weight_label
-        self.distance_name = distance_label
+        self.leaf_label = leaf_label
+        self.weight_label = weight_label
+        self.distance_label = distance_label
 
     @property
     def root(self) -> Node:
