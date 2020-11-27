@@ -322,13 +322,25 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
 @inheritdoc(match="[see superclass]")
 class AddInheritance(AutodocProcessDocstring):
     """
-    Add list of base classes as the first line of the docstring. Ignore builtin
-    classes and classes that were already visited once
+    Add list of base classes as the first line of the docstring.
+
+    Ignore builtin classes and classes that have already been visited once before.
     """
 
     def __init__(self, collapsible_submodules: Mapping[str, str]):
+        """
+        :param collapsible_submodules: mapping of submodule paths to shorter
+            *(collapsed)* versions they should be replaced with
+        """
         super().__init__()
         self.collapsible_submodules = collapsible_submodules
+
+        #: dict mapping visited classes to their unprocessed docstrings
+        self._visited: Dict[type, str] = {}
+
+    F_BASES = ":bases:"  #: field directive for base classes
+    F_GENERICS = ":generic types:"  #: field directive for generic types
+    F_METACLASSES = ":metaclasses:"  #: field directive for metaclasses
 
     def process(
         self,
@@ -348,9 +360,22 @@ class AddInheritance(AutodocProcessDocstring):
             # generate the RST for bases and generics
             class_ = cast(type, obj)
 
+            _current_lines = "\n".join(lines)
+            try:
+                _seen_lines = self._visited[class_]
+                if _current_lines != _seen_lines:
+                    # we are seeing another part of the docstring, probably in __init__
+                    # vs. the class docstring;
+                    # ignore this to prevent adding the same content at two places
+                    return
+            except KeyError:
+                # we are seeing a class for the first time; store its content so we can
+                # detect and allow repeat visits
+                self._visited[class_] = _current_lines
+
             bases_with_origin = [
                 (base, typing_inspect.get_origin(base) or base)
-                for base in set(self._get_bases(class_))
+                for base in set(self._get_bases(class_, include_subclass=False))
             ]
             bases = [
                 base
@@ -361,25 +386,32 @@ class AddInheritance(AutodocProcessDocstring):
                 )
             ]
 
-            bases_lines = [""]
+            bases_lines: List[str] = [""]
             if bases:
                 base_names = (self._class_name_with_generics(base) for base in bases)
-                bases_lines.append(f'Bases: {", ".join(base_names)}')
-                bases_lines.append("")
+                bases_lines.append(f'{AddInheritance.F_BASES} {", ".join(base_names)}')
 
             generics: List[str] = self._get_generics(class_)
             if generics:
-                generic_type_variables = f'Generic types: {", ".join(generics)}'
-                bases_lines.append(generic_type_variables)
-                bases_lines.append("")
+                bases_lines.append(f'{AddInheritance.F_GENERICS} {", ".join(generics)}')
+
+            metaclasses: List[str] = self._get_metaclasses(class_)
+            if metaclasses:
+                bases_lines.append(
+                    f'{AddInheritance.F_METACLASSES} {", ".join(metaclasses)}'
+                )
+
+            bases_lines.append("")
 
             # insert this after the intro text, and before class parameters
 
             def _insert_position() -> int:
                 for n, line in enumerate(lines):
-                    if re.match(r"\s*:param\s*\w+:", line):
+                    if re.match(r"\s*:\w+(?:\s+\w+)*:", line) and (
+                        n == 0 or not line[n - 1].strip()
+                    ):
                         return n
-                return -1
+                return len(lines)
 
             if len(bases_lines) > 0:
                 pos = _insert_position()
@@ -405,7 +437,9 @@ class AddInheritance(AutodocProcessDocstring):
         return _get_attr(_cls=cls)
 
     def _class_module(self, cls: type) -> str:
-        module_name = self._class_attr(cls=cls, attr="__module__", default=lambda: "")
+        module_name = AddInheritance._class_attr(
+            cls=cls, attr="__module__", default=lambda: ""
+        )
 
         collapsed_module = self.collapsible_submodules.get(module_name, None)
         if collapsed_module:
@@ -420,19 +454,31 @@ class AddInheritance(AutodocProcessDocstring):
         # return the unchanged module name
         return module_name
 
-    def _class_name(self, cls: type) -> str:
-        return self._class_attr(cls=cls, attr="__qualname__", default=lambda: str(cls))
+    @staticmethod
+    def _class_name(cls: type) -> str:
+        return AddInheritance._class_attr(
+            cls=cls, attr="__qualname__", default=lambda: str(cls)
+        )
 
     def _full_name(self, cls: type) -> str:
         # get the full name of the class, including the module prefix
         return f"{self._class_module(cls=cls)}.{self._class_name(cls=cls)}"
 
-    def _class_name_with_generics(self, cls: type) -> str:
+    def _class_name_with_generics(self, cls: Union[type, TypeVar]) -> str:
+        def _class_tag(_name: Any) -> str:
+            return f":class:`{str(_name)}`"
+
+        if isinstance(cls, TypeVar):
+            return _class_tag(cls)
+
+        if isinstance(cls, ForwardRef):
+            return _class_tag(cls.__forward_arg__)
+
         if not hasattr(cls, "__module__"):
-            return str(cls)
+            return _class_tag(cls)
 
         if cls.__module__ in ("__builtin__", "builtins"):
-            return f":class:`{cls.__name__}`"
+            return _class_tag(cls.__name__)
 
         else:
             generic_args = [
@@ -444,45 +490,85 @@ class AddInheritance(AutodocProcessDocstring):
 
             return f":class:`~{self._full_name(cls)}`{generic_arg_str}"
 
-    def _get_bases(self, child_class: type) -> Generator[type, None, None]:
-        # get the names of the immediate base classes of arg child_class
+    def _typevar_name(self, cls: TypeVar) -> str:
+        if isinstance(cls, TypeVar):
+            args: List[str] = [
+                self._class_name_with_generics(c) for c in cls.__constraints__
+            ]
+            if cls.__bound__:
+                args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
+            if cls.__covariant__:
+                args.append("*__covariant__=True*")
+            if cls.__contravariant__:
+                args.append("*__contravariant__=True*")
+            return f'{cls}({", ".join(args)})' if args else str(cls)
+        else:
+            return str(cls)
 
-        # ensure we have the non-generic origin class
-        child_class = typing_inspect.get_origin(child_class) or child_class
+    def _get_bases(
+        self, subclass: type, include_subclass: bool
+    ) -> Generator[type, None, None]:
+        # get the names of the immediate base classes of arg _subclass
 
-        # get the base classes; try generic bases first then fall back to regular bases
-        base_classes = get_generic_bases(child_class) or child_class.__bases__
+        visited_classes: Set[type] = set()
 
-        # get the names of all base classes; go up the class hierarchy in case of hidden
-        # classes
-        for base in base_classes:
+        def _inner(
+            _subclass: type, _include_subclass: bool
+        ) -> Generator[type, None, None]:
+            # ensure we have the non-generic origin class
+            _subclass: type = typing_inspect.get_origin(_subclass) or _subclass
 
-            # exclude object and Generic types
-            if base is object or typing_inspect.get_origin(base) is Generic:
-                continue
+            if _subclass in visited_classes:
+                return
+            visited_classes.add(_subclass)
 
-            # exclude protected classes
-            elif self._class_name(base).startswith("_"):
-                yield from self._get_bases(base)
+            # get the base classes; try generic bases first then fall back to regular
+            # bases
+            base_classes: Tuple[type] = (
+                get_generic_bases(_subclass) or _subclass.__bases__
+            )
 
-            # all other classes will be listed as bases
-            else:
-                yield base
+            # include the _subclass itself in the list of bases, if requested
+            if _include_subclass:
+                # noinspection PyTypeChecker
+                base_classes = (_subclass, *base_classes)
+
+            # get the names of all base classes; go up the class hierarchy in case of
+            # hidden classes
+            for base in base_classes:
+
+                # exclude object and Generic types
+                if base is object or typing_inspect.get_origin(base) is Generic:
+                    continue
+
+                # exclude protected classes
+                elif self._class_name(base).startswith("_"):
+                    yield from _inner(base, _include_subclass=False)
+
+                # all other classes will be listed as bases
+                else:
+                    yield base
+
+        return _inner(subclass, _include_subclass=include_subclass)
 
     def _get_generics(self, child_class: type) -> List[str]:
         return list(
             itertools.chain.from_iterable(
                 (
-                    [
-                        self._class_name_with_generics(arg)
-                        for arg in typing_inspect.get_args(base, evaluate=True)
-                    ]
-                    for base in get_generic_bases(child_class)
-                    if typing_inspect.get_origin(base) is Generic
+                    self._typevar_name(arg)
+                    for arg in typing_inspect.get_args(base, evaluate=True)
                 )
+                for base in get_generic_bases(child_class)
+                if typing_inspect.get_origin(base) is Generic
             )
         )
 
+    def _get_metaclasses(self, class_: type) -> List[str]:
+        return [
+            self._class_name_with_generics(meta_)
+            for meta_ in self._get_bases(type(class_), include_subclass=True)
+            if meta_ is not type
+        ]
 
 
 class CollapseModulePaths(metaclass=ABCMeta):
