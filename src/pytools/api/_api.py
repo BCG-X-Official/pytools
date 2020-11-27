@@ -334,7 +334,7 @@ def get_generic_bases(cls: type) -> Tuple[type, ...]:
 #
 
 
-def deprecated(function: Callable = None, *, message: str = None):
+def deprecated(function: Callable = None, *, message: Optional[str] = None):
     """
     Decorator to mark functions as deprecated.
 
