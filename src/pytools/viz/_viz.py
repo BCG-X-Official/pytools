@@ -165,7 +165,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         # styles might hold some drawing context, so make sure we are thread safe
         # noinspection PyProtectedMember
         with style._lock:
-            style_attributes = self._get_style_attributes(data)
+            style_attributes = self._get_style_kwargs(data)
             # noinspection PyProtectedMember
             style._drawing_start(title, **style_attributes)
             self._draw(data)
