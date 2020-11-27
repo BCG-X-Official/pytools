@@ -117,8 +117,10 @@ nbsphinx_timeout = 60 * 15  # 15 minutes due to tutorial/model notebook
 # add intersphinx mapping
 intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    "pd": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "matplotlib": ("https://matplotlib.org", None),
     "numpy": ("https://numpy.org/doc/stable", None),
+    "np": ("https://numpy.org/doc/stable", None),
     "python": ("https://docs.python.org/3.6", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
