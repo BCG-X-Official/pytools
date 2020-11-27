@@ -341,6 +341,12 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
         "text": MatrixReportStyle,
     }
 
+    def __init__(self, style: Optional[Union[MatrixStyle, str]] = None) -> None:
+        """
+        :param style: the style to be used for drawing (default: ``"matplot"``)
+        """
+        super().__init__(style=style)
+
     @classmethod
     def _get_style_dict(cls) -> Mapping[str, Type[MatrixStyle]]:
         return MatrixDrawer._STYLES
