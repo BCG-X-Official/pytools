@@ -18,8 +18,8 @@ from typing import (
 )
 from weakref import WeakValueDictionary
 
-from ..api import AllTracker, to_list
-from . import operator as op
+from ..api import AllTracker, inheritdoc, to_list
+from ..meta import SingletonMeta, compose_meta
 from .operator import BinaryOperator, Operator, UnaryOperator
 
 log = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ __all__ = [
     "AtomicExpression",
     "Lit",
     "Id",
-    "EPSILON",
+    "Epsilon",
     "SingletonExpression",
     "BracketPair",
     "BRACKETS_ROUND",
@@ -444,7 +444,7 @@ def make_expression(value: Any) -> Expression:
         return DictLiteral(*value.items())
     elif isinstance(value, slice):
         args = [
-            EPSILON if value is None else value
+            Epsilon() if value is None else value
             for value in (value.start, value.stop, value.step)
         ]
         if value.step is not None:
@@ -591,12 +591,11 @@ class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
         """[see superclass]"""
         return self._name
 
-    text_.__doc__ = AtomicExpression.text_.__doc__
 
-
-class _Epsilon(AtomicExpression[None]):
+@inheritdoc(match="[see superclass]")
+class Epsilon(AtomicExpression[None], metaclass=compose_meta(ABCMeta, SingletonMeta)):
     """
-    The empty expression.
+    A singleton class representing the empty expression.
     """
 
     @property
@@ -608,11 +607,6 @@ class _Epsilon(AtomicExpression[None]):
     def text_(self) -> str:
         """[see superclass]"""
         return ""
-
-    text_.__doc__ = AtomicExpression.text_.__doc__
-
-
-EPSILON = _Epsilon()
 
 
 #
@@ -718,7 +712,7 @@ class CollectionLiteral(BracketedExpression):
 
         subexpression: Expression
         if not elements:
-            subexpression = EPSILON
+            subexpression = Epsilon()
         elif len(elements) == 1:
             subexpression = elements[0]
         else:
@@ -899,7 +893,7 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
     """
 
     def __init__(self, operator: UnaryOperator, operand: Any):
-        super().__init__(prefix=EPSILON, body=operand)
+        super().__init__(prefix=Epsilon(), body=operand)
         self._operator = operator
 
     @property
@@ -1095,8 +1089,18 @@ class LambdaDefinition(BasePrefixExpression):
 
     _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
-    def __init__(self, params: Any, body: Any):
-        super().__init__(prefix=params, body=body)
+    def __init__(self, *params: Id, body: Any):
+        """
+        :param params: the parameters of the lambda expression
+        :param body: the body of the lambda expression
+        """
+        if not params:
+            params_expression = Epsilon()
+        elif len(params) == 1:
+            params_expression = params[0]
+        else:
+            params_expression = Operation(operator=BinaryOperator.COMMA, *params)
+        super().__init__(prefix=params_expression, body=body)
 
     @property
     def params_(self) -> Expression:
@@ -1126,16 +1130,11 @@ class Lambda(BasePrefixExpression):
     _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
     def __init__(self, *params: Id, body: Any):
-        if not params:
-            arg_list = EPSILON
-        elif len(params) == 1:
-            arg_list = params[0]
-        else:
-            arg_list = Operation(operator=op.COMMA, *params)
-
-        super().__init__(
-            prefix=EPSILON, body=LambdaDefinition(params=arg_list, body=body)
-        )
+        """
+        :param params: the parameters of the lambda expression
+        :param body: the body of the lambda expression
+        """
+        super().__init__(prefix=Epsilon(), body=LambdaDefinition(*params, body=body))
 
     @property
     def precedence_(self) -> int:
