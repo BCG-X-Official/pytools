@@ -3,11 +3,11 @@ Drawing dendrograms
 """
 
 import logging
-from typing import Any, List, Mapping, NamedTuple, Type
+from typing import Any, List, Mapping, NamedTuple, Optional, Type, Union
 
 import numpy as np
 
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 from pytools.viz import Drawer
 from pytools.viz.dendrogram._linkage import LinkageTree
 from pytools.viz.dendrogram._style import DendrogramHeatmapStyle, DendrogramReportStyle
@@ -40,23 +40,28 @@ class _SubtreeInfo(NamedTuple):
     weight: float
 
 
+@inheritdoc(match="[see superclass]")
 class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     """
-    Class to draw a ``LinkageTree`` as a dendrogram.
+    Draws dendrogram representations of :class:`.LinkageTree` objects.
     """
 
     _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
+
+    def __init__(self, style: Optional[Union[DendrogramStyle, str]] = None) -> None:
+        """[see superclass]"""
+        super().__init__(style=style)
 
     @classmethod
     def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
         return DendrogramDrawer._STYLES
 
-    def _get_style_attributes(self, data: LinkageTree) -> Mapping[str, Any]:
+    def _get_style_kwargs(self, data: LinkageTree) -> Mapping[str, Any]:
         return dict(
-            labels_name=data.labels_name,
-            distance_name=data.distance_name,
-            weights_name=data.weights_name,
-            **super()._get_style_attributes(data=data),
+            leaf_label=data.leaf_label,
+            distance_label=data.distance_label,
+            weight_label=data.weight_label,
+            **super()._get_style_kwargs(data=data),
         )
 
     def _draw(self, data: LinkageTree) -> None:

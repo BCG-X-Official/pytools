@@ -7,6 +7,7 @@ import logging
 from matplotlib.ticker import Formatter
 
 from pytools.api import AllTracker
+from pytools.meta import SingletonMeta
 
 log = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class PercentageFormatter(Formatter):
+class PercentageFormatter(Formatter, metaclass=SingletonMeta):
     """
     Formats floats as a percentages with 3 digits precision, omitting trailing zeros.
 

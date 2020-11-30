@@ -54,13 +54,17 @@ class AllTracker:
     """
 
     def __init__(self, globals_: Dict[str, Any]):
+        """
+        :param globals_: the dictionary of global variables returned by calling
+            :meth:`.globals` in the current module scope
+        """
         self.globals_ = globals_
         self.imported = set(globals_.keys())
 
     def validate(self) -> None:
         """
         Validate that all eligible symbols defined since creation of this tracker
-        are listed in the ``__all__`` field.
+        are listed in the ``__all__`` variable.
 
         :raise RuntimeError: if ``__all__`` is not as expected
         """
@@ -97,15 +101,13 @@ def is_list_like(obj: Any) -> bool:
     ``__getitem__``. These include, for example, lists, tuples, sets, NumPy arrays, and
     Pandas series and indices.
 
-    As an exception, the following types are not considered list-like despite
-    implementing the methods above:
+    As an exception, the following types are not considered list-like:
 
     - :class:`str`
     - :class:`bytes`
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
         iterating a data frame yields the values of the column index, while the length \
         of a data frame is its number of rows
-    - :class:`pandas.Panel`: similar behaviour as for data frames
     - :class:`numpy.ndarray` instances with 0 dimensions
 
     :param obj: The object to check
@@ -115,7 +117,9 @@ def is_list_like(obj: Any) -> bool:
     return (
         hasattr(obj, "__len__")
         and hasattr(obj, "__getitem__")
-        and not isinstance(obj, (str, bytes, pd.DataFrame, pd.Panel))
+        and not isinstance(obj, (str, bytes))
+        # pandas data objects with more than 1 dimension, e.g., data frames
+        and not (isinstance(obj, pd.NDFrame) and obj.ndim != 1)
         # exclude zero-dimensional numpy arrays, effectively scalars
         and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
     )
@@ -130,20 +134,18 @@ def to_tuple(
     """
     Return the given values as a tuple.
 
-    - if arg values is a tuple, return arg values unchanged
-    - if arg values is an iterable and is an instance of the expected type,
-      return a tuple with the value as its only element
-    - if arg values is an iterable and is not an instance of the expected type,
-      return a tuple of its elements
-    - if arg values is not an iterable,
-      return a tuple with the value as its only element
+    - if arg `values` is a tuple, return arg `values` unchanged
+    - if arg `values` is an iterable other than a tuple, return a list of its elements
+    - if arg `values` is not an iterable, return a tuple with the value as its only
+      element
 
     :param values: one or more elements to return as a tuple
-    :param element_type: expected type of the values, raise a TypeException if one \
+    :param element_type: expected type of the values; raise a ``TypeException`` if one
         or more values do not implement this type
-    :param arg_name: name of the argument when calling this to process a function or \
-        initializer argument. Used to construct exception messages. (optional)
+    :param arg_name: name of the argument as which the values were passed to a function
+        or method; used when composing the ``TypeException`` message
     :return: the values as a tuple
+    :raise TypeException: one or more values did not match the expected type
     """
 
     return _to_collection(
@@ -163,20 +165,18 @@ def to_list(
     """
     Return the given values as a list.
 
-    - if arg values is a list, return arg values unchanged
-    - if arg values is an iterable and is an instance of the expected type,
-      return a list with the value as its only element
-    - if arg values is an iterable and is not an instance of the expected type,
-      return a list of its elements
-    - if arg values is not an iterable,
-      return a list with the value as its only element
+    - if arg `values` is a list, return arg `values` unchanged
+    - if arg `values` is an iterable other than a list, return a list of its elements
+    - if arg `values` is not an iterable, return a list with the value as its only
+      element
 
     :param values: one or more elements to return as a list
-    :param element_type: expected type of the values, raise a TypeException if one \
+    :param element_type: expected type of the values; raise a ``TypeException`` if one
         or more values do not implement this type
-    :param arg_name: name of the argument when calling this to process a function or \
-        initializer argument. Used to construct exception messages. (optional)
+    :param arg_name: name of the argument as which the values were passed to a function
+        or method; used when composing the ``TypeException`` message
     :return: the values as a list
+    :raise TypeException: one or more values did not match the expected type
     """
 
     return _to_collection(
@@ -196,20 +196,18 @@ def to_set(
     """
     Return the given values as a set.
 
-    - if arg values is a set, return arg values unchanged
-    - if arg values is an iterable and is an instance of the expected type,
-      return a set with the value as its only element
-    - if arg values is an iterable and is not an instance of the expected type,
-      return a set of its elements
-    - if arg values is not an iterable,
-      return a set with the value as its only element
+    - if arg `values` is a set, return arg `values` unchanged
+    - if arg `values` is an iterable other than a set, return a set of its elements
+    - if arg `values` is not an iterable, return a list with the value as its only
+      element
 
     :param values: one or more elements to return as a set
-    :param element_type: expected type of the values, raise a TypeException if one \
+    :param element_type: expected type of the values; raise a ``TypeException`` if one
         or more values do not implement this type
-    :param arg_name: name of the argument when calling this to process a function or \
-        initializer argument. Used to construct exception messages. (optional)
+    :param arg_name: name of the argument as which the values were passed to a function
+        or method; used when composing the ``TypeException`` message
     :return: the values as a set
+    :raise TypeException: one or more values did not match the expected type
     """
 
     return _to_collection(
@@ -264,11 +262,11 @@ def validate_type(
 
     :param value: an arbitrary object
     :param expected_type: the type to check for
-    :param optional: if ``True``, accept ``None`` as a valid value \
-        (default: ``False``)
-    :param name: optional name of the entity to which the elements were passed. \
-        Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
-        arguments.
+    :param optional: if ``True``, accept ``None`` as a valid value (default: ``False``)
+    :param name: optional name of the argument or callable with/to which the value
+        was passed; use ``"arg …"`` for arguments, or the name of a callable if
+        verifying positional arguments
+    :raise TypeException: the value did not match the expected type
     """
     if expected_type == object:
         return
@@ -291,13 +289,15 @@ def validate_element_types(
     iterable: Iterable[T], *, expected_type: Type[T], name: Optional[str] = None
 ) -> None:
     """
-    Validate that all elements in the given iterable implement the expected type
+    Validate that all elements in the given iterable implement the expected type.
 
     :param iterable: an iterable
     :param expected_type: the type to check for
-    :param name: optional name of the entity to which the elements were passed. \
-        Use `"arg …"` for arguments, or the name of a class if verifying unnamed \
-        arguments.
+    :param name: optional name of the argument or callable with/to which the elements
+        were passed; use ``"arg …"`` for arguments, or the name of a callable if
+        verifying positional arguments
+    :raise TypeException: one or more elements of the iterable did not match the
+        expected type
     """
     if expected_type == object:
         return
@@ -316,11 +316,13 @@ def validate_element_types(
 
 def get_generic_bases(cls: type) -> Tuple[type, ...]:
     """
-    Bugfix version of :func:`typing_inspect.get_generic_bases` that prevents
-    getting the generic bases of the parent class if not defined for the given class.
+    Bugfix version of :func:`typing_inspect.get_generic_bases`.
+
+    Prevents getting the generic bases of the parent class if not defined for the given
+    class.
 
     :param cls: class to get the generic bases for
-    :return: the resulting generic base classes
+    :return: the generic base classes of the given class
     """
     bases = typing_inspect.get_generic_bases(cls)
     if bases is typing_inspect.get_generic_bases(super(cls, cls)):
@@ -334,14 +336,17 @@ def get_generic_bases(cls: type) -> Tuple[type, ...]:
 #
 
 
-def deprecated(function: Callable = None, *, message: str = None):
+def deprecated(function: Callable = None, *, message: Optional[str] = None):
     """
-    Decorator to mark functions as deprecated.
+    Decorator to mark a function as deprecated.
 
-    It will result in a warning being logged when the function is used.
+    Logs a warning when the decorated function is called.
 
     To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
+
+    :param function: the function to be decorated
+    :param message: custom message to include when logging the warning (optional)
     """
 
     def _deprecated_inner(func: callable) -> callable:
@@ -381,7 +386,7 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     Issue a deprecation warning.
 
     :param message: the warning message
-    :param stacklevel: stack level relative to caller for emitting the context of the \
+    :param stacklevel: stack level relative to caller for emitting the context of the
         warning (default: 1)
     :return:
     """
