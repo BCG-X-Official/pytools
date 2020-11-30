@@ -38,7 +38,7 @@ __all__ = [
     "TupleLiteral",
     "SetLiteral",
     "DictLiteral",
-    "BaseOperation",
+    "Operation",
     "PrefixExpression",
     "SimplePrefixExpression",
     "UnaryOperation",
@@ -50,7 +50,7 @@ __all__ = [
     "LambdaDefinition",
     "Lambda",
     "InfixExpression",
-    "Operation",
+    "BinaryOperation",
     "Attr",
     "ExpressionAlias",
 ]
@@ -155,16 +155,16 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         The subexpressions of this expression
         """
 
-    def or_(self, other: "Expression") -> "Operation":
+    def or_(self, other: "Expression") -> "BinaryOperation":
         """
         Create a logical `or` expression using this and another expression as operands.
 
         :param other: other operand to combine with this expression using a logical `or`
         :return: the logical `or` expression
         """
-        return Operation(BinaryOperator.OR, self, other)
+        return BinaryOperation(BinaryOperator.OR, self, other)
 
-    def and_(self, other: "Expression") -> "Operation":
+    def and_(self, other: "Expression") -> "BinaryOperation":
         """
         Create a logical `and` expression using this and another expression as operands.
 
@@ -172,7 +172,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
             `and`
         :return: the logical `and` expression
         """
-        return Operation(BinaryOperator.AND, self, other)
+        return BinaryOperation(BinaryOperator.AND, self, other)
 
     def not_(self) -> "UnaryOperation":
         """
@@ -223,87 +223,87 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         # assuming other is the same type as self, check if self and other are equal
         pass
 
-    def __add__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.ADD, self, other)
+    def __add__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.ADD, self, other)
 
-    def __sub__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.SUB, self, other)
+    def __sub__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.SUB, self, other)
 
-    def __mul__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MUL, self, other)
+    def __mul__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MUL, self, other)
 
-    def __matmul__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MATMUL, self, other)
+    def __matmul__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MATMUL, self, other)
 
-    def __truediv__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.DIV, self, other)
+    def __truediv__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.DIV, self, other)
 
-    def __floordiv__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.FLOOR_DIV, self, other)
+    def __floordiv__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.FLOOR_DIV, self, other)
 
-    def __mod__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MOD, self, other)
+    def __mod__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MOD, self, other)
 
-    def __pow__(self, power: Any, modulo=None) -> "Operation":
+    def __pow__(self, power: Any, modulo=None) -> "BinaryOperation":
         if modulo is not None:
             return NotImplemented
-        return Operation(BinaryOperator.POW, self, power)
+        return BinaryOperation(BinaryOperator.POW, self, power)
 
-    def __lshift__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.LSHIFT, self, other)
+    def __lshift__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.LSHIFT, self, other)
 
-    def __rshift__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.RSHIFT, self, other)
+    def __rshift__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.RSHIFT, self, other)
 
-    def __and__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.AND_BITWISE, self, other)
+    def __and__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.AND_BITWISE, self, other)
 
-    def __xor__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.XOR_BITWISE, self, other)
+    def __xor__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.XOR_BITWISE, self, other)
 
-    def __or__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.OR_BITWISE, self, other)
+    def __or__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.OR_BITWISE, self, other)
 
-    def __radd__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.ADD, other, self)
+    def __radd__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.ADD, other, self)
 
-    def __rsub__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.SUB, other, self)
+    def __rsub__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.SUB, other, self)
 
-    def __rmul__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MUL, other, self)
+    def __rmul__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MUL, other, self)
 
-    def __rmatmul__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MATMUL, other, self)
+    def __rmatmul__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MATMUL, other, self)
 
-    def __rtruediv__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.DIV, other, self)
+    def __rtruediv__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.DIV, other, self)
 
-    def __rfloordiv__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.FLOOR_DIV, other, self)
+    def __rfloordiv__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.FLOOR_DIV, other, self)
 
-    def __rmod__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.MOD, other, self)
+    def __rmod__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.MOD, other, self)
 
-    def __rpow__(self, power: Any, modulo=None) -> "Operation":
+    def __rpow__(self, power: Any, modulo=None) -> "BinaryOperation":
         if modulo is not None:
             return NotImplemented
-        return Operation(BinaryOperator.POW, (power, self))
+        return BinaryOperation(BinaryOperator.POW, (power, self))
 
-    def __rlshift__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.LSHIFT, other, self)
+    def __rlshift__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.LSHIFT, other, self)
 
-    def __rrshift__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.RSHIFT, other, self)
+    def __rrshift__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.RSHIFT, other, self)
 
-    def __rand__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.AND_BITWISE, other, self)
+    def __rand__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.AND_BITWISE, other, self)
 
-    def __rxor__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.XOR_BITWISE, other, self)
+    def __rxor__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.XOR_BITWISE, other, self)
 
-    def __ror__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.OR_BITWISE, other, self)
+    def __ror__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.OR_BITWISE, other, self)
 
     def __neg__(self) -> "UnaryOperation":
         return UnaryOperation(UnaryOperator.NEG, self)
@@ -314,23 +314,23 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __invert__(self) -> "UnaryOperation":
         return UnaryOperation(UnaryOperator.INVERT, self)
 
-    def __eq__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.EQ, self, other)
+    def __eq__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.EQ, self, other)
 
-    def __ne__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.NEQ, self, other)
+    def __ne__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.NEQ, self, other)
 
-    def __gt__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.GT, self, other)
+    def __gt__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.GT, self, other)
 
-    def __ge__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.GE, self, other)
+    def __ge__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.GE, self, other)
 
-    def __lt__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.LT, self, other)
+    def __lt__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.LT, self, other)
 
-    def __le__(self, other: Any) -> "Operation":
-        return Operation(BinaryOperator.LE, self, other)
+    def __le__(self, other: Any) -> "BinaryOperation":
+        return BinaryOperation(BinaryOperator.LE, self, other)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
         """
@@ -449,9 +449,9 @@ def make_expression(value: Any) -> Expression:
             for value in (value.start, value.stop, value.step)
         ]
         if value.step is not None:
-            return Operation(BinaryOperator.SLICE, *args)
+            return BinaryOperation(BinaryOperator.SLICE, *args)
         else:
-            return Operation(BinaryOperator.SLICE, args[0], args[1])
+            return BinaryOperation(BinaryOperator.SLICE, args[0], args[1])
     elif isinstance(value, Iterable):
         return Call(Id(type(value)), *value)
     else:
@@ -758,7 +758,7 @@ class CollectionLiteral(BracketedExpression):
         elif len(elements) == 1:
             subexpression = elements[0]
         else:
-            subexpression = Operation(BinaryOperator.COMMA, *elements)
+            subexpression = BinaryOperation(BinaryOperator.COMMA, *elements)
 
         super().__init__(brackets, subexpression)
 
@@ -771,7 +771,7 @@ class CollectionLiteral(BracketedExpression):
 
         - an :class:`Epsilon` expression for an empty collection
         - an arbitrary expression for a collection with a single element
-        - an :class:`Operation` with a :attr:`pytools.expression.operator.COMMA`
+        - a :class:`BinaryOperation` with a :attr:`pytools.expression.operator.COMMA`
           operator for collections with two or more elements
         """
         return super().subexpression_
@@ -845,7 +845,7 @@ class DictLiteral(CollectionLiteral):
 
 
 @inheritdoc(match="[see superclass]")
-class BaseOperation(Expression, metaclass=ABCMeta):
+class Operation(Expression, metaclass=ABCMeta):
     """
     Abstract base class for operation expressions.
     """
@@ -953,7 +953,7 @@ class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
 
 
 @inheritdoc(match="[see superclass]")
-class UnaryOperation(SimplePrefixExpression, BaseOperation, metaclass=ABCMeta):
+class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
     """
     A unary operation.
     """
@@ -1171,7 +1171,7 @@ class LambdaDefinition(SimplePrefixExpression):
         elif len(params) == 1:
             params_expression = params[0]
         else:
-            params_expression = Operation(operator=BinaryOperator.COMMA, *params)
+            params_expression = BinaryOperation(operator=BinaryOperator.COMMA, *params)
         super().__init__(prefix=params_expression, body=body)
 
     @property
@@ -1254,7 +1254,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
 
 
 @inheritdoc(match="[see superclass]")
-class Operation(InfixExpression, BaseOperation):
+class BinaryOperation(InfixExpression, Operation):
     """
     A operation with two or more operands.
     """
@@ -1277,7 +1277,7 @@ class Operation(InfixExpression, BaseOperation):
 
         first_operand = operands[0]
 
-        if isinstance(first_operand, Operation):
+        if isinstance(first_operand, BinaryOperation):
             if first_operand.operator_ == operator:
                 # if first operand has the same operator, we flatten the operand
                 # noinspection PyUnresolvedReferences
@@ -1307,7 +1307,7 @@ class Operation(InfixExpression, BaseOperation):
         return self.infix_.precedence
 
 
-class Attr(Operation):
+class Attr(BinaryOperation):
     """
     The ``….…`` ("dot") operation to reference an attribute of an object.
     """

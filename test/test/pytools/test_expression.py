@@ -7,6 +7,7 @@ import logging
 import pytest
 
 from pytools.expression import (
+    BinaryOperation,
     Call,
     DictLiteral,
     Expression,
@@ -14,7 +15,6 @@ from pytools.expression import (
     Lambda,
     ListLiteral,
     Lit,
-    Operation,
     PythonExpressionFormatter,
     SetLiteral,
     TupleLiteral,
@@ -96,7 +96,7 @@ def test_expression() -> None:
         (TupleLiteral(lit_5, lit_abc, Id.xx), "(5, 'abc', xx)"),
         (DictLiteral(**{"5": lit_abc, "x": lit_5}), "{'5': 'abc', 'x': 5}"),
         (DictLiteral((lit_5, lit_abc), (Id.xx, lit_5)), "{5: 'abc', xx: 5}"),
-        (Operation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
+        (BinaryOperation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
         (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
         (SetLiteral(), "{}"),
@@ -166,19 +166,19 @@ def test_comparison_expressions() -> None:
 
 def test_expression_operators() -> None:
     a, b = Id.a, Id.b
-    assert a + b == Operation(BinaryOperator.ADD, a, b)
-    assert a - b == Operation(BinaryOperator.SUB, a, b)
-    assert a * b == Operation(BinaryOperator.MUL, a, b)
-    assert a @ b == Operation(BinaryOperator.MATMUL, a, b)
-    assert a / b == Operation(BinaryOperator.DIV, a, b)
-    assert a // b == Operation(BinaryOperator.FLOOR_DIV, a, b)
-    assert a % b == Operation(BinaryOperator.MOD, a, b)
-    assert a ** b == Operation(BinaryOperator.POW, a, b)
-    assert a << b == Operation(BinaryOperator.LSHIFT, a, b)
-    assert a >> b == Operation(BinaryOperator.RSHIFT, a, b)
-    assert a & b == Operation(BinaryOperator.AND_BITWISE, a, b)
-    assert a ^ b == Operation(BinaryOperator.XOR_BITWISE, a, b)
-    assert a | b == Operation(BinaryOperator.OR_BITWISE, a, b)
+    assert a + b == BinaryOperation(BinaryOperator.ADD, a, b)
+    assert a - b == BinaryOperation(BinaryOperator.SUB, a, b)
+    assert a * b == BinaryOperation(BinaryOperator.MUL, a, b)
+    assert a @ b == BinaryOperation(BinaryOperator.MATMUL, a, b)
+    assert a / b == BinaryOperation(BinaryOperator.DIV, a, b)
+    assert a // b == BinaryOperation(BinaryOperator.FLOOR_DIV, a, b)
+    assert a % b == BinaryOperation(BinaryOperator.MOD, a, b)
+    assert a ** b == BinaryOperation(BinaryOperator.POW, a, b)
+    assert a << b == BinaryOperation(BinaryOperator.LSHIFT, a, b)
+    assert a >> b == BinaryOperation(BinaryOperator.RSHIFT, a, b)
+    assert a & b == BinaryOperation(BinaryOperator.AND_BITWISE, a, b)
+    assert a ^ b == BinaryOperation(BinaryOperator.XOR_BITWISE, a, b)
+    assert a | b == BinaryOperation(BinaryOperator.OR_BITWISE, a, b)
     assert -a == UnaryOperation(UnaryOperator.NEG, operand=a)
     assert +a == UnaryOperation(UnaryOperator.POS, operand=a)
     assert ~a == UnaryOperation(UnaryOperator.INVERT, operand=a)
