@@ -540,18 +540,18 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
     text_.__doc__ = AtomicExpression.text_.__doc__
 
-
-class _IdentifierMeta(ABCMeta):
+class _IdentifierMeta(type):
     _identifiers: Dict[str, "Id"] = WeakValueDictionary()
 
-    def __getattr__(self, item: str) -> "Id":
-        if item.startswith("_"):
-            # we do not allow creating identifiers with leading underscores
-            raise AttributeError()
+    def __getattr__(self, name: str) -> "Id":
+        if name.startswith("_") or name.endswith("_") or name == "Id":
+            # we do not allow creating identifiers with leading or trailing underscores
+            # we also disallow "Id" to avoid a compatibility issue with sphinx
+            raise AttributeError(name)
 
-        identifier = _IdentifierMeta._identifiers.get(item, None)
+        identifier = _IdentifierMeta._identifiers.get(name, None)
         if not identifier:
-            _IdentifierMeta._identifiers[item] = identifier = Id(item)
+            _IdentifierMeta._identifiers[name] = identifier = Id(name)
 
         return identifier
 
