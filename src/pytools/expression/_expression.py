@@ -344,13 +344,13 @@ class Expression(metaclass=ABCMeta):
         raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
 
     def __getattr__(self, key: str) -> "Expression":
-        if key.startswith("_"):
+        if key.startswith("_") or key.endswith("_"):
             raise AttributeError(key)
         else:
             return Attr(obj=self, attribute=key)
 
-    def __setattr__(self, key: Any, value: Any) -> None:
-        if key[:1] == "_":
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("_") or key.endswith("_"):
             super().__setattr__(key, value)
         else:
             raise TypeError(f"cannot set public field of Expression: {key}")
