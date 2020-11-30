@@ -60,6 +60,7 @@ __all__ = [
 #
 
 T = TypeVar("T")
+T_Literal = TypeVar("T_Literal", bool, int, float, complex, str, bytes)
 
 
 #
@@ -512,17 +513,21 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
 
     hash_.__doc__ = Expression.hash_.__doc__
 
-
-class Lit(AtomicExpression[T], Generic[T]):
+@inheritdoc(match="[see superclass]")
+class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
     """
     A literal
     """
 
-    def __init__(self, value: T):
+    def __init__(self, value: T_Literal):
+        """
+        :param value: the literal value represented by this expression
+        """
+        super().__init__()
         self._value = value
 
     @property
-    def value_(self) -> T:
+    def value_(self) -> T_Literal:
         """[see superclass]"""
         return self._value
 
