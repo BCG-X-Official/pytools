@@ -40,7 +40,7 @@ __all__ = [
     "DictLiteral",
     "BaseOperation",
     "PrefixExpression",
-    "BasePrefixExpression",
+    "SimplePrefixExpression",
     "UnaryOperation",
     "KeywordArgument",
     "DictEntry",
@@ -888,8 +888,8 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
 
     hash_.__doc__ = Expression.hash_.__doc__
 
-
-class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     """
     Base implementation for prefix expressions
     """
@@ -912,8 +912,8 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
 
     body_.__doc__ = PrefixExpression.body_.__doc__
 
-
-class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class UnaryOperation(SimplePrefixExpression, BaseOperation, metaclass=ABCMeta):
     """
     A unary operation.
     """
@@ -950,9 +950,8 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-# noinspection DuplicatedCode
-class KeywordArgument(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class KeywordArgument(SimplePrefixExpression):
     """
     A keyword argument, used by functions.
     """
@@ -991,9 +990,8 @@ class KeywordArgument(BasePrefixExpression):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-# noinspection DuplicatedCode
-class DictEntry(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class DictEntry(SimplePrefixExpression):
     """
     Two expressions separated by a colon, used in dictionaries and lambda expressions.
     """
@@ -1107,8 +1105,9 @@ class Index(BaseInvocation):
         super().__init__(prefix=collection, brackets=BracketPair.SQUARE, args=keys)
 
 
-# noinspection DuplicatedCode
-class LambdaDefinition(BasePrefixExpression):
+
+@inheritdoc(match="[see superclass]")
+class LambdaDefinition(SimplePrefixExpression):
     """
     function arguments and body separated by a colon, used inside lambda expressions.
     """
@@ -1147,8 +1146,8 @@ class LambdaDefinition(BasePrefixExpression):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-class Lambda(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class Lambda(SimplePrefixExpression):
     """
     A lambda expression
     """
