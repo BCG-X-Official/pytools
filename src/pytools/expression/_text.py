@@ -19,7 +19,7 @@ from . import (
     InfixExpression,
     PrefixExpression,
 )
-from . import operator as op
+from .operator import BinaryOperator
 
 log = logging.getLogger(__name__)
 
@@ -564,9 +564,9 @@ class InfixForm(ComplexForm):
 
         infix_padding = (
             InfixForm.PADDING_RIGHT
-            if infix in [op.COMMA, op.COLON]
+            if infix in [BinaryOperator.COMMA, BinaryOperator.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [op.DOT, op.SLICE, op.NONE]
+            if infix in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
             else InfixForm.PADDING_BOTH
         )
 
