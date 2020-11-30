@@ -8,10 +8,9 @@ from typing import List, NamedTuple, Tuple
 
 from ..api import AllTracker
 from . import (
-    BRACKETS_ROUND,
-    EPSILON,
     AtomicExpression,
     BracketedExpression,
+    BracketPair,
     Epsilon,
     Expression,
     ExpressionAlias,
@@ -174,7 +173,7 @@ class TextualForm:
         """
         return (
             BracketedForm(
-                brackets=BRACKETS_ROUND, subform=self, single_line=single_line
+                brackets=BracketPair.ROUND, subform=self, single_line=single_line
             )
             if condition
             else self
