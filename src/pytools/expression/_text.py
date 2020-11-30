@@ -12,7 +12,7 @@ from . import (
     EPSILON,
     AtomicExpression,
     BracketedExpression,
-    BracketPair,
+    Epsilon,
     Expression,
     ExpressionAlias,
     ExpressionFormatter,
@@ -90,7 +90,7 @@ class TextualForm:
         :param expression: the expression to be transformed
         :return: the resulting textual form
         """
-        if expression is EPSILON:
+        if expression is Epsilon():
             return EMPTY_FORM
         if isinstance(expression, AtomicExpression):
             return AtomicForm(expression)
@@ -551,7 +551,7 @@ class InfixForm(ComplexForm):
                             pos < last_subexpression
                             or not (
                                 isinstance(subexpression, PrefixExpression)
-                                and subexpression.prefix_ is EPSILON
+                                and subexpression.prefix_ is Epsilon()
                             )
                         )
                     )
