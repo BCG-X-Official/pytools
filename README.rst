@@ -1,4 +1,4 @@
-.. image:: _static/gamma_pytools_logo.png
+.. image:: sphinx/source/_static/gamma_pytools_logo.png
 
 |
 
@@ -12,8 +12,12 @@ utilities for reuse, including:
 - Parallelization based on the joblib package
 - A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
 
-|pypi| |conda| |azure_devops_master_ci| |code_cov|
+.. Begin-Badges
+
+|pypi| |conda| |azure_build| |azure_code_cov|
 |python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
+
+.. End-Badges
 
 Installation
 ---------------------
@@ -25,7 +29,7 @@ Anaconda
 
 .. code-block:: RST
 
-    conda install -c bcg_gamma gamma-pytools
+    conda install gamma-pytools -c bcg_gamma -c conda-forge
 
 Pip
 ~~~~~~~~~~~~~~~~~~~~~
@@ -73,6 +77,7 @@ BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
 or have a look at
 `career opportunities <https://www.bcg.com/en-gb/beyond-consulting/bcg-gamma/careers>`_.
 
+.. Begin-Badges
 
 .. |conda| image:: https://anaconda.org/bcg_gamma/gamma-pytools/badges/version.svg
     :target: https://anaconda.org/BCG_Gamma/gamma-pytools
@@ -80,13 +85,13 @@ or have a look at
 .. |pypi| image:: https://badge.fury.io/py/gamma-pytools.svg
     :target: https://pypi.org/project/gamma-pytools/
 
-.. |azure_devops_master_ci| image:: https://
-    :target: https://
+.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
+   :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |code_cov| image:: https://
-    :target: https://
+.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/_build?definitionId=9.svg
+   :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |python_versions| image:: https://img.shields.io/badge/python-3.7|3.8-blue.svg
+.. |python_versions| image:: https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg
     :target: https://www.python.org/downloads/release/python-380/
 
 .. |code_style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
@@ -97,3 +102,5 @@ or have a look at
 
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0
+
+.. End-Badges

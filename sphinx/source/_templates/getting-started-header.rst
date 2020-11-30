@@ -2,5 +2,3 @@
 
 Getting started with
 ====================
-
-.. include:: ../../README.rst
