@@ -5,22 +5,12 @@ strings; useful for generating representations of complex Python objects.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    NamedTuple,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Any, Dict, Generic, Iterable, Optional, Tuple, TypeVar, Union
 from weakref import WeakValueDictionary
 
-from ..api import AllTracker, to_list
-from . import operator as op
-from .operator import MAX_PRECEDENCE, BinaryOperator, Operator, UnaryOperator
+from ..api import AllTracker, inheritdoc, to_list
+from ..meta import SingletonMeta, compose_meta
+from .operator import BinaryOperator, Operator, UnaryOperator
 
 log = logging.getLogger(__name__)
 
@@ -39,13 +29,9 @@ __all__ = [
     "AtomicExpression",
     "Lit",
     "Id",
-    "EPSILON",
+    "Epsilon",
     "SingletonExpression",
     "BracketPair",
-    "BRACKETS_ROUND",
-    "BRACKETS_SQUARE",
-    "BRACKETS_CURLY",
-    "BRACKETS_ANGLE",
     "BracketedExpression",
     "CollectionLiteral",
     "ListLiteral",
@@ -54,11 +40,11 @@ __all__ = [
     "DictLiteral",
     "BaseOperation",
     "PrefixExpression",
-    "BasePrefixExpression",
+    "SimplePrefixExpression",
     "UnaryOperation",
     "KeywordArgument",
     "DictEntry",
-    "BaseInvocation",
+    "Invocation",
     "Call",
     "Index",
     "LambdaDefinition",
@@ -69,12 +55,12 @@ __all__ = [
     "ExpressionAlias",
 ]
 
-
 #
 # Type variables
 #
 
 T = TypeVar("T")
+T_Literal = TypeVar("T_Literal", bool, int, float, complex, str, bytes)
 
 
 #
@@ -96,6 +82,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
         """
         Construct a text representation of the given expression.
 
+        :param expression: the expression to represent as text
         :return: a text representation of the expression
         """
         pass
@@ -103,7 +90,10 @@ class ExpressionFormatter(metaclass=ABCMeta):
     @staticmethod
     def default(single_line: bool) -> "ExpressionFormatter":
         """
-        Get the default expression format.
+        Get the default expression formatter.
+
+        :param single_line: if ``True``, return a formatter that does not generate line
+            breaks
         """
         return ExpressionFormatter.__default_format[single_line]
 
@@ -120,7 +110,8 @@ class ExpressionFormatter(metaclass=ABCMeta):
 
 class HasExpressionRepr(metaclass=ABCMeta):
     """
-    Mix-in class for classes whose ``repr`` representations are rendered as expressions
+    Mix-in class, rendering :func:`repr` and :class:`str` representations using
+    expressions.
     """
 
     @abstractmethod
@@ -143,7 +134,8 @@ class HasExpressionRepr(metaclass=ABCMeta):
         return str(self.to_expression())
 
 
-class Expression(metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
     An expression composed of literals and (possibly nested) operations.
     """
@@ -160,35 +152,35 @@ class Expression(metaclass=ABCMeta):
     @abstractmethod
     def subexpressions_(self) -> Tuple["Expression", ...]:
         """
-        The subexpressions of this expression.
+        The subexpressions of this expression
         """
 
     def or_(self, other: "Expression") -> "Operation":
         """
-        Create a logical "or" expression using this and another expression as operands.
+        Create a logical `or` expression using this and another expression as operands.
 
-        :param other: other operand to combine with this expression using a logical "or"
-        :return: the logical "or" expression
+        :param other: other operand to combine with this expression using a logical `or`
+        :return: the logical `or` expression
         """
-        return Operation(op.OR, self, other)
+        return Operation(BinaryOperator.OR, self, other)
 
     def and_(self, other: "Expression") -> "Operation":
         """
-        Create a logical "and" expression using this and another expression as operands.
+        Create a logical `and` expression using this and another expression as operands.
 
-        :param other: other operand to combine with this expression using a logical \
-            "and"
-        :return: the logical "and" expression
+        :param other: other operand to combine with this expression using a logical
+            `and`
+        :return: the logical `and` expression
         """
-        return Operation(op.AND, self, other)
+        return Operation(BinaryOperator.AND, self, other)
 
     def not_(self) -> "UnaryOperation":
         """
-        Create a logical "not" expression using this expression as the operand.
+        Create a logical `not` expression using this expression as the operand.
 
-        :return: the logical "not" expression
+        :return: the logical `not` expression
         """
-        return UnaryOperation(op.NOT, self)
+        return UnaryOperation(UnaryOperator.NOT, self)
 
     def eq_(self, other: "Expression") -> bool:
         """
@@ -198,7 +190,7 @@ class Expression(metaclass=ABCMeta):
         :class:`.FrozenExpression`.
 
         :param other: the expression to compare this expression with
-        :return: ``True`` if and only if both expressions are equal
+        :return: ``True`` if both expressions are equal; ``False`` otherwise
         """
         self_type = type(self)
         other_type = type(other)
@@ -218,10 +210,13 @@ class Expression(metaclass=ABCMeta):
         """
         Calculate the hash for this expression.
 
-        For using Python's native ``hash`` function, see
-        :class:`.FrozenExpression`.
+        For using Python's native ``hash`` function, see :class:`.FrozenExpression`.
         """
         pass
+
+    def to_expression(self) -> "Expression":
+        """[see superclass]"""
+        return self
 
     @abstractmethod
     def _eq_same_type(self: T, other: T) -> bool:
@@ -229,117 +224,118 @@ class Expression(metaclass=ABCMeta):
         pass
 
     def __add__(self, other: Any) -> "Operation":
-        return Operation(op.ADD, self, other)
+        return Operation(BinaryOperator.ADD, self, other)
 
     def __sub__(self, other: Any) -> "Operation":
-        return Operation(op.SUB, self, other)
+        return Operation(BinaryOperator.SUB, self, other)
 
     def __mul__(self, other: Any) -> "Operation":
-        return Operation(op.MUL, self, other)
+        return Operation(BinaryOperator.MUL, self, other)
 
     def __matmul__(self, other: Any) -> "Operation":
-        return Operation(op.MATMUL, self, other)
+        return Operation(BinaryOperator.MATMUL, self, other)
 
     def __truediv__(self, other: Any) -> "Operation":
-        return Operation(op.DIV, self, other)
+        return Operation(BinaryOperator.DIV, self, other)
 
     def __floordiv__(self, other: Any) -> "Operation":
-        return Operation(op.FLOOR_DIV, self, other)
+        return Operation(BinaryOperator.FLOOR_DIV, self, other)
 
     def __mod__(self, other: Any) -> "Operation":
-        return Operation(op.MOD, self, other)
+        return Operation(BinaryOperator.MOD, self, other)
 
     def __pow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             return NotImplemented
-        return Operation(op.POW, self, power)
+        return Operation(BinaryOperator.POW, self, power)
 
     def __lshift__(self, other: Any) -> "Operation":
-        return Operation(op.LSHIFT, self, other)
+        return Operation(BinaryOperator.LSHIFT, self, other)
 
     def __rshift__(self, other: Any) -> "Operation":
-        return Operation(op.RSHIFT, self, other)
+        return Operation(BinaryOperator.RSHIFT, self, other)
 
     def __and__(self, other: Any) -> "Operation":
-        return Operation(op.AND_BITWISE, self, other)
+        return Operation(BinaryOperator.AND_BITWISE, self, other)
 
     def __xor__(self, other: Any) -> "Operation":
-        return Operation(op.XOR_BITWISE, self, other)
+        return Operation(BinaryOperator.XOR_BITWISE, self, other)
 
     def __or__(self, other: Any) -> "Operation":
-        return Operation(op.OR_BITWISE, self, other)
+        return Operation(BinaryOperator.OR_BITWISE, self, other)
 
     def __radd__(self, other: Any) -> "Operation":
-        return Operation(op.ADD, other, self)
+        return Operation(BinaryOperator.ADD, other, self)
 
     def __rsub__(self, other: Any) -> "Operation":
-        return Operation(op.SUB, other, self)
+        return Operation(BinaryOperator.SUB, other, self)
 
     def __rmul__(self, other: Any) -> "Operation":
-        return Operation(op.MUL, other, self)
+        return Operation(BinaryOperator.MUL, other, self)
 
     def __rmatmul__(self, other: Any) -> "Operation":
-        return Operation(op.MATMUL, other, self)
+        return Operation(BinaryOperator.MATMUL, other, self)
 
     def __rtruediv__(self, other: Any) -> "Operation":
-        return Operation(op.DIV, other, self)
+        return Operation(BinaryOperator.DIV, other, self)
 
     def __rfloordiv__(self, other: Any) -> "Operation":
-        return Operation(op.FLOOR_DIV, other, self)
+        return Operation(BinaryOperator.FLOOR_DIV, other, self)
 
     def __rmod__(self, other: Any) -> "Operation":
-        return Operation(op.MOD, other, self)
+        return Operation(BinaryOperator.MOD, other, self)
 
     def __rpow__(self, power: Any, modulo=None) -> "Operation":
         if modulo is not None:
             return NotImplemented
-        return Operation(op.POW, (power, self))
+        return Operation(BinaryOperator.POW, (power, self))
 
     def __rlshift__(self, other: Any) -> "Operation":
-        return Operation(op.LSHIFT, other, self)
+        return Operation(BinaryOperator.LSHIFT, other, self)
 
     def __rrshift__(self, other: Any) -> "Operation":
-        return Operation(op.RSHIFT, other, self)
+        return Operation(BinaryOperator.RSHIFT, other, self)
 
     def __rand__(self, other: Any) -> "Operation":
-        return Operation(op.AND_BITWISE, other, self)
+        return Operation(BinaryOperator.AND_BITWISE, other, self)
 
     def __rxor__(self, other: Any) -> "Operation":
-        return Operation(op.XOR_BITWISE, other, self)
+        return Operation(BinaryOperator.XOR_BITWISE, other, self)
 
     def __ror__(self, other: Any) -> "Operation":
-        return Operation(op.OR_BITWISE, other, self)
+        return Operation(BinaryOperator.OR_BITWISE, other, self)
 
     def __neg__(self) -> "UnaryOperation":
-        return UnaryOperation(op.NEG, self)
+        return UnaryOperation(UnaryOperator.NEG, self)
 
     def __pos__(self) -> "UnaryOperation":
-        return UnaryOperation(op.POS, self)
+        return UnaryOperation(UnaryOperator.POS, self)
 
     def __invert__(self) -> "UnaryOperation":
-        return UnaryOperation(op.INVERT, self)
+        return UnaryOperation(UnaryOperator.INVERT, self)
 
     def __eq__(self, other: Any) -> "Operation":
-        return Operation(op.EQ, self, other)
+        return Operation(BinaryOperator.EQ, self, other)
 
     def __ne__(self, other: Any) -> "Operation":
-        return Operation(op.NEQ, self, other)
+        return Operation(BinaryOperator.NEQ, self, other)
 
     def __gt__(self, other: Any) -> "Operation":
-        return Operation(op.GT, self, other)
+        return Operation(BinaryOperator.GT, self, other)
 
     def __ge__(self, other: Any) -> "Operation":
-        return Operation(op.GE, self, other)
+        return Operation(BinaryOperator.GE, self, other)
 
     def __lt__(self, other: Any) -> "Operation":
-        return Operation(op.LT, self, other)
+        return Operation(BinaryOperator.LT, self, other)
 
     def __le__(self, other: Any) -> "Operation":
-        return Operation(op.LE, self, other)
+        return Operation(BinaryOperator.LE, self, other)
 
     def __call__(self, *args: Any, **kwargs: Any) -> "Call":
         """
         Generate a :class:`.Call` expression.
+
         :return: the resulting expression
         """
         return Call(
@@ -358,13 +354,13 @@ class Expression(metaclass=ABCMeta):
         raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
 
     def __getattr__(self, key: str) -> "Expression":
-        if key.startswith("_"):
+        if key.startswith("_") or key.endswith("_"):
             raise AttributeError(key)
         else:
             return Attr(obj=self, attribute=key)
 
-    def __setattr__(self, key: Any, value: Any) -> None:
-        if key[:1] == "_":
+    def __setattr__(self, key: str, value: Any) -> None:
+        if key.startswith("_") or key.endswith("_"):
             super().__setattr__(key, value)
         else:
             raise TypeError(f"cannot set public field of Expression: {key}")
@@ -394,6 +390,9 @@ class FrozenExpression(HasExpressionRepr):
     """
 
     def __init__(self, expression: Expression) -> None:
+        """
+        :param expression: the expression to be frozen
+        """
         self._expression = expression
 
     def to_expression(self) -> "Expression":
@@ -413,24 +412,25 @@ class FrozenExpression(HasExpressionRepr):
 
 def make_expression(value: Any) -> Expression:
     """
-    Convert a python object into an expression.
+    Convert a Python :class:`object` into an expression.
 
-    Conversions:
+    Expressions are generated as follows:
 
-    - expressions are returned as themselves
-    - standard containers are turned into their expression equivalents
-    - strings are turned into literals
-    - other iterables are turned into a Call expression
-    - all other values are turned into literals
+    - Instances of :class:`HasExpressionRepr` are converted by calling method
+      :meth:`~.HasExpressionRepr.to_expression`
+    - Python literals (strings, numbers) are converted to :class:`Lit` expressions
+    - Python tuples, lists, sets, and dictionaries are converted to equivalent
+      expressions, and all elements are converted to expressions recursively
+    - Other iterables are converted to a :class:`Call` expression, with the
+      name of the iterable as the callee, and its elements as the arguments
+    - Other objects implementing the ``__name__`` attribute are converted to an
+      :class:`Id` expression with the same name
+    - All other values are converted to a :class:`Lit` expression
 
-    :param value: value to turn into an expression
+    :param value: value to convert to an expression
     :return: the resulting expression
     """
 
-    if isinstance(value, Expression):
-        return value
-    elif isinstance(value, FrozenExpression):
-        return value.to_expression()
     if isinstance(value, HasExpressionRepr):
         return value.to_expression()
     elif isinstance(value, str):
@@ -445,13 +445,13 @@ def make_expression(value: Any) -> Expression:
         return DictLiteral(*value.items())
     elif isinstance(value, slice):
         args = [
-            EPSILON if value is None else value
+            Epsilon() if value is None else value
             for value in (value.start, value.stop, value.step)
         ]
         if value.step is not None:
-            return Operation(op.SLICE, *args)
+            return Operation(BinaryOperator.SLICE, *args)
         else:
-            return Operation(op.SLICE, args[0], args[1])
+            return Operation(BinaryOperator.SLICE, args[0], args[1])
     elif isinstance(value, Iterable):
         return Call(Id(type(value)), *value)
     else:
@@ -467,6 +467,8 @@ def freeze(expression: Expression) -> FrozenExpression:
     """
     Convenience function to freeze an expression.
 
+    Equivalent to ``FrozenExpression(expression)``.
+
     :param expression: the expression to freeze
     :return: the resulting frozen expression
     """
@@ -478,6 +480,7 @@ def freeze(expression: Expression) -> FrozenExpression:
 #
 
 
+@inheritdoc(match="[see superclass]")
 class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
     An atomic expression.
@@ -488,12 +491,10 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
         """
-        The subexpressions of this expression.
-        Always returns an empty tuple for atomic expressions.
+        The subexpressions of this expression
+        (an empty tuple, as this expression is atomic)
         """
         return ()
-
-    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
     @property
     @abstractmethod
@@ -514,66 +515,80 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
-        return MAX_PRECEDENCE
-
-    precedence_.__doc__ = Expression.precedence_.__doc__
+        return BinaryOperator.MAX_PRECEDENCE
 
     def _eq_same_type(self, other: "AtomicExpression") -> bool:
         return self.value_ == other.value_
 
     def hash_(self) -> int:
-        """
-        [see superclass]
-        """
+        """[see superclass]"""
         return hash((type(self), self.value_))
 
-    hash_.__doc__ = Expression.hash_.__doc__
 
-
-class Lit(AtomicExpression[T], Generic[T]):
+@inheritdoc(match="[see superclass]")
+class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
     """
-    A literal
+    A literal value (usually a number or string).
     """
 
-    def __init__(self, value: T):
+    def __init__(self, value: T_Literal):
+        """
+        :param value: the literal value represented by this expression
+        """
+        super().__init__()
         self._value = value
 
     @property
-    def value_(self) -> T:
+    def value_(self) -> T_Literal:
         """[see superclass]"""
         return self._value
-
-    value_.__doc__ = AtomicExpression.value_.__doc__
 
     @property
     def text_(self) -> str:
         """[see superclass]"""
         return repr(self.value_)
 
-    text_.__doc__ = AtomicExpression.text_.__doc__
 
-
-class _IdentifierMeta(ABCMeta):
+class _IdentifierMeta(type):
     _identifiers: Dict[str, "Id"] = WeakValueDictionary()
 
-    def __getattr__(self, item: str) -> "Id":
-        if item.startswith("_"):
-            # we do not allow creating identifiers with leading underscores
-            raise AttributeError()
+    def __getattr__(self, name: str) -> "Id":
+        if name.startswith("_") or name.endswith("_") or name == "Id":
+            # we do not allow creating identifiers with leading or trailing underscores
+            # we also disallow "Id" to avoid a compatibility issue with sphinx
+            raise AttributeError(name)
 
-        identifier = _IdentifierMeta._identifiers.get(item, None)
+        identifier = _IdentifierMeta._identifiers.get(name, None)
         if not identifier:
-            _IdentifierMeta._identifiers[item] = identifier = Id(item)
+            _IdentifierMeta._identifiers[name] = identifier = Id(name)
 
         return identifier
 
 
-class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
+@inheritdoc(match="[see superclass]")
+class Id(AtomicExpression[str], metaclass=compose_meta(_IdentifierMeta, ABCMeta)):
     """
     An identifier.
+
+    Identifiers can be created either by
+
+    - class instantiation: ``Id("x")``
+    - attribute access: ``Id.x``
+
+    The attribute access method will return the identical :class:`Id` instance
+    for subsequent access to an attribute of the same name (stored internally using a
+    weak reference dictionary).
+    Attribute access requires attribute names that do not start or end with an
+    underscore character (``_``), otherwise an :class:`AttributeError` is raised.
+    For compatibility reasons, attribute access does not work for the ``Id`` name, i.e.,
+    ``Id.Id`` will raise an :class:`AttributeError`.
     """
 
     def __init__(self, name: Any) -> None:
+        """
+        :param name: the name of the identifier
+        """
+        super().__init__()
         if not isinstance(name, str):
             name = getattr(name, "__name__", None)
             if not name:
@@ -587,19 +602,16 @@ class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
         """[see superclass]"""
         return self._name
 
-    value_.__doc__ = AtomicExpression.value_.__doc__
-
     @property
     def text_(self) -> str:
         """[see superclass]"""
         return self._name
 
-    text_.__doc__ = AtomicExpression.text_.__doc__
 
-
-class _Epsilon(AtomicExpression[None]):
+@inheritdoc(match="[see superclass]")
+class Epsilon(AtomicExpression[None], metaclass=compose_meta(ABCMeta, SingletonMeta)):
     """
-    The empty expression.
+    A singleton class representing the empty expression.
     """
 
     @property
@@ -611,11 +623,6 @@ class _Epsilon(AtomicExpression[None]):
     def text_(self) -> str:
         """[see superclass]"""
         return ""
-
-    text_.__doc__ = AtomicExpression.text_.__doc__
-
-
-EPSILON = _Epsilon()
 
 
 #
@@ -632,15 +639,15 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def subexpression_(self) -> Expression:
         """
-        The subexpression of this expression.
+        The subexpression of this expression
         """
 
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
-        """[see superclass]"""
+        """
+        A tuple with the this expression's subexpression as its only element
+        """
         return (self.subexpression_,)
-
-    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
 
 #
@@ -648,137 +655,188 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
 #
 
 
-class BracketPair(NamedTuple):
+@inheritdoc(match="[see superclass]")
+class BracketPair(HasExpressionRepr):
     """
     A pair of brackets.
     """
+
+    #: a pair of round brackets
+    ROUND = None
+    #: a pair of square brackets
+    SQUARE = None
+    #: a pair of curly brackets
+    CURLY = None
+    #: a pair of angled brackets
+    ANGLED = None
 
     #: the opening bracket
     opening: str
     #: the closing bracket
     closing: str
 
+    def __init__(self, opening: str, closing: str) -> None:
+        """
+        :param opening: the opening bracket
+        :param closing: the closing bracket
+        """
+        self.opening = opening
+        self.closing = closing
 
-BRACKETS_ROUND = BracketPair("(", ")")
-BRACKETS_SQUARE = BracketPair("[", "]")
-BRACKETS_CURLY = BracketPair("{", "}")
-BRACKETS_ANGLE = BracketPair("<", ">")
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        return Id.BracketPair(opening=self.opening, closing=self.closing)
 
 
+BracketPair.ROUND = BracketPair("(", ")")
+BracketPair.SQUARE = BracketPair("[", "]")
+BracketPair.CURLY = BracketPair("{", "}")
+BracketPair.ANGLED = BracketPair("<", ">")
+
+
+@inheritdoc(match="[see superclass]")
 class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     """
     An expression surrounded by brackets.
     """
 
     def __init__(self, brackets: BracketPair, subexpression: Any) -> None:
+        """
+        :param brackets: the brackets enclosing this expression's subexpressions
+        :param subexpression: the subexpression enclosed by brackets
+        """
+        super().__init__()
         self._brackets = brackets
         self._subexpression = make_expression(subexpression)
 
     @property
     def brackets_(self) -> BracketPair:
         """
-        The brackets surrounding this expression's subexpressions.
+        The brackets enclosing this expression's subexpressions
         """
         return self._brackets
 
     @property
     def subexpression_(self) -> Expression:
         """
-        The subexpression bracketed by this expression.
+        The subexpression enclosed by the brackets
         """
         return self._subexpression
 
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
-        return MAX_PRECEDENCE
+        return Operator.MAX_PRECEDENCE
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
+    def hash_(self) -> int:
+        """[see superclass]"""
+        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
 
     def _eq_same_type(self, other: "BracketedExpression") -> bool:
         return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
             other.subexpression_
         )
 
-    def hash_(self) -> int:
-        """
-        [see superclass]
-        """
-        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
-
-    hash_.__doc__ = Expression.hash_.__doc__
-
 
 class CollectionLiteral(BracketedExpression):
     """
-    A collection literal, e.g. a list, set, tuple, or dictionary
+    A collection literal, e.g., a list, set, tuple, or dictionary.
     """
 
     def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
+        """
+        :param brackets: the brackets enclosing the collection
+        :param elements: the elements of the collection
+        """
         elements: Tuple[Expression, ...] = tuple(
             make_expression(element) for element in elements
         )
 
         subexpression: Expression
         if not elements:
-            subexpression = EPSILON
+            subexpression = Epsilon()
         elif len(elements) == 1:
             subexpression = elements[0]
         else:
-            subexpression = Operation(op.COMMA, *elements)
+            subexpression = Operation(BinaryOperator.COMMA, *elements)
 
         super().__init__(brackets, subexpression)
+
+        self._elements = elements
+
+    @property
+    def subexpression_(self) -> Expression:
+        """
+        The subexpression representing the element(s) of this collection literal
+
+        - an :class:`Epsilon` expression for an empty collection
+        - an arbitrary expression for a collection with a single element
+        - an :class:`Operation` with a :attr:`pytools.expression.operator.COMMA`
+          operator for collections with two or more elements
+        """
+        return super().subexpression_
+
+    @property
+    def elements_(self) -> Tuple[Expression]:
+        """
+        The expression(s) representing the elements of this expression
+        """
+        return self._elements
 
 
 class ListLiteral(CollectionLiteral):
     """
-    A list of expressions
+    A list expression.
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_SQUARE, elements=elements)
+        """
+        :param elements: the list elements
+        """
+        super().__init__(brackets=BracketPair.SQUARE, elements=elements)
 
 
 class TupleLiteral(CollectionLiteral):
     """
-    A list of expressions
+    A tuple expression.
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_ROUND, elements=elements)
+        """
+        :param elements: the tuple elements
+        """
+        super().__init__(brackets=BracketPair.ROUND, elements=elements)
 
 
 class SetLiteral(CollectionLiteral):
     """
-    A list of expressions
+    A set expression.
     """
 
     def __init__(self, *elements: Any):
-        super().__init__(brackets=BRACKETS_CURLY, elements=elements)
+        """
+        :param elements: the set elements
+        """
+        super().__init__(brackets=BracketPair.CURLY, elements=elements)
 
 
 class DictLiteral(CollectionLiteral):
     """
-    A list of expressions
+    A dictionary expression.
     """
 
-    def __init__(self, *args: Tuple[Any, Any], **entries: Tuple[str, Any]):
+    def __init__(self, *args: Tuple[Any, Any], **kwargs: Tuple[str, Any]):
+        """
+        :param args: dictionary entries as tuples ``(key, value)``
+        :param kwargs: dictionary entries as keyword arguments
+        """
         super().__init__(
-            brackets=BRACKETS_CURLY,
+            brackets=BracketPair.CURLY,
             elements=(
                 DictEntry(key, value)
-                for key, value in itertools.chain(args, entries.items())
+                for key, value in itertools.chain(args, kwargs.items())
             ),
         )
-
-
-class _Invocation(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, brackets: BracketPair, args: Iterable[Any]):
-        super().__init__(brackets=brackets, elements=args)
 
 
 #
@@ -786,10 +844,16 @@ class _Invocation(CollectionLiteral):
 #
 
 
+@inheritdoc(match="[see superclass]")
 class BaseOperation(Expression, metaclass=ABCMeta):
     """
-    Abstract base class for operation expressions
+    Abstract base class for operation expressions.
     """
+
+    @property
+    def subexpressions_(self) -> Tuple["Expression", ...]:
+        """[see superclass]"""
+        return self.operands_
 
     @property
     @abstractmethod
@@ -803,9 +867,9 @@ class BaseOperation(Expression, metaclass=ABCMeta):
     @abstractmethod
     def operands_(self) -> Tuple[Expression, ...]:
         """
-        The operands of this operation
+        The operands of this operation; same as :attr:`subexpressions_`
         """
-        return self.subexpressions_
+        pass
 
 
 #
@@ -813,12 +877,13 @@ class BaseOperation(Expression, metaclass=ABCMeta):
 #
 
 
+@inheritdoc(match="[see superclass]")
 class PrefixExpression(Expression, metaclass=ABCMeta):
     """
     A prefix expression.
 
-    A prefix expression combines a prefix and a subexpression, optionally separated
-    by one or more characters.
+    Combines a prefix and a subexpression, optionally separated by one or more
+    characters.
     """
 
     @property
@@ -846,10 +911,10 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
 
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
-        """[see superclass]"""
+        """
+        A tuple containing the prefix and the body of this expression
+        """
         return self.prefix_, self.body_
-
-    subexpressions_.__doc__ = Expression.subexpressions_.__doc__
 
     def _eq_same_type(self, other: "PrefixExpression") -> bool:
         return self.prefix_.eq_(other.prefix_) and self.body_.eq_(other.body_)
@@ -860,15 +925,19 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
             (type(self), self.prefix_.hash_(), self.separator_, self.body_.hash_())
         )
 
-    hash_.__doc__ = Expression.hash_.__doc__
 
-
-class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     """
-    Base implementation for prefix expressions
+    An abstract base implementation of simple prefix expressions.
     """
 
     def __init__(self, prefix: Any, body: Any):
+        """
+        :param prefix: the prefix of the expression
+        :param body: the body of the expression
+        """
+        super().__init__()
         self._prefix = make_expression(prefix)
         self._body = make_expression(body)
 
@@ -877,23 +946,20 @@ class BasePrefixExpression(PrefixExpression, metaclass=ABCMeta):
         """[see superclass]"""
         return self._prefix
 
-    prefix_.__doc__ = PrefixExpression.prefix_.__doc__
-
     @property
     def body_(self) -> Expression:
         """[see superclass]"""
         return self._body
 
-    body_.__doc__ = PrefixExpression.body_.__doc__
 
-
-class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class UnaryOperation(SimplePrefixExpression, BaseOperation, metaclass=ABCMeta):
     """
     A unary operation.
     """
 
     def __init__(self, operator: UnaryOperator, operand: Any):
-        super().__init__(prefix=EPSILON, body=operand)
+        super().__init__(prefix=Epsilon(), body=operand)
         self._operator = operator
 
     @property
@@ -901,39 +967,35 @@ class UnaryOperation(BasePrefixExpression, BaseOperation, metaclass=ABCMeta):
         """[see superclass]"""
         return self._operator.symbol
 
-    separator_.__doc__ = PrefixExpression.separator_.__doc__
-
     @property
-    def operator_(self) -> op.UnaryOperator:
+    def operator_(self) -> UnaryOperator:
         """[see superclass]"""
         return self._operator
-
-    operator_.__doc__ = BaseOperation.operator_.__doc__
 
     @property
     def operands_(self) -> Tuple[Expression, ...]:
         """[see superclass]"""
         return self.subexpressions_
 
-    operator_.__doc__ = BaseOperation.operator_.__doc__
-
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
         return self._operator.precedence
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-# noinspection DuplicatedCode
-class KeywordArgument(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class KeywordArgument(SimplePrefixExpression):
     """
     A keyword argument, used by functions.
     """
 
-    _PRECEDENCE = op.EQ.precedence
+    _PRECEDENCE = BinaryOperator.EQ.precedence
 
     def __init__(self, name: str, value: Any):
+        """
+        :param name: the name of the keyword
+        :param value: the value for the keyword
+        """
         super().__init__(prefix=Id(name), body=value)
         self._name = name
 
@@ -949,8 +1011,6 @@ class KeywordArgument(BasePrefixExpression):
         """[see superclass]"""
         return "="
 
-    separator_.__doc__ = PrefixExpression.separator_.__doc__
-
     @property
     def value_(self) -> Expression:
         """
@@ -963,38 +1023,38 @@ class KeywordArgument(BasePrefixExpression):
         """[see superclass]"""
         return self._PRECEDENCE
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-# noinspection DuplicatedCode
-class DictEntry(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class DictEntry(SimplePrefixExpression):
     """
-    Two expressions separated by a colon, used in dictionaries and lambda expressions.
+    Two expressions separated by a colon, used in dictionaries.
     """
 
-    _PRECEDENCE = op.COLON.precedence
+    _PRECEDENCE = BinaryOperator.COLON.precedence
 
     def __init__(self, key: Any, value: Any):
+        """
+        :param key: the key of the dictionary entry
+        :param value: the value of the dictionary entry
+        """
         super().__init__(prefix=key, body=value)
 
     @property
     def key_(self) -> Expression:
         """
-        The key of this dictionary entry.
+        The key of this dictionary entry; identical with the expression prefix
         """
         return self.prefix_
 
     @property
     def separator_(self) -> str:
-        """[see superclass]"""
+        """A ``:``, followed by a space"""
         return ": "
-
-    separator_.__doc__ = PrefixExpression.separator_.__doc__
 
     @property
     def value_(self) -> Expression:
         """
-        The value of this dictionary entry.
+        The value of this dictionary entry; identical with the expression body
         """
         return self.body_
 
@@ -1003,57 +1063,58 @@ class DictEntry(BasePrefixExpression):
         """[see superclass]"""
         return DictEntry._PRECEDENCE
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-class BaseInvocation(PrefixExpression):
+@inheritdoc(match="[see superclass]")
+class Invocation(PrefixExpression):
     """
     An invocation in the shape of ``<expression>(<expression>)`` or
     ``<expression>[<expression>]``.
     """
 
-    _PRECEDENCE = op.DOT.precedence
+    _PRECEDENCE = BinaryOperator.DOT.precedence
 
     def __init__(self, prefix: Any, brackets: BracketPair, args: Iterable[Any]):
         """
         :param prefix: the expression representing the object being invoked
         :param brackets: the brackets surrounding the invocation argument(s)
-        :param args: the invocation arguments (can also be empty)
+        :param args: the invocation argument(s); can also be an empty iterable
         """
+        super().__init__()
         self._prefix = make_expression(prefix)
-        self._invocation = _Invocation(brackets, args=args)
+        self._invocation = CollectionLiteral(brackets=brackets, elements=args)
 
     @property
     def prefix_(self) -> Expression:
         """[see superclass]"""
         return self._prefix
 
-    prefix_.__doc__ = PrefixExpression.prefix_.__doc__
-
     @property
-    def body_(self) -> Expression:
-        """[see superclass]"""
+    def body_(self) -> CollectionLiteral:
+        """
+        The expression representing the arguments enclosed by brackets
+        """
         return self._invocation
-
-    body_.__doc__ = PrefixExpression.body_.__doc__
 
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
-        return BaseInvocation._PRECEDENCE
-
-    precedence_.__doc__ = Expression.precedence_.__doc__
+        return Invocation._PRECEDENCE
 
 
-class Call(BaseInvocation):
+class Call(Invocation):
     """
-    A function invocation.
+    A call expression.
     """
 
     def __init__(self, callee: Any, *args: Any, **kwargs: Any):
+        """
+        :param callee: the expression representing the object being called
+        :param args: the positional argument(s) of the call
+        :param kwargs: the keyword arguments of the call
+        """
         super().__init__(
             prefix=callee,
-            brackets=BRACKETS_ROUND,
+            brackets=BracketPair.ROUND,
             args=(
                 *args,
                 *(
@@ -1066,31 +1127,52 @@ class Call(BaseInvocation):
     @property
     def callee_(self) -> Expression:
         """
-        The expression invoked by this call.
+        The expression being called; identical with the prefix of this expression
         """
         return self.prefix_
 
 
-class Index(BaseInvocation):
+class Index(Invocation):
     """
-    An indexing operation in the shape of ``x[i]``.
+    An indexing operation.
     """
 
     def __init__(self, collection: Any, key: Any):
+        """
+        :param collection: the collection to be indexed
+        :param key: the index key
+        """
         keys = key if isinstance(key, tuple) else (key,)
-        super().__init__(prefix=collection, brackets=BRACKETS_SQUARE, args=keys)
+        super().__init__(prefix=collection, brackets=BracketPair.SQUARE, args=keys)
+
+    @property
+    def collection_(self) -> Expression:
+        """
+        The collection to be indexed; same as :attr:`prefix_`
+        """
+        return self.prefix_
 
 
-# noinspection DuplicatedCode
-class LambdaDefinition(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class LambdaDefinition(SimplePrefixExpression):
     """
-    function arguments and body separated by a colon, used inside lambda expressions.
+    Function parameters and body separated by a colon, used inside lambda expressions.
     """
 
-    _PRECEDENCE = op.LAMBDA.precedence
+    _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
-    def __init__(self, params: Any, body: Any):
-        super().__init__(prefix=params, body=body)
+    def __init__(self, *params: Id, body: Any):
+        """
+        :param params: the parameters of the lambda expression
+        :param body: the body of the lambda expression
+        """
+        if not params:
+            params_expression = Epsilon()
+        elif len(params) == 1:
+            params_expression = params[0]
+        else:
+            params_expression = Operation(operator=BinaryOperator.COMMA, *params)
+        super().__init__(prefix=params_expression, body=body)
 
     @property
     def params_(self) -> Expression:
@@ -1101,51 +1183,39 @@ class LambdaDefinition(BasePrefixExpression):
 
     @property
     def separator_(self) -> str:
-        """[see superclass]"""
+        """A ``:``, followed by a space"""
         return ": "
-
-    separator_.__doc__ = PrefixExpression.separator_.__doc__
 
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
         return LambdaDefinition._PRECEDENCE
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-class Lambda(BasePrefixExpression):
+@inheritdoc(match="[see superclass]")
+class Lambda(SimplePrefixExpression):
     """
-    A lambda expression
+    A lambda expression.
     """
 
-    _PRECEDENCE = op.LAMBDA.precedence
+    _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
     def __init__(self, *params: Id, body: Any):
-        if not params:
-            arg_list = EPSILON
-        elif len(params) == 1:
-            arg_list = params[0]
-        else:
-            arg_list = Operation(operator=op.COMMA, *params)
-
-        super().__init__(
-            prefix=EPSILON, body=LambdaDefinition(params=arg_list, body=body)
-        )
+        """
+        :param params: the parameters of the lambda expression
+        :param body: the body of the lambda expression
+        """
+        super().__init__(prefix=Epsilon(), body=LambdaDefinition(*params, body=body))
 
     @property
     def precedence_(self) -> int:
-        """
-        [see superclass]
-        """
+        """[see superclass]"""
         return Lambda._PRECEDENCE
-
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
     @property
     def separator_(self) -> str:
         """[see superclass]"""
-        return f"{op.LAMBDA.symbol} "
+        return f"{UnaryOperator.LAMBDA.symbol} "
 
 
 #
@@ -1153,29 +1223,22 @@ class Lambda(BasePrefixExpression):
 #
 
 
+@inheritdoc(match="[see superclass]")
 class InfixExpression(Expression, metaclass=ABCMeta):
     """
-    An infix expression, where any number of subexpressions are separated by a specific
-    infix.
+    An infix expression, separating any number of subexpressions with an infix symbol.
     """
 
     @property
     @abstractmethod
     def infix_(self) -> BinaryOperator:
         """
-        The infix used to separate this expression's subexpressions.
+        The infix used to separate this expression's subexpressions
         """
         pass
 
-    def _eq_same_type(self, other: "InfixExpression") -> bool:
-        return self.infix_ == other.infix_ and all(
-            a.eq_(b) for a, b in zip(self.subexpressions_, other.subexpressions_)
-        )
-
     def hash_(self) -> int:
-        """
-        [see superclass]
-        """
+        """[see superclass]"""
         return hash(
             (
                 type(self),
@@ -1184,16 +1247,24 @@ class InfixExpression(Expression, metaclass=ABCMeta):
             )
         )
 
-    hash_.__doc__ = Expression.hash_.__doc__
+    def _eq_same_type(self, other: "InfixExpression") -> bool:
+        return self.infix_ == other.infix_ and all(
+            a.eq_(b) for a, b in zip(self.subexpressions_, other.subexpressions_)
+        )
 
 
+@inheritdoc(match="[see superclass]")
 class Operation(InfixExpression, BaseOperation):
     """
-    A operation with at least two operands.
+    A operation with two or more operands.
     """
 
     def __init__(self, operator: BinaryOperator, *operands: Any):
-
+        """
+        :param operator: the binary operator applied by this operation
+        :param operands: the operands applied to the binary operator
+        """
+        super().__init__()
         if not isinstance(operator, BinaryOperator):
             raise TypeError(f"arg operator={operator} must be an BinaryOperator")
 
@@ -1220,43 +1291,32 @@ class Operation(InfixExpression, BaseOperation):
         """[see superclass]"""
         return self._operator
 
-    operator_.__doc__ = BaseOperation.operator_.__doc__
-
     @property
     def operands_(self) -> Tuple[Expression, ...]:
         """[see superclass]"""
         return self._operands
-
-    operands_.__doc__ = BaseOperation.operands_.__doc__
 
     @property
     def infix_(self) -> BinaryOperator:
         """[see superclass]"""
         return self._operator
 
-    infix_.__doc__ = InfixExpression.infix_.__doc__
-
-    @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
-        """[see superclass]"""
-        return self._operands
-
-    subexpressions_.__doc__ = InfixExpression.subexpressions_.__doc__
-
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
         return self.infix_.precedence
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
-
 
 class Attr(Operation):
     """
-    The "dot" operation to reference an attribute of an object.
+    The ``….…`` ("dot") operation to reference an attribute of an object.
     """
 
     def __init__(self, obj: Any, attribute: Union[Id, str]) -> None:
+        """
+        :param obj: the object whose attribute is referenced
+        :param attribute: the name of the attribute being referenced
+        """
         if isinstance(attribute, str):
             attribute = Id(attribute)
         elif not isinstance(attribute, Id):
@@ -1264,9 +1324,9 @@ class Attr(Operation):
 
         if isinstance(obj, Attr):
             sub = obj.subexpressions_
-            super().__init__(op.DOT, sub[0], *(sub[1:]), attribute)
+            super().__init__(BinaryOperator.DOT, sub[0], *(sub[1:]), attribute)
         else:
-            super().__init__(op.DOT, obj, attribute)
+            super().__init__(BinaryOperator.DOT, obj, attribute)
 
 
 #
@@ -1274,6 +1334,7 @@ class Attr(Operation):
 #
 
 
+@inheritdoc(match="[see superclass]")
 class ExpressionAlias(SingletonExpression):
     """
     An alias pointing to another expression, and representing that expression.
@@ -1287,18 +1348,23 @@ class ExpressionAlias(SingletonExpression):
     """
 
     def __init__(self, expression: Expression) -> None:
+        """
+        :param expression: the expression referred to by this alias
+        """
+        super().__init__()
         self._expression = expression
 
     @property
     def expression_(self) -> Expression:
         """
-        The expression represented by this ExpressionAlias.
+        The expression represented by this alias; may be set to a new expression
         """
         return self._expression
 
-    def set_expression_(self, expression: Expression) -> None:
+    @expression_.setter
+    def expression_(self, expression: Expression) -> None:
         """
-        Set the expression represented by this ExpressionAlias.
+        Set the expression represented by this alias
 
         :param expression: the expression to be set
         """
@@ -1306,32 +1372,20 @@ class ExpressionAlias(SingletonExpression):
 
     @property
     def precedence_(self) -> int:
-        """
-        [see superclass]
-        """
+        """[see superclass]"""
         return self.expression_.precedence_
-
-    precedence_.__doc__ = Expression.precedence_.__doc__
 
     @property
     def subexpression_(self) -> Expression:
-        """
-        [see superclass]
-        """
+        """[see superclass]"""
         return self._expression
 
-    subexpression_.__doc__ = SingletonExpression.subexpression_.__doc__
+    def hash_(self) -> int:
+        """[see superclass]"""
+        return self.expression_.hash_()
 
     def _eq_same_type(self, other: "ExpressionAlias") -> bool:
         return self._expression.eq_(other._expression)
-
-    def hash_(self) -> int:
-        """
-        [see superclass]
-        """
-        return self.expression_.hash_()
-
-    hash_.__doc__ = Expression.hash_.__doc__
 
 
 __tracker.validate()

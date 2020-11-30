@@ -6,7 +6,6 @@ import logging
 
 import pytest
 
-import pytools.expression.operator as op
 from pytools.expression import (
     Call,
     DictLiteral,
@@ -26,6 +25,7 @@ from pytools.expression import (
 
 # noinspection PyProtectedMember
 from pytools.expression._text import TextualForm
+from pytools.expression.operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)
 
@@ -89,14 +89,14 @@ def test_expression() -> None:
     expressions = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
-        ((Id.xx), "xx"),
+        (Id.xx, "xx"),
         (Call(Id("func"), lit_5, lit_abc), "func(5, 'abc')"),
         (ListLiteral(lit_5, lit_abc, Id.xx), "[5, 'abc', xx]"),
         (SetLiteral(lit_5, lit_abc, Id.xx), "{5, 'abc', xx}"),
         (TupleLiteral(lit_5, lit_abc, Id.xx), "(5, 'abc', xx)"),
         (DictLiteral(**{"5": lit_abc, "x": lit_5}), "{'5': 'abc', 'x': 5}"),
         (DictLiteral((lit_5, lit_abc), (Id.xx, lit_5)), "{5: 'abc', xx: 5}"),
-        (Operation(op.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
+        (Operation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
         (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
         (SetLiteral(), "{}"),
@@ -166,22 +166,23 @@ def test_comparison_expressions() -> None:
 
 def test_expression_operators() -> None:
     a, b = Id.a, Id.b
-    assert a + b == Operation(op.ADD, a, b)
-    assert a - b == Operation(op.SUB, a, b)
-    assert a * b == Operation(op.MUL, a, b)
-    assert a @ b == Operation(op.MATMUL, a, b)
-    assert a / b == Operation(op.DIV, a, b)
-    assert a // b == Operation(op.FLOOR_DIV, a, b)
-    assert a % b == Operation(op.MOD, a, b)
-    assert a ** b == Operation(op.POW, a, b)
-    assert a << b == Operation(op.LSHIFT, a, b)
-    assert a >> b == Operation(op.RSHIFT, a, b)
-    assert a & b == Operation(op.AND_BITWISE, a, b)
-    assert a ^ b == Operation(op.XOR_BITWISE, a, b)
-    assert a | b == Operation(op.OR_BITWISE, a, b)
-    assert -a == UnaryOperation(op.NEG, operand=a)
-    assert +a == UnaryOperation(op.POS, operand=a)
-    assert ~a == UnaryOperation(op.INVERT, operand=a)
+    assert a + b == Operation(BinaryOperator.ADD, a, b)
+    assert a - b == Operation(BinaryOperator.SUB, a, b)
+    assert a * b == Operation(BinaryOperator.MUL, a, b)
+    assert a @ b == Operation(BinaryOperator.MATMUL, a, b)
+    assert a / b == Operation(BinaryOperator.DIV, a, b)
+    assert a // b == Operation(BinaryOperator.FLOOR_DIV, a, b)
+    assert a % b == Operation(BinaryOperator.MOD, a, b)
+    assert a ** b == Operation(BinaryOperator.POW, a, b)
+    assert a << b == Operation(BinaryOperator.LSHIFT, a, b)
+    assert a >> b == Operation(BinaryOperator.RSHIFT, a, b)
+    assert a & b == Operation(BinaryOperator.AND_BITWISE, a, b)
+    assert a ^ b == Operation(BinaryOperator.XOR_BITWISE, a, b)
+    assert a | b == Operation(BinaryOperator.OR_BITWISE, a, b)
+    assert -a == UnaryOperation(UnaryOperator.NEG, operand=a)
+    assert +a == UnaryOperation(UnaryOperator.POS, operand=a)
+    assert ~a == UnaryOperation(UnaryOperator.INVERT, operand=a)
+    assert (not a) == UnaryOperation(UnaryOperator.NOT, operand=a)
 
 
 def test_operator_precedence() -> None:

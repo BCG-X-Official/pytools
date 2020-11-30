@@ -8,18 +8,17 @@ from typing import List, NamedTuple, Tuple
 
 from ..api import AllTracker
 from . import (
-    BRACKETS_ROUND,
-    EPSILON,
     AtomicExpression,
     BracketedExpression,
     BracketPair,
+    Epsilon,
     Expression,
     ExpressionAlias,
     ExpressionFormatter,
     InfixExpression,
     PrefixExpression,
 )
-from . import operator as op
+from .operator import BinaryOperator
 
 log = logging.getLogger(__name__)
 
@@ -90,7 +89,7 @@ class TextualForm:
         :param expression: the expression to be transformed
         :return: the resulting textual form
         """
-        if expression is EPSILON:
+        if expression is Epsilon():
             return EMPTY_FORM
         if isinstance(expression, AtomicExpression):
             return AtomicForm(expression)
@@ -174,7 +173,7 @@ class TextualForm:
         """
         return (
             BracketedForm(
-                brackets=BRACKETS_ROUND, subform=self, single_line=single_line
+                brackets=BracketPair.ROUND, subform=self, single_line=single_line
             )
             if condition
             else self
@@ -551,7 +550,7 @@ class InfixForm(ComplexForm):
                             pos < last_subexpression
                             or not (
                                 isinstance(subexpression, PrefixExpression)
-                                and subexpression.prefix_ is EPSILON
+                                and subexpression.prefix_ is Epsilon()
                             )
                         )
                     )
@@ -564,9 +563,9 @@ class InfixForm(ComplexForm):
 
         infix_padding = (
             InfixForm.PADDING_RIGHT
-            if infix in [op.COMMA, op.COLON]
+            if infix in [BinaryOperator.COMMA, BinaryOperator.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [op.DOT, op.SLICE, op.NONE]
+            if infix in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
             else InfixForm.PADDING_BOTH
         )
 
