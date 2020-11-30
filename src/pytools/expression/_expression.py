@@ -129,7 +129,8 @@ class HasExpressionRepr(metaclass=ABCMeta):
         return str(self.to_expression())
 
 
-class Expression(metaclass=ABCMeta):
+@inheritdoc(match="[see superclass]")
+class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
     An expression composed of literals and (possibly nested) operations.
     """
@@ -208,6 +209,10 @@ class Expression(metaclass=ABCMeta):
         :class:`.FrozenExpression`.
         """
         pass
+
+    def to_expression(self) -> "Expression":
+        """[see superclass]"""
+        return self
 
     @abstractmethod
     def _eq_same_type(self: T, other: T) -> bool:
