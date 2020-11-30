@@ -89,7 +89,7 @@ def test_expression() -> None:
     expressions = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
-        ((Id.xx), "xx"),
+        (Id.xx, "xx"),
         (Call(Id("func"), lit_5, lit_abc), "func(5, 'abc')"),
         (ListLiteral(lit_5, lit_abc, Id.xx), "[5, 'abc', xx]"),
         (SetLiteral(lit_5, lit_abc, Id.xx), "{5, 'abc', xx}"),
