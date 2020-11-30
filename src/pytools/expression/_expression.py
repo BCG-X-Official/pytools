@@ -44,7 +44,7 @@ __all__ = [
     "UnaryOperation",
     "KeywordArgument",
     "DictEntry",
-    "BaseInvocation",
+    "Invocation",
     "Call",
     "Index",
     "LambdaDefinition",
@@ -1029,8 +1029,8 @@ class DictEntry(SimplePrefixExpression):
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-class BaseInvocation(PrefixExpression):
+@inheritdoc(match="[see superclass]")
+class Invocation(PrefixExpression):
     """
     An invocation in the shape of ``<expression>(<expression>)`` or
     ``<expression>[<expression>]``.
@@ -1064,12 +1064,11 @@ class BaseInvocation(PrefixExpression):
     @property
     def precedence_(self) -> int:
         """[see superclass]"""
-        return BaseInvocation._PRECEDENCE
+        return Invocation._PRECEDENCE
 
     precedence_.__doc__ = Expression.precedence_.__doc__
 
-
-class Call(BaseInvocation):
+class Call(Invocation):
     """
     A function invocation.
     """
@@ -1095,7 +1094,7 @@ class Call(BaseInvocation):
         return self.prefix_
 
 
-class Index(BaseInvocation):
+class Index(Invocation):
     """
     An indexing operation in the shape of ``x[i]``.
     """
