@@ -5,17 +5,7 @@ strings; useful for generating representations of complex Python objects.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import (
-    Any,
-    Dict,
-    Generic,
-    Iterable,
-    NamedTuple,
-    Optional,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import Any, Dict, Generic, Iterable, Optional, Tuple, TypeVar, Union
 from weakref import WeakValueDictionary
 
 from ..api import AllTracker, inheritdoc, to_list
@@ -42,10 +32,6 @@ __all__ = [
     "Epsilon",
     "SingletonExpression",
     "BracketPair",
-    "BRACKETS_ROUND",
-    "BRACKETS_SQUARE",
-    "BRACKETS_CURLY",
-    "BRACKETS_ANGLE",
     "BracketedExpression",
     "CollectionLiteral",
     "ListLiteral",
@@ -639,22 +625,43 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
 #
 
 
-class BracketPair(NamedTuple):
+@inheritdoc(match="[see superclass]")
+class BracketPair(HasExpressionRepr):
     """
     A pair of brackets.
     """
+
+    #: a pair of round brackets
+    ROUND = None
+    #: a pair of square brackets
+    SQUARE = None
+    #: a pair of curly brackets
+    CURLY = None
+    #: a pair of angled brackets
+    ANGLED = None
 
     #: the opening bracket
     opening: str
     #: the closing bracket
     closing: str
 
+    def __init__(self, opening: str, closing: str) -> None:
+        """
+        :param opening: the opening bracket
+        :param closing: the closing bracket
+        """
+        self.opening = opening
+        self.closing = closing
 
-BRACKETS_ROUND = BracketPair("(", ")")
-BRACKETS_SQUARE = BracketPair("[", "]")
-BRACKETS_CURLY = BracketPair("{", "}")
-BRACKETS_ANGLE = BracketPair("<", ">")
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        return Id.BracketPair(opening=self.opening, closing=self.closing)
 
+
+BracketPair.ROUND = BracketPair("(", ")")
+BracketPair.SQUARE = BracketPair("[", "]")
+BracketPair.CURLY = BracketPair("{", "}")
+BracketPair.ANGLED = BracketPair("<", ">")
 
 class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     """
@@ -684,28 +691,26 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
         """[see superclass]"""
         return Operator.MAX_PRECEDENCE
 
-    precedence_.__doc__ = Expression.precedence_.__doc__
+    def hash_(self) -> int:
+        """[see superclass]"""
+        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
 
     def _eq_same_type(self, other: "BracketedExpression") -> bool:
         return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
             other.subexpression_
         )
 
-    def hash_(self) -> int:
-        """
-        [see superclass]
-        """
-        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
-
-    hash_.__doc__ = Expression.hash_.__doc__
-
 
 class CollectionLiteral(BracketedExpression):
     """
-    A collection literal, e.g. a list, set, tuple, or dictionary
+    A collection literal, e.g., a list, set, tuple, or dictionary.
     """
 
     def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
+        """
+        :param brackets: the brackets enclosing the collection
+        :param elements: the elements of the collection
+        """
         elements: Tuple[Expression, ...] = tuple(
             make_expression(element) for element in elements
         )
@@ -719,6 +724,27 @@ class CollectionLiteral(BracketedExpression):
             subexpression = Operation(BinaryOperator.COMMA, *elements)
 
         super().__init__(brackets, subexpression)
+
+        self._elements = elements
+
+    @property
+    def subexpression_(self) -> Expression:
+        """
+        The subexpression representing the element(s) of this collection literal
+
+        - an :class:`Epsilon` expression for an empty collection
+        - an arbitrary expression for a collection with a single element
+        - an :class:`Operation` with a :attr:`pytools.expression.operator.COMMA`
+          operator for collections with two or more elements
+        """
+        return super().subexpression_
+
+    @property
+    def elements_(self) -> Tuple[Expression]:
+        """
+        The expression(s) representing the elements of this expression
+        """
+        return self._elements
 
 
 class ListLiteral(CollectionLiteral):
@@ -1053,7 +1079,7 @@ class Call(BaseInvocation):
     def __init__(self, callee: Any, *args: Any, **kwargs: Any):
         super().__init__(
             prefix=callee,
-            brackets=BRACKETS_ROUND,
+            brackets=BracketPair.ROUND,
             args=(
                 *args,
                 *(
@@ -1078,7 +1104,7 @@ class Index(BaseInvocation):
 
     def __init__(self, collection: Any, key: Any):
         keys = key if isinstance(key, tuple) else (key,)
-        super().__init__(prefix=collection, brackets=BRACKETS_SQUARE, args=keys)
+        super().__init__(prefix=collection, brackets=BracketPair.SQUARE, args=keys)
 
 
 # noinspection DuplicatedCode
