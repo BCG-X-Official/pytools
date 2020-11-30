@@ -808,15 +808,6 @@ class DictLiteral(CollectionLiteral):
         )
 
 
-class _Invocation(CollectionLiteral):
-    """
-    A list of expressions
-    """
-
-    def __init__(self, brackets: BracketPair, args: Iterable[Any]):
-        super().__init__(brackets=brackets, elements=args)
-
-
 #
 # Operations
 #
@@ -1055,7 +1046,7 @@ class Invocation(PrefixExpression):
         :param args: the invocation arguments (can also be empty)
         """
         self._prefix = make_expression(prefix)
-        self._invocation = _Invocation(brackets, args=args)
+        self._invocation = CollectionLiteral(brackets=brackets, elements=args)
 
     @property
     def prefix_(self) -> Expression:
