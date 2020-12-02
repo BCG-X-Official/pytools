@@ -5,6 +5,7 @@ Core implementation of :mod:`pytools.api`
 import inspect
 import logging
 import operator
+import re
 import warnings
 from abc import ABCMeta, abstractmethod
 from functools import reduce, wraps
@@ -75,15 +76,57 @@ class AllTracker:
     has been imported by the respective public modules (see :meth:`.add_group`)
     """
 
-    def __init__(self, globals_: Dict[str, Any]):
+    __RE_PUBLIC_MODULE = re.compile(
+        # start of match group for the public part of the module path
+        r"("
+        # first module component must not start with '_')
+        r"(?:[a-zA-Z]\w+)"
+        # then as many path components as can be matched non-greedily …)
+        r"(?:\.\w+)*?"
+        # but when we hit the first private path component, we stop matching the
+        # public part of the path …
+        r")"
+        # … and match the rest as the private path
+        r"(?:\._\w*(\.\w+)*)"
+    )
+
+    def __init__(self, globals_: Dict[str, Any], public_module: Optional[str] = None):
         """
         :param globals_: the dictionary of global variables returned by calling
             :meth:`._globals` in the current module scope
+        :param public_module: full name of the public module that will export the items
+            managed by this tracker
+
         """
         self._globals = globals_
         self._imported = set(globals_.keys())
         self._groups: List["ImportGroup"] = []
         self._default_group: Optional[_DefaultGroup] = None
+
+        if public_module:
+            self.public_module = public_module
+
+        else:
+            try:
+                module = globals_["__name__"]
+            except KeyError:
+                raise ValueError(
+                    "cannot infer public module: "
+                    "arg globals_ does not define module name in __name__"
+                )
+
+            match = AllTracker.__RE_PUBLIC_MODULE.fullmatch(module)
+            if not match:
+                raise ValueError(
+                    f"cannot infer public module path from module {module}"
+                )
+
+            self.public_module = match[1]
+
+    #: full name of the public module that will export the items managed by this
+    #: tracker;
+    #: ``None`` if there is no known public module
+    public_module: str
 
     @property
     def default_group(self) -> "ImportGroup":
@@ -93,7 +136,9 @@ class AllTracker:
         # we must create the default group here because it is not yet defined
         # by the time we instantiate the AllTracker further down in this module
         if not self._default_group:
-            self._default_group = _DefaultGroup(tracker=self)
+            self._default_group = _DefaultGroup(
+                public_module=self.public_module, tracker=self
+            )
         return self._default_group
 
     @property
@@ -117,7 +162,15 @@ class AllTracker:
                 f"unexpected all declaration, expected:\n__all__ = {all_expected}"
             )
 
-    def add_group(self) -> "ImportGroup":
+        default_public_module = self.public_module
+
+        for item in self.default_group.get_members().values():
+            try:
+                item.__publicmodule__ = default_public_module
+            except AttributeError:
+                pass
+
+    def add_group(self, public_module: Optional[str] = None) -> "ImportGroup":
         """
         Add a new import group to this tracker.
 
@@ -136,9 +189,11 @@ class AllTracker:
 
         without adding ``base`` to ``__all__``.
 
+        :param public_module: full name of the public module that will export the items
+            in this group (default: ``None``)
         :return: the newly added import group
         """
-        group = _ImportGroupDecorator(tracker=self)
+        group = _ImportGroupDecorator(public_module=public_module, tracker=self)
         self._groups.append(group)
         return group
 
@@ -609,6 +664,16 @@ class ImportGroup(metaclass=ABCMeta):
     group.
     """
 
+    #: full name of the public module that will export the items in this group
+    public_module: str
+
+    def __init__(self, public_module: str) -> None:
+        """
+        :param public_module: full name of the public module that will export the items
+            in this group
+        """
+        self.public_module = public_module
+
     @property
     @abstractmethod
     def tracker(self) -> AllTracker:
@@ -690,11 +755,14 @@ class _BaseImportGroup(ImportGroup, metaclass=ABCMeta):
     :class:`.ImportGroup`.
     """
 
-    def __init__(self, tracker: AllTracker) -> None:
+    def __init__(self, public_module: str, tracker: AllTracker) -> None:
         """
         :param tracker: the tracker that created this group
         """
+        super().__init__(public_module=public_module)
         self.__tracker = tracker
+
+    __init__.__doc__ = ImportGroup.__init__.__doc__ + __init__.__doc__
 
     @property
     def tracker(self) -> AllTracker:
@@ -712,9 +780,9 @@ class _ImportGroupDecorator(_BaseImportGroup):
 
     __members: Dict[int, Any]
 
-    def __init__(self, tracker: AllTracker):
+    def __init__(self, public_module: str, tracker: AllTracker) -> None:
         """[see superclass]"""
-        super().__init__(tracker=tracker)
+        super().__init__(public_module=public_module, tracker=tracker)
         self.__members = {}
 
     def get_members(self) -> Dict[int, Any]:
@@ -730,6 +798,8 @@ class _ImportGroupDecorator(_BaseImportGroup):
             raise ValueError(f"{item.__name__} has already been assigned to a group")
 
         self.__members[id(item)] = item
+        if self.public_module is not None:
+            item.__publicmodule__ = self.public_module
 
         return item
 

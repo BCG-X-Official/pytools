@@ -72,9 +72,9 @@ __tracker = AllTracker(globals())
 # Decorators indicating the import groups for public (sub)modules
 #
 
-base = __tracker.add_group()
-atomic = __tracker.add_group()
-composite = __tracker.add_group()
+base = __tracker.add_group("pytools.expression.base")
+atomic = __tracker.add_group("pytools.expression.atomic")
+composite = __tracker.add_group("pytools.expression.composite")
 default = __tracker.default_group
 
 #
