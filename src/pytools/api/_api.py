@@ -69,7 +69,7 @@ class AllTracker:
     This ensures a clean namespace in the public package, uncluttered by any imports
     used in the private module.
 
-    It can make sense to expose the items of one private module across several public
+    It can make sense to export the items of one private module across several public
     modules.
     To this end, tracked items can be assigned to different import groups using a group
     decorator, and each group can be used to validate that the correct subset of items
@@ -184,6 +184,7 @@ class AllTracker:
         Therefore it is perfectly fine to write
 
         .. code:: python
+
             __tracker = AllTracker()
             base = __tracker.add_group()
 
