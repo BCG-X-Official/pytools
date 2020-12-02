@@ -24,6 +24,15 @@ from pytools.expression.operator import BinaryOperator, UnaryOperator
 log = logging.getLogger(__name__)
 
 
+def test_base_import() -> None:
+    """
+    Test if the expression base package can be imported without errors.
+    """
+    from pytools.expression import base
+
+    assert base.AtomicExpression is not None
+
+
 def test_expression_formatting() -> None:
     """
     Basic formatting tests
