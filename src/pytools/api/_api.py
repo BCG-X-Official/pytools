@@ -4,15 +4,19 @@ Core implementation of :mod:`pytools.api`
 
 import inspect
 import logging
+import operator
 import warnings
-from functools import wraps
+from abc import ABCMeta, abstractmethod
+from functools import reduce, wraps
 from typing import (
     Any,
     Callable,
     Collection,
     Dict,
     Iterable,
+    Iterator,
     List,
+    Mapping,
     Optional,
     Set,
     Tuple,
@@ -39,6 +43,7 @@ __all__ = [
     "deprecated",
     "deprecation_warning",
     "inheritdoc",
+    "ImportGroup",
 ]
 
 T = TypeVar("T")
@@ -47,36 +52,137 @@ T_Collection = TypeVar("T_Collection", bound=Collection)
 
 class AllTracker:
     """
-    Track global symbols defined in a module and validate that all eligible symbols have
-    been included in the ``__all__`` variable.
+    Track global, public items defined in a module and validate that all eligible items
+    have been included in the ``__all__`` variable.
 
-    Eligible symbols are all symbols that do not start with an underscore character.
+    Items will be tracked if:
+
+    - their name does not start with an underscore character
+    - they are defined after the :class:`.AllTracker` instance has been created
+    - they are not an :class:`.ImportGroup` instance
+
+    The underlying idea (and widely used pattern in GAMMA packages) is to define all
+    items in a private module, export all public items using the ``__all__`` keyword,
+    and import them from a public package (usually the package's ``__init__.py``).
+
+    This ensures a clean namespace in the public package, uncluttered by any imports
+    used in the private module.
+
+    It can make sense to expose the items of one private module across several public
+    modules.
+    To this end, tracked items can be assigned to different import groups using a group
+    decorator, and each group can be used to validate that the correct subset of items
+    has been imported by the respective public modules (see :meth:`.add_group`)
     """
 
     def __init__(self, globals_: Dict[str, Any]):
         """
         :param globals_: the dictionary of global variables returned by calling
-            :meth:`.globals` in the current module scope
+            :meth:`._globals` in the current module scope
         """
-        self.globals_ = globals_
-        self.imported = set(globals_.keys())
+        self._globals = globals_
+        self._imported = set(globals_.keys())
+        self._groups: List["ImportGroup"] = []
+        self._default_group: Optional[_DefaultGroup] = None
+
+    @property
+    def default_group(self) -> "ImportGroup":
+        """
+        The default group containing all ungrouped items managed by this tracker
+        """
+        # we must create the default group here because it is not yet defined
+        # by the time we instantiate the AllTracker further down in this module
+        if not self._default_group:
+            self._default_group = _DefaultGroup(tracker=self)
+        return self._default_group
+
+    @property
+    def groups(self) -> Iterator["ImportGroup"]:
+        """
+        The import groups managed by this tracker
+        """
+        return iter(self._groups)
 
     def validate(self) -> None:
         """
-        Validate that all eligible symbols defined since creation of this tracker
-        are listed in the ``__all__`` variable.
+        Validate that all eligible items that were defined since the creation of this
+        tracker are listed in the ``__all__`` variable.
 
         :raise RuntimeError: if ``__all__`` is not as expected
         """
-        all_expected = [
-            symbol
-            for symbol in self.globals_
-            if not symbol.startswith("_") and symbol not in self.imported
-        ]
-        if set(self.globals_.get("__all__", [])) != set(all_expected):
+        all_expected = self.get_tracked()
+
+        if set(self._globals.get("__all__", [])) != set(all_expected):
             raise RuntimeError(
                 f"unexpected all declaration, expected:\n__all__ = {all_expected}"
             )
+
+    def add_group(self) -> "ImportGroup":
+        """
+        Add a new import group to this tracker.
+
+        Import group objects can be used as decorators to add items to the group
+        (usually classes or functions).
+        See :class:`ImportGroup` for more details.
+
+        Import group objects are excluded from tracking, even if they are assigned
+        after creating the tracker.
+
+        Therefore it is perfectly fine to write
+
+        .. code:: python
+            __tracker = AllTracker()
+            base = __tracker.add_group()
+
+        without adding ``base`` to ``__all__``.
+
+        :return: the newly added import group
+        """
+        group = _ImportGroupDecorator(tracker=self)
+        self._groups.append(group)
+        return group
+
+    def get_tracked(self) -> List[str]:
+        """
+        List the names of all locally tracked, public items.
+
+        :return: the list of object names
+        """
+
+        return [
+            name
+            for name, item in self._globals.items()
+            if self._is_eligible(name=name, item=item)
+        ]
+
+    def is_tracked(self, name: str, item: Any) -> bool:
+        """
+        Check if the given item is tracked by this tracker under the given name.
+
+        :param name: the name of the item in the tracker's global namespace
+        :param item: the item referred to by the name
+        """
+        try:
+            return self._globals[name] is item and self._is_eligible(name, item)
+        except KeyError:
+            return False
+
+    def _is_eligible(self, name: str, item: Any) -> bool:
+        # check if the given item is eligible for tracking by this tracker
+        return not (
+            name.startswith("_")
+            or name in self._imported
+            or isinstance(item, ImportGroup)
+        )
+
+    def __getitem__(self, name: str) -> Any:
+        # get a tracked item by name
+
+        item = self._globals[name]
+        if self._is_eligible(name=name, item=item):
+            return item
+        else:
+            raise KeyError(name)
 
 
 #
@@ -86,7 +192,8 @@ class AllTracker:
 __tracker = AllTracker(globals())
 # we forget that class AllTracker itself is already defined, because we want to include
 # it in the __all__ statement
-__tracker.imported.remove(AllTracker.__name__)
+# noinspection PyProtectedMember
+__tracker._imported.remove(AllTracker.__name__)
 
 #
 # Functions
@@ -484,6 +591,188 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         )
     else:
         _raise_type_error(cls)
+
+
+#
+# Import group decorator
+#
+
+
+class ImportGroup(metaclass=ABCMeta):
+    """
+    A group of definitions designated to be jointly imported from their original module.
+
+    The :class:`ImportGroup` object can be used as a decorator (usually for classes or
+    functions) to include newly defined items in the group.
+
+    Supports the ``in`` operator to check if an arbitraty object is contained in this
+    group.
+    """
+
+    @property
+    @abstractmethod
+    def tracker(self) -> AllTracker:
+        """
+        The tracker managing the namespace associated with the items in this group
+        """
+        pass
+
+    @abstractmethod
+    def get_members(self) -> Dict[int, Any]:
+        """
+        Get all members of this group as a mapping of hash ids to the actual items.
+
+        :return: the items in this group
+        """
+
+    def validate_imported(self, globals_: Mapping[str, Any]) -> None:
+        """
+        Check that all items in this group have been imported to the caller's
+        global namespace, and that no other item has been imported from the module
+        associated with this group.
+
+        :param globals_: the dictionary returned by ``globals()`` in the caller's
+            namespace
+        :raises ImportError: if not all members of this group are present in the
+           given _globals dictionary
+        """
+        imported_objects: Dict[int, Any] = {
+            id(item): item
+            for name, item in globals_.items()
+            if self.tracker.is_tracked(name=name, item=item)
+        }
+        expected_objects: Dict[int, Any] = self.get_members()
+
+        def _check_overlap(
+            minimal_set: Dict[int, Any], comparison_set: Dict[int, Any], message: str
+        ) -> None:
+            # ensure that the comparison set includes all elements of the minimal set
+            deviation = minimal_set.keys() - comparison_set.keys()
+            if deviation:
+                names = (minimal_set[id_].__name__ for id_ in deviation)
+                raise ImportError(f'{message}: {", ".join(names)}')
+
+        _check_overlap(
+            minimal_set=expected_objects,
+            comparison_set=imported_objects,
+            message="not all group members were imported",
+        )
+
+        _check_overlap(
+            minimal_set=imported_objects,
+            comparison_set=expected_objects,
+            message="some imported items are not part of the group",
+        )
+
+    @abstractmethod
+    def __call__(self, item: T) -> T:
+        """
+        Add the given item to this group.
+
+        :param item: the item to add to this group
+        :return: the unchanged item
+        """
+        pass
+
+    @abstractmethod
+    def __contains__(self, item: Any) -> bool:
+        # check if the given item is a member of this group
+        pass
+
+
+class _BaseImportGroup(ImportGroup, metaclass=ABCMeta):
+    """
+    Abstract base implementation of import groups, implementing the :attr:`.tracker`
+    property.
+
+    We don't include this in the :class:`.ImportGroup` base class because we want users
+    to instantiate groups via the :class:`.AllTracker`, and not by instantiating
+    :class:`.ImportGroup`.
+    """
+
+    def __init__(self, tracker: AllTracker) -> None:
+        """
+        :param tracker: the tracker that created this group
+        """
+        self.__tracker = tracker
+
+    @property
+    def tracker(self) -> AllTracker:
+        """[see superclass]"""
+        return self.__tracker
+
+
+@inheritdoc(match="[see superclass]")
+class _ImportGroupDecorator(_BaseImportGroup):
+    """
+    A decorator flagging classes or other objects as a member of an import group.
+
+    Useful for validating selective imports from a private module.
+    """
+
+    __members: Dict[int, Any]
+
+    def __init__(self, tracker: AllTracker):
+        """[see superclass]"""
+        super().__init__(tracker=tracker)
+        self.__members = {}
+
+    def get_members(self) -> Dict[int, Any]:
+        """[see superclass]"""
+        return self.__members
+
+    def __call__(self, item: T) -> T:
+        """[see superclass]"""
+        if not hasattr(item, "__name__"):
+            raise TypeError("only named objects can be decorated with an import group")
+
+        if any(item in group for group in self.tracker.groups):
+            raise ValueError(f"{item.__name__} has already been assigned to a group")
+
+        self.__members[id(item)] = item
+
+        return item
+
+    def __contains__(self, item: Any) -> bool:
+        return id(item) in self.__members
+
+
+@inheritdoc(match="[see superclass]")
+class _DefaultGroup(_BaseImportGroup):
+    """
+    Group of definitions that have not explicitly been assigned to any import group.
+    """
+
+    def get_members(self) -> Dict[int, Any]:
+        """[see superclass]"""
+        tracker = self.tracker
+
+        all_ids: Dict[int, Any] = {
+            id(obj): obj for obj in (tracker[name] for name in tracker.get_tracked())
+        }
+
+        default_ids = reduce(
+            operator.sub,
+            (group.get_members().keys() for group in tracker.groups),
+            all_ids,
+        )
+
+        return {id_: all_ids[id_] for id_ in default_ids}
+
+    def __call__(self, item: T) -> T:
+        """
+        Raises a :class:`.NotImplementedError`.
+
+        Items are in this group by default.
+        Attempts to explicitly add them to this group will raise an exception.
+
+        :raises NotImplementedError: objects cannot be added to the default group
+        """
+        raise NotImplementedError("objects cannot be added to the default group")
+
+    def __contains__(self, item: Any) -> bool:
+        tracker = self.tracker
+        return item in tracker and all(item not in group for group in tracker.groups)
 
 
 __tracker.validate()
