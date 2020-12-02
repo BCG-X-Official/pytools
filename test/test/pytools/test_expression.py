@@ -6,25 +6,19 @@ import logging
 
 import pytest
 
-from pytools.expression import (
+from pytools.expression import Expression, freeze, make_expression
+from pytools.expression._text import PythonExpressionFormatter, TextualForm
+from pytools.expression.atomic import Id, Lit
+from pytools.expression.composite import (
     BinaryOperation,
     Call,
     DictLiteral,
-    Expression,
-    Id,
     Lambda,
     ListLiteral,
-    Lit,
-    PythonExpressionFormatter,
     SetLiteral,
     TupleLiteral,
     UnaryOperation,
-    freeze,
-    make_expression,
 )
-
-# noinspection PyProtectedMember
-from pytools.expression._text import TextualForm
 from pytools.expression.operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)

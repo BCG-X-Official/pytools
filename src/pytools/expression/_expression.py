@@ -67,7 +67,20 @@ T_Literal = TypeVar("T_Literal", bool, int, float, complex, str, bytes)
 # Ensure all symbols introduced below are included in __all__
 #
 
-__tracker = AllTracker((globals()))
+__tracker = AllTracker(globals())
+
+#
+# Decorators indicating the import groups for public (sub)modules
+#
+
+base = __tracker.add_group()
+atomic = __tracker.add_group()
+composite = __tracker.add_group()
+default = __tracker.default_group
+
+#
+# class definitions
+#
 
 
 class ExpressionFormatter(metaclass=ABCMeta):
@@ -480,6 +493,7 @@ def freeze(expression: Expression) -> FrozenExpression:
 #
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
@@ -525,6 +539,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
         return hash((type(self), self.value_))
 
 
+@atomic
 @inheritdoc(match="[see superclass]")
 class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
     """
@@ -565,6 +580,7 @@ class _IdentifierMeta(type):
         return identifier
 
 
+@atomic
 @inheritdoc(match="[see superclass]")
 class Id(AtomicExpression[str], metaclass=compose_meta(_IdentifierMeta, ABCMeta)):
     """
@@ -608,6 +624,7 @@ class Id(AtomicExpression[str], metaclass=compose_meta(_IdentifierMeta, ABCMeta)
         return self._name
 
 
+@atomic
 @inheritdoc(match="[see superclass]")
 class Epsilon(AtomicExpression[None], metaclass=compose_meta(ABCMeta, SingletonMeta)):
     """
@@ -630,6 +647,7 @@ class Epsilon(AtomicExpression[None], metaclass=compose_meta(ABCMeta, SingletonM
 #
 
 
+@base
 class SingletonExpression(Expression, metaclass=ABCMeta):
     """
     An expression with a single subexpression.
@@ -655,6 +673,7 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
 #
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class BracketPair(HasExpressionRepr):
     """
@@ -694,6 +713,7 @@ BracketPair.CURLY = BracketPair("{", "}")
 BracketPair.ANGLED = BracketPair("<", ">")
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     """
@@ -738,6 +758,7 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
         )
 
 
+@base
 class CollectionLiteral(BracketedExpression):
     """
     A collection literal, e.g., a list, set, tuple, or dictionary.
@@ -784,6 +805,7 @@ class CollectionLiteral(BracketedExpression):
         return self._elements
 
 
+@composite
 class ListLiteral(CollectionLiteral):
     """
     A list expression.
@@ -796,6 +818,7 @@ class ListLiteral(CollectionLiteral):
         super().__init__(brackets=BracketPair.SQUARE, elements=elements)
 
 
+@composite
 class TupleLiteral(CollectionLiteral):
     """
     A tuple expression.
@@ -808,6 +831,7 @@ class TupleLiteral(CollectionLiteral):
         super().__init__(brackets=BracketPair.ROUND, elements=elements)
 
 
+@composite
 class SetLiteral(CollectionLiteral):
     """
     A set expression.
@@ -820,6 +844,7 @@ class SetLiteral(CollectionLiteral):
         super().__init__(brackets=BracketPair.CURLY, elements=elements)
 
 
+@composite
 class DictLiteral(CollectionLiteral):
     """
     A dictionary expression.
@@ -844,6 +869,7 @@ class DictLiteral(CollectionLiteral):
 #
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class Operation(Expression, metaclass=ABCMeta):
     """
@@ -877,6 +903,7 @@ class Operation(Expression, metaclass=ABCMeta):
 #
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class PrefixExpression(Expression, metaclass=ABCMeta):
     """
@@ -926,6 +953,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         )
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     """
@@ -952,6 +980,7 @@ class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
         return self._body
 
 
+@composite
 @inheritdoc(match="[see superclass]")
 class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
     """
@@ -983,6 +1012,7 @@ class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
         return self._operator.precedence
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class KeywordArgument(SimplePrefixExpression):
     """
@@ -1024,6 +1054,7 @@ class KeywordArgument(SimplePrefixExpression):
         return self._PRECEDENCE
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class DictEntry(SimplePrefixExpression):
     """
@@ -1064,6 +1095,7 @@ class DictEntry(SimplePrefixExpression):
         return DictEntry._PRECEDENCE
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class Invocation(PrefixExpression):
     """
@@ -1101,6 +1133,7 @@ class Invocation(PrefixExpression):
         return Invocation._PRECEDENCE
 
 
+@composite
 class Call(Invocation):
     """
     A call expression.
@@ -1132,6 +1165,7 @@ class Call(Invocation):
         return self.prefix_
 
 
+@composite
 class Index(Invocation):
     """
     An indexing operation.
@@ -1153,6 +1187,7 @@ class Index(Invocation):
         return self.prefix_
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class LambdaDefinition(SimplePrefixExpression):
     """
@@ -1192,6 +1227,7 @@ class LambdaDefinition(SimplePrefixExpression):
         return LambdaDefinition._PRECEDENCE
 
 
+@composite
 @inheritdoc(match="[see superclass]")
 class Lambda(SimplePrefixExpression):
     """
@@ -1223,6 +1259,7 @@ class Lambda(SimplePrefixExpression):
 #
 
 
+@base
 @inheritdoc(match="[see superclass]")
 class InfixExpression(Expression, metaclass=ABCMeta):
     """
@@ -1253,6 +1290,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
         )
 
 
+@composite
 @inheritdoc(match="[see superclass]")
 class BinaryOperation(InfixExpression, Operation):
     """
@@ -1307,6 +1345,7 @@ class BinaryOperation(InfixExpression, Operation):
         return self.infix_.precedence
 
 
+@composite
 class Attr(BinaryOperation):
     """
     The ``….…`` ("dot") operation to reference an attribute of an object.

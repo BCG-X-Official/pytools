@@ -7,7 +7,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List, NamedTuple, Tuple
 
 from ..api import AllTracker
-from . import (
+from ._expression import (
     AtomicExpression,
     BracketedExpression,
     BracketPair,
