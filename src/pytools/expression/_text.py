@@ -690,7 +690,7 @@ __tracker = AllTracker(globals())
 
 class PythonExpressionFormatter(ExpressionFormatter):
     """
-    Formats expression objects as Python expressions, in line with the ``black`` style
+    Formats expression objects as Python expressions, in line with the `black` style
     """
 
     def __init__(

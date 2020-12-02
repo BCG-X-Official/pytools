@@ -1,6 +1,5 @@
 """
-Basic utilities for constructing complex expressions and rendering them as indented
-strings; useful for generating representations of complex Python objects.
+Implementation of :mod:`pytools.expression` and subpackages.
 """
 import itertools
 import logging
@@ -85,7 +84,7 @@ default = __tracker.default_group
 
 class ExpressionFormatter(metaclass=ABCMeta):
     """
-    An expression formatter produces text representations of expressions.
+    Generates text representations of expression objects.
     """
 
     __default_format: Dict[bool, "ExpressionFormatter"] = {}
@@ -123,8 +122,8 @@ class ExpressionFormatter(metaclass=ABCMeta):
 
 class HasExpressionRepr(metaclass=ABCMeta):
     """
-    Mix-in class, rendering :func:`repr` and :class:`str` representations using
-    expressions.
+    Mix-in class for arbitrary classes, rendering :func:`repr` and :class:`str`
+    representations using expression objects.
     """
 
     @abstractmethod
@@ -150,7 +149,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
 @inheritdoc(match="[see superclass]")
 class Expression(HasExpressionRepr, metaclass=ABCMeta):
     """
-    An expression composed of literals and (possibly nested) operations.
+    A representation of an expression.
     """
 
     @property
