@@ -7,14 +7,11 @@ from abc import ABCMeta, abstractmethod
 from typing import List, NamedTuple, Tuple
 
 from ..api import AllTracker
-from ._expression import (
+from ._expression import Expression, ExpressionAlias, ExpressionFormatter
+from .base import (
     AtomicExpression,
     BracketedExpression,
     BracketPair,
-    Epsilon,
-    Expression,
-    ExpressionAlias,
-    ExpressionFormatter,
     InfixExpression,
     PrefixExpression,
 )
@@ -82,13 +79,20 @@ class TextualForm:
     A hierarchical textual representation of an expression
     """
 
+    #: the default formatting configuration for rendering textual forms
+    DEFAULT_FORMAT = FormattingConfig()
+
     @staticmethod
     def from_expression(expression: Expression) -> "TextualForm":
         """
         Generate a textual form for the given expression
+
         :param expression: the expression to be transformed
         :return: the resulting textual form
         """
+
+        from .atomic import Epsilon
+
         if expression is Epsilon():
             return EMPTY_FORM
         if isinstance(expression, AtomicExpression):
@@ -112,9 +116,10 @@ class TextualForm:
         """
         return False
 
-    def to_text(self, config: FormattingConfig) -> str:
+    def to_text(self, config: FormattingConfig = DEFAULT_FORMAT) -> str:
         """
-        Render this textual form as a string
+        Render this textual form as a string.
+
         :param config: the formatting configuration to use
         :return: the resulting string
         """
@@ -143,11 +148,12 @@ class TextualForm:
     ) -> List[IndentedLine]:
         """
         Generate a list of indented lines from this textual form.
+
         :param config: the rendering configuration
         :param indent: the indentation level to use as a starting point
-        :param leading_characters: space to reserve in the first line for leading \
+        :param leading_characters: space to reserve in the first line for leading
             characters (needed to determine whether maximum width has been exceeded)
-        :param trailing_characters: space to reserve in the last line for trailing \
+        :param trailing_characters: space to reserve in the last line for trailing
             characters (needed to determine whether maximum width has been exceeded)
         :return: a list of indented lines generated from this textual form
         """
@@ -156,7 +162,8 @@ class TextualForm:
     @abstractmethod
     def to_single_line(self) -> str:
         """
-        Convert this representation to a single-line string
+        Convert this representation to a single-line string.
+
         :return: the resulting string
         """
         pass
@@ -166,8 +173,9 @@ class TextualForm:
     ) -> "TextualForm":
         """
         Return this form encapsulated in round parentheses.
+
         :param condition: if ``False``, do not encapsulate this form
-        :param single_line: if ``False``, render the encapsulation only when the form \
+        :param single_line: if ``False``, render the encapsulation only when the form
             is rendered across multiple lines
         :return: the resulting form depending on the condition
         """
@@ -184,8 +192,7 @@ class TextualForm:
         pass
 
     def __repr__(self) -> str:
-        # noinspection PyProtectedMember
-        return self.to_text(config=_DEFAULT_FORMATTING_CONFIG)
+        return self.to_text()
 
 
 class EmptyForm(TextualForm):
@@ -340,7 +347,8 @@ class BracketedForm(ComplexForm):
     @staticmethod
     def from_bracketed_expression(expression: BracketedExpression) -> "BracketedForm":
         """
-        Make a bracketed from for the given bracketed expression
+        Make a bracketed from for the given bracketed expression.
+
         :param expression: the bracketed expression to convert
         :return: the resulting bracketed form
         """
@@ -385,7 +393,7 @@ class BracketedForm(ComplexForm):
 
 class PrefixForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     def __init__(self, prefix: TextualForm, separator: str, body: TextualForm) -> None:
@@ -403,7 +411,7 @@ class PrefixForm(ComplexForm):
     @staticmethod
     def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
         """
-        Create a prefixed form from the given prefix expression
+        Create a prefixed form from the given prefix expression.
         """
 
         prefix = expression.prefix_
@@ -482,7 +490,7 @@ class PrefixForm(ComplexForm):
 
 class InfixForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     PADDING_NONE = "none"
@@ -526,10 +534,13 @@ class InfixForm(ComplexForm):
     @staticmethod
     def from_infix_expression(expression: InfixExpression) -> TextualForm:
         """
-        Create a infix form from the given infix expression
-        :param expression:
-        :return:
+        Create a infix form from the given infix expression.
+
+        :param expression: the infix expression to render the text from
+        :return: the resulting textual form
         """
+
+        from .atomic import Epsilon
 
         subexpressions = expression.subexpressions_
         n_subexpressions = len(subexpressions)
@@ -721,20 +732,5 @@ class PythonExpressionFormatter(ExpressionFormatter):
 
     to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
-
-# noinspection PyProtectedMember
-def _register_default_formatters() -> FormattingConfig:
-    # Register class PythonExpressionFormat as the default display form
-    multi_line_formatter = PythonExpressionFormatter()
-    ExpressionFormatter._register_default_format(
-        multi_line_formatter, single_line=False
-    )
-    ExpressionFormatter._register_default_format(
-        PythonExpressionFormatter(single_line=True), single_line=True
-    )
-    return multi_line_formatter.config
-
-
-_DEFAULT_FORMATTING_CONFIG = _register_default_formatters()
 
 __tracker.validate()

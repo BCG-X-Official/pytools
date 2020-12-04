@@ -12,21 +12,5 @@ Composite expressions comprise
 - attribute access: ``<expression 1>.<attribute name>``
 - lambda expressions: ``lambda [x, y, …]: <expression>``
 """
-from .. import _expression
 
-# noinspection PyUnresolvedReferences
-from .._expression import (
-    Attr,
-    BinaryOperation,
-    Call,
-    DictLiteral,
-    Index,
-    Lambda,
-    ListLiteral,
-    SetLiteral,
-    TupleLiteral,
-    UnaryOperation,
-)
-
-_expression.composite.validate_imported(globals())
-del _expression
+from ._composite import *

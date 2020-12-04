@@ -74,15 +74,5 @@ Even class :class:`Expression` subclasses :class:`.HasExpressionRepr`;
 :meth:`.Expression.to_expression` returns the expression itself.
 """
 
-from ._expression import (
-    Expression,
-    ExpressionAlias,
-    ExpressionFormatter,
-    FrozenExpression,
-    HasExpressionRepr,
-    freeze,
-    make_expression,
-)
+from ._expression import *
 from ._text import *
-
-_expression.default.validate_imported(globals())
