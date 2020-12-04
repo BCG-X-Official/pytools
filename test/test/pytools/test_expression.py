@@ -87,8 +87,14 @@ def test_expression_formatting() -> None:
 )"""
     )
 
-    expr_4 = Lambda(Id.x, body=e)(Lit(5))
-    assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
+    expr_4 = Lambda(body=e)
+    assert repr(expr_4) == "lambda : f((1 | 2) >> 'x' % x, abc=-5)"
+
+    expr_5 = Lambda(Id.x, body=e)(Lit(5))
+    assert repr(expr_5) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
+
+    expr_6 = Lambda(Id.x, Id.y, body=e)(Lit(5), 6)
+    assert repr(expr_6) == "(lambda x, y: f((1 | 2) >> 'x' % x, abc=-5))(5, 6)"
 
 
 def test_expression() -> None:
