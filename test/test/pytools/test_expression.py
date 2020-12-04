@@ -6,8 +6,13 @@ import logging
 
 import pytest
 
-from pytools.expression import Expression, freeze, make_expression
-from pytools.expression._text import PythonExpressionFormatter, TextualForm
+from pytools.expression import (
+    Expression,
+    PythonExpressionFormatter,
+    freeze,
+    make_expression,
+)
+from pytools.expression._text import TextualForm
 from pytools.expression.atomic import Id, Lit
 from pytools.expression.composite import (
     BinaryOperation,
