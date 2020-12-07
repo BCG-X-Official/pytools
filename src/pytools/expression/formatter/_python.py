@@ -714,7 +714,7 @@ class PythonExpressionFormatter(ExpressionFormatter):
         :param single_line: if ``False``, include line breaks to keep the width within \
             maximum bounds (default: ``False``)
         """
-        self.config = FormattingConfig(
+        self._config = FormattingConfig(
             max_width=max_width, indent_width=indent_width, single_line=single_line
         )
 
@@ -728,7 +728,7 @@ class PythonExpressionFormatter(ExpressionFormatter):
             condition=form.needs_multi_line_encapsulation, single_line=False
         )
 
-        return form.to_text(self.config)
+        return form.to_text(self._config)
 
     to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
