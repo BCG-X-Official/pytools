@@ -199,9 +199,9 @@ UnaryOperator.NOT = UnaryOperator("not")
 UnaryOperator.LAMBDA = UnaryOperator("lambda")
 
 __OPERATOR_PRECEDENCE_ORDER: Tuple[Set[Operator], ...] = (
-    {BinaryOperator.COMMA},
-    {BinaryOperator.ASSIGN, BinaryOperator.COLON, BinaryOperator.SLICE},
-    {UnaryOperator.LAMBDA},
+    {BinaryOperator.ASSIGN},
+    {BinaryOperator.COMMA, UnaryOperator.LAMBDA},
+    {BinaryOperator.COLON, BinaryOperator.SLICE},
     {BinaryOperator.OR},
     {BinaryOperator.AND},
     {UnaryOperator.NOT},

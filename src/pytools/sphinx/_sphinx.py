@@ -1,6 +1,7 @@
 """
 Implementation of sphinx module.
 """
+import importlib
 import itertools
 import logging
 import re
@@ -423,38 +424,33 @@ class AddInheritance(AutodocProcessDocstring):
     def _class_attr(cls: type, attr: str, default: Callable[[], str]) -> str:
         def _get_attr(_cls: type) -> str:
             try:
-                # we try to get the class name
+                # we try to get the class attribute
                 return getattr(_cls, attr)
             except AttributeError:
-                # if the name is not defined, this class is likely to have generic
+                # if the attribute is not defined, this class is likely to have generic
                 # arguments, so we re-try recursively with the origin (unless the origin
                 # is the class itself to avoid infinite recursion)
                 cls_origin = typing_inspect.get_origin(cls)
                 if cls_origin != _cls:
                     return _get_attr(_cls=cls_origin)
                 else:
-                    # as a last resort, we convert the class to a string
+                    # as a last resort, we create the default value
                     return default()
 
         return _get_attr(_cls=cls)
 
     def _class_module(self, cls: type) -> str:
         module_name = AddInheritance._class_attr(
-            cls=cls, attr="__module__", default=lambda: ""
+            cls=cls,
+            attr="__publicmodule__",
+            default=lambda: AddInheritance._class_attr(
+                cls=cls, attr="__module__", default=lambda: ""
+            ),
         )
 
-        collapsed_module = self.collapsible_submodules.get(module_name, None)
-        if collapsed_module:
-            return collapsed_module
-
-        # remove private submodules
-        module_path = module_name.split(".")
-        for i, submodule in enumerate(module_path):
-            if submodule.startswith("_"):
-                return ".".join(module_path[:i])
-
-        # return the unchanged module name
-        return module_name
+        # return the collapsed submodule if it exists,
+        # else return the unchanged module name
+        return self.collapsible_submodules.get(module_name, module_name)
 
     @staticmethod
     def _class_name(cls: type) -> str:
@@ -579,6 +575,17 @@ class CollapseModulePaths(metaclass=ABCMeta):
     can be matched by *intersphinx*.
     """
 
+    # matches a full name of an object, including the preceding module path with at
+    # least one private submodule (starting with a "_") directly preceding the item
+    # name
+    __RE_PRIVATE_MODULE_AND_ITEM = re.compile(
+        r"\b(?# we start with a word break so we match full words)"
+        r"(?# public module path)(\w+(?:\.\w+)*?)"
+        r"(?# private module path)((?:\._\w+)+)"
+        r"\."
+        r"(?# item name)(\w+(?![.\w]))"
+    )
+
     def __init__(
         self,
         collapsible_submodules: Mapping[str, str],
@@ -598,12 +605,6 @@ class CollapseModulePaths(metaclass=ABCMeta):
             self._make_substitution_pattern(old.replace(".", r"\."), new)
             for old, new in collapsible_submodules.items()
         ]
-        if collapse_private_modules:
-            col.append(
-                self._make_substitution_pattern(
-                    r"(?P<module>(?:(?!_)\w+\.)+)(?:_\w*\.)*", r"\g<module>"
-                )
-            )
 
         self._intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = col
         self._collapse_private_modules = collapse_private_modules
@@ -623,8 +624,37 @@ class CollapseModulePaths(metaclass=ABCMeta):
         if not line:
             return line
 
+        if self._collapse_private_modules:
+            line = self._collapse_private_module_paths(line)
+
         for expanded, collapsed in self._intersphinx_collapsible_prefixes:
             line = expanded.sub(collapsed, line)
+
+        return line
+
+    @staticmethod
+    def _collapse_private_module_paths(line: str) -> str:
+        for (
+            public_module_path,  # e.g., "pytools.expression"
+            private_module_path,  # e.g., "._expression"
+            item_name,  # e.g., "Expression"
+        ) in CollapseModulePaths.__RE_PRIVATE_MODULE_AND_ITEM.findall(line):
+            module_path = public_module_path + private_module_path
+            collapsed_path = public_module_path
+            try:
+                module = importlib.import_module(name=module_path)
+                item = vars(module)[item_name]
+                collapsed_path = item.__publicmodule__
+            except KeyError:
+                pass
+            except AttributeError:
+                pass
+            except ModuleNotFoundError:
+                pass
+
+            line = line.replace(
+                f"{module_path}.{item_name}", f"{collapsed_path}.{item_name}"
+            )
 
         return line
 
