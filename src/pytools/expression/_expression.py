@@ -570,14 +570,14 @@ class ExpressionAlias(Expression):
     @property
     def expression_(self) -> Expression:
         """
-        The expression represented by this alias; may be set to a new expression
+        The expression represented by this alias; may be set to a new expression.
         """
         return self._expression
 
     @expression_.setter
     def expression_(self, expression: Expression) -> None:
         """
-        Set the expression represented by this alias
+        Set the expression represented by this alias.
 
         :param expression: the expression to be set
         """
