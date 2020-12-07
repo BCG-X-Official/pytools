@@ -47,6 +47,9 @@ __tracker = AllTracker(globals())
 class ExpressionFormatter(metaclass=ABCMeta):
     """
     Generates text representations of expression objects.
+
+    This is an abstract base class; use :meth:`default` to create a default expression
+    formatter.
     """
 
     @abstractmethod
@@ -62,11 +65,12 @@ class ExpressionFormatter(metaclass=ABCMeta):
     @staticmethod
     def default(single_line: bool) -> "ExpressionFormatter":
         """
-        Get the default expression formatter.
+        Get the default expression formatter, formatting expression objects as
+        `Python` expressions with correct spacing and formatting.
 
         :param single_line: if ``True``, return a formatter that does not generate line
             breaks
-        :return: a :class:`PythonExpressionFormatter` with default parameters for all
+        :return: a :class:`.PythonExpressionFormatter` with default parameters for all
             formatting settings except for ``single_line``
         """
         from .formatter import PythonExpressionFormatter
