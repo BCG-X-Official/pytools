@@ -1,14 +1,14 @@
 """
-Implementation of :mod:`pytools.expression` and subpackages.
+Implementation of :mod:`pytools.expression.composite.base`.
 """
 import logging
 from typing import Any
 
-from ...api import AllTracker, inheritdoc
-from .. import Expression
-from ..atomic import Epsilon, Id
-from ..operator import BinaryOperator, UnaryOperator
-from ._base import SimplePrefixExpression
+from ... import Expression
+from ...atomic import Epsilon, Id
+from ...base import SimplePrefixExpression
+from ...operator import BinaryOperator, UnaryOperator
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -135,7 +135,7 @@ class LambdaDefinition(SimplePrefixExpression):
         elif len(params) == 1:
             params_expression = params[0]
         else:
-            from ..composite import BinaryOperation
+            from .. import BinaryOperation
 
             params_expression = BinaryOperation(BinaryOperator.COMMA, *params)
         super().__init__(prefix=params_expression, body=body)

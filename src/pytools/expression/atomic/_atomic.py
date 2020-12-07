@@ -1,6 +1,7 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
 import logging
 from abc import ABCMeta
 from typing import Any, Dict, Generic, TypeVar

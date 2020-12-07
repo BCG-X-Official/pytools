@@ -12,16 +12,14 @@ from ..atomic import Epsilon, Id
 from ..base import (
     BracketPair,
     CollectionLiteral,
-    DictEntry,
     InfixExpression,
     Invocation,
-    KeywordArgument,
-    LambdaDefinition,
     Operation,
     SimplePrefixExpression,
     SingletonExpression,
 )
 from ..operator import BinaryOperator, Operator, UnaryOperator
+from .base import DictEntry, KeywordArgument, LambdaDefinition
 
 log = logging.getLogger(__name__)
 
