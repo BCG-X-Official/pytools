@@ -65,7 +65,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     def subexpressions_(self) -> Tuple[Expression, ...]:
         """
         The subexpressions of this expression
-        (an empty tuple, as this expression is atomic)
+        (an empty tuple, as this expression is atomic).
         """
         return ()
 
@@ -73,7 +73,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     @abstractmethod
     def text_(self) -> str:
         """
-        The text representing this atomic expression
+        The text representing this atomic expression.
         """
         pass
 
@@ -81,7 +81,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     @abstractmethod
     def value_(self) -> T:
         """
-        The underlying value of this atomic expression
+        The underlying value of this atomic expression.
         """
         pass
 
@@ -112,13 +112,13 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def subexpression_(self) -> Expression:
         """
-        The subexpression of this expression
+        The subexpression of this expression.
         """
 
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
         """
-        A tuple with the this expression's subexpression as its only element
+        A tuple with the this expression's subexpression as its only element.
         """
         return (self.subexpression_,)
 
@@ -190,14 +190,14 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     @property
     def brackets_(self) -> BracketPair:
         """
-        The brackets enclosing this expression's subexpressions
+        The brackets enclosing this expression's subexpressions.
         """
         return self._brackets
 
     @property
     def subexpression_(self) -> Expression:
         """
-        The subexpression enclosed by the brackets
+        The subexpression enclosed by the brackets.
         """
         return self._subexpression
 
@@ -261,7 +261,7 @@ class CollectionLiteral(BracketedExpression):
     @property
     def elements_(self) -> Tuple[Expression]:
         """
-        The expression(s) representing the elements of this expression
+        The expression(s) representing the elements of this expression.
         """
         return self._elements
 
@@ -294,7 +294,7 @@ class Operation(Expression, metaclass=ABCMeta):
     @abstractmethod
     def operands_(self) -> Tuple[Expression, ...]:
         """
-        The operands of this operation; same as :attr:`subexpressions_`
+        The operands of this operation; same as :attr:`subexpressions_`.
         """
         pass
 
@@ -324,7 +324,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
     @property
     def separator_(self) -> str:
         """
-        One or more characters separating the prefix and the subexpression
+        One or more characters separating the prefix and the subexpression.
         """
         return ""
 
@@ -332,14 +332,14 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def body_(self) -> Expression:
         """
-        The body of this expression
+        The body of this expression.
         """
         pass
 
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
         """
-        A tuple containing the prefix and the body of this expression
+        A tuple containing the prefix and the body of this expression.
         """
         return self.prefix_, self.body_
 
@@ -406,7 +406,7 @@ class Invocation(PrefixExpression):
     @property
     def body_(self) -> CollectionLiteral:
         """
-        The expression representing the arguments enclosed by brackets
+        The expression representing the arguments enclosed by brackets.
         """
         return self._invocation
 
@@ -431,7 +431,7 @@ class InfixExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def infix_(self) -> BinaryOperator:
         """
-        The infix used to separate this expression's subexpressions
+        The infix used to separate this expression's subexpressions.
         """
         pass
 
