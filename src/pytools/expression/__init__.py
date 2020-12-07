@@ -68,7 +68,7 @@ Note that ``a == b`` does not compare two expressions for equality, but creates 
 comparison expression.
 To compare two expressions, instead use ``a.eq_(b)``, or convert both expressions to
 `frozen expressions` using :func:`.freeze`, thus removing their ability to create new
-expressions using Python operators: ``freeze(a) == freeze(b)``
+expressions using Python operators: ``freeze(a) == freeze(b)``.
 
 Also note the trailing underscore of method :meth:`~.Expression.eq_`.
 By convention, all methods and attributes of expression objects have a trailing
