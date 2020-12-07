@@ -73,7 +73,7 @@ class AllTracker:
     modules.
     To this end, tracked items can be assigned to different import groups using a group
     decorator, and each group can be used to validate that the correct subset of items
-    has been imported by the respective public modules (see :meth:`.add_group`)
+    has been imported by the respective public modules (see :meth:`.add_group`).
     """
 
     __RE_PUBLIC_MODULE = re.compile(
@@ -131,7 +131,7 @@ class AllTracker:
     @property
     def default_group(self) -> "ImportGroup":
         """
-        The default group containing all ungrouped items managed by this tracker
+        The default group containing all ungrouped items managed by this tracker.
         """
         # we must create the default group here because it is not yet defined
         # by the time we instantiate the AllTracker further down in this module
@@ -679,7 +679,7 @@ class ImportGroup(metaclass=ABCMeta):
     @abstractmethod
     def tracker(self) -> AllTracker:
         """
-        The tracker managing the namespace associated with the items in this group
+        The tracker managing the namespace associated with the items in this group.
         """
         pass
 
