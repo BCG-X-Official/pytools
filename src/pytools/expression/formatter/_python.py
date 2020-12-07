@@ -52,7 +52,7 @@ class IndentedLine(NamedTuple):
 
     def prepend(self, text: str) -> "IndentedLine":
         """
-        Add the given text to the start of this indented line
+        Add the given text to the start of this indented line.
 
         :param text: the text to add
         :return: a copy of this indented line, with the text added
@@ -61,7 +61,7 @@ class IndentedLine(NamedTuple):
 
     def append(self, text: str) -> "IndentedLine":
         """
-        Add the given text to the end of this indented line
+        Add the given text to the end of this indented line.
 
         :param text: the text to add
         :return: a copy of this indented line, with the text added
@@ -89,7 +89,7 @@ class TextualForm:
     @staticmethod
     def from_expression(expression: Expression) -> "TextualForm":
         """
-        Generate a textual form for the given expression
+        Generate a textual form for the given expression.
 
         :param expression: the expression to be transformed
         :return: the resulting textual form
