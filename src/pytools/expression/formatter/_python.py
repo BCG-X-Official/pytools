@@ -42,15 +42,18 @@ class FormattingConfig(NamedTuple):
 
 class IndentedLine(NamedTuple):
     """
-    An indented line of text
+    An indented line of text.
     """
 
+    #: the number of indentation levels
     indent: int
+    #: the text in this line
     text: str
 
     def prepend(self, text: str) -> "IndentedLine":
         """
         Add the given text to the start of this indented line
+
         :param text: the text to add
         :return: a copy of this indented line, with the text added
         """
@@ -59,6 +62,7 @@ class IndentedLine(NamedTuple):
     def append(self, text: str) -> "IndentedLine":
         """
         Add the given text to the end of this indented line
+
         :param text: the text to add
         :return: a copy of this indented line, with the text added
         """
@@ -329,7 +333,7 @@ class BracketedForm(ComplexForm):
         """
         :param brackets: the brackets surrounding the subform(s)
         :param subform: the subform to be bracketed
-        :param single_line: if ``False``, do not render the brackets in single-line \
+        :param single_line: if ``False``, do not render the brackets in single-line
             output
         """
 
