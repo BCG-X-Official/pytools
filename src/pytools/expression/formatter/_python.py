@@ -6,16 +6,16 @@ import logging
 from abc import ABCMeta, abstractmethod
 from typing import List, NamedTuple, Tuple
 
-from ..api import AllTracker
-from ._expression import Expression, ExpressionAlias, ExpressionFormatter
-from .base import (
+from .. import Expression, ExpressionAlias, ExpressionFormatter
+from ..base import (
     AtomicExpression,
     BracketedExpression,
     BracketPair,
     InfixExpression,
     PrefixExpression,
 )
-from .operator import BinaryOperator
+from ..operator import BinaryOperator
+from pytools.api import AllTracker
 
 log = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ class TextualForm:
         :return: the resulting textual form
         """
 
-        from .atomic import Epsilon
+        from ..atomic import Epsilon
 
         if expression is Epsilon():
             return EMPTY_FORM
@@ -540,7 +540,7 @@ class InfixForm(ComplexForm):
         :return: the resulting textual form
         """
 
-        from .atomic import Epsilon
+        from ..atomic import Epsilon
 
         subexpressions = expression.subexpressions_
         n_subexpressions = len(subexpressions)

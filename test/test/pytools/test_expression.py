@@ -6,13 +6,7 @@ import logging
 
 import pytest
 
-from pytools.expression import (
-    Expression,
-    PythonExpressionFormatter,
-    freeze,
-    make_expression,
-)
-from pytools.expression._text import TextualForm
+from pytools.expression import Expression, freeze, make_expression
 from pytools.expression.atomic import Id, Lit
 from pytools.expression.composite import (
     BinaryOperation,
@@ -24,6 +18,8 @@ from pytools.expression.composite import (
     TupleLiteral,
     UnaryOperation,
 )
+from pytools.expression.formatter import PythonExpressionFormatter
+from pytools.expression.formatter._python import TextualForm
 from pytools.expression.operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)

@@ -69,7 +69,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
         :return: a :class:`PythonExpressionFormatter` with default parameters for all
             formatting settings except for ``single_line``
         """
-        from ._text import PythonExpressionFormatter
+        from .formatter import PythonExpressionFormatter
 
         return PythonExpressionFormatter(single_line=single_line)
 
