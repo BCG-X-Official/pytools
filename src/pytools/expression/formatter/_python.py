@@ -712,10 +712,10 @@ class PythonExpressionFormatter(ExpressionFormatter):
         self, max_width: int = 80, indent_width: int = 4, single_line: bool = False
     ):
         """
-        :param max_width: the maximum line width (ignored when enforcing single-line \
+        :param max_width: the maximum line width (ignored when enforcing single-line
             text (default: 80)
         :param indent_width: the width of one indentation in spaces (default: 4)
-        :param single_line: if ``False``, include line breaks to keep the width within \
+        :param single_line: if ``False``, include line breaks to keep the width within
             maximum bounds (default: ``False``)
         """
         self._config = FormattingConfig(
