@@ -10,7 +10,7 @@ utilities for reuse, including:
 - Utilities for constructing complex expressions and rendering them as indented strings
 - Support for fitting objects to data, and testing whether an object is fitted
 - Parallelization based on the joblib package
-- A lean MVC framework for rendering basic visualizations in different styles, e.g., as Matplotlib charts or as plain text
+- A lean MVC framework for rendering basic visualizations in different styles, e.g., as *matplotlib* charts or as plain text
 
 .. Begin-Badges
 

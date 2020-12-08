@@ -144,7 +144,7 @@ def format_table(
 
     :param headings: the table headings
     :param data: the table data, as an array-like with shape `[n_rows, n_columns]`
-    :param formats: formatting strings for data in each row (optional); \
+    :param formats: formatting strings for data in each row (optional);
         uses ``str()`` conversion for any formatting strings stated as ``None``
     :param alignment: text alignment for each column (optional); use ``"<"`` to align
         left, ``"="`` to center, ``">"`` to align right (defaults to left alignment)

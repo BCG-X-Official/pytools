@@ -74,9 +74,9 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         **kwargs,
     ):
         """
-        :param color_outlier: color for highlighting outliers \
+        :param color_outlier: color for highlighting outliers
             (default: ``DEFAULT_COLOR_OUTLIER``)
-        :param color_far_outlier: color for highlighting far outliers \
+        :param color_far_outlier: color for highlighting far outliers
             (default: ``DEFAULT_COLOR_FAR_OUTLIER``)
         """
         super().__init__(ax=ax, **kwargs)
