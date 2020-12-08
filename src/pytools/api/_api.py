@@ -268,8 +268,8 @@ def is_list_like(obj: Any) -> bool:
 
     - :class:`str`
     - :class:`bytes`
-    - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface; \
-        iterating a data frame yields the values of the column index, while the length \
+    - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface;
+        iterating a data frame yields the values of the column index, while the length
         of a data frame is its number of rows
     - :class:`numpy.ndarray` instances with 0 dimensions
 
@@ -586,7 +586,7 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
-    :param match: the parent docstring will be inherited if the current docstring \
+    :param match: the parent docstring will be inherited if the current docstring
         is equal to match
     """
 

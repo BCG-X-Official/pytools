@@ -131,13 +131,13 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
         Process an event.
 
         :param app: the Sphinx application object
-        :param what: the type of the object which the docstring belongs to (one of \
+        :param what: the type of the object which the docstring belongs to (one of
             "module", "class", "exception", "function", "method", "attribute")
         :param name: the fully qualified name of the object
         :param obj: the object itself
-        :param options: the options given to the directive: an object with attributes \
-            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and \
-            ``noindex`` that are ``True`` if the flag option of same name was given to \
+        :param options: the options given to the directive: an object with attributes
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and
+            ``noindex`` that are ``True`` if the flag option of same name was given to
             the auto directive
         :param lines: the lines of the docstring
         """
@@ -286,18 +286,18 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
         Decide whether a member should be included in the documentation.
 
         :param app: the Sphinx application object
-        :param what: the type of the object which the docstring belongs to (one of \
+        :param what: the type of the object which the docstring belongs to (one of
             "module", "class", "exception", "function", "method", "attribute")
         :param name: the fully qualified name of the object
         :param obj: the object itself
-        :param skip: a boolean indicating if autodoc will skip this member if the user \
+        :param skip: a boolean indicating if autodoc will skip this member if the user
             handler does not override the decision
-        :param options: the options given to the directive: an object with attributes \
-            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and \
-            ``noindex`` that are ``True`` if the flag option of same name was given to \
+        :param options: the options given to the directive: an object with attributes
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and
+            ``noindex`` that are ``True`` if the flag option of same name was given to
             the auto directive
-        :return: ``True`` if the member should be excluded; ``False`` if the member \
-            should be included; ``None`` to fall back to the skipping behavior of \
+        :return: ``True`` if the member should be excluded; ``False`` if the member
+            should be included; ``None`` to fall back to the skipping behavior of
             autodoc and other enabled extensions
 
 

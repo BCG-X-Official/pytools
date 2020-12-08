@@ -50,8 +50,8 @@ def sim_data(
 
     1. The ordinal outcome option has not been translated
     2. Mis-labelling of the binary outcome has not been translated
-    3. The addition of a linear feature that is a copy of another used in the linear \
-        predictor with a small amount of noise has been added to allow for the study \
+    3. The addition of a linear feature that is a copy of another used in the linear
+        predictor with a small amount of noise has been added to allow for the study
         of variable surrogacy/redundancy
     4. Option for a binary predictor and surrogate has been added
     5. Toggle option for regression versus classification has been added
