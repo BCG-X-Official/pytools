@@ -343,8 +343,8 @@ use the following commands:
 
 .. code-block:: sh
 
-	python make.py gamma-pytools tox default
-	flit publish
+    python make.py gamma-pytools tox default
+    flit publish
 
 Please note the following:
 
@@ -376,8 +376,8 @@ use the following commands:
 
 .. code-block:: sh
 
-	python make.py gamma-pytools conda default
-	anaconda upload --user BCG_Gamma dist/conda/noarch/<*package.tar.gz*>
+    python make.py gamma-pytools conda default
+    anaconda upload --user BCG_Gamma dist/conda/noarch/<*package.tar.gz*>
 
 Please note the following:
 
@@ -397,8 +397,8 @@ The pipelines are defined in the ``azure-pipelines.yml`` file and are divided in
 the following stages:
 
 * **code_quality_checks**: perform code quality checks for isort, black and flake8.
-* **detect_build_config_changes**: detect whether the build configuration as specified in
-the ``pyproject.yml`` has been modified. If it has, then a build test is run.
+* **detect_build_config_changes**: detect whether the build configuration as specified
+  in the ``pyproject.yml`` has been modified. If it has, then a build test is run.
 * **Unit tests**: runs all unit tests and then publishes test results and coverage.
 * **conda_tox_build**: build the PyPI and conda distribution artifacts.
 * **Release**: see release process below for more detail.
