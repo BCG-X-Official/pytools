@@ -11,7 +11,7 @@ from matplotlib.colors import LogNorm
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, DrawingStyle, MatplotStyle
-from pytools.viz.colors import ColorScheme
+from pytools.viz.color import ColorScheme
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)

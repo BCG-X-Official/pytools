@@ -8,7 +8,7 @@ from typing import Optional, Sequence, TextIO
 from pytools.api import AllTracker, inheritdoc
 from pytools.text import CharacterMatrix
 from pytools.viz import TextStyle
-from pytools.viz.colors import text_contrast_color
+from pytools.viz.color import text_contrast_color
 from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
 
 log = logging.getLogger(__name__)

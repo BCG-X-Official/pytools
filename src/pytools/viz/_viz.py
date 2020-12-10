@@ -19,7 +19,7 @@ from typing import (
 )
 
 from ..api import AllTracker
-from .colors import FacetDarkColorScheme, FacetLightColorScheme
+from .color import FacetDarkColorScheme, FacetLightColorScheme
 
 log = logging.getLogger(__name__)
 

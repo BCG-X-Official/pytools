@@ -18,7 +18,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
 from ._viz import ColoredDrawingStyle
-from pytools.viz.colors import MatplotColorScheme, RgbaColor
+from pytools.viz.color import MatplotColorScheme, RgbaColor
 
 log = logging.getLogger(__name__)
 

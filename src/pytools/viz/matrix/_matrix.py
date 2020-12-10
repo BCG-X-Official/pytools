@@ -14,7 +14,7 @@ from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle
-from pytools.viz.colors import ColorScheme, text_contrast_color
+from pytools.viz.color import ColorScheme, text_contrast_color
 from pytools.viz.matrix.base import MatrixStyle
 from pytools.viz.util import PercentageFormatter
 
