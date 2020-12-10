@@ -8,17 +8,18 @@ from abc import ABCMeta, abstractmethod
 from threading import Lock
 from typing import (
     Any,
+    Callable,
     FrozenSet,
     Generic,
     Mapping,
     Optional,
-    Type,
     TypeVar,
     Union,
     cast,
 )
 
 from ..api import AllTracker
+from .colors import FacetDarkColorScheme, FacetLightColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -27,17 +28,17 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["DrawingStyle", "Drawer"]
+__all__ = ["DrawingStyle", "ColoredDrawingStyle", "Drawer"]
 
 
 #
 # Type variables
 #
 
+T = TypeVar("T")
 T_Model = TypeVar("T_Model")
-# noinspection PyTypeChecker
 T_Style = TypeVar("T_Style", bound="DrawingStyle")
-
+T_ColorScheme = TypeVar("T_ColorScheme", bound="ColorScheme")
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -114,6 +115,37 @@ class DrawingStyle(metaclass=ABCMeta):
         pass
 
 
+class ColoredDrawingStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
+    """
+    A drawing style that supports color output.
+    """
+
+    def __init__(self, *, colors: Optional[T_ColorScheme] = None, **kwargs) -> None:
+        """
+        :param colors: the color scheme to be used by this drawing style
+        """
+        super().__init__(**kwargs)
+        self._colors = colors or FacetLightColorScheme()
+
+    @classmethod
+    def dark(cls: T, **kwargs) -> T:
+        """
+        Create an instance of this drawing style, using the default dark background
+        color scheme :class:`.FacetDarkColorScheme`.
+
+        :param kwargs: init parameters for the new drawing style instance
+        :return: the new drawing style instance
+        """
+        return cls(colors=FacetDarkColorScheme(), **kwargs)
+
+    @property
+    def colors(self) -> T_ColorScheme:
+        """
+        The color scheme used by this style
+        """
+        return self._colors
+
+
 # Controller: class Drawer
 
 
@@ -142,17 +174,17 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             and ``"text"`` if text rendering is supported (default: ``"matplot"``)
         """
 
-        def _get_style_cls(_style_name) -> Type[T_Style]:
+        def _get_style_factory(_style_name) -> Callable[[], T_Style]:
             # get the named style from the style dict
             try:
-                return self._get_style_dict()[_style_name]
+                return self._get_augmented_style_dict()[_style_name]
             except KeyError:
-                raise KeyError(f"Unknown named style: {_style_name}")
+                raise KeyError(f"unknown named style: {_style_name}")
 
         if style is None:
-            self.style = _get_style_cls("matplot")()
+            self.style = _get_style_factory("matplot")()
         elif isinstance(style, str):
-            self.style = _get_style_cls(style)()
+            self.style = _get_style_factory(style)()
         elif isinstance(style, DrawingStyle):
             self.style = style
         else:
@@ -166,7 +198,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         """
         The names of all named styles recognized by this drawer's initializer.
         """
-        return cast(FrozenSet, cls._get_style_dict().keys())
+        return cast(FrozenSet, cls._get_augmented_style_dict().keys())
 
     def draw(self, data: T_Model, title: str) -> None:
         """
@@ -189,20 +221,33 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[T_Style]]:
+    def _get_style_dict(cls) -> Mapping[str, Callable[..., T_Style]]:
         """
-        Get mapping of names to style classes available for this drawer type.
+        Get mapping of names to style factories available for this drawer type.
 
         :meta public:
-        :returns: a mapping of names to style classes
+        :returns: a mapping of names to style factories
+            (classes of functions with no parameters)
         """
         pass
+
+    @classmethod
+    def _get_augmented_style_dict(cls) -> Mapping[str, Callable[[], T_Style]]:
+        style_dict = cls._get_style_dict()
+        return {
+            **style_dict,
+            **{
+                f"{name}_dark": style.dark
+                for name, style in style_dict.items()
+                if isinstance(style, type) and issubclass(style, ColoredDrawingStyle)
+            },
+        }
 
     def _get_style_kwargs(self, data: T_Model) -> Mapping[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
-        style's :meth:`.Drawer._drawing_start` and
-        :meth:`.Drawer._drawing_finalize` methods.
+        style's :meth:`.Drawer._drawing_start` and :meth:`.Drawer._drawing_finalize`
+        methods.
 
         :meta public:
         :param data: the data to be rendered

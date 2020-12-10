@@ -3,19 +3,18 @@ Core implementation of :mod:`pytools.viz.matrix`
 """
 
 import logging
-from typing import Any, Callable, Dict, Mapping, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Mapping, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes, mticker
 from matplotlib.axis import Axis
-from matplotlib.colors import Colormap, Normalize
+from matplotlib.colors import Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle
-from pytools.viz.colors import RGBA_WHITE
-from pytools.viz.colors._colors import text_contrast_color
+from pytools.viz.colors import ColorScheme, text_contrast_color
 from pytools.viz.matrix.base import MatrixStyle
 from pytools.viz.util import PercentageFormatter
 
@@ -75,8 +74,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
+        colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
@@ -110,13 +109,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             colorbar_major_formatter = cell_formatter
 
         super().__init__(
-            colormap_normalize=colormap_normalize
-            if colormap_normalize is not None
-            else Normalize(),
-            colormap=colormap,
+            ax=ax,
+            colors=colors,
+            colormap_normalize=(
+                colormap_normalize if colormap_normalize is not None else Normalize()
+            ),
             colorbar_major_formatter=colorbar_major_formatter,
             colorbar_minor_formatter=colorbar_minor_formatter,
-            ax=ax,
             **kwargs,
         )
 
@@ -142,7 +141,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         data = matrix.values
         ax.imshow(
             data,
-            cmap=self.colormap,
+            cmap=self.colors.colormap,
             norm=self.colormap_normalize,
             origin="upper",
             interpolation="nearest",
@@ -251,7 +250,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # create a white grid using minor tick positions
         ax.set_xticks(np.arange(n_columns + 1) - 0.5, minor=True)
         ax.set_yticks(np.arange(n_rows + 1) - 0.5, minor=True)
-        ax.grid(which="minor", color=RGBA_WHITE, linestyle="-", linewidth=2)
+        ax.grid(which="minor", color=self.colors.foreground, linestyle="-", linewidth=2)
         ax.tick_params(which="minor", bottom=False, left=False)
 
 
@@ -266,8 +265,8 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
+        colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
         **kwargs,
     ) -> None:
@@ -289,8 +288,8 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
 
         super().__init__(
             ax=ax,
+            colors=colors,
             colormap_normalize=colormap_normalize,
-            colormap=colormap,
             max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
@@ -347,7 +346,7 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
         super().__init__(style=style)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[MatrixStyle]]:
+    def _get_style_dict(cls) -> Mapping[str, Callable[..., MatrixStyle]]:
         return MatrixDrawer._STYLES
 
     def _draw(self, data: pd.DataFrame) -> None:

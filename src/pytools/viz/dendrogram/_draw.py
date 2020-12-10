@@ -3,7 +3,7 @@ Drawing dendrograms
 """
 
 import logging
-from typing import Any, List, Mapping, NamedTuple, Optional, Type, Union
+from typing import Any, Callable, List, Mapping, NamedTuple, Optional, Union
 
 import numpy as np
 
@@ -53,7 +53,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
         super().__init__(style=style)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[DendrogramStyle]]:
+    def _get_style_dict(cls) -> Mapping[str, Callable[..., DendrogramStyle]]:
         return DendrogramDrawer._STYLES
 
     def _get_style_kwargs(self, data: LinkageTree) -> Mapping[str, Any]:
