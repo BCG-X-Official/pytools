@@ -35,6 +35,8 @@ class PercentageFormatter(Formatter, metaclass=SingletonMeta):
     """
     Formats floats as a percentages with 3 digits precision, omitting trailing zeros.
 
+    For percentages above 100%, formats percentages as the nearest whole number.
+
     Formatting examples:
 
     - ``0.00005`` is formatted as ``0.01%``
@@ -45,10 +47,15 @@ class PercentageFormatter(Formatter, metaclass=SingletonMeta):
     - ``0.01555`` is formatted as ``1.56%``
     - ``0.1555`` is formatted as ``15.6%``
     - ``1.555`` is formatted as ``156%``
+    - ``15.55`` is formatted as ``1556%``
+    - ``1555`` is formatted as ``1.6e+05%``
     """
 
     def __call__(self, x, pos=None) -> str:
-        return f"{x * 100.0:.3g}%"
+        if x < 1.0:
+            return f"{x * 100.0:.3g}%"
+        else:
+            return f"{round(x * 100.0):.5g}%"
 
 
 # check consistency of __all__
