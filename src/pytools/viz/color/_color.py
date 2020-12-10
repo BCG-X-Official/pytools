@@ -318,7 +318,7 @@ class MatplotColorScheme(ColorScheme):
         """
         The default colormap to use for color gradients
         """
-        return self.colormap
+        return self._colormap
 
     def to_expression(self) -> Expression:
         """[see superclass]"""
