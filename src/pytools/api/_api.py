@@ -379,7 +379,7 @@ def validate_type(
             message_head = "expected"
         raise TypeError(
             f"{message_head} instance of {expected_type.__name__} "
-            f"but got a {expected_type(value).__name__}"
+            f"but got a {type(value).__name__}"
         )
 
 
