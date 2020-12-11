@@ -4,21 +4,21 @@ Matplot styles for the Gamma visualization library
 
 import logging
 from abc import ABCMeta
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import matplotlib.pyplot as plt
-from matplotlib import cm
 from matplotlib import text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
-from matplotlib.colors import Colormap, Normalize
+from matplotlib.colors import Normalize
+from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker
-from ._viz import DrawingStyle
-from .colors import COLORMAP_FACET, RgbaColor
+from ._viz import ColoredDrawingStyle
+from pytools.viz.color import MatplotColorScheme, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -41,19 +41,26 @@ __tracker = AllTracker(globals())
 #
 
 
-class MatplotStyle(DrawingStyle, metaclass=ABCMeta):
+class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
     """
     Base class of drawing styles using `matplotlib`.
     """
 
-    def __init__(self, *, ax: Optional[Axes] = None, **kwargs) -> None:
+    def __init__(
+        self,
+        *,
+        ax: Optional[Axes] = None,
+        colors: Optional[MatplotColorScheme] = None,
+        **kwargs,
+    ) -> None:
         """
-        :param ax: optional axes object to draw on; if ``Null``, use pyplot's current
-            axes
+        :param ax: optional axes object to draw on; create a new figure if not specified
         """
-        super().__init__(**kwargs)
+        super().__init__(colors=colors, **kwargs)
         self._ax = ax
         self._renderer: Optional[RendererBase] = None
+
+    __init__.__doc__ += ColoredDrawingStyle.__init__.__doc__
 
     @property
     def ax(self) -> Axes:
@@ -62,7 +69,8 @@ class MatplotStyle(DrawingStyle, metaclass=ABCMeta):
         """
         ax = self._ax
         if ax is None:
-            ax = self._ax = plt.gca()
+            _, ax = plt.subplots()
+            self._ax = ax
         return ax
 
     @property
@@ -83,7 +91,7 @@ class MatplotStyle(DrawingStyle, metaclass=ABCMeta):
         Calculate the horizontal and vertical dimensions of the given text in axis
         units.
 
-        Constructs a :class:`matplotlib.text.Text` artist then calculates it size
+        Constructs a :class:`~matplotlib.text.Text` artist then calculates it size
         relative to the axis :attr:`.ax` managed by this style object.
         For non-linear axis scales, text size differs depending on placement,
         so the intended placement (in data coordinates) should be provided.
@@ -119,10 +127,63 @@ class MatplotStyle(DrawingStyle, metaclass=ABCMeta):
 
     def _drawing_start(self, title: str, **kwargs) -> None:
         """
-        Set the title of the matplot chart to the given title.
+        Set the title of the matplot chart to the given title, and set the foreground
+        and background color according to the color scheme.
+
         :param title: the chart title
         """
-        self.ax.set_title(label=title)
+
+        fg_color = self.colors.foreground
+        bg_color = self.colors.background
+
+        ax = self.ax
+
+        # set title plus title color
+        ax.set_title(label=title, color=fg_color)
+
+        # set face color
+        ax.set_facecolor(bg_color)
+
+        # set figure face color
+        ax.patch.set_facecolor(bg_color)
+
+        # set tick and tick label color
+        ax.tick_params(color=fg_color, labelcolor=fg_color)
+
+        # set outline
+        for spine in ax.spines.values():
+            spine.set_edgecolor(fg_color)
+
+        try:
+            if ax.figure.__pytools_viz_background != bg_color:
+                log.warning(
+                    "subplots have conflicting color schemes; setting background color "
+                    f'according to color scheme {self.colors!r} of chart "{title}"'
+                )
+        except AttributeError:
+            pass
+
+        # set the background color
+        ax.figure.set_facecolor(bg_color)
+
+        ax.figure.__pytools_viz_background = bg_color
+
+    def _drawing_finalize(self, **kwargs) -> None:
+        super()._drawing_finalize(**kwargs)
+
+        # set legend color
+        legend: Legend = self.ax.get_legend()
+
+        if legend:
+            patch = legend.legendPatch
+            fg_color = self.colors.foreground
+
+            patch.set_facecolor(self.colors.background)
+            patch.set_alpha(0.5)
+            patch.set_edgecolor(fg_color)
+
+            for text in legend.get_texts():
+                text.set_color(fg_color)
 
 
 class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
@@ -132,41 +193,31 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     The plot uses a color map to indicate a scalar value,
     and the color bar provides a legend for the color gradient.
 
-    For an overview of matplotlib's named color maps, see
-    `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_
+    The color map is provided by the :class:`.MatplotColorScheme` associated with the
+    style.
     """
 
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
+        colors: Optional[MatplotColorScheme] = None,
         colormap_normalize: Normalize = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         **kwargs,
     ):
         """
-        :param colormap: the color map to use; either a name or a
-            :class:`~matplotlib.colors.Colormap` instance
-            (default: :attr:`.colors.COLORMAP_FACET`)
         :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object
-            that maps values to color indices; if ``None``, use a plain
+            that maps values to color indices; unless otherwise specified, use a plain
             :class:`~matplotlib.colors.Normalize` object with linear autoscaling
-            (default: ``None``)
         :param colorbar_major_formatter: major tick formatter for the color bar
             (optional)
         :param colorbar_minor_formatter: minor tick formatter for the color bar
             (optional; requires that also a major formatter is specified)
         """
-        super().__init__(ax=ax, **kwargs)
+        super().__init__(ax=ax, colors=colors, **kwargs)
 
-        if isinstance(colormap, Colormap):
-            self.colormap = colormap
-        else:
-            if colormap is None:
-                colormap = COLORMAP_FACET
-            self.colormap = cm.get_cmap(name=colormap)
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize
         )
@@ -190,19 +241,21 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         :param z: the scalar to be color-encoded
         :return: the resulting color as a RGBA tuple
         """
-        return self.colormap(self.colormap_normalize(z))
+        return self.colors.colormap(self.colormap_normalize(z))
 
     def _drawing_finalize(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
         # add the colorbar to the chart
 
         super()._drawing_finalize(**kwargs)
 
+        fg_color = self.colors.foreground
+
         cax, _ = make_axes(self.ax)
-        self.colorbar = ColorbarBase(
+        self.colorbar = cb = ColorbarBase(
             cax,
-            cmap=self.colormap,
+            cmap=self.colors.colormap,
             norm=self.colormap_normalize,
-            label="" if colorbar_label is None else colorbar_label,
+            label=colorbar_label or "",
             orientation="vertical",
         )
 
@@ -211,6 +264,12 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
+
+        # set colorbar tick color
+        cb.ax.yaxis.set_tick_params(colors=fg_color)
+
+        # set colorbar edge color
+        cb.outline.set_edgecolor(fg_color)
 
 
 __tracker.validate()

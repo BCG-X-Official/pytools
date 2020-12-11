@@ -4,13 +4,14 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
 from matplotlib.axes import Axes
-from matplotlib.colors import Colormap, LogNorm
+from matplotlib.colors import LogNorm
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, DrawingStyle, MatplotStyle
+from pytools.viz.color import ColorScheme
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
@@ -106,7 +107,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         self,
         *,
         ax: Optional[Axes] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
+        colors: Optional[ColorScheme] = None,
         min_weight: float = 0.01,
     ) -> None:
         """
@@ -120,7 +121,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         percentage_formatter = PercentageFormatter()
         super().__init__(
             ax=ax,
-            colormap=colormap,
+            colors=colors,
             colormap_normalize=LogNorm(min_weight, 1),
             colorbar_major_formatter=percentage_formatter,
             colorbar_minor_formatter=percentage_formatter,

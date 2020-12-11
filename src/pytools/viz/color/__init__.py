@@ -1,4 +1,4 @@
 """
 Color definitions.
 """
-from ._colors import *
+from ._color import *
