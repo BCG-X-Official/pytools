@@ -470,7 +470,10 @@ class AddInheritance(AutodocProcessDocstring):
             return _class_tag(cls)
 
         if isinstance(cls, ForwardRef):
-            return _class_tag(cls.__forward_arg__)
+            if cls.__forward_evaluated__:
+                cls = cls.__forward_value__
+            else:
+                return _class_tag(f".{cls.__forward_arg__}")
 
         if not hasattr(cls, "__module__"):
             return _class_tag(cls)
