@@ -136,7 +136,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         y_axis.set_ticks(ticks=range(len(names)))
         y_axis.set_ticklabels(ticklabels=names)
 
-    def _drawing_finalize(
+    def finalize_drawing(
         self,
         *,
         leaf_label: Optional[str] = None,
@@ -145,13 +145,13 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         **kwargs,
     ) -> None:
         """
-        Finalize the drawing.
+        Add labels to the axes of this drawing.
 
         :param leaf_label: the label for the leaf axis
         :param distance_label: the label for the distance axis
-        :param weight_label: the label for the weight axis
+        :param weight_label: the label for the color bar, indicating weights
         """
-        super()._drawing_finalize(colorbar_label=weight_label, **kwargs)
+        super().finalize_drawing(colorbar_label=weight_label, **kwargs)
 
         ax = self.ax
 

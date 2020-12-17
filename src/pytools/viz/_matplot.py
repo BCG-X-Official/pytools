@@ -16,7 +16,7 @@ from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
-from ..api import AllTracker
+from ..api import AllTracker, inheritdoc
 from ._viz import ColoredDrawingStyle
 from pytools.viz.color import MatplotColorScheme, RgbaColor
 
@@ -41,6 +41,7 @@ __tracker = AllTracker(globals())
 #
 
 
+@inheritdoc(match="[see superclass]")
 class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
     """
     Base class of drawing styles using `matplotlib`.
@@ -125,7 +126,7 @@ class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         return abs(x1 - x0), abs(y1 - y0)
 
-    def _drawing_start(self, title: str, **kwargs) -> None:
+    def start_drawing(self, title: str, **kwargs) -> None:
         """
         Set the title of the matplot chart to the given title, and set the foreground
         and background color according to the color scheme.
@@ -168,8 +169,9 @@ class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         ax.figure.__pytools_viz_background = bg_color
 
-    def _drawing_finalize(self, **kwargs) -> None:
-        super()._drawing_finalize(**kwargs)
+    def finalize_drawing(self, **kwargs) -> None:
+        """[see superclass]"""
+        super().finalize_drawing(**kwargs)
 
         # set legend color
         legend: Legend = self.ax.get_legend()
@@ -243,10 +245,14 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         """
         return self.colors.colormap(self.colormap_normalize(z))
 
-    def _drawing_finalize(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
-        # add the colorbar to the chart
+    def finalize_drawing(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
+        """
+        Add the color bar to the chart.
 
-        super()._drawing_finalize(**kwargs)
+        :param colorbar_label: the label for the color bar
+        """
+
+        super().finalize_drawing(**kwargs)
 
         fg_color = self.colors.foreground
 
