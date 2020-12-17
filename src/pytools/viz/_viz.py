@@ -88,7 +88,7 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @abstractmethod
-    def _drawing_start(self, title: str, **kwargs) -> None:
+    def start_drawing(self, title: str, **kwargs) -> None:
         """
         Prepare a new chart for drawing, using the given title.
 
@@ -96,21 +96,18 @@ class DrawingStyle(metaclass=ABCMeta):
         method :meth:`Drawer._get_style_kwargs`, will be passed
         as keyword arguments.
 
-        :meta public:
         :param title: the title of the chart
         """
 
     pass
 
-    def _drawing_finalize(self, **kwargs) -> None:
+    def finalize_drawing(self, **kwargs) -> None:
         """
         Finalize the drawing.
 
         Any additional drawer-specific attributes, obtained from
         method :meth:`Drawer._get_style_kwargs`, will be passed
         as keyword arguments.
-
-        :meta public:
         """
         pass
 
@@ -214,10 +211,10 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         with style._lock:
             style_attributes = self._get_style_kwargs(data)
             # noinspection PyProtectedMember
-            style._drawing_start(title, **style_attributes)
+            style.start_drawing(title, **style_attributes)
             self._draw(data)
             # noinspection PyProtectedMember
-            style._drawing_finalize(**style_attributes)
+            style.finalize_drawing(**style_attributes)
 
     @classmethod
     @abstractmethod
