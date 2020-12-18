@@ -17,8 +17,8 @@ from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker, inheritdoc
-from ._viz import ColoredDrawingStyle
-from pytools.viz.color import MatplotColorScheme, RgbaColor
+from ._viz import ColoredStyle
+from .color import MatplotColorScheme, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ __tracker = AllTracker(globals())
 
 
 @inheritdoc(match="[see superclass]")
-class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
+class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     """
     Base class of drawing styles using `matplotlib`.
     """
@@ -61,7 +61,12 @@ class MatplotStyle(ColoredDrawingStyle[MatplotColorScheme], metaclass=ABCMeta):
         self._ax = ax
         self._renderer: Optional[RendererBase] = None
 
-    __init__.__doc__ += ColoredDrawingStyle.__init__.__doc__
+    __init__.__doc__ += ColoredStyle.__init__.__doc__
+
+    @classmethod
+    def get_default_style_name(cls) -> str:
+        """[see superclass]"""
+        return "matplot"
 
     @property
     def ax(self) -> Axes:

@@ -59,6 +59,11 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
         self.out = sys.stdout if out is None else out
         self.width = width
 
+    @classmethod
+    def get_default_style_name(cls) -> str:
+        """[see superclass]"""
+        return "text"
+
     def start_drawing(self, title: str, **kwargs) -> None:
         """
         Write the title to :attr:`.out`.

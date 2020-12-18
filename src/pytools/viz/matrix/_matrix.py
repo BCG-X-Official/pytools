@@ -3,7 +3,7 @@ Core implementation of :mod:`pytools.viz.matrix`
 """
 
 import logging
-from typing import Any, Callable, Dict, Mapping, Optional, Tuple, Union
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 import pandas as pd
@@ -12,11 +12,11 @@ from matplotlib.axis import Axis
 from matplotlib.colors import Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
+from .. import ColorbarMatplotStyle, Drawer, TextStyle
+from ..color import ColorScheme, text_contrast_color
+from ..util import PercentageFormatter
+from .base import MatrixStyle
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle
-from pytools.viz.color import ColorScheme, text_contrast_color
-from pytools.viz.matrix.base import MatrixStyle
-from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
 
@@ -303,6 +303,11 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
 
     __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
 
+    @classmethod
+    def get_default_style_name(cls) -> str:
+        """[see superclass]"""
+        return f"{super().get_default_style_name()}%"
+
 
 @inheritdoc(match="[see superclass]")
 class MatrixReportStyle(MatrixStyle, TextStyle):
@@ -320,6 +325,7 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
 #
 
 
+@inheritdoc(match="[see superclass]")
 class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     """
     Drawer for matrices of numerical values.
@@ -333,12 +339,6 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     - ``"text"``: text representation of the matrix, using a :class:`.MatrixReportStyle`
     """
 
-    _STYLES = {
-        "matplot": MatrixMatplotStyle,
-        "matplot%": PercentageMatrixMatplotStyle,
-        "text": MatrixReportStyle,
-    }
-
     def __init__(self, style: Optional[Union[MatrixStyle, str]] = None) -> None:
         """
         :param style: the style to be used for drawing (default: ``"matplot"``)
@@ -346,8 +346,13 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
         super().__init__(style=style)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Callable[..., MatrixStyle]]:
-        return MatrixDrawer._STYLES
+    def get_style_classes(cls) -> Iterable[Type[MatrixStyle]]:
+        """[see superclass]"""
+        return [
+            MatrixMatplotStyle,
+            PercentageMatrixMatplotStyle,
+            MatrixReportStyle,
+        ]
 
     def _draw(self, data: pd.DataFrame) -> None:
         # draw the matrix

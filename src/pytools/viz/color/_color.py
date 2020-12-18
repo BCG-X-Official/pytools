@@ -325,6 +325,7 @@ class MatplotColorScheme(ColorScheme):
         return Id(type(self))(**self._colors, colormap=self.colormap)
 
 
+@inheritdoc(match="[see superclass]")
 class _FacetColorScheme(MatplotColorScheme):
     def __init__(self, foreground: RgbColor, background: RgbColor) -> None:
         super().__init__(
