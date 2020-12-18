@@ -5,11 +5,11 @@ Dendrogram styles.
 import logging
 from typing import Optional, Sequence, TextIO
 
+from .. import TextStyle
+from ..color import text_contrast_color
+from .base import DendrogramMatplotStyle, DendrogramStyle
 from pytools.api import AllTracker, inheritdoc
 from pytools.text import CharacterMatrix
-from pytools.viz import TextStyle
-from pytools.viz.color import text_contrast_color
-from pytools.viz.dendrogram.base import DendrogramMatplotStyle, DendrogramStyle
 
 log = logging.getLogger(__name__)
 
@@ -43,6 +43,11 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
     Draws dendrograms as "classical" trees, using coloring lines along a color gradient
     to indicate leaf/branch weights.
     """
+
+    @classmethod
+    def get_default_style_name(cls) -> str:
+        """[see superclass]"""
+        return f"{super().get_default_style_name()}_line"
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: float, weight: float, tree_height

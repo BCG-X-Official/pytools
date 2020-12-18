@@ -3,15 +3,15 @@ Drawing dendrograms
 """
 
 import logging
-from typing import Any, Callable, List, Mapping, NamedTuple, Optional, Union
+from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Type, Union
 
 import numpy as np
 
+from .. import Drawer
+from ._linkage import LinkageTree
+from ._style import DendrogramHeatmapStyle, DendrogramLineStyle, DendrogramReportStyle
+from .base import DendrogramStyle, Node
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import Drawer
-from pytools.viz.dendrogram._linkage import LinkageTree
-from pytools.viz.dendrogram._style import DendrogramHeatmapStyle, DendrogramReportStyle
-from pytools.viz.dendrogram.base import DendrogramStyle, Node
 
 log = logging.getLogger(__name__)
 
@@ -46,17 +46,20 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     Draws dendrogram representations of :class:`.LinkageTree` objects.
     """
 
-    _STYLES = {"matplot": DendrogramHeatmapStyle, "text": DendrogramReportStyle}
-
     def __init__(self, style: Optional[Union[DendrogramStyle, str]] = None) -> None:
         """[see superclass]"""
         super().__init__(style=style)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Callable[..., DendrogramStyle]]:
-        return DendrogramDrawer._STYLES
+    def get_style_classes(cls) -> Iterable[Type[DendrogramStyle]]:
+        """[see superclass]"""
+        return [
+            DendrogramHeatmapStyle,
+            DendrogramLineStyle,
+            DendrogramReportStyle,
+        ]
 
-    def _get_style_kwargs(self, data: LinkageTree) -> Mapping[str, Any]:
+    def _get_style_kwargs(self, data: LinkageTree) -> Dict[str, Any]:
         return dict(
             leaf_label=data.leaf_label,
             distance_label=data.distance_label,

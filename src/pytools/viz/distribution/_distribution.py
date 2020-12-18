@@ -3,14 +3,14 @@ Core implementation of :mod:`pytools.viz.distribution`
 """
 
 import logging
-from typing import Callable, Mapping, Optional, Sequence, Union
+from typing import Iterable, Optional, Sequence, Type, Union
 
 import numpy as np
 import pandas as pd
 
-from pytools.api import AllTracker
-from pytools.viz import Drawer, MatplotStyle
-from pytools.viz.distribution.base import ECDF, ECDFStyle, XYSeries
+from .. import Drawer, MatplotStyle
+from .base import ECDF, ECDFStyle, XYSeries
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -78,6 +78,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         ax.legend()
 
 
+@inheritdoc(match="[see superclass]")
 class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs), highlighting
@@ -94,8 +95,6 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
     By convention, common values for :math:`m` are :math:`m = 1.5` for outliers,
     and :math:`m = 3` for far outliers.
     """
-
-    _STYLES = {"matplot": ECDFMatplotStyle}
 
     #: iqr multiple to determine outliers;
     #: if ``None``, then no outliers and far outliers are computed
@@ -160,8 +159,11 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         super().draw(data=data, title=title)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Callable[..., ECDFStyle]]:
-        return ECDFDrawer._STYLES
+    def get_style_classes(cls) -> Iterable[Type[ECDFStyle]]:
+        """[see superclass]"""
+        return [
+            ECDFMatplotStyle,
+        ]
 
     def _draw(self, data: Sequence[float]) -> None:
         ecdf = self._ecdf(data=data)
