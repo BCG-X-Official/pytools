@@ -6,18 +6,7 @@ plain text.
 import logging
 from abc import ABCMeta, abstractmethod
 from threading import Lock
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    Iterable,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
 
 from ..api import AllTracker, inheritdoc
 from .color import FacetDarkColorScheme, FacetLightColorScheme
@@ -214,15 +203,18 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     #: The :class:`.DrawingStyle` used by this drawer
     style: T_Style
 
+    #: The name of the default drawing style
+    DEFAULT_STYLE = "matplot"
+
     def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:
         """
         :param style: the style to be used for drawing; either as a
             :class:`.DrawingStyle` instance, or as the name of a default style.
             Permissible names include ``"matplot"`` for a style supporting `matplotlib`,
-            and ``"text"`` if text rendering is supported (default: ``"matplot"``)
+            and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
         """
 
-        def _get_style_factory(_style_name) -> Callable[[], T_Style]:
+        def _get_style_factory(_style_name) -> Type[T_Style]:
             # get the named style from the style dict
             try:
                 return self.get_named_styles()[_style_name]
@@ -230,7 +222,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 raise KeyError(f"unknown named style: {_style_name}")
 
         if style is None:
-            self.style = _get_style_factory("matplot")()
+            self.style = _get_style_factory(Drawer.DEFAULT_STYLE)()
         elif isinstance(style, str):
             self.style = _get_style_factory(style)()
         elif isinstance(style, DrawingStyle):
@@ -240,6 +232,8 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 "arg style expected to be a string, or an instance of class "
                 f"{DrawingStyle.__name__}"
             )
+
+    __init__.__doc__ = __init__.__doc__.replace("%DEFAULT%", DEFAULT_STYLE)
 
     @classmethod
     def get_named_styles(cls) -> Dict[str, Type[T_Style]]:
@@ -288,7 +282,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     def _get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
-        style's :meth:`.Drawer.start_drawing` and :meth:`.Drawer.finalize_drawing`
+        style's :meth:`.start_drawing` and :meth:`.finalize_drawing`
         methods.
 
         :meta public:
