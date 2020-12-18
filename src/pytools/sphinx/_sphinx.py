@@ -45,6 +45,7 @@ __all__ = [
     "CollapseModulePathsInDocstring",
     "CollapseModulePathsInSignature",
     "SkipIndirectImports",
+    "Replace3rdPartyDoc",
 ]
 
 #
@@ -735,6 +736,59 @@ class SkipIndirectImports(AutodocSkipMember):
             if what == "module" and name.startswith("_"):
                 log.info(f"skipping: {what}: {name}")
                 return False
+
+
+@inheritdoc(match="[see superclass]")
+class Replace3rdPartyDoc(AutodocProcessDocstring):
+    """
+    Replace 3rd party docstrings with a reference to the 3rd party documentation.
+
+    This is necessary for methods and attributes inherited from 3rd party packages,
+    as these might use an incompatible format for docstrings.
+    """
+
+    __RE_ROOT_PACKAGE = re.compile(r"\w+(?=\.)")
+
+    __RST_DIRECTIVE = {
+        "module": "mod",
+        "class": "class",
+        "exception": "exception",
+        "function": "func",
+        "method": "meth",
+        "attribute": "attr",
+    }
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        lines: List[str],
+    ) -> None:
+        """[see superclass]"""
+
+        try:
+            obj_module = obj.__module__
+        except AttributeError:
+            return
+
+        name_root_package = self.__root_package(name)
+        obj_root_package = self.__root_package(obj_module)
+
+        if name_root_package != obj_root_package:
+            # replace 3rd party docstring with cross-reference
+
+            directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
+
+            del lines[:]
+            lines.append(f"See :{directive}:`{obj_module}.{obj.__qualname__}`")
+
+    @staticmethod
+    def __root_package(name: str) -> str:
+        root_package_match = Replace3rdPartyDoc.__RE_ROOT_PACKAGE.match(name)
+        return root_package_match[0] if root_package_match else ""
 
 
 __tracker.validate()
