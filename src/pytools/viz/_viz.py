@@ -252,7 +252,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_style_classes(cls: "Drawer[T_Model, T_Style]") -> Iterable[Type[T_Style]]:
+    def get_style_classes(cls) -> Iterable[Type[T_Style]]:
         """
         Get all style classes available for this drawer type.
 
