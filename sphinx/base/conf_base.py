@@ -20,6 +20,8 @@ from typing import Any, Dict, Iterable, Optional
 
 from sphinx.application import Sphinx
 
+from pytools.sphinx import Replace3rdPartyDoc
+
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
@@ -205,6 +207,8 @@ def setup(app: Sphinx) -> None:
     ).connect(app=app, priority=100000)
 
     SkipIndirectImports().connect(app=app)
+
+    Replace3rdPartyDoc().connect(app=app)
 
     _add_custom_css_and_js(app=app)
 
