@@ -50,11 +50,11 @@ For any bug reports or feature requests/enhancements please use the appropriate
 please open a PR addressing the issue.
 
 We do ask that for any major changes please discuss these with us first via an issue or
-at our team email: FacetTeam <at> bcg <dot> com.
+at our team email: FacetTeam@bcg.com.
 
 For further information on contributing please see our `contribution guide
 <https://github.gamma.bcg.com/pages/facet/facet/contribution_guide.html>`_ (todo:
-replace with RTD link once published).
+replace with link once published).
 
 
 
@@ -62,14 +62,10 @@ License
 ---------------------------
 
 *pytools* is licensed under Apache 2.0 as described in the
-`LICENSE <https://github.com/BCG-Gamma/pytools/LICENSE>`_ file.
+`LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
 
 BCG GAMMA
 ---------------------------
-
-If you would like to know more about the team behind *pytools* please see our `about us
-page <https://github.gamma.bcg.com/pages/facet/facet/about_us.html>`_ (todo: replace
-with link once published).
 
 We are always on the lookout for passionate and talented data scientists to join the
 BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
