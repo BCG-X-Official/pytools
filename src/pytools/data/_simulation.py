@@ -48,14 +48,14 @@ def sim_data(
 
     Key modifications compared to the *R* implementation:
 
-    1. The ordinal outcome option has not been translated
-    2. Mis-labelling of the binary outcome has not been translated
-    3. The addition of a linear feature that is a copy of another used in the linear
+    1.  The ordinal outcome option has not been translated
+    2.  Mis-labelling of the binary outcome has not been translated
+    3.  The addition of a linear feature that is a copy of another used in the linear
         predictor with a small amount of noise has been added to allow for the study
-        of variable surrogacy/redundancy
-    4. Option for a binary predictor and surrogate has been added
-    5. Toggle option for regression versus classification has been added
-    6. Arguments for the coefficients of primary predictors of interest have been added
+        of variable surrogacy
+    4.  Option for a binary predictor and surrogate has been added
+    5.  Toggle option for regression versus classification has been added
+    6.  Arguments for the coefficients of primary predictors of interest has been added
 
     :param n: number of observations
     :param intercept: value for the intercept which can be modified to generate class
