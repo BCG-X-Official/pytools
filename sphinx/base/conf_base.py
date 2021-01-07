@@ -126,13 +126,13 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3.6", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference", None),
     "sklearn": ("https://scikit-learn.org/stable", None),
-    "shap": ("https://shap.readthedocs.io/en/latest", None),
+    "shap": ("https://shap.readthedocs.io/en/stable", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master", None),
-    "pytools": ("", None),
-    "sklearndf": ("", None),
-    "facet": ("", None),
-    "flow": ("", None),
+    "pytools": ("https://bcg-gamma.github.io/pytools/", None),
+    "sklearndf": ("https://bcg-gamma.github.io/sklearndf/", None),
+    "facet": ("https://bcg-gamma.github.io/facet/", None),
+    "flow": ("https://bcg-gamma.github.io/flow/", None),
 }
 
 intersphinx_collapsible_submodules = {
