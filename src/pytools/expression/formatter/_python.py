@@ -1,5 +1,5 @@
 """
-String representations of expressions
+String representations of expressions.
 """
 
 import logging
@@ -29,7 +29,7 @@ __all__ = ["PythonExpressionFormatter"]
 
 class FormattingConfig(NamedTuple):
     """
-    The parameters to use for formatting an expression
+    The parameters to use for formatting an expression.
     """
 
     max_width: int = 80
@@ -80,7 +80,7 @@ class IndentedLine(NamedTuple):
 
 class TextualForm:
     """
-    A hierarchical textual representation of an expression
+    A hierarchical textual representation of an expression.
     """
 
     #: the default formatting configuration for rendering textual forms
@@ -232,7 +232,7 @@ EMPTY_FORM = EmptyForm()
 
 class AtomicForm(TextualForm):
     """
-    A textual representation of an atomic expression
+    A textual representation of an atomic expression.
     """
 
     def __init__(self, expression: AtomicExpression) -> None:
@@ -324,7 +324,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
 
 class BracketedForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     def __init__(
@@ -705,7 +705,7 @@ __tracker = AllTracker(globals())
 
 class PythonExpressionFormatter(ExpressionFormatter):
     """
-    Formats expression objects as Python expressions, in line with the `black` style
+    Formats expression objects as Python expressions, in line with the `black` style.
     """
 
     def __init__(

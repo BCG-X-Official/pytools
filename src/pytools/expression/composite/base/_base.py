@@ -67,7 +67,7 @@ class KeywordArgument(SimplePrefixExpression):
     @property
     def value_(self) -> Expression:
         """
-        The name of this keyword argument
+        The name of this keyword argument.
         """
         return self.body_
 
@@ -95,19 +95,19 @@ class DictEntry(SimplePrefixExpression):
     @property
     def key_(self) -> Expression:
         """
-        The key of this dictionary entry; identical with the expression prefix
+        The key of this dictionary entry; identical with the expression prefix.
         """
         return self.prefix_
 
     @property
     def separator_(self) -> str:
-        """A ``:``, followed by a space"""
+        """A ``:``, followed by a space."""
         return ": "
 
     @property
     def value_(self) -> Expression:
         """
-        The value of this dictionary entry; identical with the expression body
+        The value of this dictionary entry; identical with the expression body.
         """
         return self.body_
 
@@ -149,7 +149,7 @@ class LambdaDefinition(SimplePrefixExpression):
 
     @property
     def separator_(self) -> str:
-        """A ``:``, followed by a space"""
+        """A ``:``, followed by a space."""
         return ": "
 
     @property

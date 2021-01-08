@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.parallelization`
+Core implementation of :mod:`pytools.parallelization`.
 """
 import logging
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
@@ -62,18 +62,18 @@ class ParallelizableMixin:
             if ``None``, use joblib default (default: ``None``)
         """
         super().__init__(**kwargs)
-        #: number of jobs to use in parallel; if ``None``, use joblib default
+        #: Number of jobs to use in parallel; if ``None``, use joblib default.
         self.n_jobs = n_jobs
 
-        #: if ``True``, use threads in the parallel runs;
-        #: if ``False``, use multiprocessing
+        #: If ``True``, use threads in the parallel runs;
+        #: if ``False``, use multiprocessing.
         self.shared_memory = shared_memory
 
-        #: number of batches to pre-dispatch; if ``None``, use joblib default
+        #: Number of batches to pre-dispatch; if ``None``, use joblib default.
         self.pre_dispatch = pre_dispatch
 
-        #: verbosity level used in the parallel computation;
-        #: if ``None``, use joblib default
+        #: Verbosity level used in the parallel computation;
+        #: if ``None``, use joblib default.
         self.verbose = verbose
 
         self._parallel_kwargs = {

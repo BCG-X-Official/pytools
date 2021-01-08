@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.viz.matrix`
+Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
@@ -62,12 +62,12 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     - a :class:`~matplotlib.ticker.Formatter` instance
     """
 
-    #: the maximum number of ticks to put on the x and y axis;
-    #: ``None`` to determine the number of ticks automatically
+    #: The maximum number of ticks to put on the x and y axis;
+    #: ``None`` to determine the number of ticks automatically.
     max_ticks: Optional[Tuple[int, int]]
 
-    #: formatter for annotating each matrix cell with its value; if ``None``,
-    #: no cells are annotated
+    #: Formatter for annotating each matrix cell with its value; if ``None``,
+    #: no cells are annotated.
     cell_formatter: Optional[Formatter]
 
     def __init__(

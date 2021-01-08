@@ -40,53 +40,53 @@ __tracker = AllTracker(globals())
 # Type definitions
 #
 
-#: RGB color type for use in color schemas and colored drawing styles
+#: RGB color type for use in color schemas and colored drawing styles.
 RgbColor = Tuple[float, float, float]
 
-#: RGB + Alpha color type for use in color schemas and colored drawing styles
+#: RGB + Alpha color type for use in color schemas and colored drawing styles.
 RgbaColor = Tuple[float, float, float, float]
 
 #
 # Constants
 #
 
-#: black
+#: Black.
 _RGB_BLACK: RgbColor = to_rgb("black")
 
-#: white
+#: White.
 _RGB_WHITE: RgbColor = to_rgb("white")
 
-#: Facet light grey
+#: Facet light grey.
 _RGB_LIGHT_GREY: RgbColor = to_rgb("#c8c8c8")
 
-#: Facet grey
+#: Facet grey.
 _RGB_GREY: RgbColor = to_rgb("#9a9a9a")
 
-#: Facet dark grey
+#: Facet dark grey.
 _RGB_DARK_GREY: RgbColor = to_rgb("#3d3a40")
 
-#: Facet dark blue
+#: Facet dark blue.
 _RGB_DARK_BLUE: RgbColor = to_rgb("#295e7e")
 
-#: Facet blue
+#: Facet blue.
 _RGB_LIGHT_BLUE: RgbColor = to_rgb("#30c1d7")
 
-#: Facet green
+#: Facet green.
 _RGB_LIGHT_GREEN: RgbColor = to_rgb("#43fda2")
 
-#: Facet status green
+#: Facet status green.
 _RGB_GREEN: RgbColor = to_rgb("#3ead92")
 
-#: Facet status amber
+#: Facet status amber.
 _RGB_AMBER: RgbColor = to_rgb("#a8b21c")
 
-#: Facet status red
+#: Facet status red.
 _RGB_RED: RgbColor = to_rgb("#e61c57")
 
-#: Facet dark red
+#: Facet dark red.
 _RGB_DARK_RED: RgbColor = to_rgb("#c41310")
 
-#: standard colormap for FACET
+#: Standard colormap for FACET.
 _COLORMAP_FACET = LinearSegmentedColormap.from_list(
     name="facet",
     colors=[
@@ -136,14 +136,14 @@ class ColorScheme(HasExpressionRepr):
     @property
     def foreground(self) -> RgbColor:
         """
-        The foreground color
+        The foreground color.
         """
         return self._colors[ColorScheme._COLOR_FOREGROUND]
 
     @property
     def background(self) -> RgbColor:
         """
-        The background color
+        The background color.
         """
         return self._colors[ColorScheme._COLOR_BACKGROUND]
 
@@ -316,7 +316,7 @@ class MatplotColorScheme(ColorScheme):
     @property
     def colormap(self) -> Colormap:
         """
-        The default colormap to use for color gradients
+        The default colormap to use for color gradients.
         """
         return self._colormap
 

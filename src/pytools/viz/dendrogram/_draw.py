@@ -1,5 +1,5 @@
 """
-Drawing dendrograms
+Drawing dendrograms.
 """
 
 import logging

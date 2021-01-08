@@ -1,5 +1,5 @@
 """
-Matplot styles for the Gamma visualization library.
+Matplot styles for the GAMMA visualization library.
 """
 
 import logging

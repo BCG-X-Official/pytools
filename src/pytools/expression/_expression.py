@@ -87,7 +87,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
     @abstractmethod
     def to_expression(self) -> "Expression":
         """
-        Render this object as an expression
+        Render this object as an expression.
 
         :return: the expression representing this object
         """
@@ -114,7 +114,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     @abstractmethod
     def precedence_(self) -> int:
         """
-        The precedence of this expression, used to determine the need for parentheses
+        The precedence of this expression, used to determine the need for parentheses.
         """
         pass
 
@@ -122,7 +122,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     @abstractmethod
     def subexpressions_(self) -> Tuple["Expression", ...]:
         """
-        The subexpressions of this expression
+        The subexpressions of this expression.
         """
 
     def or_(self, other: "Expression") -> "Expression":

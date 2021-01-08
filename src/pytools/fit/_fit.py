@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.fit`
+Core implementation of :mod:`pytools.fit`.
 """
 import logging
 from abc import ABCMeta, abstractmethod

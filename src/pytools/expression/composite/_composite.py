@@ -85,14 +85,14 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
     @property
     def brackets_(self) -> BracketPair:
         """
-        The brackets enclosing this expression's subexpressions
+        The brackets enclosing this expression's subexpressions.
         """
         return self._brackets
 
     @property
     def subexpression_(self) -> Expression:
         """
-        The subexpression enclosed by the brackets
+        The subexpression enclosed by the brackets.
         """
         return self._subexpression
 
@@ -284,7 +284,7 @@ class Call(Invocation):
     @property
     def callee_(self) -> Expression:
         """
-        The expression being called; identical with the prefix of this expression
+        The expression being called; identical with the prefix of this expression.
         """
         return self.prefix_
 
@@ -305,7 +305,7 @@ class Index(Invocation):
     @property
     def collection_(self) -> Expression:
         """
-        The collection to be indexed; same as :attr:`prefix_`
+        The collection to be indexed; same as :attr:`prefix_`.
         """
         return self.prefix_
 

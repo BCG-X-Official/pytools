@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.api`
+Core implementation of :mod:`pytools.api`.
 """
 
 import inspect
@@ -112,8 +112,8 @@ class AllTracker:
 
             self.public_module = match[1]
 
-    #: full name of the public module that will export the items managed by this
-    #: tracker
+    #: Full name of the public module that will export the items managed by this
+    #: tracker.
     public_module: str
 
     def validate(self) -> None:

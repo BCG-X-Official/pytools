@@ -167,14 +167,15 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
     Renders dendrograms as ASCII graphics for inclusion in plain-text reports.
     """
 
+    #: The default width of labels.
     __DEFAULT_LABEL_WIDTH = 20
 
-    #: the number of characters that will be allocated for the label column,
-    #: including the weight
+    #: The number of characters that will be allocated for the label column,
+    #: including the weight.
     label_width: int
 
-    #: maximum number of text lines to output including the title;
-    #: additional lines of the dendrogram will be clipped (optional)
+    #: Maximum number of text lines to output including the title;
+    #: additional lines of the dendrogram will be clipped (optional).
     max_height: int
 
     def __init__(

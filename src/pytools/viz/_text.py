@@ -1,5 +1,5 @@
 """
-Text styles for the Gamma visualization library
+Text styles for the GAMMA visualization library.
 """
 
 import logging
@@ -37,10 +37,10 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
     Base class of drawing styles producing plain text output.
     """
 
-    #: The output stream this style instance writes to
+    #: The output stream this style instance writes to.
     out: TextIO
 
-    #: The maximum width of the text to be produced
+    #: The maximum width of the text to be produced.
     width: int
 
     def __init__(self, out: Optional[TextIO] = None, width: int = 80, **kwargs) -> None:
