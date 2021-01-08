@@ -129,6 +129,7 @@ intersphinx_mapping = {
     "shap": ("https://shap.readthedocs.io/en/stable", None),
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master", None),
+    "lightgbm": ("https://lightgbm.readthedocs.io/en/latest/", None),
     "pytools": ("https://bcg-gamma.github.io/pytools/", None),
     "sklearndf": ("https://bcg-gamma.github.io/sklearndf/", None),
     "facet": ("https://bcg-gamma.github.io/facet/", None),

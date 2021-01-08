@@ -137,18 +137,18 @@ class BracketPair(HasExpressionRepr):
     A pair of brackets.
     """
 
-    #: a pair of round brackets
+    #: A pair of round brackets.
     ROUND: _BracketPair = None
-    #: a pair of square brackets
+    #: A pair of square brackets.
     SQUARE: _BracketPair = None
-    #: a pair of curly brackets
+    #: A pair of curly brackets.
     CURLY: _BracketPair = None
-    #: a pair of angled brackets
+    #: A pair of angled brackets.
     ANGLED: _BracketPair = None
 
-    #: the opening bracket
+    #: The opening bracket.
     opening: str
-    #: the closing bracket
+    #: The closing bracket.
     closing: str
 
     def __init__(self, opening: str, closing: str) -> None:
@@ -286,7 +286,7 @@ class Operation(Expression, metaclass=ABCMeta):
     @abstractmethod
     def operator_(self) -> Operator:
         """
-        The operator of this operation
+        The operator of this operation.
         """
         pass
 
@@ -317,7 +317,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
     @abstractmethod
     def prefix_(self) -> Expression:
         """
-        The prefix of this expression
+        The prefix of this expression.
         """
         pass
 

@@ -45,7 +45,7 @@ class LinkageTree:
     __F_CHILDREN_DISTANCE = 2
     __F_N_DESCENDANTS = 3
 
-    #: The original linkage matrix created by :func:`scipy.cluster.hierarchy.linkage`
+    #: The original linkage matrix created by :func:`scipy.cluster.hierarchy.linkage`.
     #:
     #: One row of the scipy linkage matrix is a quadruple:
     #: `(<index of left child>,
@@ -53,23 +53,23 @@ class LinkageTree:
     #: <distance between children>,
     #: <number of descendant nodes>)`,
     #: where the descendant nodes include the nodes from the entire sub-tree,
-    #: from direct children down to leaf nodes
+    #: from direct children down to leaf nodes.
     scipy_linkage_matrix: np.ndarray
 
     #: The maximum possible distance in the linkage tree; this determines the height of
-    #: the tree to be drawn
+    #: the tree to be drawn.
     max_distance: float
 
     #: A label describing the type/unit of distances
-    #: passed in arg `scipy_linkage_matrix` (optional)
+    #: passed in arg `scipy_linkage_matrix` (optional).
     distance_label: Optional[str]
 
     #: A label describing the type of names
-    #: passed in arg `leaf_names` (optional)
+    #: passed in arg `leaf_names` (optional).
     leaf_label: Optional[str]
 
     #: A label describing the type/unit of weights
-    #: passed in arg `leaf_weights` (optional)
+    #: passed in arg `leaf_weights` (optional).
     weight_label: Optional[str]
 
     def __init__(
@@ -158,7 +158,7 @@ class LinkageTree:
     @property
     def root(self) -> Node:
         """
-        The root node of the linkage tree
+        The root node of the linkage tree.
         """
         return self._nodes[-1]
 
@@ -190,7 +190,7 @@ class LinkageTree:
     @property
     def n_leaves(self) -> int:
         """
-        The number of leave nodes in this linkage tree
+        The number of leave nodes in this linkage tree.
         """
         return len(self) - len(self.scipy_linkage_matrix)
 

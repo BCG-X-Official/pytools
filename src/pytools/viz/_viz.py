@@ -1,5 +1,5 @@
 """
-The Gamma visualization library, providing `model/view/controller` oriented classes for
+The GAMMA visualization library, providing `model/view/controller` oriented classes for
 rendering data in different shapes, styles and formats, e.g., as matplot charts or
 plain text.
 """
@@ -178,7 +178,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     @property
     def colors(self) -> T_ColorScheme:
         """
-        The color scheme used by this style
+        The color scheme used by this style.
         """
         return self._colors
 
@@ -200,10 +200,10 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     a line drawing.
     """
 
-    #: The :class:`.DrawingStyle` used by this drawer
+    #: The :class:`.DrawingStyle` used by this drawer.
     style: T_Style
 
-    #: The name of the default drawing style
+    #: The name of the default drawing style.
     DEFAULT_STYLE = "matplot"
 
     def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:

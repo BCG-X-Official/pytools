@@ -1,5 +1,5 @@
 """
-Matplot styles for the Gamma visualization library
+Matplot styles for the GAMMA visualization library.
 """
 
 import logging
@@ -71,7 +71,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     @property
     def ax(self) -> Axes:
         """
-        The matplotlib :class:`~matplotlib.axes.Axes` object on which to draw
+        The matplotlib :class:`~matplotlib.axes.Axes` object on which to draw.
         """
         ax = self._ax
         if ax is None:
@@ -83,7 +83,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     def renderer(self) -> RendererBase:
         """
         The renderer used by this style's :class:`~matplotlib.axes.Axes` object
-        (see :attr:`.ax`)
+        (see :attr:`.ax`).
         """
         renderer = self._renderer
         if renderer is None:

@@ -71,7 +71,7 @@ class CharacterMatrix:
     @property
     def n_rows(self) -> int:
         """
-        The height of this matrix
+        The height of this matrix.
 
         Same as ``len(self)``.
         """
@@ -80,7 +80,7 @@ class CharacterMatrix:
     @property
     def n_columns(self) -> int:
         """
-        The width of this matrix
+        The width of this matrix.
         """
         return self._n_columns
 

@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.meta`
+Core implementation of :mod:`pytools.meta`.
 """
 import logging
 from typing import Type, TypeVar

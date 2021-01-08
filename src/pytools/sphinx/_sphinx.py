@@ -52,7 +52,7 @@ __all__ = [
 # Type variables
 #
 
-#: Mock type declaration: Sphinx application object
+#: Mock type declaration: Sphinx application object.
 Sphinx = Any
 
 
@@ -339,12 +339,12 @@ class AddInheritance(AutodocProcessDocstring):
         super().__init__()
         self.collapsible_submodules = collapsible_submodules
 
-        #: dict mapping visited classes to their unprocessed docstrings
+        #: Dict mapping visited classes to their unprocessed docstrings.
         self._visited: Dict[type, str] = {}
 
-    F_BASES = ":bases:"  #: field directive for base classes
-    F_GENERICS = ":generic types:"  #: field directive for generic types
-    F_METACLASSES = ":metaclasses:"  #: field directive for metaclasses
+    F_BASES = ":bases:"  #: Field directive for base classes.
+    F_GENERICS = ":generic types:"  #: Field directive for generic types.
+    F_METACLASSES = ":metaclasses:"  #: Field directive for metaclasses.
 
     def process(
         self,
@@ -667,7 +667,7 @@ class CollapseModulePaths(metaclass=ABCMeta):
 class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstring):
     """
     Replace private module paths in docstrings with their public prefix so that object
-    references can be matched by _intersphinx_.
+    references can be matched by *intersphinx*.
     """
 
     def process(
@@ -692,7 +692,7 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
 class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignature):
     """
     Replace private module paths in signatures with their public prefix so that object
-    references can be matched by _intersphinx_.
+    references can be matched by *intersphinx*.
     """
 
     def process(

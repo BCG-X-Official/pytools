@@ -1,5 +1,5 @@
 """
-Supporting classes for linkage trees
+Supporting classes for linkage trees.
 """
 
 import logging
@@ -43,7 +43,7 @@ class Node(metaclass=ABCMeta):
     @property
     def index(self) -> int:
         """
-        The numerical index of this node in the linkage tree
+        The numerical index of this node in the linkage tree.
         """
         return self._index
 
@@ -51,7 +51,7 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def children_distance(self) -> float:
         """
-        Distance of this node from its children
+        Distance of this node from its children.
         """
         pass
 
@@ -59,7 +59,7 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def weight(self) -> float:
         """
-        The weight of this node
+        The weight of this node.
         """
         pass
 
@@ -67,7 +67,7 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def name(self) -> str:
         """
-        The name of this node
+        The name of this node.
         """
         pass
 
@@ -75,7 +75,7 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def is_leaf(self) -> bool:
         """
-        ``True`` if the node is a leaf; ``False`` otherwise
+        ``True`` if the node is a leaf; ``False`` otherwise.
         """
         pass
 
@@ -109,14 +109,14 @@ class LinkageNode(Node):
     @property
     def weight(self) -> float:
         """
-        Undefined for inner nodes; raises :class:`TypeError`
+        Undefined for inner nodes; raises :class:`TypeError`.
         """
         raise self._type_error("weight")
 
     @property
     def name(self) -> str:
         """
-        Undefined for inner nodes; raises :class:`TypeError`
+        Undefined for inner nodes; raises :class:`TypeError`.
         """
         raise self._type_error("name")
 
@@ -149,7 +149,7 @@ class LeafNode(Node):
     @property
     def children_distance(self) -> float:
         """
-        Undefined for leaf nodes; raises :class:`TypeError`
+        Undefined for leaf nodes; raises :class:`TypeError`.
         """
         raise self._type_error("children_distance")
 
