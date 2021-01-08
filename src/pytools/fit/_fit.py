@@ -20,7 +20,7 @@ __all__ = ["NotFittedError", "FittableMixin"]
 # Type variables
 #
 
-T = TypeVar("T")
+T_Self = TypeVar("T_Self")
 T_Data = TypeVar("T_Data")
 
 
@@ -48,7 +48,7 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def fit(self: T, _x: T_Data, **fit_params) -> T:
+    def fit(self: T_Self, _x: T_Data, **fit_params) -> T_Self:
         """
         Fit this object to the given data.
 
