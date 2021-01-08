@@ -31,6 +31,7 @@ __tracker = AllTracker(globals())
 # Classes
 #
 
+
 @inheritdoc(match="[see superclass]")
 class TextStyle(DrawingStyle, metaclass=ABCMeta):
     """
