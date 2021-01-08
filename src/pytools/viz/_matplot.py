@@ -55,7 +55,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         **kwargs,
     ) -> None:
         """
-        :param ax: Optional axes object to draw on; create a new figure if not specified.
+        :param ax: optional axes object to draw on; create a new figure if not specified
         """
         super().__init__(colors=colors, **kwargs)
         self._ax = ax
