@@ -289,7 +289,11 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         super().__init__(
             ax=ax,
             colors=colors,
-            colormap_normalize=colormap_normalize,
+            colormap_normalize=(
+                colormap_normalize
+                if colormap_normalize
+                else Normalize(vmin=0.0, vmax=1.0)
+            ),
             max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
