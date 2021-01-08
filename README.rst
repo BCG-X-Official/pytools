@@ -53,8 +53,7 @@ We do ask that for any major changes please discuss these with us first via an i
 at our team email: FacetTeam@bcg.com.
 
 For further information on contributing please see our `contribution guide
-<https://github.gamma.bcg.com/pages/facet/facet/contribution_guide.html>`_ (todo:
-replace with link once published).
+<https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
 
 
 
