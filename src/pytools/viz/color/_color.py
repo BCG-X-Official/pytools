@@ -56,34 +56,34 @@ _RGB_BLACK: RgbColor = to_rgb("black")
 #: White.
 _RGB_WHITE: RgbColor = to_rgb("white")
 
-#: Facet light grey.
+#: FACET light grey.
 _RGB_LIGHT_GREY: RgbColor = to_rgb("#c8c8c8")
 
-#: Facet grey.
+#: FACET grey.
 _RGB_GREY: RgbColor = to_rgb("#9a9a9a")
 
-#: Facet dark grey.
+#: FACET dark grey.
 _RGB_DARK_GREY: RgbColor = to_rgb("#3d3a40")
 
-#: Facet dark blue.
+#: FACET dark blue.
 _RGB_DARK_BLUE: RgbColor = to_rgb("#295e7e")
 
-#: Facet blue.
+#: FACET blue.
 _RGB_LIGHT_BLUE: RgbColor = to_rgb("#30c1d7")
 
-#: Facet green.
+#: FACET green.
 _RGB_LIGHT_GREEN: RgbColor = to_rgb("#43fda2")
 
-#: Facet status green.
+#: FACET status green.
 _RGB_GREEN: RgbColor = to_rgb("#3ead92")
 
-#: Facet status amber.
+#: FACET status amber.
 _RGB_AMBER: RgbColor = to_rgb("#a8b21c")
 
-#: Facet status red.
+#: FACET status red.
 _RGB_RED: RgbColor = to_rgb("#e61c57")
 
-#: Facet dark red.
+#: FACET dark red.
 _RGB_DARK_RED: RgbColor = to_rgb("#c41310")
 
 #: Standard colormap for FACET.
