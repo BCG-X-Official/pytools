@@ -81,7 +81,7 @@ scipy       =  "=1.5.*"
 joblib      =  "=0.16.*"
 
 [build.matrix.unconstrained]
-python      =  ">=3.6,<4"
+python      =  ">=3.6"
 pandas      =  ">=0.24"
 matplotlib  =  ">=3.0"
 numpy       =  ">=1.16"
