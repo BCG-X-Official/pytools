@@ -178,7 +178,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     @property
     def colors(self) -> T_ColorScheme:
         """
-        The color scheme used by this style
+        The color scheme used by this style.
         """
         return self._colors
 
