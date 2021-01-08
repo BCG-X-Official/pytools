@@ -168,7 +168,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
     """
 
     #: The default width of labels.
-    __DEFAULT_LABEL_WIDTH = 20
+    DEFAULT_LABEL_WIDTH = 20
 
     #: The number of characters that will be allocated for the label column,
     #: including the weight.
@@ -187,8 +187,9 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
     ) -> None:
         """
         :param label_width: the number of characters that will be allocated for the
-            label column, including the weight (optional; defaults to 20 characters or
-            half of arg `width`, whichever is smaller)
+            label column, including the weight (optional; defaults to
+            %DEFAULT_LABEL_WIDTH% characters or half of arg `width`,
+            whichever is smaller)
         :param max_height: maximum number of text lines to output including the title;
             additional lines of the dendrogram will be clipped (default: 100)
         """
@@ -205,7 +206,7 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
             )
         self.max_height = max_height
         self.label_width = (
-            min(DendrogramReportStyle.__DEFAULT_LABEL_WIDTH, width // 2)
+            min(DendrogramReportStyle.DEFAULT_LABEL_WIDTH, width // 2)
             if label_width is None
             else label_width
         )
@@ -213,7 +214,9 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         self._char_matrix = None
         self._n_labels = None
 
-    __init__.__doc__ = TextStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = TextStyle.__init__.__doc__ + __init__.__doc__.replace(
+        "%DEFAULT_LABEL_WIDTH%", str(DEFAULT_LABEL_WIDTH)
+    )
 
     def draw_leaf_names(self, *, names: Sequence[str]) -> None:
         """[see superclass]"""
