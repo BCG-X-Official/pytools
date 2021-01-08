@@ -7,7 +7,7 @@ import sys
 from abc import ABCMeta
 from typing import Optional, TextIO
 
-from ..api import AllTracker
+from ..api import AllTracker, inheritdoc
 from ._viz import DrawingStyle
 
 log = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ __tracker = AllTracker(globals())
 # Classes
 #
 
-
+@inheritdoc(match="[see superclass]")
 class TextStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class of drawing styles producing plain text output.
