@@ -110,12 +110,7 @@ class ColorScheme(HasExpressionRepr):
     allowing code to refer to colors by usage rather than specific RGB values.
     """
 
-    def __init__(
-        self,
-        foreground: RgbColor,
-        background: RgbColor,
-        **colors: RgbColor,
-    ):
+    def __init__(self, foreground: RgbColor, background: RgbColor, **colors: RgbColor):
         """
         :param foreground: the foreground color
         :param background: the background color
