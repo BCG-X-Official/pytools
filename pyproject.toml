@@ -23,7 +23,7 @@ requires = [
     "pyyaml >= 5.0"
 ]
 
-requires-python = ">=3.6,<4"
+requires-python = ">=3.7,<4"
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -65,7 +65,7 @@ Documentation = "https://bcg-gamma.github.io/pytools/"
 Repository = "https://github.com/BCG-Gamma/pytools"
 
 [build.matrix.min]
-python      =  "=3.6.*"
+python      =  "=3.7.*"
 pandas      =  "=0.24.*"
 matplotlib  =  "=3.0.*"
 numpy       =  "=1.16.*"
@@ -81,7 +81,7 @@ scipy       =  "=1.5.*"
 joblib      =  "=0.16.*"
 
 [build.matrix.unconstrained]
-python      =  ">=3.6"
+python      =  ">=3.7,<4"
 pandas      =  ">=0.24"
 matplotlib  =  ">=3.0"
 numpy       =  ">=1.16"
