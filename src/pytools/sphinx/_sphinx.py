@@ -25,7 +25,7 @@ from typing import (
 
 import typing_inspect
 
-from pytools.api import AllTracker, get_generic_bases, inheritdoc
+from pytools.api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
 
 log = logging.getLogger(__name__)
 
@@ -781,9 +781,10 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             # replace 3rd party docstring with cross-reference
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
+            public_module = public_module_prefix(obj_module)
 
             del lines[:]
-            lines.append(f"See :{directive}:`{obj_module}.{obj.__qualname__}`")
+            lines.append(f"See :{directive}:`{public_module}.{obj.__qualname__}`")
 
     @staticmethod
     def __root_package(name: str) -> str:
