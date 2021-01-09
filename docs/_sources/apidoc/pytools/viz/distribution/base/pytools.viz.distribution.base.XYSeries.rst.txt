@@ -11,24 +11,9 @@ pytools.viz.distribution.base.XYSeries
 
    
    
-   .. rubric:: Method summary
-
-   .. autosummary::
-      :nosignatures:
-   
-      ~XYSeries.count
-      ~XYSeries.index
-   
    
 
    
-   
-   .. rubric:: Attribute summary
-
-   .. autosummary::
-   
-      ~XYSeries.x
-      ~XYSeries.y
    
    
 

@@ -251,69 +251,28 @@
 <h1>pytools.viz.distribution.base.XYSeries<a class="headerlink" href="#pytools-viz-distribution-base-xyseries" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="pytools.viz.distribution.base.XYSeries">
-<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.distribution.base.</code><code class="sig-name descname">XYSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)">float</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">y</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)">float</a><span class="p">]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/pytools/viz/distribution/base/_base.html#XYSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.distribution.base.</code><code class="sig-name descname">XYSeries</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/pytools/viz/distribution/base/_base.html#XYSeries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries" title="Permalink to this definition">¶</a></dt>
 <dd><p>Series of <cite>x</cite> and <cite>y</cite> coordinates for plotting; <cite>x</cite> and <cite>y</cite> values are stored in two
 separate sequences of the same length.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Bases</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Sequence" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>x</cite> coordinate values</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Sequence" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>y</cite> coordinate values</p></li>
+</ul>
 </dd>
 </dl>
-<p>Create new instance of XYSeries(x, y)</p>
-<p class="rubric">Method summary</p>
-<table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.XYSeries.count" title="pytools.viz.distribution.base.XYSeries.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p></td>
-<td><p>Return number of occurrences of value.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.XYSeries.index" title="pytools.viz.distribution.base.XYSeries.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a></p></td>
-<td><p>Return first index of value.</p></td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Attribute summary</p>
-<table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.XYSeries.x" title="pytools.viz.distribution.base.XYSeries.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a></p></td>
-<td><p>Alias for field number 0</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.XYSeries.y" title="pytools.viz.distribution.base.XYSeries.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a></p></td>
-<td><p>Alias for field number 1</p></td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Definitions</p>
-<dl class="py method">
-<dt id="pytools.viz.distribution.base.XYSeries.count">
-<code class="sig-name descname">count</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return number of occurrences of value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="pytools.viz.distribution.base.XYSeries.index">
-<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">9223372036854775807</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return first index of value.</p>
-<p>Raises ValueError if the value is not present.</p>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="pytools.viz.distribution.base.XYSeries.x">
 <code class="sig-name descname">x</code><em class="property">: Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)">float</a><span class="p">]</span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.x" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
+<dd><p>series of all <cite>x</cite> coordinate values</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="pytools.viz.distribution.base.XYSeries.y">
 <code class="sig-name descname">y</code><em class="property">: Sequence<span class="p">[</span><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)">float</a><span class="p">]</span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.y" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
+<dd><p>series of all <cite>y</cite> coordinate values</p>
 </dd></dl>
 
 </dd></dl>

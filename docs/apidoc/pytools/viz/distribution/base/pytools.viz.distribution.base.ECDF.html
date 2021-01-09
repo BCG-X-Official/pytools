@@ -251,30 +251,18 @@
 <h1>pytools.viz.distribution.base.ECDF<a class="headerlink" href="#pytools-viz-distribution-base-ecdf" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="pytools.viz.distribution.base.ECDF">
-<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.distribution.base.</code><code class="sig-name descname">ECDF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inliers</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries">pytools.viz.distribution.base.XYSeries</a></span></em>, <em class="sig-param"><span class="n">outliers</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries">pytools.viz.distribution.base.XYSeries</a></span></em>, <em class="sig-param"><span class="n">far_outliers</span><span class="p">:</span> <span class="n"><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries">pytools.viz.distribution.base.XYSeries</a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/pytools/viz/distribution/base/_base.html#ECDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.distribution.base.ECDF" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.distribution.base.</code><code class="sig-name descname">ECDF</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inliers</span></em>, <em class="sig-param"><span class="n">outliers</span></em>, <em class="sig-param"><span class="n">far_outliers</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../../_modules/pytools/viz/distribution/base/_base.html#ECDF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.distribution.base.ECDF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Three sets of coordinates for plotting an ECDF: inliers, outliers, and far
 outliers.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Bases</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inliers</strong> (<a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a>) – coordinates for inliers in the ECDF</p></li>
+<li><p><strong>outliers</strong> (<a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a>) – coordinates for outliers in the ECDF</p></li>
+<li><p><strong>far_outliers</strong> (<a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a>) – coordinates for far outliers in the ECDF</p></li>
+</ul>
 </dd>
 </dl>
-<p>Create new instance of ECDF(inliers, outliers, far_outliers)</p>
-<p class="rubric">Method summary</p>
-<table class="longtable table autosummary">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.ECDF.count" title="pytools.viz.distribution.base.ECDF.count"><code class="xref py py-obj docutils literal notranslate"><span class="pre">count</span></code></a></p></td>
-<td><p>Return number of occurrences of value.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.ECDF.index" title="pytools.viz.distribution.base.ECDF.index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code></a></p></td>
-<td><p>Return first index of value.</p></td>
-</tr>
-</tbody>
-</table>
 <p class="rubric">Attribute summary</p>
 <table class="longtable table autosummary">
 <colgroup>
@@ -283,46 +271,48 @@ outliers.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.ECDF.far_outliers" title="pytools.viz.distribution.base.ECDF.far_outliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">far_outliers</span></code></a></p></td>
-<td><p>Alias for field number 2</p></td>
+<td><p>Coordinates for far outliers in the ECDF.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.ECDF.inliers" title="pytools.viz.distribution.base.ECDF.inliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inliers</span></code></a></p></td>
-<td><p>Alias for field number 0</p></td>
+<td><p>Coordinates for inliers in the ECDF.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.base.ECDF.outliers" title="pytools.viz.distribution.base.ECDF.outliers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outliers</span></code></a></p></td>
-<td><p>Alias for field number 1</p></td>
+<td><p>Coordinates for outliers in the ECDF.</p></td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Definitions</p>
 <dl class="py method">
-<dt id="pytools.viz.distribution.base.ECDF.count">
-<code class="sig-name descname">count</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.count" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return number of occurrences of value.</p>
+<dt id="pytools.viz.distribution.base.ECDF.far_outliers">
+<em class="property">property </em><code class="sig-name descname">far_outliers</code><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.far_outliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates for far outliers in the ECDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="pytools.viz.distribution.base.ECDF.index">
-<code class="sig-name descname">index</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em>, <em class="sig-param"><span class="n">start</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">stop</span><span class="o">=</span><span class="default_value">9223372036854775807</span></em>, <em class="sig-param"><span class="o">/</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.index" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return first index of value.</p>
-<p>Raises ValueError if the value is not present.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="pytools.viz.distribution.base.ECDF.far_outliers">
-<code class="sig-name descname">far_outliers</code><em class="property">: pytools.viz.distribution.base._base.XYSeries</em><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.far_outliers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 2</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt id="pytools.viz.distribution.base.ECDF.inliers">
-<code class="sig-name descname">inliers</code><em class="property">: pytools.viz.distribution.base._base.XYSeries</em><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.inliers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 0</p>
+<em class="property">property </em><code class="sig-name descname">inliers</code><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.inliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates for inliers in the ECDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py attribute">
+<dl class="py method">
 <dt id="pytools.viz.distribution.base.ECDF.outliers">
-<code class="sig-name descname">outliers</code><em class="property">: pytools.viz.distribution.base._base.XYSeries</em><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.outliers" title="Permalink to this definition">¶</a></dt>
-<dd><p>Alias for field number 1</p>
+<em class="property">property </em><code class="sig-name descname">outliers</code><a class="headerlink" href="#pytools.viz.distribution.base.ECDF.outliers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coordinates for outliers in the ECDF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries" title="pytools.viz.distribution.base.XYSeries"><code class="xref py py-class docutils literal notranslate"><span class="pre">XYSeries</span></code></a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

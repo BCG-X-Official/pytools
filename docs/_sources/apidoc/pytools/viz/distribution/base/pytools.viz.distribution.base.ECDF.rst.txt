@@ -11,14 +11,6 @@ pytools.viz.distribution.base.ECDF
 
    
    
-   .. rubric:: Method summary
-
-   .. autosummary::
-      :nosignatures:
-   
-      ~ECDF.count
-      ~ECDF.index
-   
    
 
    
