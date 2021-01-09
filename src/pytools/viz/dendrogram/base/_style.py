@@ -112,7 +112,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
     ) -> None:
         """
         :param min_weight: the minimum weight on the logarithmic feature importance
-            color scale; must be greater than `0` and smaller than `1``
+            color scale; must be greater than `0` and smaller than `1`
             (default: `0.01`, i.e., 1%)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
