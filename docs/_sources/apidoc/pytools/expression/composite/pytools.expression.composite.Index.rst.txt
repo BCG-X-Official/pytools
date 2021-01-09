@@ -1,0 +1,43 @@
+pytools.expression.composite.Index
+==================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: Index
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Index.and_
+      ~Index.eq_
+      ~Index.hash_
+      ~Index.not_
+      ~Index.or_
+      ~Index.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Index.body_
+      ~Index.collection_
+      ~Index.precedence_
+      ~Index.prefix_
+      ~Index.separator_
+      ~Index.subexpressions_
+   
+   
+
+   .. rubric:: Definitions
