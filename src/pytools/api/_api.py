@@ -37,6 +37,7 @@ __all__ = [
     "validate_type",
     "validate_element_types",
     "get_generic_bases",
+    "public_module_prefix",
     "deprecated",
     "deprecation_warning",
     "inheritdoc",
@@ -65,22 +66,6 @@ class AllTracker:
     used in the private module.
     """
 
-    # regular expression to extract the public prefix of a private module
-    # this is the module path up to the first submodule with a leading underscore
-    __RE_PUBLIC_MODULE = re.compile(
-        # start of match group for the public part of the module path
-        r"("
-        # first module component must not start with '_')
-        r"(?:[a-zA-Z]\w+)"
-        # then as many path components as can be matched non-greedily …)
-        r"(?:\.\w+)*?"
-        # but when we hit the first private path component, we stop matching the
-        # public part of the path …
-        r")"
-        # … and match the rest as the private path
-        r"(?:\._\w*(\.\w+)*)"
-    )
-
     def __init__(self, globals_: Dict[str, Any], public_module: Optional[str] = None):
         """
         :param globals_: the dictionary of global variables returned by calling
@@ -104,13 +89,7 @@ class AllTracker:
                     "arg globals_ does not define module name in __name__"
                 )
 
-            match = AllTracker.__RE_PUBLIC_MODULE.fullmatch(module)
-            if not match:
-                raise ValueError(
-                    f"cannot infer public module path from module {module}"
-                )
-
-            self.public_module = match[1]
+            self.public_module = public_module_prefix(module)
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -176,6 +155,50 @@ class AllTracker:
             raise KeyError(name)
 
 
+# regular expression to extract the public prefix of a private module
+# this is the module path up to the first submodule with a leading underscore
+__RE_PUBLIC_MODULE = re.compile(
+    # start of match group for the public part of the module path
+    r"("
+    # first module component must not start with '_')
+    r"(?:[a-zA-Z]\w+)"
+    # then as many path components as can be matched non-greedily …)
+    r"(?:\.\w+)*?"
+    # but when we hit the first private path component, we stop matching the
+    # public part of the path …
+    r")"
+    # … and match the rest as the private path
+    r"(?:\._\w*(?:\.\w+)*)?"
+)
+
+
+def public_module_prefix(module_name: str) -> str:
+    """
+    Get the public prefix of the given module name.
+
+    A module name is composed of one or more identifiers, separated by ``.`` operators.
+    The public prefix is the module name including all identifiers up to, and excluding,
+    the first identifier starting with an underscore character (``_``) .
+    If there is no such identifier, then the public prefix is the same as the full
+    module name.
+    If the first identifier starts with a ``_``, then the public prefix is not defined.
+
+    For example:
+
+    - the public module prefix of ``a.b._c.d._e`` is ``a.b``
+    - the public module prefix of ``a.b`` is ``a.b``
+    - the public module prefix of ``_a.b.c`` is undefined
+
+    :param module_name: the module name for which to get the public prefix
+    :return: the public prefix
+    :raise ValueError: the public prefix is undefined
+    """
+    match = __RE_PUBLIC_MODULE.fullmatch(module_name)
+    if not match:
+        raise ValueError(f"cannot infer public module path from module {module_name}")
+    return match[1]
+
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
@@ -185,6 +208,8 @@ __tracker = AllTracker(globals())
 # it in the __all__ statement
 # noinspection PyProtectedMember
 __tracker._imported.remove(AllTracker.__name__)
+# noinspection PyProtectedMember
+__tracker._imported.remove(public_module_prefix.__name__)
 
 #
 # Functions
