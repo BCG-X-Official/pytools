@@ -2,7 +2,7 @@
 
 Getting started with
 ====================
-.. image:: https://github.com/BCG-Gamma/pytools/blob/develop/../_static/gamma_pytools_logo.png
+.. image:: ../_static/gamma_pytools_logo.png
 
 |
 
