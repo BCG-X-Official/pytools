@@ -3,7 +3,6 @@ Implementation of :mod:`pytools.expression` and subpackages.
 """
 
 import logging
-from abc import ABCMeta
 from typing import Any, Dict, Generic, TypeVar
 from weakref import WeakValueDictionary
 
@@ -85,7 +84,10 @@ class _IdentifierMeta(type):
 
 
 @inheritdoc(match="[see superclass]")
-class Id(AtomicExpression[str], metaclass=compose_meta(_IdentifierMeta, ABCMeta)):
+class Id(
+    AtomicExpression[str],
+    metaclass=compose_meta(_IdentifierMeta, type(AtomicExpression)),
+):
     """
     An identifier.
 
@@ -128,7 +130,10 @@ class Id(AtomicExpression[str], metaclass=compose_meta(_IdentifierMeta, ABCMeta)
 
 
 @inheritdoc(match="[see superclass]")
-class Epsilon(AtomicExpression[None], metaclass=compose_meta(ABCMeta, SingletonMeta)):
+class Epsilon(
+    AtomicExpression[None],
+    metaclass=compose_meta(SingletonMeta, type(AtomicExpression)),
+):
     """
     A singleton class representing the empty expression.
     """

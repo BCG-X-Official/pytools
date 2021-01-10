@@ -10,7 +10,6 @@ from typing import (
     Any,
     Callable,
     Dict,
-    ForwardRef,
     Generator,
     Generic,
     List,
@@ -19,13 +18,28 @@ from typing import (
     Set,
     Tuple,
     TypeVar,
-    Union,
     cast,
 )
 
 import typing_inspect
 
 from pytools.api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
+
+try:
+    # re.Pattern was introduced in Python 3.7 …
+    Pattern = re.Pattern
+except AttributeError:
+    # … in older versions, we set it to the wildcard type
+    Pattern = Any
+
+try:
+    # ForwardRef was introduced in Python 3.7 …
+    # noinspection PyUnresolvedReferences
+    from typing import ForwardRef
+except ImportError:
+    # … in Python 3.6, it is called _ForwardRef
+    # noinspection PyProtectedMember,PyUnresolvedReferences
+    from typing import _ForwardRef as ForwardRef
 
 log = logging.getLogger(__name__)
 
@@ -463,7 +477,7 @@ class AddInheritance(AutodocProcessDocstring):
         # get the full name of the class, including the module prefix
         return f"{self._class_module(cls=cls)}.{self._class_name(cls=cls)}"
 
-    def _class_name_with_generics(self, cls: Union[type, TypeVar]) -> str:
+    def _class_name_with_generics(self, cls: Any) -> str:
         def _class_tag(_name: Any) -> str:
             return f":class:`{str(_name)}`"
 
@@ -610,11 +624,11 @@ class CollapseModulePaths(metaclass=ABCMeta):
             for old, new in collapsible_submodules.items()
         ]
 
-        self._intersphinx_collapsible_prefixes: List[Tuple[re.Pattern, str]] = col
+        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern, str]] = col
         self._collapse_private_modules = collapse_private_modules
 
     @abstractmethod
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
         # create the regex substitution rule given a raw match and replacement patterns
         pass
 
@@ -684,7 +698,7 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
         for i, line in enumerate(lines):
             lines[i] = self.collapse_module_paths(line)
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
         return re.compile(f"(`~?){old}"), f"\\1{new}"
 
 
@@ -712,7 +726,7 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
                 self.collapse_module_paths(return_annotation),
             )
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[re.Pattern, str]:
+    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
         return re.compile(old), new
 
 
