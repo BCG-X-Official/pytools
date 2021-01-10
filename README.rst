@@ -1,4 +1,4 @@
-.. image:: sphinx/source/_static/gamma_pytools_logo.png
+.. image:: https://github.com/BCG-Gamma/pytools/blob/develop/sphinx/source/_static/gamma_pytools_logo.png
 
 |
 
