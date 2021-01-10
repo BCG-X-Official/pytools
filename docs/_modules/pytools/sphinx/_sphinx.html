@@ -154,7 +154,6 @@
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">ForwardRef</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
     <span class="n">Generic</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
@@ -163,13 +162,28 @@
     <span class="n">Set</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
     <span class="n">cast</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">typing_inspect</span>
 
 <span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">get_generic_bases</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">public_module_prefix</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># re.Pattern was introduced in Python 3.7 …</span>
+    <span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="c1"># … in older versions, we set it to the wildcard type</span>
+    <span class="n">Pattern</span> <span class="o">=</span> <span class="n">Any</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># ForwardRef was introduced in Python 3.7 …</span>
+    <span class="c1"># noinspection PyUnresolvedReferences</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ForwardRef</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># … in Python 3.6, it is called _ForwardRef</span>
+    <span class="c1"># noinspection PyProtectedMember,PyUnresolvedReferences</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">_ForwardRef</span> <span class="k">as</span> <span class="n">ForwardRef</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -607,7 +621,7 @@
         <span class="c1"># get the full name of the class, including the module prefix</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_module</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_name</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_class_name_with_generics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_class_name_with_generics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">def</span> <span class="nf">_class_tag</span><span class="p">(</span><span class="n">_name</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;:class:`</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">_name</span><span class="p">)</span><span class="si">}</span><span class="s2">`&quot;</span>
 
@@ -754,11 +768,11 @@
             <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">collapsible_submodules</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_intersphinx_collapsible_prefixes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intersphinx_collapsible_prefixes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">col</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collapse_private_modules</span> <span class="o">=</span> <span class="n">collapse_private_modules</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="c1"># create the regex substitution rule given a raw match and replacement patterns</span>
         <span class="k">pass</span>
 
@@ -828,7 +842,7 @@
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
             <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collapse_module_paths</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(`~?)</span><span class="si">{</span><span class="n">old</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">1</span><span class="si">{</span><span class="n">new</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
@@ -856,7 +870,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">collapse_module_paths</span><span class="p">(</span><span class="n">return_annotation</span><span class="p">),</span>
             <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">old</span><span class="p">),</span> <span class="n">new</span></div>
 
 

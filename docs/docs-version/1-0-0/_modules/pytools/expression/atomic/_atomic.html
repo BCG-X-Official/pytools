@@ -147,7 +147,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span>
 
@@ -229,7 +228,10 @@
 
 
 <div class="viewcode-block" id="Id"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/atomic/pytools.expression.atomic.Id.html#pytools.expression.atomic.Id">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Id</span><span class="p">(</span><span class="n">AtomicExpression</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">compose_meta</span><span class="p">(</span><span class="n">_IdentifierMeta</span><span class="p">,</span> <span class="n">ABCMeta</span><span class="p">)):</span>
+<span class="k">class</span> <span class="nc">Id</span><span class="p">(</span>
+    <span class="n">AtomicExpression</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">metaclass</span><span class="o">=</span><span class="n">compose_meta</span><span class="p">(</span><span class="n">_IdentifierMeta</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">AtomicExpression</span><span class="p">)),</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An identifier.</span>
 
@@ -272,7 +274,10 @@
 
 
 <div class="viewcode-block" id="Epsilon"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/atomic/pytools.expression.atomic.Epsilon.html#pytools.expression.atomic.Epsilon">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Epsilon</span><span class="p">(</span><span class="n">AtomicExpression</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">compose_meta</span><span class="p">(</span><span class="n">ABCMeta</span><span class="p">,</span> <span class="n">SingletonMeta</span><span class="p">)):</span>
+<span class="k">class</span> <span class="nc">Epsilon</span><span class="p">(</span>
+    <span class="n">AtomicExpression</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+    <span class="n">metaclass</span><span class="o">=</span><span class="n">compose_meta</span><span class="p">(</span><span class="n">SingletonMeta</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">AtomicExpression</span><span class="p">)),</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A singleton class representing the empty expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
