@@ -117,7 +117,7 @@ class DrawingStyle(metaclass=ABCMeta):
         Finalize the drawing.
 
         Any additional drawer-specific attributes, obtained from
-        method :meth:`Drawer._get_style_kwargs`, will be passed
+        method :meth:`.Drawer._get_style_kwargs`, will be passed
         as keyword arguments.
         """
 

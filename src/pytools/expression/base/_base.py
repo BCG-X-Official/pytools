@@ -251,9 +251,9 @@ class CollectionLiteral(BracketedExpression):
         """
         The subexpression representing the element(s) of this collection literal
 
-        - an :class:`Epsilon` expression for an empty collection
+        - an :class:`.Epsilon` expression for an empty collection
         - an arbitrary expression for a collection with a single element
-        - a :class:`BinaryOperation` with a :attr:`pytools.expression.operator.COMMA`
+        - a :class:`.BinaryOperation` with a :attr:`.BinaryOperator.COMMA`
           operator for collections with two or more elements
         """
         return super().subexpression_
