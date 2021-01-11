@@ -156,7 +156,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         # set tick and tick label color
         ax.tick_params(color=fg_color, labelcolor=fg_color)
 
-        # set outline
+        # set the outline color
         for spine in ax.spines.values():
             spine.set_edgecolor(fg_color)
 
