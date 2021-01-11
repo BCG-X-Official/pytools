@@ -45,8 +45,8 @@ test:
 about:
   home: https://github.com/BCG-Gamma/pytools
   license: Apache Software License v2.0
-  license_file: LICENSE
-  summary: |
+  license_file: https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE
+  description: |
     A collection of generic Python extensions and tools, used across GAMMA's open-source
     libraries.
   dev_url: https://github.com/BCG-Gamma/pytools
