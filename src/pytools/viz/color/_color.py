@@ -3,7 +3,6 @@ Core implementation of :mod:`pytools.viz.colors`
 """
 
 import logging
-from abc import ABCMeta
 from typing import Set, Tuple, Union
 
 from matplotlib import cm
@@ -346,7 +345,7 @@ class _FacetColorScheme(MatplotColorScheme):
 
 
 class FacetLightColorScheme(
-    _FacetColorScheme, metaclass=compose_meta(ABCMeta, SingletonMeta)
+    _FacetColorScheme, metaclass=compose_meta(SingletonMeta, type(_FacetColorScheme))
 ):
     """
     The default FACET color scheme with a light background.
@@ -357,7 +356,7 @@ class FacetLightColorScheme(
 
 
 class FacetDarkColorScheme(
-    _FacetColorScheme, metaclass=compose_meta(ABCMeta, SingletonMeta)
+    _FacetColorScheme, metaclass=compose_meta(SingletonMeta, type(_FacetColorScheme))
 ):
     """
     The default FACET color scheme with a dark background.
