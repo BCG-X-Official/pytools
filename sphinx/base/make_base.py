@@ -229,7 +229,7 @@ class FetchPkgVersions(Command):
     @classmethod
     def _run(cls) -> None:
         os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
-        start_from_version_tag = "1.0.0"
+        start_from_version_tag = "1.0.1"
         sp = subprocess.run(
             args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
         )

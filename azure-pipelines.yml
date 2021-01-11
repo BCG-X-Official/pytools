@@ -1,7 +1,6 @@
 trigger:
   - master
   - develop
-  - release/*
 
 pr:
   - master
@@ -23,13 +22,7 @@ variables:
     branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
     branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  master_or_release: >
-    ${{ or(
-    startsWith(variables['branchName'], 'release'),
-    eq(variables['branchName'], 'master'),
-    eq(variables['Build.Reason'], 'Schedule')
-    )
-    }}
+  master_or_release: $[ or(startsWith(variables['branchName'], 'release'), eq(variables['branchName'], 'master'), eq(variables['Build.Reason'], 'Schedule')) ]
 
 stages:
   # check code quality first to fail fast (isort, flake8, black)
@@ -269,7 +262,7 @@ stages:
             BUILD_SYSTEM: 'conda'
             PKG_DEPENDENCIES: 'max'
           unconstrained_dependencies_conda:
-            FACET_V_PYTHON_BUILD: '>=3.6,<4'
+            FACET_V_PYTHON_BUILD: '>=3.6'
             PKG_DEPENDENCIES: 'unconstrained'
             BUILD_SYSTEM: 'conda'
           default_dependencies_tox:
@@ -285,7 +278,7 @@ stages:
             BUILD_SYSTEM: 'tox'
             PKG_DEPENDENCIES: 'max'
           unconstrained_dependencies_tox:
-            FACET_V_PYTHON_BUILD: '>=3.6,<4'
+            FACET_V_PYTHON_BUILD: '>=3.6'
             PKG_DEPENDENCIES: 'unconstrained'
             BUILD_SYSTEM: 'tox'
 
