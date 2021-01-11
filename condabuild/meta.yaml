@@ -1,0 +1,54 @@
+package:
+  name: gamma-pytools
+  version: {{ environ.get('FACET_BUILD_PYTOOLS_VERSION') }}
+
+source:
+  git_url: {{FACET_PATH}}/pytools #todo: change to final
+
+build:
+  noarch: python
+  script: "flit install --deps none"
+
+requirements:
+  host:
+    - pip>=20.*
+    - python {{ environ.get('FACET_V_PYTHON', '=3.8.*') }}
+    - flit>=3.0.*
+  run:
+    - python{{ environ.get('FACET_V_PYTHON') }}
+    - pandas{{ environ.get('FACET_V_PANDAS') }}
+    - numpy{{ environ.get('FACET_V_NUMPY') }}
+    - matplotlib{{ environ.get('FACET_V_MATPLOTLIB') }}
+    - joblib{{ environ.get('FACET_V_JOBLIB') }}
+    - scipy{{ environ.get('FACET_V_SCIPY') }}
+    - pyyaml{{ environ.get('FACET_V_PYYAML') }}
+    - typing_inspect{{ environ.get('FACET_V_TYPING_INSPECT') }}
+test:
+  imports:
+    - pytools
+    - pytools.api
+    - pytools.data
+    - pytools.expression
+    - pytools.fit
+    - pytools.parallelization
+    - pytools.sphinx
+    - pytools.viz
+  requires:
+    - pytest=5.2.*
+  commands:
+    - conda list
+    - python -c 'import pytools;
+                 import os;
+                 assert pytools.__version__ == os.environ["PKG_VERSION"]'
+    - pytest -vs ${FACET_PATH}/pytools/test
+
+about:
+  home: https://github.com/BCG-Gamma/pytools
+  license: Apache Software License v2.0
+  license_file: LICENSE
+  description: |
+    A collection of generic Python extensions and tools, used across GAMMA's open-source
+    libraries.
+  dev_url: https://github.com/BCG-Gamma/pytools
+  doc_url: https://bcg-gamma.github.io/pytools/
+  doc_source_url: https://github.com/BCG-Gamma/pytools/blob/develop/README.rst
