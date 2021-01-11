@@ -1,0 +1,440 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.expression &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/js/gamma.js"></script>
+    <script src="../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="pytools.expression.Expression" href="expression/pytools.expression.Expression.html" />
+    <link rel="prev" title="pytools.data.sim_data" href="data/pytools.data.sim_data.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../index.html">
+    
+      <img src="../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../faqs.html">FAQ</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="">pytools.expression</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.Expression.html">pytools.expression.Expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.ExpressionAlias.html">pytools.expression.ExpressionAlias</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.ExpressionFormatter.html">pytools.expression.ExpressionFormatter</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.FrozenExpression.html">pytools.expression.FrozenExpression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.HasExpressionRepr.html">pytools.expression.HasExpressionRepr</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.freeze.html">pytools.expression.freeze</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.make_expression.html">pytools.expression.make_expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.atomic.html">pytools.expression.atomic</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.base.html">pytools.expression.base</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.composite.html">pytools.expression.composite</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.formatter.html">pytools.expression.formatter</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="expression/pytools.expression.operator.html">pytools.expression.operator</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.sphinx.html">pytools.sphinx</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="pytools.viz.html">pytools.viz</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#classes" class="nav-link">Classes</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#functions" class="nav-link">Functions</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#submodules" class="nav-link">Submodules</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="module-pytools.expression">
+<span id="pytools-expression"></span><h1>pytools.expression<a class="headerlink" href="#module-pytools.expression" title="Permalink to this headline">¶</a></h1>
+<p>Representations of Python expressions and support for pretty-printed multi-line output.</p>
+<p>Useful for generating representations of complex Python objects.</p>
+<p>The simplest expressions are <cite>atomic</cite> identifiers and literals, represented by
+instances of <a class="reference internal" href="expression/atomic/pytools.expression.atomic.Id.html#pytools.expression.atomic.Id" title="pytools.expression.atomic.Id"><code class="xref py py-class docutils literal notranslate"><span class="pre">Id</span></code></a> and <a class="reference internal" href="expression/atomic/pytools.expression.atomic.Lit.html#pytools.expression.atomic.Lit" title="pytools.expression.atomic.Lit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lit</span></code></a>.
+To create an identifier, use one of</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Id</span><span class="o">.</span><span class="n">x</span>
+<span class="n">Id</span><span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To create identifiers with a leading or trailing underscore, you need to use the
+<a class="reference internal" href="expression/atomic/pytools.expression.atomic.Id.html#pytools.expression.atomic.Id" title="pytools.expression.atomic.Id"><code class="xref py py-class docutils literal notranslate"><span class="pre">Id</span></code></a> constructor as demonstrated in the second variant above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Id</span><span class="o">.</span><span class="n">_x</span>     <span class="c1"># will raise exception</span>
+<span class="n">Id</span><span class="o">.</span><span class="n">x_</span>     <span class="c1"># will raise exception</span>
+<span class="n">Id</span><span class="p">(</span><span class="s2">&quot;_x&quot;</span><span class="p">)</span>  <span class="c1"># works</span>
+<span class="n">Id</span><span class="p">(</span><span class="s2">&quot;x_&quot;</span><span class="p">)</span>  <span class="c1"># works</span>
+</pre></div>
+</div>
+<p>To create a literal, use one of</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Lit</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">Lit</span><span class="p">(</span><span class="mf">3.3</span><span class="p">)</span>
+<span class="n">Lit</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="expression/pytools.expression.make_expression.html#pytools.expression.make_expression" title="pytools.expression.make_expression"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_expression()</span></code></a> below for more ways to create literals.</p>
+<p>You can use most Python operators to create composite expressions – even using literals
+without <a class="reference internal" href="expression/atomic/pytools.expression.atomic.Lit.html#pytools.expression.atomic.Lit" title="pytools.expression.atomic.Lit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Lit</span></code></a> where the context makes it clear that an expression object is
+being constructed, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">Id</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">Id</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">Id</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="n">Id</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">Id</span><span class="o">.</span><span class="n">g</span>
+<span class="n">x</span> <span class="o">+</span> <span class="mi">3</span>   <span class="c1"># x is an Expression instance, hence 3 is converted to a Literal object</span>
+<span class="mi">3</span> <span class="o">+</span> <span class="n">x</span>   <span class="c1"># this also works if only the second argument is an Expression object</span>
+<span class="n">x</span> <span class="o">==</span> <span class="n">y</span>
+<span class="n">f</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+<span class="n">g</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">g</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>Function <a class="reference internal" href="expression/pytools.expression.make_expression.html#pytools.expression.make_expression" title="pytools.expression.make_expression"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_expression()</span></code></a> translates most Python objects to useful expressions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">make_expression</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">make_expression</span><span class="p">(</span><span class="mf">3.3</span><span class="p">)</span>
+<span class="n">make_expression</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+<span class="n">make_expression</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">Id</span><span class="o">.</span><span class="n">x</span><span class="p">])</span>
+<span class="n">make_expression</span><span class="p">({</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="mi">6</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>If you pass named object to <a class="reference internal" href="expression/pytools.expression.make_expression.html#pytools.expression.make_expression" title="pytools.expression.make_expression"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_expression()</span></code></a>, e.g., a function or a class,
+it will return an identifier with the name of that object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">make_expression</span><span class="p">(</span><span class="n">my_function</span><span class="p">)</span>
+<span class="n">make_expression</span><span class="p">(</span><span class="n">MyClass</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">==</span> <span class="pre">b</span></code> does not compare two expressions for equality, but creates a
+comparison expression.
+To compare two expressions, instead use <code class="docutils literal notranslate"><span class="pre">a.eq_(b)</span></code>, or convert both expressions to
+<cite>frozen expressions</cite> using <a class="reference internal" href="expression/pytools.expression.freeze.html#pytools.expression.freeze" title="pytools.expression.freeze"><code class="xref py py-func docutils literal notranslate"><span class="pre">freeze()</span></code></a>, thus removing their ability to create new
+expressions using Python operators: <code class="docutils literal notranslate"><span class="pre">freeze(a)</span> <span class="pre">==</span> <span class="pre">freeze(b)</span></code>.</p>
+<p>Also note the trailing underscore of method <a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression.eq_" title="pytools.expression.Expression.eq_"><code class="xref py py-meth docutils literal notranslate"><span class="pre">eq_()</span></code></a>.
+By convention, all methods and attributes of expression objects have a trailing
+underscore, to distinguish them from the shortcut to generate attribute access
+expressions: <code class="docutils literal notranslate"><span class="pre">a.eq(b)</span></code> creates a new expression object, rather than comparing
+two expressions.</p>
+<p>Finally, <a class="reference internal" href="expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr" title="pytools.expression.HasExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasExpressionRepr</span></code></a> is a mix-in class that provides a simple way
+for any class to produce well-formatted <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#repr" title="(in Python v3.6)"><code class="xref py py-func docutils literal notranslate"><span class="pre">repr()</span></code></a> string representations
+by implementing method <a class="reference internal" href="expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr.to_expression" title="pytools.expression.HasExpressionRepr.to_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_expression()</span></code></a> and generating
+an <a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> representation of themselves.</p>
+<p>Even class <a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> subclasses <a class="reference internal" href="expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr" title="pytools.expression.HasExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasExpressionRepr</span></code></a>;
+<a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression.to_expression" title="pytools.expression.Expression.to_expression"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Expression.to_expression()</span></code></a> returns the expression itself.</p>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Expression</span></code></a></p></td>
+<td><p>A representation of an expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="expression/pytools.expression.ExpressionAlias.html#pytools.expression.ExpressionAlias" title="pytools.expression.ExpressionAlias"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExpressionAlias</span></code></a></p></td>
+<td><p>An alias pointing to another expression, and representing that expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.ExpressionFormatter.html#pytools.expression.ExpressionFormatter" title="pytools.expression.ExpressionFormatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExpressionFormatter</span></code></a></p></td>
+<td><p>Generates text representations of expression objects.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="expression/pytools.expression.FrozenExpression.html#pytools.expression.FrozenExpression" title="pytools.expression.FrozenExpression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FrozenExpression</span></code></a></p></td>
+<td><p>A frozen expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr" title="pytools.expression.HasExpressionRepr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HasExpressionRepr</span></code></a></p></td>
+<td><p>Mix-in class for arbitrary classes, rendering <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#repr" title="(in Python v3.6)"><code class="xref py py-func docutils literal notranslate"><span class="pre">repr()</span></code></a> and <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> representations using expression objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.freeze.html#pytools.expression.freeze" title="pytools.expression.freeze"><code class="xref py py-obj docutils literal notranslate"><span class="pre">freeze</span></code></a></p></td>
+<td><p>Convenience function to freeze an expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="expression/pytools.expression.make_expression.html#pytools.expression.make_expression" title="pytools.expression.make_expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_expression</span></code></a></p></td>
+<td><p>Convert a Python <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#object" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a> into an expression.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.atomic.html#module-pytools.expression.atomic" title="pytools.expression.atomic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.atomic</span></code></a></p></td>
+<td><p>Atomic expressions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="expression/pytools.expression.base.html#module-pytools.expression.base" title="pytools.expression.base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.base</span></code></a></p></td>
+<td><p>Abstract base classes of expression elements.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.composite.html#module-pytools.expression.composite" title="pytools.expression.composite"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.composite</span></code></a></p></td>
+<td><p>Composite expressions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="expression/pytools.expression.formatter.html#module-pytools.expression.formatter" title="pytools.expression.formatter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.formatter</span></code></a></p></td>
+<td><p>Expression formatters for converting <a class="reference internal" href="expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> objects into text representations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="expression/pytools.expression.operator.html#module-pytools.expression.operator" title="pytools.expression.operator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.operator</span></code></a></p></td>
+<td><p>Operators used in expressions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="data/pytools.data.sim_data.html" title="previous page">pytools.data.sim_data</a>
+    <a class='right-next' id="next-link" href="expression/pytools.expression.Expression.html" title="next page">pytools.expression.Expression</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
