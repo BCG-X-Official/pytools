@@ -247,6 +247,17 @@ class JobRunner(ParallelizableMixin):
             verbose=parallelizable.verbose,
         )
 
+    def run_jobs(self, *jobs: Job[T_Job_Result]) -> List[T_Job_Result]:
+        """
+        Run all given jobs in parallel.
+
+        :return: the results of all jobs
+        """
+        simple_queue: JobQueue[T_Job_Result, List[T_Job_Result]] = SimpleQueue(
+            jobs=jobs
+        )
+        return self.run_queue(simple_queue)
+
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
         Run all jobs in the given queue.
