@@ -4,6 +4,7 @@ Core implementation of :mod:`pytools.parallelization`.
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
+from functools import wraps
 from typing import (
     Any,
     Callable,
@@ -152,6 +153,33 @@ class Job(Generic[T_Job_Result], metaclass=ABCMeta):
         :return: the result produced by the job
         """
         pass
+
+    @classmethod
+    def delayed(
+        cls, function: Callable[..., T_Job_Result]
+    ) -> "Callable[..., Job[T_Job_Result]]":
+        """
+        A decorator creating a `delayed` version of the given function which,
+        if called with arguments, does not run immediately but instead returns a
+        :class:`.Job` that will call the function with the given arguments.
+
+        Once the job is run, it will call the function with the given arguments.
+
+        :param function: a function returning the job result
+        :return: the delayed version of the function
+        """
+
+        @wraps(function)
+        def _delayed_function(*args, **kwargs) -> Job[T_Job_Result]:
+            @inheritdoc(match="""[see superclass]""")
+            class _Job(Job[T_Job_Result]):
+                def run(self) -> T_Job_Result:
+                    """[see superclass]"""
+                    return function(*args, **kwargs)
+
+            return _Job()
+
+        return _delayed_function
 
 
 class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
