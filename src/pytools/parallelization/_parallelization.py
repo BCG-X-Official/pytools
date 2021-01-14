@@ -23,7 +23,7 @@ from typing import (
 
 import joblib
 
-from ..api import AllTracker, inheritdoc, to_tuple
+from ..api import AllTracker, deprecated, inheritdoc, to_tuple
 
 log = logging.getLogger(__name__)
 
@@ -113,10 +113,18 @@ class ParallelizableMixin:
             if value is not None
         }
 
+    @deprecated(
+        message=(
+            "this method is deprecated as of pytools v1.0.2, "
+            "and will be removed in v1.1"
+        )
+    )
     def _parallel(self) -> joblib.Parallel:
         """
         Generate a :class:`joblib.Parallel` instance using the parallelization
         parameters of ``self``.
+
+        `Deprecated as of pytools v1.1; will be removed in v1.2.`
 
         :meta public:
         :return: the new :class:`joblib.Parallel` instance
@@ -124,6 +132,12 @@ class ParallelizableMixin:
         return joblib.Parallel(**self._parallel_kwargs)
 
     @staticmethod
+    @deprecated(
+        message=(
+            "this method is deprecated as of pytools v1.0.2, "
+            "and will be removed in v1.1"
+        )
+    )
     def _delayed(
         function: Callable[..., T]
     ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict[str, Any]]]:
@@ -132,6 +146,8 @@ class ParallelizableMixin:
 
         Convenience method preventing having to import :mod:`joblib`;
         defers to function :func:`joblib.delayed`.
+
+        `Deprecated as of pytools v1.1; will be removed in v1.2.`
 
         :meta public:
         :param function: the function to be delayed
@@ -260,7 +276,7 @@ class JobRunner(ParallelizableMixin):
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
-        Run all jobs in the given queue.
+        Run all jobs in the given queue, in parallel.
 
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
         """
@@ -269,7 +285,7 @@ class JobRunner(ParallelizableMixin):
 
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
-                self._delayed(lambda job: job.run())(job) for job in queue.jobs()
+                joblib.delayed(lambda job: job.run())(job) for job in queue.jobs()
             )
 
         return queue.collate(job_results=results)
@@ -278,7 +294,7 @@ class JobRunner(ParallelizableMixin):
         self, *queues: JobQueue[Any, T_Queue_Result]
     ) -> Iterator[T_Queue_Result]:
         """
-        Run all jobs in the given queues.
+        Run all jobs in the given queues, in parallel.
 
         :return: the result of all jobs, collated per queue using method
             :meth:`.JobQueue.collate`
@@ -289,7 +305,7 @@ class JobRunner(ParallelizableMixin):
 
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
-                self._delayed(lambda job: job.run())(job)
+                joblib.delayed(lambda job: job.run())(job)
                 for queue in queues
                 for job in queue.jobs()
             )
@@ -299,6 +315,11 @@ class JobRunner(ParallelizableMixin):
             last_job = first_job + len(queue)
             yield queue.collate(results[first_job:last_job])
             first_job = last_job
+
+    def _parallel(self) -> joblib.Parallel:
+        # Generate a :class:`joblib.Parallel` instance using the parallelization
+        # parameters of ``self``.
+        return joblib.Parallel(**self._parallel_kwargs)
 
 
 @inheritdoc(match="""[see superclass]""")
