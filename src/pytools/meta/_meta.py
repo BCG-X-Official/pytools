@@ -2,7 +2,7 @@
 Core implementation of :mod:`pytools.meta`.
 """
 import logging
-from typing import Type, TypeVar
+from typing import Optional, Type, TypeVar
 from weakref import ref
 
 from ..api import AllTracker
@@ -44,7 +44,9 @@ class SingletonMeta(type):
     Singleton classes may not accept any parameters upon instantiation.
     """
 
-    __instance_ref: ref = None
+    def __init__(cls, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        cls.__instance_ref: Optional[ref] = None
 
     def __call__(cls: Type[T], *args, **kwargs) -> T:
         """
@@ -60,6 +62,8 @@ class SingletonMeta(type):
         """
         if args or kwargs:
             raise ValueError("singleton classes may not take any arguments")
+
+        cls: SingletonMeta
 
         if cls.__instance_ref:
             obj = cls.__instance_ref()
