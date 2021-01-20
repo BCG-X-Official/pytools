@@ -113,18 +113,13 @@ class ParallelizableMixin:
             if value is not None
         }
 
-    @deprecated(
-        message=(
-            "this method is deprecated as of pytools v1.0.2, "
-            "and will be removed in v1.1"
-        )
-    )
+    @deprecated(message="this method is deprecated and will be removed in v1.1")
     def _parallel(self) -> joblib.Parallel:
         """
         Generate a :class:`joblib.Parallel` instance using the parallelization
         parameters of ``self``.
 
-        `Deprecated as of pytools v1.1; will be removed in v1.2.`
+        `This method is deprecated and will be removed in v1.1.`
 
         :meta public:
         :return: the new :class:`joblib.Parallel` instance
@@ -132,12 +127,7 @@ class ParallelizableMixin:
         return joblib.Parallel(**self._parallel_kwargs)
 
     @staticmethod
-    @deprecated(
-        message=(
-            "this method is deprecated as of pytools v1.0.2, "
-            "and will be removed in v1.1"
-        )
-    )
+    @deprecated(message="this method is deprecated and will be removed in v1.1")
     def _delayed(
         function: Callable[..., T]
     ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict[str, Any]]]:
@@ -147,7 +137,7 @@ class ParallelizableMixin:
         Convenience method preventing having to import :mod:`joblib`;
         defers to function :func:`joblib.delayed`.
 
-        `Deprecated as of pytools v1.1; will be removed in v1.2.`
+        `This method is deprecated and will be removed in v1.1.`
 
         :meta public:
         :param function: the function to be delayed
