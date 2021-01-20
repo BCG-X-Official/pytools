@@ -1,4 +1,4 @@
-name: facet-develop
+name: pytools-develop
 channels:
   - conda-forge
 dependencies:
