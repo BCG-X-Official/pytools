@@ -245,7 +245,7 @@ class JobRunner(ParallelizableMixin):
             for the job runner
         :return: the new job runner
         """
-        cls: Type[JobRunner]
+        cls: Type[T_JobRunner]
         return cls(
             n_jobs=parallelizable.n_jobs,
             shared_memory=parallelizable.shared_memory,
