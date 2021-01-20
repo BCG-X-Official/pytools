@@ -86,6 +86,11 @@ def compose_meta(*metaclasses: type):
 
     :param metaclasses: one or more metaclasses
     """
+    metaclasses = tuple(
+        mcs
+        for i, mcs in enumerate(metaclasses)
+        if mcs is not type and mcs not in metaclasses[:i]
+    )
     return type("_" + "_".join(mcs.__name__ for mcs in metaclasses), metaclasses, {})
 
 
