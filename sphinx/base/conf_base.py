@@ -114,7 +114,6 @@ autodoc_default_options = {
 }
 
 nbsphinx_allow_errors = True
-nbsphinx_timeout = 60 * 15  # 15 minutes due to tutorial/model notebook
 
 # add intersphinx mapping
 intersphinx_mapping = {
