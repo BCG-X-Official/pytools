@@ -124,10 +124,9 @@ class AllTracker:
         """
         List the names of all locally tracked, public items.
 
-        :return: the list of object names
+        :return: the list of object names, sorted alphabetically
         """
-
-        return [name for name in self._globals if self._is_eligible(name=name)]
+        return sorted(name for name in self._globals if self._is_eligible(name=name))
 
     def is_tracked(self, name: str, item: Any) -> bool:
         """
