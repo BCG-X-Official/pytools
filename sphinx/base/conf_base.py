@@ -133,7 +133,6 @@ intersphinx_mapping = {
     "pytools": ("https://bcg-gamma.github.io/pytools/", None),
     "sklearndf": ("https://bcg-gamma.github.io/sklearndf/", None),
     "facet": ("https://bcg-gamma.github.io/facet/", None),
-    "flow": ("https://bcg-gamma.github.io/flow/", None),
 }
 
 intersphinx_collapsible_submodules = {
