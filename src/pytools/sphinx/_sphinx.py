@@ -789,13 +789,13 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             return
 
         name_root_package = self.__root_package(name)
-        obj_root_package = self.__root_package(obj_module)
+        obj_root_package = self.__root_package(obj_module) if obj_module else None
 
         if name_root_package != obj_root_package:
             # replace 3rd party docstring with cross-reference
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
-            public_module = public_module_prefix(obj_module)
+            public_module = public_module_prefix(obj_module) if obj_module else ""
 
             del lines[:]
             lines.append(f"See :{directive}:`{public_module}.{obj.__qualname__}`")
