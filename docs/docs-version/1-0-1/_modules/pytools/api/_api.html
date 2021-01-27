@@ -270,10 +270,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List the names of all locally tracked, public items.</span>
 
-<span class="sd">        :return: the list of object names</span>
+<span class="sd">        :return: the list of object names, sorted alphabetically</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="p">[</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globals</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_eligible</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)]</span></div>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globals</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_eligible</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AllTracker.is_tracked"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.is_tracked">[docs]</a>    <span class="k">def</span> <span class="nf">is_tracked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>

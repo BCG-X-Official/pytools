@@ -935,13 +935,13 @@
             <span class="k">return</span>
 
         <span class="n">name_root_package</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root_package</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="n">obj_root_package</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root_package</span><span class="p">(</span><span class="n">obj_module</span><span class="p">)</span>
+        <span class="n">obj_root_package</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root_package</span><span class="p">(</span><span class="n">obj_module</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj_module</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="n">name_root_package</span> <span class="o">!=</span> <span class="n">obj_root_package</span><span class="p">:</span>
             <span class="c1"># replace 3rd party docstring with cross-reference</span>
 
             <span class="n">directive</span> <span class="o">=</span> <span class="n">Replace3rdPartyDoc</span><span class="o">.</span><span class="n">__RST_DIRECTIVE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="n">what</span><span class="p">)</span>
-            <span class="n">public_module</span> <span class="o">=</span> <span class="n">public_module_prefix</span><span class="p">(</span><span class="n">obj_module</span><span class="p">)</span>
+            <span class="n">public_module</span> <span class="o">=</span> <span class="n">public_module_prefix</span><span class="p">(</span><span class="n">obj_module</span><span class="p">)</span> <span class="k">if</span> <span class="n">obj_module</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
             <span class="k">del</span> <span class="n">lines</span><span class="p">[:]</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;See :</span><span class="si">{</span><span class="n">directive</span><span class="si">}</span><span class="s2">:`</span><span class="si">{</span><span class="n">public_module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span></div>
