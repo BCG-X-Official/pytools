@@ -43,8 +43,8 @@
     <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="pytools.sphinx" href="../pytools.sphinx.html" />
-    <link rel="prev" title="pytools.parallelization" href="../pytools.parallelization.html" />
+    <link rel="next" title="pytools.parallelization.SimpleQueue" href="pytools.parallelization.SimpleQueue.html" />
+    <link rel="prev" title="pytools.parallelization.NestedQueue" href="pytools.parallelization.NestedQueue.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
   </head>
@@ -151,8 +151,28 @@
                     <a href="../pytools.parallelization.html">pytools.parallelization</a>
                     <ul>
                     
+                        <li class="">
+                            <a href="pytools.parallelization.Job.html">pytools.parallelization.Job</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.parallelization.JobQueue.html">pytools.parallelization.JobQueue</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.parallelization.JobRunner.html">pytools.parallelization.JobRunner</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.parallelization.NestedQueue.html">pytools.parallelization.NestedQueue</a>
+                        </li>
+                    
                         <li class="active">
                             <a href="">pytools.parallelization.ParallelizableMixin</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.parallelization.SimpleQueue.html">pytools.parallelization.SimpleQueue</a>
                         </li>
                     
                     </ul>
@@ -236,6 +256,7 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
 <dd><p>Decorate the given function for delayed execution.</p>
 <p>Convenience method preventing having to import <a class="reference external" href="https://joblib.readthedocs.io/en/latest/index.html#module-joblib" title="(in joblib v1.1.0.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">joblib</span></code></a>;
 defers to function <a class="reference external" href="https://joblib.readthedocs.io/en/latest/parallel.html#joblib.delayed" title="(in joblib v1.1.0.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">joblib.delayed()</span></code></a>.</p>
+<p><cite>This method is deprecated and will be removed in v1.1.</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Callable" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[…, ~T]) – the function to be delayed</p>
@@ -254,6 +275,7 @@ defers to function <a class="reference external" href="https://joblib.readthedoc
 <code class="sig-name descname">_parallel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/parallelization/_parallelization.html#ParallelizableMixin._parallel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.parallelization.ParallelizableMixin._parallel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a <a class="reference external" href="https://joblib.readthedocs.io/en/latest/generated/joblib.Parallel.html#joblib.Parallel" title="(in joblib v1.1.0.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">joblib.Parallel</span></code></a> instance using the parallelization
 parameters of <code class="docutils literal notranslate"><span class="pre">self</span></code>.</p>
+<p><cite>This method is deprecated and will be removed in v1.1.</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Parallel</span></code></p>
@@ -300,8 +322,8 @@ if <code class="docutils literal notranslate"><span class="pre">None</span></cod
               
               <div class='prev-next-bottom'>
                 
-    <a class='left-prev' id="prev-link" href="../pytools.parallelization.html" title="previous page">pytools.parallelization</a>
-    <a class='right-next' id="next-link" href="../pytools.sphinx.html" title="next page">pytools.sphinx</a>
+    <a class='left-prev' id="prev-link" href="pytools.parallelization.NestedQueue.html" title="previous page">pytools.parallelization.NestedQueue</a>
+    <a class='right-next' id="next-link" href="pytools.parallelization.SimpleQueue.html" title="next page">pytools.parallelization.SimpleQueue</a>
 
               </div>
               
