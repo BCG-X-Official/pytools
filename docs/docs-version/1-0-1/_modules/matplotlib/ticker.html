@@ -227,6 +227,19 @@
 
 <span class="sd">The default minor locator is `NullLocator`, i.e., no minor ticks on by default.</span>
 
+<span class="sd">.. note::</span>
+<span class="sd">    `Locator` instances should not be used with more than one</span>
+<span class="sd">    `~matplotlib.axis.Axis` or `~matplotlib.axes.Axes`. So instead of::</span>
+
+<span class="sd">        locator = MultipleLocator(5)</span>
+<span class="sd">        ax.xaxis.set_major_locator(locator)</span>
+<span class="sd">        ax2.xaxis.set_major_locator(locator)</span>
+
+<span class="sd">    do the following instead::</span>
+
+<span class="sd">        ax.xaxis.set_major_locator(MultipleLocator(5))</span>
+<span class="sd">        ax2.xaxis.set_major_locator(MultipleLocator(5))</span>
+
 <span class="sd">Tick formatting</span>
 <span class="sd">---------------</span>
 
