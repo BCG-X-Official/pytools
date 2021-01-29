@@ -1,0 +1,44 @@
+pytools.viz.dendrogram.DendrogramHeatmapStyle
+=============================================
+
+.. currentmodule:: pytools.viz.dendrogram
+
+.. autoclass:: DendrogramHeatmapStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DendrogramHeatmapStyle.color_for_value
+      ~DendrogramHeatmapStyle.dark
+      ~DendrogramHeatmapStyle.draw_leaf_names
+      ~DendrogramHeatmapStyle.draw_link_connector
+      ~DendrogramHeatmapStyle.draw_link_leg
+      ~DendrogramHeatmapStyle.finalize_drawing
+      ~DendrogramHeatmapStyle.get_default_style_name
+      ~DendrogramHeatmapStyle.get_named_styles
+      ~DendrogramHeatmapStyle.start_drawing
+      ~DendrogramHeatmapStyle.text_dimensions
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~DendrogramHeatmapStyle.ax
+      ~DendrogramHeatmapStyle.colors
+      ~DendrogramHeatmapStyle.renderer
+   
+   
+
+   .. rubric:: Definitions

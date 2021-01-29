@@ -1,0 +1,37 @@
+pytools.viz.ColoredStyle
+========================
+
+.. currentmodule:: pytools.viz
+
+.. autoclass:: ColoredStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ColoredStyle.dark
+      ~ColoredStyle.finalize_drawing
+      ~ColoredStyle.get_default_style_name
+      ~ColoredStyle.get_named_styles
+      ~ColoredStyle.start_drawing
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ColoredStyle.colors
+   
+   
+
+   .. rubric:: Definitions

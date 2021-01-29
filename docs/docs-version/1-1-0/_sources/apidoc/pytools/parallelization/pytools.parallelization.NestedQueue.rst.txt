@@ -1,0 +1,29 @@
+pytools.parallelization.NestedQueue
+===================================
+
+.. currentmodule:: pytools.parallelization
+
+.. autoclass:: NestedQueue
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~NestedQueue.collate
+      ~NestedQueue.jobs
+      ~NestedQueue.start
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

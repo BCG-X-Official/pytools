@@ -1,0 +1,370 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.expression.composite &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/js/gamma.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="pytools.expression.composite.Attr" href="composite/pytools.expression.composite.Attr.html" />
+    <link rel="prev" title="pytools.expression.base.SingletonExpression" href="base/pytools.expression.base.SingletonExpression.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../index.html">
+    
+      <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../faqs.html">FAQ</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../pytools.expression.html">pytools.expression</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="pytools.expression.Expression.html">pytools.expression.Expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.ExpressionAlias.html">pytools.expression.ExpressionAlias</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.ExpressionFormatter.html">pytools.expression.ExpressionFormatter</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.FrozenExpression.html">pytools.expression.FrozenExpression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.HasExpressionRepr.html">pytools.expression.HasExpressionRepr</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.freeze.html">pytools.expression.freeze</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.make_expression.html">pytools.expression.make_expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.atomic.html">pytools.expression.atomic</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.base.html">pytools.expression.base</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">pytools.expression.composite</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.formatter.html">pytools.expression.formatter</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.expression.operator.html">pytools.expression.operator</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.sphinx.html">pytools.sphinx</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.viz.html">pytools.viz</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#classes" class="nav-link">Classes</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#submodules" class="nav-link">Submodules</a>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="module-pytools.expression.composite">
+<span id="pytools-expression-composite"></span><h1>pytools.expression.composite<a class="headerlink" href="#module-pytools.expression.composite" title="Permalink to this headline">¶</a></h1>
+<p>Composite expressions.</p>
+<p>A composite expressions combines subexpressions to form a new, combines expression.</p>
+<p>Composite expressions comprise</p>
+<ul class="simple">
+<li><p>operations: e.g., <code class="docutils literal notranslate"><span class="pre">-&lt;expression&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;expression</span> <span class="pre">1&gt;</span> <span class="pre">-</span> <span class="pre">&lt;expression</span> <span class="pre">2&gt;</span></code></p></li>
+<li><p>tuple, list, set, dictionary literals</p></li>
+<li><p>call expressions: <code class="docutils literal notranslate"><span class="pre">&lt;expression</span> <span class="pre">1&gt;(&lt;expression</span> <span class="pre">2&gt;])</span></code></p></li>
+<li><p>indexing expressions: <code class="docutils literal notranslate"><span class="pre">&lt;expression</span> <span class="pre">1&gt;[&lt;expression</span> <span class="pre">2&gt;]</span></code></p></li>
+<li><p>attribute access: <code class="docutils literal notranslate"><span class="pre">&lt;expression</span> <span class="pre">1&gt;.&lt;attribute</span> <span class="pre">name&gt;</span></code></p></li>
+<li><p>lambda expressions: <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">…]:</span> <span class="pre">&lt;expression&gt;</span></code></p></li>
+</ul>
+<div class="section" id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.Attr.html#pytools.expression.composite.Attr" title="pytools.expression.composite.Attr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Attr</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">….…</span></code> (“dot”) operation to reference an attribute of an object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="composite/pytools.expression.composite.BinaryOperation.html#pytools.expression.composite.BinaryOperation" title="pytools.expression.composite.BinaryOperation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p></td>
+<td><p>A operation with two or more operands.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.BracketedExpression.html#pytools.expression.composite.BracketedExpression" title="pytools.expression.composite.BracketedExpression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BracketedExpression</span></code></a></p></td>
+<td><p>An expression surrounded by brackets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="composite/pytools.expression.composite.Call.html#pytools.expression.composite.Call" title="pytools.expression.composite.Call"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Call</span></code></a></p></td>
+<td><p>A call expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.DictLiteral.html#pytools.expression.composite.DictLiteral" title="pytools.expression.composite.DictLiteral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DictLiteral</span></code></a></p></td>
+<td><p>A dictionary expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="composite/pytools.expression.composite.Index.html#pytools.expression.composite.Index" title="pytools.expression.composite.Index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Index</span></code></a></p></td>
+<td><p>An indexing operation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.Lambda.html#pytools.expression.composite.Lambda" title="pytools.expression.composite.Lambda"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lambda</span></code></a></p></td>
+<td><p>A lambda expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="composite/pytools.expression.composite.ListLiteral.html#pytools.expression.composite.ListLiteral" title="pytools.expression.composite.ListLiteral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListLiteral</span></code></a></p></td>
+<td><p>A list expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.SetLiteral.html#pytools.expression.composite.SetLiteral" title="pytools.expression.composite.SetLiteral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SetLiteral</span></code></a></p></td>
+<td><p>A set expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="composite/pytools.expression.composite.TupleLiteral.html#pytools.expression.composite.TupleLiteral" title="pytools.expression.composite.TupleLiteral"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TupleLiteral</span></code></a></p></td>
+<td><p>A tuple expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.UnaryOperation.html#pytools.expression.composite.UnaryOperation" title="pytools.expression.composite.UnaryOperation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p></td>
+<td><p>A unary operation.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="composite/pytools.expression.composite.base.html#module-pytools.expression.composite.base" title="pytools.expression.composite.base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pytools.expression.composite.base</span></code></a></p></td>
+<td><p>Supporting classes for composite expressions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="base/pytools.expression.base.SingletonExpression.html" title="previous page">pytools.expression.base.SingletonExpression</a>
+    <a class='right-next' id="next-link" href="composite/pytools.expression.composite.Attr.html" title="next page">pytools.expression.composite.Attr</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2020, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
