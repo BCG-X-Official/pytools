@@ -199,12 +199,11 @@ def set_up(project: str, build_system: str, dependency_type: str) -> None:
     os.environ[
         FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
     ] = pkg_version
-    print("==============================================")
-    print(
-        f"STARTING {build_system.upper()} BUILD FOR: {project},"
-        f" VERSION: {pkg_version}"
+    message = (
+        f"STARTING {build_system.upper()} BUILD FOR: {project}, VERSION: {pkg_version}"
     )
-    print("==============================================")
+    separator = "=" * len(message)
+    print(f"{separator}\n{message}\n{separator}")
 
 
 def conda_build(project: str, dependency_type: str) -> None:
