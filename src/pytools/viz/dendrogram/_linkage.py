@@ -36,6 +36,8 @@ __tracker = AllTracker(globals())
 class LinkageTree:
     """
     A traversable tree derived from a SciPy linkage matrix.
+
+    Supports :func:`len`, and numerical indexing and iteration of nodes.
     """
 
     __F_CHILD_LEFT = 0
@@ -43,20 +45,31 @@ class LinkageTree:
     __F_CHILDREN_DISTANCE = 2
     __F_N_DESCENDANTS = 3
 
+    #: The original linkage matrix created by :func:`scipy.cluster.hierarchy.linkage`.
+    #:
+    #: One row of the scipy linkage matrix is a quadruple:
+    #: `(<index of left child>,
+    #: <index of right child>,
+    #: <distance between children>,
+    #: <number of descendant nodes>)`,
+    #: where the descendant nodes include the nodes from the entire sub-tree,
+    #: from direct children down to leaf nodes.
+    scipy_linkage_matrix: np.ndarray
+
     #: The maximum possible distance in the linkage tree; this determines the height of
-    #: the tree to be drawn
+    #: the tree to be drawn.
     max_distance: float
 
     #: A label describing the type/unit of distances
-    #: passed in arg ``scipy_linkage_matrix`` (optional)
+    #: passed in arg `scipy_linkage_matrix` (optional).
     distance_label: Optional[str]
 
     #: A label describing the type of names
-    #: passed in arg ``leaf_names`` (optional)
+    #: passed in arg `leaf_names` (optional).
     leaf_label: Optional[str]
 
     #: A label describing the type/unit of weights
-    #: passed in arg ``leaf_weights`` (optional)
+    #: passed in arg `leaf_weights` (optional).
     weight_label: Optional[str]
 
     def __init__(
@@ -71,28 +84,21 @@ class LinkageTree:
         weight_label: Optional[str] = None,
     ) -> None:
         """
-        :param scipy_linkage_matrix: linkage matrix calculated by function \
+        :param scipy_linkage_matrix: linkage matrix calculated by function
             :func:`scipy.cluster.hierarchy.linkage`
         :param leaf_names: labels of the leaves
-        :param leaf_weights: weight of the leaves (all values must range between 0.0 \
-            and 1.0; should add up to 1.0)
-        :param max_distance: maximum theoretical distance value; this must be equal \
-            to, or greater than the maximum distance in arg ``scipy_linkage_matrix`` \
+        :param leaf_weights: weight of the leaves; all values must range between `0.0`
+            and `1.0`, and should add up to `1.0`
+        :param max_distance: maximum theoretical distance value; this must be equal
+            to, or greater than the maximum distance in arg `scipy_linkage_matrix`
             (optional)
-        :param distance_label: a label describing the type/unit of distances \
-            passed in arg ``scipy_linkage_matrix`` (optional)
-        :param leaf_label: a label describing the type of names \
-            passed in arg ``leaf_names`` (optional)
-        :param weight_label: a label describing the type/unit of weights \
-            passed in arg ``leaf_weights`` (optional)
+        :param distance_label: a label describing the type and/or unit of distances
+            passed in arg `scipy_linkage_matrix` (optional)
+        :param leaf_label: a label describing the type of names
+            passed in arg `leaf_names` (optional)
+        :param weight_label: a label describing the type and/or unit of weights
+            passed in arg `leaf_weights` (optional)
         """
-        # one row of the linkage matrix is a quadruple:
-        # (
-        #    <index of left child>,
-        #    <index of right child>,
-        #    <distance between children>,
-        #    <number of descendant nodes, from direct children down to leaf nodes>
-        # )
 
         n_branches = len(scipy_linkage_matrix)
         n_leaves = n_branches + 1
@@ -145,37 +151,47 @@ class LinkageTree:
             )
 
         self.max_distance = max_distance
-        self.labels_name = leaf_label
-        self.weights_name = weight_label
-        self.distance_name = distance_label
+        self.leaf_label = leaf_label
+        self.weight_label = weight_label
+        self.distance_label = distance_label
 
     @property
     def root(self) -> Node:
         """
         The root node of the linkage tree.
-
-        It is the cluster containing all other clusters.
         """
         return self._nodes[-1]
 
     def children(self, node: Node) -> Optional[Tuple[Node, Node]]:
-        """Return the children of the node.
+        """
+        Get the children of the given node.
 
+        :param node: the node for which to get the children
         :return: ``None`` if the node is a leaf, otherwise the pair of children
         """
+
+        node_index = node.index
+        nodes = self._nodes
+
+        # check that the node is included in this tree
+        if node_index >= len(nodes) or node is not nodes[node_index]:
+            raise ValueError("arg node is not a node in this linkage tree")
+
         if node.is_leaf:
             return None
         else:
             # noinspection PyProtectedMember
-            node_linkage = self.scipy_linkage_matrix[node._index - self.n_leaves]
+            node_linkage = self.scipy_linkage_matrix[node_index - self.n_leaves]
             ix_c1, ix_c2 = node_linkage[
                 [LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]
             ].astype(int)
-            return self._nodes[ix_c1], self._nodes[ix_c2]
+            return nodes[ix_c1], nodes[ix_c2]
 
     @property
     def n_leaves(self) -> int:
-        """The number of leaves."""
+        """
+        The number of leave nodes in this linkage tree.
+        """
         return len(self) - len(self.scipy_linkage_matrix)
 
     def __len__(self) -> int:

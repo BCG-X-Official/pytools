@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.parallelization`
+Core implementation of :mod:`pytools.parallelization`.
 """
 import logging
 from typing import Any, Callable, Dict, Optional, Tuple, TypeVar, Union
@@ -52,28 +52,28 @@ class ParallelizableMixin:
         **kwargs,
     ) -> None:
         """
-        :param n_jobs: number of jobs to use in parallel; \
-            if ``None``, use joblib default (default: ``None``).
-        :param shared_memory: if ``True``, use threads in the parallel runs'; if \
-            ``False``, use multiprocessing (default: ``False``).
-        :param pre_dispatch: number of batches to pre-dispatch; \
-            if ``None``, use joblib default (default: ``None``).
-        :param verbose: verbosity level used in the parallel computation; \
-            if ``None``, use joblib default (default: ``None``).
+        :param n_jobs: number of jobs to use in parallel;
+            if ``None``, use joblib default (default: ``None``)
+        :param shared_memory: if ``True``, use threads in the parallel runs; if
+            ``False``, use multiprocessing (default: ``False``)
+        :param pre_dispatch: number of batches to pre-dispatch;
+            if ``None``, use joblib default (default: ``None``)
+        :param verbose: verbosity level used in the parallel computation;
+            if ``None``, use joblib default (default: ``None``)
         """
         super().__init__(**kwargs)
-        #: number of jobs to use in parallel; if ``None``, use joblib default
+        #: Number of jobs to use in parallel; if ``None``, use joblib default.
         self.n_jobs = n_jobs
 
-        #: if ``True``, use threads in the parallel runs;
-        #: if ``False``, use multiprocessing
+        #: If ``True``, use threads in the parallel runs;
+        #: if ``False``, use multiprocessing.
         self.shared_memory = shared_memory
 
-        #: number of batches to pre-dispatch; if ``None``, use joblib default
+        #: Number of batches to pre-dispatch; if ``None``, use joblib default.
         self.pre_dispatch = pre_dispatch
 
-        #: verbosity level used in the parallel computation;
-        #: if ``None``, use joblib default
+        #: Verbosity level used in the parallel computation;
+        #: if ``None``, use joblib default.
         self.verbose = verbose
 
         self._parallel_kwargs = {
@@ -88,12 +88,29 @@ class ParallelizableMixin:
         }
 
     def _parallel(self) -> joblib.Parallel:
+        """
+        Generate a :class:`joblib.Parallel` instance using the parallelization
+        parameters of ``self``.
+
+        :meta public:
+        :return: the new :class:`joblib.Parallel` instance
+        """
         return joblib.Parallel(**self._parallel_kwargs)
 
     @staticmethod
     def _delayed(
         function: Callable[..., T]
     ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict[str, Any]]]:
+        """
+        Decorate the given function for delayed execution.
+
+        Convenience method preventing having to import :mod:`joblib`;
+        defers to function :func:`joblib.delayed`.
+
+        :meta public:
+        :param function: the function to be delayed
+        :return: the delayed function
+        """
         return joblib.delayed(function)
 
 

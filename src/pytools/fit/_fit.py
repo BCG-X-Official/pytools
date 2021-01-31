@@ -1,5 +1,5 @@
 """
-Core implementation of :mod:`pytools.fit`
+Core implementation of :mod:`pytools.fit`.
 """
 import logging
 from abc import ABCMeta, abstractmethod
@@ -13,14 +13,14 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["FittableMixin"]
+__all__ = ["NotFittedError", "FittableMixin"]
 
 
 #
 # Type variables
 #
 
-T = TypeVar("T")
+T_Self = TypeVar("T_Self")
 T_Data = TypeVar("T_Data")
 
 
@@ -36,15 +36,22 @@ __tracker = AllTracker(globals())
 #
 
 
+class NotFittedError(Exception):
+    """
+    Raised when a fittable object was expected to be fitted but was not fitted.
+    """
+
+
 class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     """
     Mix-in class that supports fitting the object to data.
     """
 
     @abstractmethod
-    def fit(self: T, _x: T_Data, **fit_params) -> T:
+    def fit(self: T_Self, _x: T_Data, **fit_params) -> T_Self:
         """
-        Fit this object to the given data
+        Fit this object to the given data.
+
         :param _x: the data to fit this object to
         :param fit_params: optional fitting parameters
         :return: self
@@ -54,13 +61,20 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     @property
     @abstractmethod
     def is_fitted(self) -> bool:
-        """``True`` if this object is fitted, ``False`` otherwise."""
+        """
+        ``True`` if this object is fitted, ``False`` otherwise.
+        """
         pass
 
     def _ensure_fitted(self) -> None:
-        # raise a runtime exception if this object is not fitted
+        """
+        Raise a :class:`.NotFittedError` if this object is not fitted.
+
+        :meta public:
+        :raise NotFittedError: this object is not fitted
+        """
         if not self.is_fitted:
-            raise RuntimeError(f"{type(self).__name__} is not fitted")
+            raise NotFittedError(f"{type(self).__name__} is not fitted")
 
 
 __tracker.validate()

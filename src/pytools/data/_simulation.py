@@ -1,7 +1,7 @@
 """
 Utilities for creating simulated data sets.
 """
-from typing import Sequence
+from typing import Optional, Sequence
 
 import numpy as np
 import pandas as pd
@@ -18,9 +18,9 @@ __tracker = AllTracker(globals())
 def sim_data(
     n: int = 100,
     intercept: float = -5,
-    two_way_coef: float = None,
+    two_way_coef: Optional[float] = None,
     linear_vars: int = 10,
-    linear_var_coef: Sequence[float] = None,
+    linear_var_coef: Optional[Sequence[float]] = None,
     noise_vars: int = 0,
     corr_vars: int = 0,
     corr_type: str = "AR1",
@@ -29,52 +29,53 @@ def sim_data(
     bin_var_p: float = 0,
     bin_coef: float = 0,
     outcome: str = "classification",
-    regression_err: float = None,
+    regression_err: Optional[float] = None,
     seed_val: int = 4763546,
 ):
     """
     Simulate data for classification or regression that includes an interaction between
-    two linear features, and some non-linear and linear features. Noise variables,
-    correlated variables that are not predictive and surrogate features
+    two linear features, and some non-linear and linear features.
+
+    Noise variables, correlated variables that are not predictive and surrogate features
     which are just derived from features that are predictive are also added.
 
-    This function is for the most part a direct translation of the twoClassSim function
-    from the R package caret - the option for an ordinal outcome and binary outcome
-    mis-labelling were omitted. Full credit for the approach used for simulating binary
-    classification data goes to the Authors and contributors of caret
-    (Caret: Kuhn, M. (2008). Caret package. Journal of Statistical Software, 28(5).
-    https://rdrr.io/cran/caret/man/twoClassSim.html)
+    This function is for the most part a direct translation of the ``twoClassSim``
+    function from the R package caret -- the option for an ordinal outcome and binary
+    outcome mis-labelling were omitted. Full credit for the approach used for simulating
+    binary classification data goes to the authors and contributors of caret
+    [`Kuhn, M. (2008). Caret package. Journal of Statistical Software, 28(5).
+    <https://rdrr.io/cran/caret/man/twoClassSim.html>`_]
 
-    Key modifications compared to the R implementation:
+    Key modifications compared to the *R* implementation:
 
-    1. The ordinal outcome option has not been translated
-    2. Mis-labelling of the binary outcome has not been translated
-    3. The addition of a linear feature that is a copy of another used in the linear \
-        predictor with a small amount of noise has been added to allow for the study \
-        of variable surrogacy/redundancy
-    4. Option for a binary predictor and surrogate has also been added
-    5. Toggle option for regression versus classification has also been added
-    6. Arguments for the coefficients of primary predictors of interest have been added
+    1.  The ordinal outcome option has not been translated
+    2.  Mis-labelling of the binary outcome has not been translated
+    3.  The addition of a linear feature that is a copy of another used in the linear
+        predictor with a small amount of noise has been added to allow for the study
+        of variable surrogacy
+    4.  Option for a binary predictor and surrogate has been added
+    5.  Toggle option for regression versus classification has been added
+    6.  Arguments for the coefficients of primary predictors of interest has been added
 
     :param n: number of observations
-    :param intercept: value for the intercept which can be modified to generate class \
+    :param intercept: value for the intercept which can be modified to generate class
         imbalance
-    :param two_way_coef: list of three coefficients: two linear terms and an \
+    :param two_way_coef: list of three coefficients: two linear terms and an
         interaction effect
     :param linear_vars: number of linear features
-    :param linear_var_coef: an optional list of coefficients for linear features if \
+    :param linear_var_coef: an optional list of coefficients for linear features if
         the default is not desired
-    :param noise_vars: number of unrelated independent noise features (do not \
+    :param noise_vars: number of unrelated independent noise features (do not
         contribute to the linear predictor)
-    :param corr_vars: number of unrelated correlated noise features (do not contribute \
+    :param corr_vars: number of unrelated correlated noise features (do not contribute
         to the linear predictor)
-    :param corr_type: type of correlation (exchangeable or auto-regressive) for \
+    :param corr_type: type of correlation (exchangeable or auto-regressive) for
         correlated noise features
     :param corr_value: correlation for correlated noise features
     :param surg_err: degree of noise added to first linear predictor
     :param bin_var_p: prevalence for a binary feature to include in linear predictor
     :param bin_coef: coefficient for the impact of binary feature on linear predictor
-    :param outcome: can be either classification for a binary outcome or regression \
+    :param outcome: can be either classification for a binary outcome or regression
         for a continuous outcome
     :param regression_err: the error to be used in simulating a regression outcome
     :param seed_val: set a seed for reproducibility

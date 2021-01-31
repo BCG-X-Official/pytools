@@ -1,5 +1,5 @@
 """
-Supporting classes for linkage trees
+Supporting classes for linkage trees.
 """
 
 import logging
@@ -36,13 +36,15 @@ class Node(metaclass=ABCMeta):
 
     def __init__(self, index: int) -> None:
         """
-        :param index: the index of this node in the linkage tree
+        :param index: the numerical index of this node in the linkage tree
         """
         self._index = index
 
     @property
     def index(self) -> int:
-        """The index of the node."""
+        """
+        The numerical index of this node in the linkage tree.
+        """
         return self._index
 
     @property
@@ -57,7 +59,7 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def weight(self) -> float:
         """
-        Weight of this node.
+        The weight of this node.
         """
         pass
 
@@ -65,14 +67,16 @@ class Node(metaclass=ABCMeta):
     @abstractmethod
     def name(self) -> str:
         """
-        Name of this node.
+        The name of this node.
         """
         pass
 
     @property
     @abstractmethod
     def is_leaf(self) -> bool:
-        """``True`` if the node is a leaf, ``False`` otherwise."""
+        """
+        ``True`` if the node is a leaf; ``False`` otherwise.
+        """
         pass
 
     def _type_error(self, property_name: str) -> TypeError:
@@ -85,7 +89,7 @@ class Node(metaclass=ABCMeta):
 @inheritdoc(match="[see superclass]")
 class LinkageNode(Node):
     """
-    Inner node in a :class:`.LinkageTree`.
+    An inner node in a :class:`.LinkageTree`.
     """
 
     def __init__(self, index: int, children_distance: Optional[float]) -> None:
@@ -105,14 +109,14 @@ class LinkageNode(Node):
     @property
     def weight(self) -> float:
         """
-        Undefined, raises :class:`TypeError`.
+        Undefined for inner nodes; raises :class:`TypeError`.
         """
         raise self._type_error("weight")
 
     @property
     def name(self) -> str:
         """
-        Undefined, raises :class:`TypeError`.
+        Undefined for inner nodes; raises :class:`TypeError`.
         """
         raise self._type_error("name")
 
@@ -128,7 +132,7 @@ class LinkageNode(Node):
 @inheritdoc(match="[see superclass]")
 class LeafNode(Node):
     """
-    A leaf in a linkage tree.
+    A leaf in a :class:`.LinkageTree`.
     """
 
     def __init__(self, index: int, name: str, weight: float) -> None:
@@ -145,7 +149,7 @@ class LeafNode(Node):
     @property
     def children_distance(self) -> float:
         """
-        Undefined, raises :class:`TypeError`.
+        Undefined for leaf nodes; raises :class:`TypeError`.
         """
         raise self._type_error("children_distance")
 

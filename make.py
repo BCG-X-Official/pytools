@@ -117,7 +117,9 @@ def get_package_version(project: str) -> str:
         )
 
     version_module = importlib.util.module_from_spec(spec)
+    # noinspection PyUnresolvedReferences
     spec.loader.exec_module(version_module)
+    # noinspection PyUnresolvedReferences
     return version_module.__version__
 
 
@@ -211,8 +213,8 @@ def conda_build(project: str, dependency_type: str) -> None:
     """
     set_up(project, build_system=B_CONDA, dependency_type=dependency_type)
 
-    def _mk_conda_channel_arg(_project):
-        return f"""-c "{pathlib.Path(make_build_path(_project,B_CONDA)).as_uri()}" """
+    def _mk_conda_channel_arg(_project) -> str:
+        return f'-c "{pathlib.Path(make_build_path(_project, B_CONDA)).as_uri()}"'
 
     build_path = make_build_path(project, B_CONDA)
     os.environ[CONDA_BUILD_PATH_ENV] = build_path
