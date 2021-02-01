@@ -148,8 +148,10 @@ def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
     default_deps_definition: List[str] = flit_metadata["requires"]
 
     for default_dep in default_deps_definition:
+        dependency_name: str
+        dependency_version: str
         dependency_name, dependency_version = default_dep.strip().split(" ", maxsplit=1)
-        dependencies_to_expose[dependency_name] = dependency_version
+        dependencies_to_expose[dependency_name] = dependency_version.strip()
 
     if dependency_type != DEFAULT_DEPS:
         build_matrix_definition = pyproject_toml["build"]["matrix"]
