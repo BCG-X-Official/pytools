@@ -27,6 +27,16 @@ FACET_PATH_URI_ENV = "FACET_PATH_URI"
 FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 
+# pyproject.toml: elements of the hierarchy
+TOML_BUILD = "build"
+TOML_FLIT = "flit"
+TOML_MATRIX = "matrix"
+TOML_METADATA = "metadata"
+TOML_REQUIRES = "requires"
+TOML_REQUIRES_PYTHON = "requires-python"
+TOML_TOOL = "tool"
+
+
 if FACET_PATH_ENV in os.environ and os.environ[FACET_PATH_ENV] != "":
     FACET_PATH = os.environ[FACET_PATH_ENV]
 else:
@@ -139,13 +149,13 @@ def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
 
     dependencies_to_expose = {}
 
-    flit_metadata = pyproject_toml["tool"]["flit"]["metadata"]
+    flit_metadata = pyproject_toml[TOML_TOOL][TOML_FLIT][TOML_METADATA]
 
-    pkg_requires_python_version = flit_metadata["requires-python"]
+    pkg_requires_python_version = flit_metadata[TOML_REQUIRES_PYTHON]
 
     dependencies_to_expose["python"] = pkg_requires_python_version
 
-    default_deps_definition: List[str] = flit_metadata["requires"]
+    default_deps_definition: List[str] = flit_metadata[TOML_REQUIRES]
 
     for default_dep in default_deps_definition:
         dependency_name: str
@@ -154,7 +164,7 @@ def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
         dependencies_to_expose[dependency_name] = dependency_version.strip()
 
     if dependency_type != DEFAULT_DEPS:
-        build_matrix_definition = pyproject_toml["build"]["matrix"]
+        build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
         dependencies = build_matrix_definition[dependency_type]
         for (dependency_name, dependency_version) in dependencies.items():
             dependencies_to_expose[dependency_name] = adapt_version_syntax(
