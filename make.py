@@ -84,6 +84,7 @@ def get_pyproject_toml(project: str) -> Dict[str, Any]:
     Retrieve a parsed Dict for a given project's pyproject.toml.
     """
     pyproject_toml_path = os.path.join(FACET_PATH, project, "pyproject.toml")
+    print(f"Reading build configuration from {pyproject_toml_path}")
     with open(pyproject_toml_path, "rt") as f:
         return toml.load(f)
 
