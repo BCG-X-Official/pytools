@@ -51,17 +51,16 @@ if " " in FACET_PATH:
 
 KNOWN_COMMANDS = "build"
 
-KNOWN_PROJECTS = ("pytools", "sklearndf", "facet", "flow")
+KNOWN_PROJECTS = {"pytools", "sklearndf", "facet", "flow"}
 
 B_CONDA = "conda"
 B_TOX = "tox"
-KNOWN_BUILD_SYSTEMS = (B_CONDA, B_TOX)
+KNOWN_BUILD_SYSTEMS = {B_CONDA, B_TOX}
 
 DEFAULT_DEPS = "default"
 MIN_DEPS = "min"
 MAX_DEPS = "max"
-UNCONSTRAINED_DEPS = "unconstrained"
-KNOWN_DEPENDENCY_TYPES = (DEFAULT_DEPS, MIN_DEPS, MAX_DEPS, UNCONSTRAINED_DEPS)
+KNOWN_DEPENDENCY_TYPES = {DEFAULT_DEPS, MIN_DEPS, MAX_DEPS}
 
 CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
@@ -323,12 +322,11 @@ Available program arguments:
             default: use dependencies and version ranges as defined in pyproject.toml
             min:     use a custom set of minimal dependencies from pyproject.toml
             max:     use a custom set of maximum dependencies from pyproject.toml
-            unconstrained: use constrained dependencies from pyproject.toml
 
 
 Example usage:
     ./make.py sklearndf conda default
-    ./make.py sklearndf tox unconstrained
+    ./make.py sklearndf tox max
 
 """
     print(usage)
@@ -360,7 +358,9 @@ def run_make() -> None:
         if arg_name == "project" and arg_passed == "all":
             continue
         elif arg_passed not in known_args:
-            print(f"Wrong {arg_name}: {arg_passed}. Allowed are: {known_args}")
+            print(
+                f"Wrong {arg_name}: {arg_passed}; fallowed are: {', '.join(known_args)}"
+            )
             exit(1)
 
     if project == ALL_PROJECTS_QUALIFIER:

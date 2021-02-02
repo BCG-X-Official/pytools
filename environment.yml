@@ -26,11 +26,11 @@ dependencies:
   - pytest = 5.2.*
   - pytest-cov = 2.8.*
   - python = 3.8.*
-  - pyyaml = 5.1.*
+  - pyyaml = 5.4.*
   - scikit-learn >=0.23.1,<0.24
   - scipy = 1.5.*
   - seaborn = 0.11.*
-  - shap = 0.35.*
+  - shap = 0.37.*
   - sphinx = 3.2.*
   - sphinx-autodoc-typehints = 1.11.*
   - tableone = 0.7.*
@@ -38,4 +38,3 @@ dependencies:
   - toml = 0.10.*
   - tox = 3.20.*
   - xlrd = 1.2.*
-  - yaml = 0.1.*
