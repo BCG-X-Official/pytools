@@ -37,18 +37,6 @@ TOML_REQUIRES_PYTHON = "requires-python"
 TOML_TOOL = "tool"
 
 
-if FACET_PATH_ENV in os.environ and os.environ[FACET_PATH_ENV] != "":
-    FACET_PATH = os.environ[FACET_PATH_ENV]
-else:
-    FACET_PATH = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-
-if " " in FACET_PATH:
-    warnings.warn(
-        f"The build base path '{FACET_PATH}' contains spaces – this causes issues "
-        f"with conda-build. Consider to set a different path using the "
-        f"environment variable {FACET_PATH_ENV} ahead of running make.py"
-    )
-
 KNOWN_COMMANDS = "build"
 
 KNOWN_PROJECTS = ("pytools", "sklearndf", "facet", "flow")
@@ -93,7 +81,9 @@ def get_pyproject_toml(project: str) -> Dict[str, Any]:
     """
     Retrieve a parsed Dict for a given project's pyproject.toml.
     """
-    pyproject_toml_path = os.path.join(FACET_PATH, project, "pyproject.toml")
+    pyproject_toml_path = os.path.join(
+        os.environ[FACET_PATH_ENV], project, "pyproject.toml"
+    )
     print(f"Reading build configuration from {pyproject_toml_path}")
     with open(pyproject_toml_path, "rt") as f:
         return toml.load(f)
@@ -204,8 +194,20 @@ def set_up(project: str, build_system: str, dependency_type: str) -> None:
     """
     Set up for a build – set FACET_PATH (parent folder of all projects) and clean.
     """
-    os.environ[FACET_PATH_ENV] = FACET_PATH
-    os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(FACET_PATH)}"
+    if FACET_PATH_ENV in os.environ and os.environ[FACET_PATH_ENV] != "":
+        facet_path = os.environ[FACET_PATH_ENV]
+    else:
+        facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+        os.environ[FACET_PATH_ENV] = facet_path
+
+    if " " in facet_path:
+        warnings.warn(
+            f"The build base path '{facet_path}' contains spaces – this causes issues "
+            f"with conda-build. Consider to set a different path using the "
+            f"environment variable {FACET_PATH_ENV} ahead of running make.py"
+        )
+
+    os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(facet_path)}"
     clean(project, build_system)
     expose_deps(project, build_system, dependency_type)
     pkg_version = get_package_version(project)
