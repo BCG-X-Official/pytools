@@ -189,7 +189,7 @@ def clean(project: str, build_system: str) -> None:
         pass
 
 
-def set_up(project: str, build_system: str, dependency_type: str) -> None:
+def set_up(project: str, build_system: str, dependency_type: str) -> str:
     """
     Set up for a build – set FACET_PATH (parent folder of all projects) and clean.
     """
@@ -213,8 +213,20 @@ def set_up(project: str, build_system: str, dependency_type: str) -> None:
     os.environ[
         FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
     ] = pkg_version
+    print_build_info(
+        stage="STARTING",
+        build_system=build_system,
+        pkg_version=pkg_version,
+        project=project,
+    )
+    return pkg_version
+
+
+def print_build_info(
+    stage: str, build_system: str, pkg_version: str, project: str
+) -> None:
     message = (
-        f"STARTING {build_system.upper()} BUILD FOR: {project}, VERSION: {pkg_version}"
+        f"{stage} {build_system.upper()} BUILD FOR: {project}, VERSION: {pkg_version}"
     )
     separator = "=" * len(message)
     print(f"{separator}\n{message}\n{separator}")
@@ -224,7 +236,9 @@ def conda_build(project: str, dependency_type: str) -> None:
     """
     Build a facet project using conda-build.
     """
-    set_up(project, build_system=B_CONDA, dependency_type=dependency_type)
+    pkg_version = set_up(
+        project=project, build_system=B_CONDA, dependency_type=dependency_type
+    )
 
     def _mk_conda_channel_arg(_project) -> str:
         return f'-c "{pathlib.Path(make_build_path(_project, B_CONDA)).as_uri()}"'
@@ -254,12 +268,21 @@ def conda_build(project: str, dependency_type: str) -> None:
     print(f"Build Command: {build_cmd}")
     subprocess.run(args=build_cmd, shell=True, check=True)
 
+    print_build_info(
+        stage="COMPLETED",
+        build_system=B_CONDA,
+        pkg_version=pkg_version,
+        project=project,
+    )
+
 
 def tox_build(project: str, dependency_type: str) -> None:
     """
     Build a facet project using tox.
     """
-    set_up(project, B_TOX, dependency_type)
+    pkg_version = set_up(
+        project=project, build_system=B_TOX, dependency_type=dependency_type
+    )
     if dependency_type == DEFAULT_DEPS:
         tox_env = "py3"
     else:
@@ -270,6 +293,13 @@ def tox_build(project: str, dependency_type: str) -> None:
     subprocess.run(args=build_cmd, shell=True, check=True)
     print("Tox build completed – creating local PyPi index")
     create_local_pypi_index(project)
+
+    print_build_info(
+        stage="COMPLETED",
+        build_system=B_CONDA,
+        pkg_version=pkg_version,
+        project=project,
+    )
 
 
 def create_local_pypi_index(project: str) -> None:
