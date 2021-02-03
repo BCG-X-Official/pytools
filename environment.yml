@@ -26,7 +26,7 @@ dependencies:
   - python = 3.8.*
   - pyyaml >= 5.1
   - seaborn = 0.11.*
-  - sphinx >= 3.4
+  - sphinx = 3.4.*
   - sphinx-autodoc-typehints = 1.11.*
   - tableone = 0.7.*
   - toml = 0.10.*
