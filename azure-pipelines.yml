@@ -352,7 +352,7 @@ stages:
               ConnectionDetailsSelection: 'Endpoint'
               AnalysisService: 'veracode'
               veracodeAppProfile: 'FACET'
-              version: 'Fixed_name'
+              version: '$(BuildID)'
               filepath: '$(System.DefaultWorkingDirectory)/static_scan'
               sandboxName: 'pytools'
               createSandBox: false
