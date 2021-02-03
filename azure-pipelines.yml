@@ -334,7 +334,7 @@ stages:
     jobs:
       - job:
         displayName: 'Veracode check'
-        condition: eq(variables['Build.Reason'], 'Schedule')
+        #condition: eq(variables['Build.Reason'], 'Schedule')
 
         steps:
           - task: Bash@3
@@ -352,7 +352,7 @@ stages:
               ConnectionDetailsSelection: 'Endpoint'
               AnalysisService: 'veracode'
               veracodeAppProfile: 'FACET'
-              version: '$(Build.BuildNumber)'
+              version: 'Fixed_name'
               filepath: '$(System.DefaultWorkingDirectory)/static_scan'
               sandboxName: 'pytools'
               createSandBox: false
