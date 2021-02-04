@@ -363,22 +363,20 @@ def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    usage = """Facet Build script
-=================================
-Available program arguments:
-    <self.project> <build-system> <dependencies>
-        create the Conda package for given self.project.
+    usage = f"""Facet Build script
+==================
+Build a distribution package for given project.
 
-    Available arguments:
-        self.project:    i.e. pytools | sklearndf | facet | flow.
-                    Use "build=all" to build pytools, sklearndf, facet and flow.
+Available arguments:
+    project:    {' | '.join((ALL_PROJECTS_QUALIFIER,*KNOWN_PROJECTS))}
+                use "{ALL_PROJECTS_QUALIFIER}" to build all projects
 
-        build-system: conda | tox
+    build-system: {B_CONDA} | {B_TOX}
 
-        dependencies:
-            default: use dependencies and version ranges as defined in pyproject.toml
-            min:     use a custom set of minimal dependencies from pyproject.toml
-            max:     use a custom set of maximum dependencies from pyproject.toml
+    dependencies:
+        default: use dependencies and version ranges as defined in pyproject.toml
+        min:     use a custom set of minimal dependencies from pyproject.toml
+        max:     use a custom set of maximum dependencies from pyproject.toml
 
 
 Example usage:
