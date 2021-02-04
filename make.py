@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import warnings
+from abc import ABCMeta, abstractmethod
 from glob import glob
 from typing import Any, Dict, List
 from urllib.request import pathname2url
@@ -57,10 +58,9 @@ CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 
-class Builder:
-    def __init__(self, project: str, build_system: str, dependency_type: str):
+class Builder(metaclass=ABCMeta):
+    def __init__(self, project: str, dependency_type: str):
         self.project = project
-        self.build_system = build_system
         self.dependency_type = dependency_type
 
         # determine the FACET root path containing the project working directories
@@ -107,6 +107,27 @@ class Builder:
 
         self.package_version = package_version
 
+    @staticmethod
+    def for_build_system(
+        build_system: str, project: str, dependency_type: str
+    ) -> "Builder":
+        if build_system == B_CONDA:
+            return CondaBuilder(project=project, dependency_type=dependency_type)
+        elif build_system == B_TOX:
+            return ToxBuilder(project=project, dependency_type=dependency_type)
+        else:
+            raise KeyError(f"Unknown build system: {build_system}")
+
+    @property
+    @abstractmethod
+    def build_system(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def build_path_suffix(self) -> str:
+        pass
+
     def make_build_path(self, project: str = None) -> str:
         """
         Return the target build path for Conda or Tox build.
@@ -115,16 +136,9 @@ class Builder:
         if project is None:
             project = self.project
 
-        if self.build_system == B_CONDA:
-            return os.path.abspath(
-                os.path.join(
-                    os.environ[FACET_PATH_ENV], project, CONDA_BUILD_PATH_SUFFIX
-                )
-            )
-        elif self.build_system == B_TOX:
-            return os.path.abspath(
-                os.path.join(os.environ[FACET_PATH_ENV], project, TOX_BUILD_PATH_SUFFIX)
-            )
+        return os.path.abspath(
+            os.path.join(os.environ[FACET_PATH_ENV], project, self.build_path_suffix)
+        )
 
     def make_local_pypi_index_path(self) -> str:
         """
@@ -153,18 +167,15 @@ class Builder:
             TOML_DIST_NAME
         ]
 
+    @abstractmethod
+    def adapt_version_syntax(self, version: str) -> str:
+        pass
+
     def expose_deps(self) -> None:
         """
         Expose package dependencies for builds as environment variables.
         """
         pyproject_toml = self.get_pyproject_toml()
-
-        def adapt_version_syntax(version: str) -> str:
-            if self.build_system == B_CONDA or (">" in version or "<" in version):
-                return version
-            else:
-                # PIP expects == instead of =
-                return version.replace("=", "==")
 
         dependencies_to_expose = {}
 
@@ -188,7 +199,7 @@ class Builder:
             build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
             dependencies = build_matrix_definition[self.dependency_type]
             for (dependency_name, dependency_version) in dependencies.items():
-                dependencies_to_expose[dependency_name] = adapt_version_syntax(
+                dependencies_to_expose[dependency_name] = self.adapt_version_syntax(
                     dependency_version
                 )
 
@@ -199,29 +210,11 @@ class Builder:
             print(f"Exposing: '{env_var_key}' as: '{env_var_value}'")
             os.environ[env_var_key] = env_var_value
 
+    @abstractmethod
     def clean(self) -> None:
         """
         Cleans the dist folder for the given self.project and build system.
         """
-        build_path = self.make_build_path()
-        if self.build_system == B_CONDA:
-            # purge pre-existing build directories
-            package_dist_name = self.get_package_dist_name()
-            for obsolete_folder in glob(
-                os.path.join(build_path, f"{package_dist_name}_*")
-            ):
-                print(
-                    f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}"
-                )
-                shutil.rmtree(obsolete_folder, ignore_errors=True)
-
-            # remove broken packages
-            shutil.rmtree(os.path.join(build_path, "broken"), ignore_errors=True)
-
-        elif self.build_system == B_TOX:
-            # nothing to do – .tar.gz of same version will simply be replaced and
-            # .tox is useful to keep
-            pass
 
     def print_build_info(self, stage: str) -> None:
         message = (
@@ -231,55 +224,9 @@ class Builder:
         separator = "=" * len(message)
         print(f"{separator}\n{message}\n{separator}")
 
+    @abstractmethod
     def build(self) -> None:
-        self.clean()
-        self.expose_deps()
-        if self.build_system == B_CONDA:
-            self.conda_build()
-        elif self.build_system == B_TOX:
-            self.tox_build()
-
-    def conda_build(self) -> None:
-        """
-        Build a facet self.project using conda-build.
-        """
-
-        build_path = self.make_build_path()
-        os.environ[CONDA_BUILD_PATH_ENV] = build_path
-
-        recipe_path = os.path.abspath(
-            os.path.join(os.environ[FACET_PATH_ENV], self.project, "condabuild")
-        )
-
-        local_channels = [
-            f'-c "{pathlib.Path(_build_path).as_uri()}"'
-            for _build_path in map(self.make_build_path, KNOWN_PROJECTS)
-            if os.path.exists(_build_path)
-            and os.path.exists(os.path.join(_build_path, "noarch/repodata.json"))
-        ]
-
-        print(f"Building: {self.project}. Build path: {build_path}")
-        os.makedirs(build_path, exist_ok=True)
-        build_cmd = (
-            f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
-        )
-        print(f"Build Command: {build_cmd}")
-        subprocess.run(args=build_cmd, shell=True, check=True)
-
-    def tox_build(self) -> None:
-        """
-        Build a facet self.project using tox.
-        """
-        if self.dependency_type == DEFAULT_DEPS:
-            tox_env = "py3"
-        else:
-            tox_env = "py3-custom-deps"
-
-        build_cmd = f"tox -e {tox_env} -v"
-        print(f"Build Command: {build_cmd}")
-        subprocess.run(args=build_cmd, shell=True, check=True)
-        print("Tox build completed – creating local PyPi index")
-        self.create_local_pypi_index()
+        pass
 
     def create_local_pypi_index(self) -> None:
         """
@@ -318,8 +265,98 @@ class Builder:
 
     def run(self) -> None:
         self.print_build_info(stage="STARTING")
+        self.clean()
+        self.expose_deps()
         self.build()
         self.print_build_info(stage="COMPLETED")
+
+
+class CondaBuilder(Builder):
+    @property
+    def build_system(self) -> str:
+        return B_CONDA
+
+    @property
+    def build_path_suffix(self) -> str:
+        return CONDA_BUILD_PATH_SUFFIX
+
+    def adapt_version_syntax(self, version: str) -> str:
+        return version
+
+    def clean(self) -> None:
+        build_path = self.make_build_path()
+        # purge pre-existing build directories
+        package_dist_name = self.get_package_dist_name()
+        for obsolete_folder in glob(os.path.join(build_path, f"{package_dist_name}_*")):
+            print(f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}")
+            shutil.rmtree(obsolete_folder, ignore_errors=True)
+
+        # remove broken packages
+        shutil.rmtree(os.path.join(build_path, "broken"), ignore_errors=True)
+
+    def build(self) -> None:
+        """
+        Build a facet self.project using conda-build.
+        """
+
+        build_path = self.make_build_path()
+        os.environ[CONDA_BUILD_PATH_ENV] = build_path
+
+        recipe_path = os.path.abspath(
+            os.path.join(os.environ[FACET_PATH_ENV], self.project, "condabuild")
+        )
+
+        local_channels = [
+            f'-c "{pathlib.Path(_build_path).as_uri()}"'
+            for _build_path in map(self.make_build_path, KNOWN_PROJECTS)
+            if os.path.exists(_build_path)
+            and os.path.exists(os.path.join(_build_path, "noarch/repodata.json"))
+        ]
+
+        print(f"Building: {self.project}. Build path: {build_path}")
+        os.makedirs(build_path, exist_ok=True)
+        build_cmd = (
+            f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
+        )
+        print(f"Build Command: {build_cmd}")
+        subprocess.run(args=build_cmd, shell=True, check=True)
+
+
+class ToxBuilder(Builder):
+    @property
+    def build_system(self) -> str:
+        return B_TOX
+
+    @property
+    def build_path_suffix(self) -> str:
+        return TOX_BUILD_PATH_SUFFIX
+
+    def adapt_version_syntax(self, version: str) -> str:
+        if ">" in version or "<" in version:
+            return version
+        else:
+            # PIP expects == instead of =
+            return version.replace("=", "==")
+
+    def clean(self) -> None:
+        # nothing to do – .tar.gz of same version will simply be replaced and
+        # .tox is useful to keep
+        pass
+
+    def build(self) -> None:
+        """
+        Build a facet self.project using tox.
+        """
+        if self.dependency_type == DEFAULT_DEPS:
+            tox_env = "py3"
+        else:
+            tox_env = "py3-custom-deps"
+
+        build_cmd = f"tox -e {tox_env} -v"
+        print(f"Build Command: {build_cmd}")
+        subprocess.run(args=build_cmd, shell=True, check=True)
+        print("Tox build completed – creating local PyPi index")
+        self.create_local_pypi_index()
 
 
 def print_usage() -> None:
@@ -385,14 +422,14 @@ def run_make() -> None:
 
     if project == ALL_PROJECTS_QUALIFIER:
         for _project in KNOWN_PROJECTS:
-            Builder(
-                project=_project,
+            Builder.for_build_system(
                 build_system=build_system,
+                project=_project,
                 dependency_type=dependency_type,
             ).run()
     else:
-        Builder(
-            project=project, build_system=build_system, dependency_type=dependency_type
+        Builder.for_build_system(
+            build_system=build_system, project=project, dependency_type=dependency_type
         ).run()
 
 
