@@ -29,6 +29,7 @@ CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 
 # pyproject.toml: elements of the hierarchy
 TOML_BUILD = "build"
+TOML_DIST_NAME = "dist-name"
 TOML_FLIT = "flit"
 TOML_MATRIX = "matrix"
 TOML_METADATA = "metadata"
@@ -37,9 +38,11 @@ TOML_REQUIRES_PYTHON = "requires-python"
 TOML_TOOL = "tool"
 
 
-KNOWN_COMMANDS = "build"
-
-KNOWN_PROJECTS = {"pytools", "sklearndf", "facet", "flow"}
+PROJ_PYTOOLS = "pytools"
+PROJ_FACET = "facet"
+PROJ_FLOW = "flow"
+PROJ_SKLEARNDF = "sklearndf"
+KNOWN_PROJECTS = {PROJ_PYTOOLS, PROJ_SKLEARNDF, PROJ_FACET, PROJ_FLOW}
 
 B_CONDA = "conda"
 B_TOX = "tox"
@@ -54,284 +57,269 @@ CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 
-def make_build_path(project: str, build_system: str) -> str:
-    """
-    Return the target build path for Conda or Tox build.
-    """
-    if build_system == B_CONDA:
-        return os.path.abspath(
-            os.path.join(os.environ[FACET_PATH_ENV], project, CONDA_BUILD_PATH_SUFFIX)
-        )
-    elif build_system == B_TOX:
-        return os.path.abspath(
-            os.path.join(os.environ[FACET_PATH_ENV], project, TOX_BUILD_PATH_SUFFIX)
-        )
+class Builder:
+    def __init__(self, project: str, build_system: str, dependency_type: str):
+        self.project = project
+        self.build_system = build_system
+        self.dependency_type = dependency_type
 
+        # determine the FACET root path containing the project working directories
 
-def make_local_pypi_index_path(project: str) -> str:
-    """
-    Return the path where the local PyPi index for
-    the given project should be placed.
-    """
-    return os.path.join(make_build_path(project, B_TOX), "simple")
-
-
-def get_pyproject_toml(project: str) -> Dict[str, Any]:
-    """
-    Retrieve a parsed Dict for a given project's pyproject.toml.
-    """
-    pyproject_toml_path = os.path.join(
-        os.environ[FACET_PATH_ENV], project, "pyproject.toml"
-    )
-    print(f"Reading build configuration from {pyproject_toml_path}")
-    with open(pyproject_toml_path, "rt") as f:
-        return toml.load(f)
-
-
-def get_package_dist_name(project: str) -> str:
-    """
-    Retrieves from pyproject.toml for a project the appropriate
-    dist-name. E.g. "gamma-pytools" for project "pytools".
-    """
-    return get_pyproject_toml(project)["tool"]["flit"]["metadata"]["dist-name"]
-
-
-def get_package_version(project: str) -> str:
-    """
-    Retrieve the package version for the project from __init__ or _version
-    """
-    project_src = os.path.abspath(
-        os.path.join(os.environ[FACET_PATH_ENV], project, "src")
-    )
-
-    if project in ("sklearndf", "flow"):
-        # for sklearndf and flow __init__ can't be trivially imported due to import
-        # dependencies. Load the version as defined in project._version module
-        spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, project, "_version.py")
-        )
-    else:
-        # pytools/facet: retrieve version from __init__.py
-        spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, project, "__init__.py")
-        )
-
-    version_module = importlib.util.module_from_spec(spec)
-    # noinspection PyUnresolvedReferences
-    spec.loader.exec_module(version_module)
-    # noinspection PyUnresolvedReferences
-    return version_module.__version__
-
-
-def expose_deps(project: str, build_system: str, dependency_type: str) -> None:
-    """
-    Expose package dependencies for builds as environment variables.
-    """
-    pyproject_toml = get_pyproject_toml(project)
-
-    def adapt_version_syntax(version: str) -> str:
-        if build_system == B_CONDA or (">" in version or "<" in version):
-            return version
+        if (FACET_PATH_ENV in os.environ) and os.environ[FACET_PATH_ENV]:
+            facet_path = os.environ[FACET_PATH_ENV]
         else:
-            # PIP expects == instead of =
-            return version.replace("=", "==")
+            facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+            os.environ[FACET_PATH_ENV] = facet_path
 
-    dependencies_to_expose = {}
+        if " " in facet_path:
+            warnings.warn(
+                f"The build base path '{facet_path}' contains spaces – "
+                f"this causes issues with conda-build. "
+                f"Consider to set a different path using the "
+                f"environment variable {FACET_PATH_ENV} ahead of running make.py."
+            )
+        os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(facet_path)}"
 
-    flit_metadata = pyproject_toml[TOML_TOOL][TOML_FLIT][TOML_METADATA]
+        # determine the package version of the project
 
-    pkg_requires_python_version = flit_metadata[TOML_REQUIRES_PYTHON]
+        project_src = os.path.abspath(os.path.join(facet_path, project, "src"))
+        if project in (PROJ_SKLEARNDF, PROJ_FLOW):
+            # For sklearndf and flow,
+            # __init__ can't be trivially imported due to import dependencies.
+            # Load the version as defined in project._version module.
+            spec = importlib.util.spec_from_file_location(
+                "_version", os.path.join(project_src, project, "_version.py")
+            )
+        else:
+            # pytools/facet: retrieve version from __init__.py
+            spec = importlib.util.spec_from_file_location(
+                "_version", os.path.join(project_src, project, "__init__.py")
+            )
+        version_module = importlib.util.module_from_spec(spec)
+        # noinspection PyUnresolvedReferences
+        spec.loader.exec_module(version_module)
+        # noinspection PyUnresolvedReferences
+        package_version = version_module.__version__
 
-    dependencies_to_expose["python"] = pkg_requires_python_version
+        os.environ[
+            FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
+        ] = package_version
 
-    default_deps_definition: List[str] = flit_metadata[TOML_REQUIRES]
+        self.package_version = package_version
 
-    for default_dep in default_deps_definition:
-        dependency_name: str
-        dependency_version: str
-        dependency_name, dependency_version = default_dep.strip().split(" ", maxsplit=1)
-        dependencies_to_expose[dependency_name] = dependency_version.strip()
+    def make_build_path(self, project: str = None) -> str:
+        """
+        Return the target build path for Conda or Tox build.
+        """
 
-    if dependency_type != DEFAULT_DEPS:
-        build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
-        dependencies = build_matrix_definition[dependency_type]
-        for (dependency_name, dependency_version) in dependencies.items():
-            dependencies_to_expose[dependency_name] = adapt_version_syntax(
-                dependency_version
+        if project is None:
+            project = self.project
+
+        if self.build_system == B_CONDA:
+            return os.path.abspath(
+                os.path.join(
+                    os.environ[FACET_PATH_ENV], project, CONDA_BUILD_PATH_SUFFIX
+                )
+            )
+        elif self.build_system == B_TOX:
+            return os.path.abspath(
+                os.path.join(os.environ[FACET_PATH_ENV], project, TOX_BUILD_PATH_SUFFIX)
             )
 
-    for d_name, d_version in dependencies_to_expose.items():
-        # bash ENV variables can not use dash, replace it to _
-        env_var_key = f"FACET_V_{d_name.replace('-','_')}".upper().strip()
-        env_var_value = d_version.strip()
-        print(f"Exposing: '{env_var_key}' as: '{env_var_value}'")
-        os.environ[env_var_key] = env_var_value
+    def make_local_pypi_index_path(self) -> str:
+        """
+        Return the path where the local PyPi index for
+        the given self.project should be placed.
+        """
+        return os.path.join(self.make_build_path(), "simple")
 
+    def get_pyproject_toml(self) -> Dict[str, Any]:
+        """
+        Retrieve a parsed Dict for a given self.project's pyproject.toml.
+        """
+        pyproject_toml_path = os.path.join(
+            os.environ[FACET_PATH_ENV], self.project, "pyproject.toml"
+        )
+        print(f"Reading build configuration from {pyproject_toml_path}")
+        with open(pyproject_toml_path, "rt") as f:
+            return toml.load(f)
 
-def clean(project: str, build_system: str) -> None:
-    """
-    Cleans the dist folder for the given project and build system.
-    """
-    build_path = make_build_path(project, build_system)
-    if build_system == B_CONDA:
-        # purge pre-existing build directories
-        package_dist_name = get_package_dist_name(project)
-        for obsolete_folder in glob(os.path.join(build_path, f"{package_dist_name}_*")):
-            print(f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}")
-            shutil.rmtree(obsolete_folder, ignore_errors=True)
+    def get_package_dist_name(self) -> str:
+        """
+        Retrieves from pyproject.toml for a self.project the appropriate
+        dist-name. E.g. "gamma-pytools" for self.project "pytools".
+        """
+        return self.get_pyproject_toml()[TOML_TOOL][TOML_FLIT][TOML_METADATA][
+            TOML_DIST_NAME
+        ]
 
-        # remove broken packages
-        shutil.rmtree(os.path.join(build_path, "broken"), ignore_errors=True)
+    def expose_deps(self) -> None:
+        """
+        Expose package dependencies for builds as environment variables.
+        """
+        pyproject_toml = self.get_pyproject_toml()
 
-    elif build_system == B_TOX:
-        # nothing to do – .tar.gz of same version will simply be replaced and
-        # .tox is useful to keep
-        pass
+        def adapt_version_syntax(version: str) -> str:
+            if self.build_system == B_CONDA or (">" in version or "<" in version):
+                return version
+            else:
+                # PIP expects == instead of =
+                return version.replace("=", "==")
 
+        dependencies_to_expose = {}
 
-def set_up(project: str, build_system: str, dependency_type: str) -> str:
-    """
-    Set up for a build – set FACET_PATH (parent folder of all projects) and clean.
-    """
-    if FACET_PATH_ENV in os.environ and os.environ[FACET_PATH_ENV] != "":
-        facet_path = os.environ[FACET_PATH_ENV]
-    else:
-        facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-        os.environ[FACET_PATH_ENV] = facet_path
+        flit_metadata = pyproject_toml[TOML_TOOL][TOML_FLIT][TOML_METADATA]
 
-    if " " in facet_path:
-        warnings.warn(
-            f"The build base path '{facet_path}' contains spaces – this causes issues "
-            f"with conda-build. Consider to set a different path using the "
-            f"environment variable {FACET_PATH_ENV} ahead of running make.py"
+        pkg_requires_python_version = flit_metadata[TOML_REQUIRES_PYTHON]
+
+        dependencies_to_expose["python"] = pkg_requires_python_version
+
+        default_deps_definition: List[str] = flit_metadata[TOML_REQUIRES]
+
+        for default_dep in default_deps_definition:
+            dependency_name: str
+            dependency_version: str
+            dependency_name, dependency_version = default_dep.strip().split(
+                " ", maxsplit=1
+            )
+            dependencies_to_expose[dependency_name] = dependency_version.strip()
+
+        if self.dependency_type != DEFAULT_DEPS:
+            build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
+            dependencies = build_matrix_definition[self.dependency_type]
+            for (dependency_name, dependency_version) in dependencies.items():
+                dependencies_to_expose[dependency_name] = adapt_version_syntax(
+                    dependency_version
+                )
+
+        for d_name, d_version in dependencies_to_expose.items():
+            # bash ENV variables can not use dash, replace it to _
+            env_var_key = f"FACET_V_{d_name.replace('-','_')}".upper().strip()
+            env_var_value = d_version.strip()
+            print(f"Exposing: '{env_var_key}' as: '{env_var_value}'")
+            os.environ[env_var_key] = env_var_value
+
+    def clean(self) -> None:
+        """
+        Cleans the dist folder for the given self.project and build system.
+        """
+        build_path = self.make_build_path()
+        if self.build_system == B_CONDA:
+            # purge pre-existing build directories
+            package_dist_name = self.get_package_dist_name()
+            for obsolete_folder in glob(
+                os.path.join(build_path, f"{package_dist_name}_*")
+            ):
+                print(
+                    f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}"
+                )
+                shutil.rmtree(obsolete_folder, ignore_errors=True)
+
+            # remove broken packages
+            shutil.rmtree(os.path.join(build_path, "broken"), ignore_errors=True)
+
+        elif self.build_system == B_TOX:
+            # nothing to do – .tar.gz of same version will simply be replaced and
+            # .tox is useful to keep
+            pass
+
+    def print_build_info(self, stage: str) -> None:
+        message = (
+            f"{stage} {self.build_system.upper()} BUILD FOR {self.project}, "
+            f"VERSION {self.package_version}"
+        )
+        separator = "=" * len(message)
+        print(f"{separator}\n{message}\n{separator}")
+
+    def build(self) -> None:
+        self.clean()
+        self.expose_deps()
+        if self.build_system == B_CONDA:
+            self.conda_build()
+        elif self.build_system == B_TOX:
+            self.tox_build()
+
+    def conda_build(self) -> None:
+        """
+        Build a facet self.project using conda-build.
+        """
+
+        build_path = self.make_build_path()
+        os.environ[CONDA_BUILD_PATH_ENV] = build_path
+
+        recipe_path = os.path.abspath(
+            os.path.join(os.environ[FACET_PATH_ENV], self.project, "condabuild")
         )
 
-    os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(facet_path)}"
-    clean(project, build_system)
-    expose_deps(project, build_system, dependency_type)
-    pkg_version = get_package_version(project)
-    os.environ[
-        FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
-    ] = pkg_version
-    print_build_info(
-        stage="STARTING",
-        build_system=build_system,
-        pkg_version=pkg_version,
-        project=project,
-    )
-    return pkg_version
+        local_channels = [
+            f'-c "{pathlib.Path(_build_path).as_uri()}"'
+            for _build_path in map(self.make_build_path, KNOWN_PROJECTS)
+            if os.path.exists(_build_path)
+            and os.path.exists(os.path.join(_build_path, "noarch/repodata.json"))
+        ]
 
-
-def print_build_info(
-    stage: str, build_system: str, pkg_version: str, project: str
-) -> None:
-    message = (
-        f"{stage} {build_system.upper()} BUILD FOR: {project}, VERSION: {pkg_version}"
-    )
-    separator = "=" * len(message)
-    print(f"{separator}\n{message}\n{separator}")
-
-
-def conda_build(project: str, dependency_type: str) -> None:
-    """
-    Build a facet project using conda-build.
-    """
-    pkg_version = set_up(
-        project=project, build_system=B_CONDA, dependency_type=dependency_type
-    )
-
-    def _mk_conda_channel_arg(_project) -> str:
-        return f'-c "{pathlib.Path(make_build_path(_project, B_CONDA)).as_uri()}"'
-
-    build_path = make_build_path(project, B_CONDA)
-    os.environ[CONDA_BUILD_PATH_ENV] = build_path
-
-    recipe_path = os.path.abspath(
-        os.path.join(os.environ[FACET_PATH_ENV], project, "condabuild")
-    )
-
-    local_channels = [
-        _mk_conda_channel_arg(p)
-        for p in KNOWN_PROJECTS
-        if os.path.exists(make_build_path(p, B_CONDA))
-        and os.path.exists(
-            os.path.join(make_build_path(p, B_CONDA), "noarch/repodata.json")
+        print(f"Building: {self.project}. Build path: {build_path}")
+        os.makedirs(build_path, exist_ok=True)
+        build_cmd = (
+            f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
         )
-    ]
+        print(f"Build Command: {build_cmd}")
+        subprocess.run(args=build_cmd, shell=True, check=True)
 
-    print(f"Building: {project}. Build path: {build_path}")
-    os.makedirs(build_path, exist_ok=True)
-    build_cmd = f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
-    print(f"Build Command: {build_cmd}")
-    subprocess.run(args=build_cmd, shell=True, check=True)
+    def tox_build(self) -> None:
+        """
+        Build a facet self.project using tox.
+        """
+        if self.dependency_type == DEFAULT_DEPS:
+            tox_env = "py3"
+        else:
+            tox_env = "py3-custom-deps"
 
-    print_build_info(
-        stage="COMPLETED",
-        build_system=B_CONDA,
-        pkg_version=pkg_version,
-        project=project,
-    )
+        build_cmd = f"tox -e {tox_env} -v"
+        print(f"Build Command: {build_cmd}")
+        subprocess.run(args=build_cmd, shell=True, check=True)
+        print("Tox build completed – creating local PyPi index")
+        self.create_local_pypi_index()
 
+    def create_local_pypi_index(self) -> None:
+        """
+        Creates/updates a local PyPI PEP 503 (the simple repository API) compliant
+        folder structure, so that it can be used with PIP's --extra-index-url
+        setting.
+        """
+        main_tox_build_path = self.make_build_path()
+        pypi_index_path = self.make_local_pypi_index_path()
+        project_dist_name = self.get_package_dist_name()
+        project_repo_path = os.path.join(pypi_index_path, project_dist_name)
+        project_index_html_path = os.path.join(project_repo_path, "index.html")
+        os.makedirs(project_repo_path, exist_ok=True)
 
-def tox_build(project: str, dependency_type: str) -> None:
-    """
-    Build a facet project using tox.
-    """
-    pkg_version = set_up(
-        project=project, build_system=B_TOX, dependency_type=dependency_type
-    )
-    if dependency_type == DEFAULT_DEPS:
-        tox_env = "py3"
-    else:
-        tox_env = "py3-custom-deps"
+        package_glob = f"{project_dist_name}-*.tar.gz"
 
-    build_cmd = f"tox -e {tox_env} -v"
-    print(f"Build Command: {build_cmd}")
-    subprocess.run(args=build_cmd, shell=True, check=True)
-    print("Tox build completed – creating local PyPi index")
-    create_local_pypi_index(project)
+        # copy all relevant packages into the index subfolder
+        for package in glob(os.path.join(main_tox_build_path, package_glob)):
+            shutil.copy(package, project_repo_path)
 
-    print_build_info(
-        stage="COMPLETED",
-        build_system=B_CONDA,
-        pkg_version=pkg_version,
-        project=project,
-    )
+        # remove index.html, if exists already
+        if os.path.exists(project_index_html_path):
+            os.remove(project_index_html_path)
 
+        # create an index.html with entries for all existing packages
+        package_file_links = [
+            f"<a href='{os.path.basename(package)}'>{os.path.basename(package)}</a>"
+            f"<br/>"
+            for package in glob(os.path.join(project_repo_path, package_glob))
+        ]
+        # store index.html
+        with open(project_index_html_path, "wt") as f:
+            f.writelines(package_file_links)
 
-def create_local_pypi_index(project: str) -> None:
-    """
-    Creates/updates a local PyPI PEP 503 (the simple repository API) compliant
-    folder structure, so that it can be used with PIP's --extra-index-url
-    setting.
-    """
-    main_tox_build_path = make_build_path(project, B_TOX)
-    pypi_index_path = make_local_pypi_index_path(project)
-    project_dist_name = get_package_dist_name(project)
-    project_repo_path = os.path.join(pypi_index_path, project_dist_name)
-    project_index_html_path = os.path.join(project_repo_path, "index.html")
-    os.makedirs(project_repo_path, exist_ok=True)
+        print(f"Local PyPi Index created at: {pypi_index_path}")
 
-    package_glob = f"{project_dist_name}-*.tar.gz"
-
-    # copy all relevant packages into the index subfolder
-    for package in glob(os.path.join(main_tox_build_path, package_glob)):
-        shutil.copy(package, project_repo_path)
-
-    # remove index.html, if exists already
-    if os.path.exists(project_index_html_path):
-        os.remove(project_index_html_path)
-
-    # create an index.html with entries for all existing packages
-    package_file_links = [
-        f"<a href='{os.path.basename(package)}'>{os.path.basename(package)}</a><br />"
-        for package in glob(os.path.join(project_repo_path, package_glob))
-    ]
-    # store index.html
-    with open(project_index_html_path, "wt") as f:
-        f.writelines(package_file_links)
-
-    print(f"Local PyPi Index created at: {pypi_index_path}")
+    def run(self) -> None:
+        self.print_build_info(stage="STARTING")
+        self.build()
+        self.print_build_info(stage="COMPLETED")
 
 
 def print_usage() -> None:
@@ -341,11 +329,11 @@ def print_usage() -> None:
     usage = """Facet Build script
 =================================
 Available program arguments:
-    <project> <build-system> <dependencies>
-        create the Conda package for given project.
+    <self.project> <build-system> <dependencies>
+        create the Conda package for given self.project.
 
     Available arguments:
-        project:    i.e. pytools | sklearndf | facet | flow.
+        self.project:    i.e. pytools | sklearndf | facet | flow.
                     Use "build=all" to build pytools, sklearndf, facet and flow.
 
         build-system: conda | tox
@@ -397,15 +385,15 @@ def run_make() -> None:
 
     if project == ALL_PROJECTS_QUALIFIER:
         for _project in KNOWN_PROJECTS:
-            if build_system == B_CONDA:
-                conda_build(_project, dependency_type)
-            elif build_system == B_TOX:
-                tox_build(_project, dependency_type)
+            Builder(
+                project=_project,
+                build_system=build_system,
+                dependency_type=dependency_type,
+            ).run()
     else:
-        if build_system == B_CONDA:
-            conda_build(project, dependency_type)
-        elif build_system == B_TOX:
-            tox_build(project, dependency_type)
+        Builder(
+            project=project, build_system=build_system, dependency_type=dependency_type
+        ).run()
 
 
 if __name__ == "__main__":
