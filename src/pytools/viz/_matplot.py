@@ -145,7 +145,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         ax.set_title(label=title, color=self.colors.foreground)
 
         # color the axes
-        self._apply_color_scheme(ax)
+        self.apply_color_scheme(ax)
 
         bg_color = self.colors.background
 
@@ -181,15 +181,13 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
             for text in legend.get_texts():
                 text.set_color(fg_color)
 
-    def _apply_color_scheme(self, ax: Axes) -> None:
+    def apply_color_scheme(self, ax: Axes) -> None:
         """
         Apply this style's color scheme to the given :class:`~matplotlib.axes.Axes`.
 
         Style implementations can use this to apply the color scheme to sub-axes.
         Does not need to be applied to main axes, as this is already done in method
         :meth:`.start_drawing`.
-
-        This method will be public as of v1.1.
 
         :param ax: the axes to apply the color scheme to
         """
