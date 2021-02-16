@@ -1,10 +1,11 @@
 trigger:
-  - master
   - develop
+  - release/*
 
 pr:
-  - master
   - develop
+  - develop/*
+  - release/*
 
 # set the build name
 name: $[ variables['branchName'] ]
@@ -362,7 +363,7 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
-  # release on merge from release branch to master:
+  # release on merges into release/*:
   # - add release tag
   # - create GitHub release with changelog
   # - upload conda and pip packages as artifacts to GitHub
@@ -373,7 +374,7 @@ stages:
     jobs:
       - job:
         displayName: 'Release'
-        condition: eq(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'master')
+        condition: startsWith(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'release/')
 
         steps:
           - task: UsePythonVersion@0
