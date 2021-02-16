@@ -1,7 +1,6 @@
 trigger:
   - master
   - develop
-  - release/*
 
 pr:
   - master
@@ -12,7 +11,7 @@ name: $[ variables['branchName'] ]
 
 # run tests and full conda/tox build matrix every night at 4am
 schedules:
-- cron: "0 4 * * *"
+- cron: "0 4 * * 1-5"
   displayName: Nightly full build
   branches:
     include:
@@ -23,13 +22,8 @@ variables:
     branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
     branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  master_or_release: >
-    ${{ or(
-    startsWith(variables['branchName'], 'release'),
-    eq(variables['branchName'], 'master'),
-    eq(variables['Build.Reason'], 'Schedule')
-    )
-    }}
+  master_or_release: $[ or(startsWith(variables['branchName'], 'release'), eq(variables['branchName'], 'master')) ]
+  is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
 
 stages:
   # check code quality first to fail fast (isort, flake8, black)
@@ -88,8 +82,8 @@ stages:
               script: |
                 cd $(System.DefaultWorkingDirectory)
                 files_changed=$(git diff $(Build.SourceVersion)^! --name-only)
-                echo "Files changed since last commit: ${files_changed}"
-                if [ "${files_changed}" == *"pyproject.toml"* ]
+                n_files_changed=$(git diff $(Build.SourceVersion)^! --name-only | grep -i -E 'meta.yaml|pyproject.toml|azure-pipelines.yml|tox.ini'  | wc -l | xargs)
+                if [ ${n_files_changed} -gt 0 ]
                 then
                 build_changed=1
                 echo "build config has been changed"
@@ -112,6 +106,7 @@ stages:
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
+        ne(variables.is_scheduled, 'True'),
         eq(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
         )
 
@@ -184,6 +179,7 @@ stages:
       condition: >
         and(
         ne(variables.master_or_release, 'True'),
+        ne(variables.is_scheduled, 'True'),
         ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
         )
 
@@ -249,7 +245,11 @@ stages:
 
     - job:
       displayName: 'matrix'
-      condition: eq(variables.master_or_release, 'True')
+      condition: >
+        or(
+        eq(variables.master_or_release, 'True'),
+        eq(variables.is_scheduled, 'True')
+        )
 
       pool:
         vmImage: 'ubuntu-latest'
@@ -268,10 +268,6 @@ stages:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'conda'
             PKG_DEPENDENCIES: 'max'
-          unconstrained_dependencies_conda:
-            FACET_V_PYTHON_BUILD: '>=3.6,<4'
-            PKG_DEPENDENCIES: 'unconstrained'
-            BUILD_SYSTEM: 'conda'
           default_dependencies_tox:
             FACET_V_PYTHON_BUILD: '=3.7.*'
             BUILD_SYSTEM: 'tox'
@@ -284,10 +280,6 @@ stages:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'tox'
             PKG_DEPENDENCIES: 'max'
-          unconstrained_dependencies_tox:
-            FACET_V_PYTHON_BUILD: '>=3.6,<4'
-            PKG_DEPENDENCIES: 'unconstrained'
-            BUILD_SYSTEM: 'tox'
 
       steps:
         - task: UsePythonVersion@0
@@ -334,6 +326,41 @@ stages:
             pathtoPublish: $(Build.ArtifactStagingDirectory)
             artifactName: $(BUILD_SYSTEM)_$(PKG_DEPENDENCIES)
             publishLocation: Container
+
+  # apply veracode static code analysis during nightly build
+  - stage: veracode_check
+    displayName: 'Veracode check'
+
+    jobs:
+      - job:
+        displayName: 'Veracode check'
+        condition: eq(variables['Build.Reason'], 'Schedule')
+
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -e
+                eval "$(conda shell.bash hook)"
+                cd $(System.DefaultWorkingDirectory)
+                mkdir static_scan
+                git archive --format=zip --output static_scan/archive.zip HEAD
+
+          - task: Veracode@3
+            inputs:
+              ConnectionDetailsSelection: 'Endpoint'
+              AnalysisService: 'veracode'
+              veracodeAppProfile: 'FACET'
+              version: '$(Build.BuildID)'
+              filepath: '$(System.DefaultWorkingDirectory)/static_scan'
+              sandboxName: 'pytools'
+              createSandBox: false
+              createProfile: false
+              failTheBuildIfVeracodeScanDidNotInitiate: false
+              scanStatusCheckInterval: '60'
+              importResults: false
+              failBuildOnPolicyFail: false
 
   # release on merge from release branch to master:
   # - add release tag
@@ -402,7 +429,7 @@ stages:
 
                 Your conda package can be upgraded by running
 
-                    conda install -c conda-forge gamma-pytools
+                    conda install -c conda-forge -c bcg_gamma gamma-pytools
 
               isDraft: false
               isPreRelease: $(is_prerelease)

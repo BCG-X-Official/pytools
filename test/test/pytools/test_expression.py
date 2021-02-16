@@ -6,28 +6,32 @@ import logging
 
 import pytest
 
-import pytools.expression.operator as op
-from pytools.expression import (
+from pytools.expression import Expression, freeze, make_expression
+from pytools.expression.atomic import Id, Lit
+from pytools.expression.composite import (
+    BinaryOperation,
     Call,
     DictLiteral,
-    Expression,
-    Id,
     Lambda,
     ListLiteral,
-    Lit,
-    Operation,
-    PythonExpressionFormatter,
     SetLiteral,
     TupleLiteral,
     UnaryOperation,
-    freeze,
-    make_expression,
 )
-
-# noinspection PyProtectedMember
-from pytools.expression._text import TextualForm
+from pytools.expression.formatter import PythonExpressionFormatter
+from pytools.expression.formatter._python import TextualForm
+from pytools.expression.operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)
+
+
+def test_base_import() -> None:
+    """
+    Test if the expression base package can be imported without errors.
+    """
+    from pytools.expression import base
+
+    assert base.AtomicExpression is not None
 
 
 def test_expression_formatting() -> None:
@@ -79,8 +83,14 @@ def test_expression_formatting() -> None:
 )"""
     )
 
-    expr_4 = Lambda(Id.x, body=e)(Lit(5))
-    assert repr(expr_4) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
+    expr_4 = Lambda(body=e)
+    assert repr(expr_4) == "lambda : f((1 | 2) >> 'x' % x, abc=-5)"
+
+    expr_5 = Lambda(Id.x, body=e)(Lit(5))
+    assert repr(expr_5) == "(lambda x: f((1 | 2) >> 'x' % x, abc=-5))(5)"
+
+    expr_6 = Lambda(Id.x, Id.y, body=e)(Lit(5), 6)
+    assert repr(expr_6) == "(lambda x, y: f((1 | 2) >> 'x' % x, abc=-5))(5, 6)"
 
 
 def test_expression() -> None:
@@ -89,14 +99,14 @@ def test_expression() -> None:
     expressions = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
-        ((Id.xx), "xx"),
+        (Id.xx, "xx"),
         (Call(Id("func"), lit_5, lit_abc), "func(5, 'abc')"),
         (ListLiteral(lit_5, lit_abc, Id.xx), "[5, 'abc', xx]"),
         (SetLiteral(lit_5, lit_abc, Id.xx), "{5, 'abc', xx}"),
         (TupleLiteral(lit_5, lit_abc, Id.xx), "(5, 'abc', xx)"),
         (DictLiteral(**{"5": lit_abc, "x": lit_5}), "{'5': 'abc', 'x': 5}"),
         (DictLiteral((lit_5, lit_abc), (Id.xx, lit_5)), "{5: 'abc', xx: 5}"),
-        (Operation(op.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
+        (BinaryOperation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
         (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
         (SetLiteral(), "{}"),
@@ -166,22 +176,23 @@ def test_comparison_expressions() -> None:
 
 def test_expression_operators() -> None:
     a, b = Id.a, Id.b
-    assert a + b == Operation(op.ADD, a, b)
-    assert a - b == Operation(op.SUB, a, b)
-    assert a * b == Operation(op.MUL, a, b)
-    assert a @ b == Operation(op.MATMUL, a, b)
-    assert a / b == Operation(op.DIV, a, b)
-    assert a // b == Operation(op.FLOOR_DIV, a, b)
-    assert a % b == Operation(op.MOD, a, b)
-    assert a ** b == Operation(op.POW, a, b)
-    assert a << b == Operation(op.LSHIFT, a, b)
-    assert a >> b == Operation(op.RSHIFT, a, b)
-    assert a & b == Operation(op.AND_BITWISE, a, b)
-    assert a ^ b == Operation(op.XOR_BITWISE, a, b)
-    assert a | b == Operation(op.OR_BITWISE, a, b)
-    assert -a == UnaryOperation(op.NEG, operand=a)
-    assert +a == UnaryOperation(op.POS, operand=a)
-    assert ~a == UnaryOperation(op.INVERT, operand=a)
+    assert a + b == BinaryOperation(BinaryOperator.ADD, a, b)
+    assert a - b == BinaryOperation(BinaryOperator.SUB, a, b)
+    assert a * b == BinaryOperation(BinaryOperator.MUL, a, b)
+    assert a @ b == BinaryOperation(BinaryOperator.MATMUL, a, b)
+    assert a / b == BinaryOperation(BinaryOperator.DIV, a, b)
+    assert a // b == BinaryOperation(BinaryOperator.FLOOR_DIV, a, b)
+    assert a % b == BinaryOperation(BinaryOperator.MOD, a, b)
+    assert a ** b == BinaryOperation(BinaryOperator.POW, a, b)
+    assert a << b == BinaryOperation(BinaryOperator.LSHIFT, a, b)
+    assert a >> b == BinaryOperation(BinaryOperator.RSHIFT, a, b)
+    assert a & b == BinaryOperation(BinaryOperator.AND_BITWISE, a, b)
+    assert a ^ b == BinaryOperation(BinaryOperator.XOR_BITWISE, a, b)
+    assert a | b == BinaryOperation(BinaryOperator.OR_BITWISE, a, b)
+    assert -a == UnaryOperation(UnaryOperator.NEG, operand=a)
+    assert +a == UnaryOperation(UnaryOperator.POS, operand=a)
+    assert ~a == UnaryOperation(UnaryOperator.INVERT, operand=a)
+    assert (not a) == UnaryOperation(UnaryOperator.NOT, operand=a)
 
 
 def test_operator_precedence() -> None:

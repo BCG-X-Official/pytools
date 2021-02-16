@@ -4,13 +4,14 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence, Union
+from typing import Optional, Sequence
 
 from matplotlib.axes import Axes
-from matplotlib.colors import Colormap, LogNorm
+from matplotlib.colors import LogNorm
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, DrawingStyle, MatplotStyle
+from pytools.viz.color import ColorScheme
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
 
         :param bottom: the height of the child node in the linkage tree
         :param top: the height of the parent node in the linkage tree
-        :param leaf: the index of the leaf where the link leg should be drawn (may be \
+        :param leaf: the index of the leaf where the link leg should be drawn (may be
             a ``float``, indicating a position in between two leaves)
         :param weight: the weight of the child node
         :param tree_height: the total height of the linkage tree
@@ -96,33 +97,34 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
 @inheritdoc(match="[see superclass]")
 class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=ABCMeta):
     """
-    Base class for Matplotlib styles for dendrograms.
+    Base class for `matplotlib` styles for dendrograms.
 
-    Includes support for plotting a color legend for feature importance.
+    Supports color maps to indicate feature importance on a logarithmic scale,
+    and renders a color bar as a legend.
     """
-
-    _PERCENTAGE_FORMATTER = PercentageFormatter()
 
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
+        colors: Optional[ColorScheme] = None,
         min_weight: float = 0.01,
     ) -> None:
         """
-        :param min_weight: the min weight on the logarithmic feature importance color \
-            scale; must be greater than 0 and smaller than 1 (default: 0.01)
+        :param min_weight: the minimum weight on the logarithmic feature importance
+            color scale; must be greater than `0` and smaller than `1`
+            (default: `0.01`, i.e., 1%)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
 
+        percentage_formatter = PercentageFormatter()
         super().__init__(
             ax=ax,
-            colormap=colormap,
+            colors=colors,
             colormap_normalize=LogNorm(min_weight, 1),
-            colorbar_major_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
-            colorbar_minor_formatter=DendrogramMatplotStyle._PERCENTAGE_FORMATTER,
+            colorbar_major_formatter=percentage_formatter,
+            colorbar_minor_formatter=percentage_formatter,
         )
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
@@ -134,24 +136,31 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         y_axis.set_ticks(ticks=range(len(names)))
         y_axis.set_ticklabels(ticklabels=names)
 
-    def _drawing_finalize(
+    def finalize_drawing(
         self,
         *,
-        labels_name: Optional[str] = None,
-        distance_name: Optional[str] = None,
-        weights_name: Optional[str] = None,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
         **kwargs,
     ) -> None:
-        super()._drawing_finalize(colorbar_label=weights_name, **kwargs)
+        """
+        Add labels to the axes of this drawing.
+
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the color bar, indicating weights
+        """
+        super().finalize_drawing(colorbar_label=weight_label, **kwargs)
 
         ax = self.ax
 
         # configure the axes
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
-        if distance_name:
-            ax.set_xlabel(distance_name)
-        if labels_name:
-            ax.set_ylabel(labels_name)
+        if distance_label:
+            ax.set_xlabel(distance_label)
+        if leaf_label:
+            ax.set_ylabel(leaf_label)
 
 
 __tracker.validate()

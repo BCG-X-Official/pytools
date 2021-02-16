@@ -1,25 +1,21 @@
 """
-String representations of expressions
+String representations of expressions.
 """
 
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import List, NamedTuple, Tuple
 
-from ..api import AllTracker
-from . import (
-    BRACKETS_ROUND,
-    EPSILON,
+from .. import Expression, ExpressionAlias, ExpressionFormatter
+from ..base import (
     AtomicExpression,
     BracketedExpression,
     BracketPair,
-    Expression,
-    ExpressionAlias,
-    ExpressionFormatter,
     InfixExpression,
     PrefixExpression,
 )
-from . import operator as op
+from ..operator import BinaryOperator
+from pytools.api import AllTracker
 
 log = logging.getLogger(__name__)
 
@@ -33,7 +29,7 @@ __all__ = ["PythonExpressionFormatter"]
 
 class FormattingConfig(NamedTuple):
     """
-    The parameters to use for formatting an expression
+    The parameters to use for formatting an expression.
     """
 
     max_width: int = 80
@@ -46,15 +42,18 @@ class FormattingConfig(NamedTuple):
 
 class IndentedLine(NamedTuple):
     """
-    An indented line of text
+    An indented line of text.
     """
 
+    #: the number of indentation levels
     indent: int
+    #: the text in this line
     text: str
 
     def prepend(self, text: str) -> "IndentedLine":
         """
-        Add the given text to the start of this indented line
+        Add the given text to the start of this indented line.
+
         :param text: the text to add
         :return: a copy of this indented line, with the text added
         """
@@ -62,7 +61,8 @@ class IndentedLine(NamedTuple):
 
     def append(self, text: str) -> "IndentedLine":
         """
-        Add the given text to the end of this indented line
+        Add the given text to the end of this indented line.
+
         :param text: the text to add
         :return: a copy of this indented line, with the text added
         """
@@ -80,17 +80,24 @@ class IndentedLine(NamedTuple):
 
 class TextualForm:
     """
-    A hierarchical textual representation of an expression
+    A hierarchical textual representation of an expression.
     """
+
+    #: the default formatting configuration for rendering textual forms
+    DEFAULT_FORMAT = FormattingConfig()
 
     @staticmethod
     def from_expression(expression: Expression) -> "TextualForm":
         """
-        Generate a textual form for the given expression
+        Generate a textual form for the given expression.
+
         :param expression: the expression to be transformed
         :return: the resulting textual form
         """
-        if expression is EPSILON:
+
+        from ..atomic import Epsilon
+
+        if expression is Epsilon():
             return EMPTY_FORM
         if isinstance(expression, AtomicExpression):
             return AtomicForm(expression)
@@ -113,9 +120,10 @@ class TextualForm:
         """
         return False
 
-    def to_text(self, config: FormattingConfig) -> str:
+    def to_text(self, config: FormattingConfig = DEFAULT_FORMAT) -> str:
         """
-        Render this textual form as a string
+        Render this textual form as a string.
+
         :param config: the formatting configuration to use
         :return: the resulting string
         """
@@ -144,11 +152,12 @@ class TextualForm:
     ) -> List[IndentedLine]:
         """
         Generate a list of indented lines from this textual form.
+
         :param config: the rendering configuration
         :param indent: the indentation level to use as a starting point
-        :param leading_characters: space to reserve in the first line for leading \
+        :param leading_characters: space to reserve in the first line for leading
             characters (needed to determine whether maximum width has been exceeded)
-        :param trailing_characters: space to reserve in the last line for trailing \
+        :param trailing_characters: space to reserve in the last line for trailing
             characters (needed to determine whether maximum width has been exceeded)
         :return: a list of indented lines generated from this textual form
         """
@@ -157,7 +166,8 @@ class TextualForm:
     @abstractmethod
     def to_single_line(self) -> str:
         """
-        Convert this representation to a single-line string
+        Convert this representation to a single-line string.
+
         :return: the resulting string
         """
         pass
@@ -167,14 +177,15 @@ class TextualForm:
     ) -> "TextualForm":
         """
         Return this form encapsulated in round parentheses.
+
         :param condition: if ``False``, do not encapsulate this form
-        :param single_line: if ``False``, render the encapsulation only when the form \
+        :param single_line: if ``False``, render the encapsulation only when the form
             is rendered across multiple lines
         :return: the resulting form depending on the condition
         """
         return (
             BracketedForm(
-                brackets=BRACKETS_ROUND, subform=self, single_line=single_line
+                brackets=BracketPair.ROUND, subform=self, single_line=single_line
             )
             if condition
             else self
@@ -185,8 +196,7 @@ class TextualForm:
         pass
 
     def __repr__(self) -> str:
-        # noinspection PyProtectedMember
-        return self.to_text(config=_DEFAULT_FORMATTING_CONFIG)
+        return self.to_text()
 
 
 class EmptyForm(TextualForm):
@@ -222,7 +232,7 @@ EMPTY_FORM = EmptyForm()
 
 class AtomicForm(TextualForm):
     """
-    A textual representation of an atomic expression
+    A textual representation of an atomic expression.
     """
 
     def __init__(self, expression: AtomicExpression) -> None:
@@ -314,7 +324,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
 
 class BracketedForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     def __init__(
@@ -323,7 +333,7 @@ class BracketedForm(ComplexForm):
         """
         :param brackets: the brackets surrounding the subform(s)
         :param subform: the subform to be bracketed
-        :param single_line: if ``False``, do not render the brackets in single-line \
+        :param single_line: if ``False``, do not render the brackets in single-line
             output
         """
 
@@ -341,7 +351,8 @@ class BracketedForm(ComplexForm):
     @staticmethod
     def from_bracketed_expression(expression: BracketedExpression) -> "BracketedForm":
         """
-        Make a bracketed from for the given bracketed expression
+        Make a bracketed from for the given bracketed expression.
+
         :param expression: the bracketed expression to convert
         :return: the resulting bracketed form
         """
@@ -386,7 +397,7 @@ class BracketedForm(ComplexForm):
 
 class PrefixForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     def __init__(self, prefix: TextualForm, separator: str, body: TextualForm) -> None:
@@ -404,7 +415,7 @@ class PrefixForm(ComplexForm):
     @staticmethod
     def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
         """
-        Create a prefixed form from the given prefix expression
+        Create a prefixed form from the given prefix expression.
         """
 
         prefix = expression.prefix_
@@ -483,7 +494,7 @@ class PrefixForm(ComplexForm):
 
 class InfixForm(ComplexForm):
     """
-    A hierarchical textual representation of a complex expression
+    A hierarchical textual representation of a complex expression.
     """
 
     PADDING_NONE = "none"
@@ -527,10 +538,13 @@ class InfixForm(ComplexForm):
     @staticmethod
     def from_infix_expression(expression: InfixExpression) -> TextualForm:
         """
-        Create a infix form from the given infix expression
-        :param expression:
-        :return:
+        Create a infix form from the given infix expression.
+
+        :param expression: the infix expression to render the text from
+        :return: the resulting textual form
         """
+
+        from ..atomic import Epsilon
 
         subexpressions = expression.subexpressions_
         n_subexpressions = len(subexpressions)
@@ -551,7 +565,7 @@ class InfixForm(ComplexForm):
                             pos < last_subexpression
                             or not (
                                 isinstance(subexpression, PrefixExpression)
-                                and subexpression.prefix_ is EPSILON
+                                and subexpression.prefix_ is Epsilon()
                             )
                         )
                     )
@@ -564,9 +578,9 @@ class InfixForm(ComplexForm):
 
         infix_padding = (
             InfixForm.PADDING_RIGHT
-            if infix in [op.COMMA, op.COLON]
+            if infix in [BinaryOperator.COMMA, BinaryOperator.COLON]
             else InfixForm.PADDING_NONE
-            if infix in [op.DOT, op.SLICE, op.NONE]
+            if infix in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
             else InfixForm.PADDING_BOTH
         )
 
@@ -691,20 +705,20 @@ __tracker = AllTracker(globals())
 
 class PythonExpressionFormatter(ExpressionFormatter):
     """
-    Formats expression objects as Python expressions, in line with the ``black`` style
+    Formats expression objects as Python expressions, in line with the `black` style.
     """
 
     def __init__(
         self, max_width: int = 80, indent_width: int = 4, single_line: bool = False
     ):
         """
-        :param max_width: the maximum line width (ignored when enforcing single-line \
+        :param max_width: the maximum line width (ignored when enforcing single-line
             text (default: 80)
         :param indent_width: the width of one indentation in spaces (default: 4)
-        :param single_line: if ``False``, include line breaks to keep the width within \
+        :param single_line: if ``False``, include line breaks to keep the width within
             maximum bounds (default: ``False``)
         """
-        self.config = FormattingConfig(
+        self._config = FormattingConfig(
             max_width=max_width, indent_width=indent_width, single_line=single_line
         )
 
@@ -718,24 +732,9 @@ class PythonExpressionFormatter(ExpressionFormatter):
             condition=form.needs_multi_line_encapsulation, single_line=False
         )
 
-        return form.to_text(self.config)
+        return form.to_text(self._config)
 
     to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
-
-# noinspection PyProtectedMember
-def _register_default_formatters() -> FormattingConfig:
-    # Register class PythonExpressionFormat as the default display form
-    multi_line_formatter = PythonExpressionFormatter()
-    ExpressionFormatter._register_default_format(
-        multi_line_formatter, single_line=False
-    )
-    ExpressionFormatter._register_default_format(
-        PythonExpressionFormatter(single_line=True), single_line=True
-    )
-    return multi_line_formatter.config
-
-
-_DEFAULT_FORMATTING_CONFIG = _register_default_formatters()
 
 __tracker.validate()

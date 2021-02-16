@@ -1,22 +1,22 @@
 """
-Core implementation of :mod:`pytools.viz.matrix`
+Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
-from typing import Any, Callable, Dict, Mapping, Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Type, Union
 
 import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes, mticker
 from matplotlib.axis import Axis
-from matplotlib.colors import Colormap, Normalize
+from matplotlib.colors import Normalize
 from matplotlib.ticker import Formatter, FuncFormatter
 
+from .. import ColorbarMatplotStyle, Drawer, TextStyle
+from ..color import ColorScheme, text_contrast_color
+from ..util import PercentageFormatter
+from .base import MatrixStyle
 from pytools.api import AllTracker, inheritdoc
-from pytools.viz import ColorbarMatplotStyle, Drawer, TextStyle, text_contrast_color
-from pytools.viz.colors import RGBA_WHITE
-from pytools.viz.matrix.base import MatrixStyle
-from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
 
@@ -50,24 +50,32 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     """
     Matplot style for matrices.
 
-    Numerical values of matrix cells are rendered as colours, with a colour bar
-    attached as a legend.
+    Numerical values of matrix cells are rendered as colors from a color map,
+    with a color bar attached as a legend.
+
+    Matrix cells will be annotated with their values if a *cell format* is specified.
+    Cell formats can be defined in different ways:
+
+    - a new-style Python format string, e.g., ``{:.3g}``
+    - a function accepting the value to be formatted as its only positional argument,
+      e.g., ``lambda x: f"{x * 100:.3g}%"``
+    - a :class:`~matplotlib.ticker.Formatter` instance
     """
 
-    #: the maximum number of ticks to put on the x and y axis;
-    #: ``None`` to determine the number of ticks automatically
+    #: The maximum number of ticks to put on the x and y axis;
+    #: ``None`` to determine the number of ticks automatically.
     max_ticks: Optional[Tuple[int, int]]
 
-    #: formatter for annotating each matrix cell with its value, if sufficient space
-    #: is available; if ``None``, no cells are annotated
+    #: Formatter for annotating each matrix cell with its value; if ``None``,
+    #: no cells are annotated.
     cell_formatter: Optional[Formatter]
 
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
+        colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
@@ -75,17 +83,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         **kwargs,
     ) -> None:
         """
-        :param max_ticks: the maximum number of ticks to put on the x and y axis; \
+        :param max_ticks: the maximum number of ticks to put on the x and y axis;
             ``None`` to determine the number of ticks automatically (default: ``None``)
-        :param cell_format: optional string format, function, or \
-            :class:`~matplotlib.ticker.Formatter` for annotating each matrix cell with \
-            its value, if sufficient space is available; if ``None``, no cells are \
-            annotated. \
-            String format should be a new-style python format string, e.g., ``{:.3g}``.\
-            Function must take one positional argument which is the value to be \
-            formatted, e.g., ``lambda x: f"{x * 100:.3g}%"``. \
-            If no colorbar major formatter is specified, the cell format is also used \
-            as the colorbar major formatter.
+        :param cell_format: format for annotating each matrix cell with
+            its value if sufficient space is available (optional – do not annotate
+            cells if omitted);
+            if no colorbar major formatter is specified, use the cell format also
+            as the colorbar major formatter
         """
         if cell_format is None:
             cell_formatter = None
@@ -105,13 +109,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             colorbar_major_formatter = cell_formatter
 
         super().__init__(
-            colormap_normalize=colormap_normalize
-            if colormap_normalize is not None
-            else Normalize(),
-            colormap=colormap,
+            ax=ax,
+            colors=colors,
+            colormap_normalize=(
+                colormap_normalize if colormap_normalize is not None else Normalize()
+            ),
             colorbar_major_formatter=colorbar_major_formatter,
             colorbar_minor_formatter=colorbar_minor_formatter,
-            ax=ax,
             **kwargs,
         )
 
@@ -137,7 +141,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         data = matrix.values
         ax.imshow(
             data,
-            cmap=self.colormap,
+            cmap=self.colors.colormap,
             norm=self.colormap_normalize,
             origin="upper",
             interpolation="nearest",
@@ -246,13 +250,10 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # create a white grid using minor tick positions
         ax.set_xticks(np.arange(n_columns + 1) - 0.5, minor=True)
         ax.set_yticks(np.arange(n_rows + 1) - 0.5, minor=True)
-        ax.grid(which="minor", color=RGBA_WHITE, linestyle="-", linewidth=2)
+        ax.grid(which="minor", color=self.colors.foreground, linestyle="-", linewidth=2)
         ax.tick_params(which="minor", bottom=False, left=False)
 
-    draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
 
-
-@inheritdoc(match="[see superclass]")
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
     """
     A matrix plot where all values are percentages.
@@ -264,27 +265,35 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
+        colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
-        colormap: Optional[Union[str, Colormap]] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
         **kwargs,
     ) -> None:
-        """[see superclass]"""
-        if any(
-            field in kwargs
-            for field in [
-                "colorbar_major_formatter",
-                "colorbar_minor_formatter",
-                "cell_format",
-            ]
-        ):
-            raise ValueError(
-                f"arg cell_format is not supported by class {type(self).__name__}"
-            )
+        """
+        :param max_ticks: the maximum number of ticks to put on the x and y axis;
+            ``None`` to determine the number of ticks automatically (default: ``None``)
+        """
+        _unsupported_fields = {
+            "colorbar_major_formatter",
+            "colorbar_minor_formatter",
+            "cell_format",
+        }.intersection(kwargs.keys())
+        if _unsupported_fields:
+            if len(_unsupported_fields) == 1:
+                _args = f"arg {next(iter(_unsupported_fields))} is"
+            else:
+                _args = f'args {", ".join(_unsupported_fields)} are'
+            raise ValueError(f"{_args} not supported by class {type(self).__name__}")
+
         super().__init__(
             ax=ax,
-            colormap_normalize=colormap_normalize,
-            colormap=colormap,
+            colors=colors,
+            colormap_normalize=(
+                colormap_normalize
+                if colormap_normalize
+                else Normalize(vmin=0.0, vmax=1.0)
+            ),
             max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
@@ -295,6 +304,13 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             ),
             **kwargs,
         )
+
+    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
+
+    @classmethod
+    def get_default_style_name(cls) -> str:
+        """[see superclass]"""
+        return f"{super().get_default_style_name()}%"
 
 
 @inheritdoc(match="[see superclass]")
@@ -307,36 +323,40 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         """[see superclass]"""
         matrix.to_string(buf=self.out, line_width=self.width)
 
-    draw_matrix.__doc__ = MatrixStyle.draw_matrix.__doc__
-
 
 #
 # Drawer classes
 #
 
 
+@inheritdoc(match="[see superclass]")
 class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
     """
     Drawer for matrices of numerical values.
 
-    Comes with three pre-defined styles:
-    - ``matplot``: matplotlib plot of the matrix using a default \
-        :class:`.MatrixMatplotStyle`
-    - ``matplot%``: matplotlib plot of matrix with percentage annotations, \
-        using a default :class:`.PercentageMatrixMatplotStyle`
-    - ``text``: print the matrix to stdout, using a default \
-        :class:`.MatrixReportStyle`
+    Supports the following pre-defined styles:
+
+    - ``"matplot"``: `matplotlib` plot of the matrix using a
+      :class:`.MatrixMatplotStyle`
+    - ``"matplot%"``: `matplotlib` plot of matrix with annotations formatted as
+      percentages, using a :class:`.PercentageMatrixMatplotStyle`
+    - ``"text"``: text representation of the matrix, using a :class:`.MatrixReportStyle`
     """
 
-    _STYLES = {
-        "matplot": MatrixMatplotStyle,
-        "matplot%": PercentageMatrixMatplotStyle,
-        "text": MatrixReportStyle,
-    }
+    def __init__(self, style: Optional[Union[MatrixStyle, str]] = None) -> None:
+        """
+        :param style: the style to be used for drawing (default: ``"matplot"``)
+        """
+        super().__init__(style=style)
 
     @classmethod
-    def _get_style_dict(cls) -> Mapping[str, Type[MatrixStyle]]:
-        return MatrixDrawer._STYLES
+    def get_style_classes(cls) -> Iterable[Type[MatrixStyle]]:
+        """[see superclass]"""
+        return [
+            MatrixMatplotStyle,
+            PercentageMatrixMatplotStyle,
+            MatrixReportStyle,
+        ]
 
     def _draw(self, data: pd.DataFrame) -> None:
         # draw the matrix

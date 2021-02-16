@@ -17,7 +17,15 @@ code {
     padding-right: 1pt;
 }
 
-.longtable.table td, .table th {
+.bd-content .longtable.table {
+    display: table;
+}
+
+.longtable.table {
+    width: 100%;
+}
+
+.longtable.table td, .longtable.table th {
     padding: .25rem;
     vertical-align: top;
     border-top: 1px solid #DEE2E6;

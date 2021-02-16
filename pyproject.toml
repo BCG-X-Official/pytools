@@ -9,18 +9,17 @@ exclude = [".idea", "tmp", "dist", ".tox", ".pytest_cache"]
 module = "pytools"
 author = "Boston Consulting Group (BCG)"
 home-page = "https://github.com/BCG-Gamma/pytools"
-description-file = "README.rst"
+description-file = "pypi_description.rst"
 dist-name = "gamma-pytools"
 license = "Apache Software License v2.0"
 
 requires = [
-    "pandas >= 0.24,<1.2",
-    "numpy  >= 1.16,<1.20",
-    "matplotlib >= 3.0,<3.4",
-    "joblib >= 0.13,<1.17",
-    "scipy  >= 1.2,<1.6",
-    "typing_inspect >= 0.4",
-    "pyyaml >= 5.0"
+    "joblib         >=0.13,<1.1",
+    "matplotlib     >=3.0,<3.4",
+    "numpy          >=1.16,<1.21",
+    "pandas         >=0.24,<1.3",
+    "scipy          >=1.2,<1.6",
+    "typing_inspect >=0.4,<0.7",
 ]
 
 requires-python = ">=3.6,<4"
@@ -50,7 +49,7 @@ testing = [
     "isort == 5.5.*",
 ]
 docs = [
-    "sphinx == 3.2.*",
+    "sphinx == 3.4.*",
     "sphinx-autodoc-typehints == 1.11.*",
     "pydata-sphinx-theme == 0.4.*",
     "nbsphinx == 0.7.*",
@@ -65,28 +64,24 @@ Documentation = "https://bcg-gamma.github.io/pytools/"
 Repository = "https://github.com/BCG-Gamma/pytools"
 
 [build.matrix.min]
-python      =  "=3.6.*"
-pandas      =  "=0.24.*"
-matplotlib  =  "=3.0.*"
-numpy       =  "=1.16.*"
-scipy       =  "=1.2.*"
-joblib      =  "=0.13.*"
+joblib         = "=0.13.*"
+matplotlib     = "=3.0.*"
+numpy          = "=1.16.*"
+packaging      = "=20.*"
+pandas         = "=0.24.*"
+python         = "=3.6.*"
+scipy          = "=1.2.*"
+typing_inspect = "=0.4"
 
 [build.matrix.max]
-python      =  "=3.8.*"
-pandas      =  "=1.1.*"
-matplotlib  =  "=3.3.*"
-numpy       =  "=1.19.*"
-scipy       =  "=1.5.*"
-joblib      =  "=0.16.*"
-
-[build.matrix.unconstrained]
-python      =  ">=3.6,<4"
-pandas      =  ">=0.24"
-matplotlib  =  ">=3.0"
-numpy       =  ">=1.16"
-scipy       =  ">=1.2"
-joblib      =  ">=0.13"
+joblib         = "<1.1"
+matplotlib     = "<3.4"
+numpy          = "<1.21"
+packaging      = ">=20"
+pandas         = "<1.3"
+python         = "=3.8.*"
+scipy          = "<1.6"
+typing_inspect = "<0.7"
 
 [tool.black]
 # quiet = "True"
