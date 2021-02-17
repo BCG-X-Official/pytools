@@ -13,7 +13,7 @@ def test_package_version():
 
     log.info(f"Test package version – version set to: {dev_version}")
     assert re.match(
-        r"^(\d)+\.(\d)+\.(\d)+(rc\d)?$", dev_version
+        r"^(\d)+\.(\d)+\.(\d)+(rc\d+)?$", dev_version
     ), "pytools.__version__ is not in MAJOR.MINOR.PATCH[rcN] format."
 
     releases_uri = "https://pypi.org/rss/project/gamma-pytools/releases.xml"
