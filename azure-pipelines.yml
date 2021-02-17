@@ -1,5 +1,6 @@
 trigger:
   - develop
+  - dev/*
   - release/*
 
 pr:
