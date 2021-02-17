@@ -17,8 +17,8 @@ def test_package_version():
         r"^(\d)+\.(\d)+\.(\d)+(rc\d)?$", dev_version
     ), "pytools.__version__ is not in MAJOR.MINOR.PATCH[rcN] format."
 
-    releases = "https://pypi.org/rss/project/gamma-pytools/releases.xml"
-    releases_xml = requests.get(releases)
+    releases_uri = "https://pypi.org/rss/project/gamma-pytools/releases.xml"
+    releases_xml = requests.get(releases_uri)
     assert releases_xml.status_code == 200, "Error getting releases from PyPi"
 
     tree = ElementTree.fromstring(releases_xml.text)
