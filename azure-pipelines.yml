@@ -140,7 +140,7 @@ stages:
               conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)
               pytest \
-                 --cov facet \
+                 --cov pytools \
                  --cov-config "tox.ini" \
                  --cov-report=xml:coverage.xml --cov-report=html:htmlcov \
                  --junitxml pytest.xml \
