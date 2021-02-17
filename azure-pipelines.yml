@@ -4,7 +4,7 @@ trigger:
 
 pr:
   - develop
-  - develop/*
+  - dev/*
   - release/*
 
 # set the build name
@@ -24,7 +24,7 @@ variables:
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
     branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
   source_is_release_branch: $[ startsWith(variables['branchName'], 'release') ]
-  source_is_develop_branch: $[ startsWith(variables['branchName'], 'develop') ]
+  source_is_develop_branch: $[ or(startsWith(variables['branchName'], 'develop'), startsWith(variables['branchName'], 'dev/') ]
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
 
 stages:
