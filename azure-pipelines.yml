@@ -394,6 +394,8 @@ stages:
             path: pytools
           
           - task: Bash@3
+            env:
+              BRANCH_NAME: variables.branchName
             inputs:
               targetType: inline
               script: |
@@ -403,7 +405,7 @@ stages:
                 from os import environ
                 from make import ToxBuilder
 
-                branch_env = "BRANCHNAME"
+                branch_env = "BRANCH_NAME"
                 assert branch_env in environ, f"ENV variable '{branch_env}' with git branch name missing."
                 branch = environ[branch_env]
                 print(f"Checking package version cosistency with branch: {branch}")
