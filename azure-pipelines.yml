@@ -386,7 +386,7 @@ stages:
             
             - task: Bash@3
               env:
-                BRANCH_NAME: variables.branchName
+                BRANCH_NAME: $[ variables['branchName'] ]
               inputs:
                 targetType: inline
                 script: |
