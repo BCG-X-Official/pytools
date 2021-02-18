@@ -14,7 +14,7 @@ utilities for reuse, including:
 
 .. Begin-Badges
 
-|pypi| |conda|
+|pypi| |conda| |azure_build| |azure_code_cov|
 |python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
 
 .. End-Badges
@@ -83,7 +83,7 @@ or have a look at
 .. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/_build?definitionId=9.svg
+.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/develop.svg
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
 .. |python_versions| image:: https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg
