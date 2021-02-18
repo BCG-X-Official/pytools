@@ -147,10 +147,12 @@ stages:
               conda env create -f environment.yml
               conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)
-              pip install pytest-azurepipelines
-              coverage run -m pytest test/test/
-              coverage xml
-              coverage html
+              pytest \
+                 --cov pytools \
+                 --cov-config "tox.ini" \
+                 --cov-report=xml:coverage.xml --cov-report=html:htmlcov \
+                 --junitxml pytest.xml \
+                 . -s
           displayName: 'pytest'
 
         - task: PublishTestResults@2
@@ -367,6 +369,7 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
+
   # release on merges into release/*:
   # - add release tag
   # - create GitHub release with changelog
@@ -395,11 +398,12 @@ stages:
           
           - task: Bash@3
             env:
-              BRANCH_NAME: variables.branchName
+              BRANCH_NAME: $(branchName)
             inputs:
               targetType: inline
               script: |
                 set -e
+                python -m pip install "toml==0.10.*"
                 cd $(System.DefaultWorkingDirectory)
                 python <<EOF
                 from os import environ
