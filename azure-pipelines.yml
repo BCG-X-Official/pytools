@@ -367,6 +367,7 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
+
   # release on merges into release/*:
   # - add release tag
   # - create GitHub release with changelog
@@ -395,11 +396,12 @@ stages:
           
           - task: Bash@3
             env:
-              BRANCH_NAME: variables.branchName
+              BRANCH_NAME: $(branchName)
             inputs:
               targetType: inline
               script: |
                 set -e
+                python -m pip install "toml==0.10.*"
                 cd $(System.DefaultWorkingDirectory)
                 python <<EOF
                 from os import environ
