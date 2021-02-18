@@ -367,57 +367,6 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
-# TODO: REMOVE AFTER TESTS, AHEAD OF MERGING
-  - stage:
-    displayName: 'DEBUG: Test new release job'
-    dependsOn: conda_tox_build
-
-    jobs:
-      - job:
-        displayName: 'Release'
-        steps:
-            - task: UsePythonVersion@0
-              inputs:
-                versionSpec: '3.7.*'
-              displayName: 'use Python 3.7'
-
-            - checkout: self
-              path: pytools
-            
-            - task: Bash@3
-              env:
-                BRANCH_NAME: $(branchName)
-              inputs:
-                targetType: inline
-                script: |
-                  set -e
-                  python -m pip install "toml==0.10.*"
-                  cd $(System.DefaultWorkingDirectory)
-                  python <<EOF
-                  from os import environ
-                  from make import ToxBuilder
-
-                  branch_env = "BRANCH_NAME"
-                  assert branch_env in environ, f"ENV variable '{branch_env}' with git branch name missing."
-                  branch = environ[branch_env]
-                  print(f"Checking package version consistency with branch: {branch}")
-
-                  assert (branch.startswith("release/") or branch.startswith("dev/")
-                  ), "This check should only run on versioned branches – check pipeline."
-
-                  branch_version = branch.split("/", maxsplit=1)[1]
-                  package_version = ToxBuilder("pytools", "default").package_version
-
-                  assert (
-                      package_version == branch_version
-                  ), f"Package version '{package_version}' does not match '{branch_version}' from branch."
-
-                  print("Check passed.")
-
-                  EOF
-
-              displayName: "Check version consistency"
-
 
   # release on merges into release/*:
   # - add release tag
@@ -447,7 +396,7 @@ stages:
           
           - task: Bash@3
             env:
-              BRANCH_NAME: variables.branchName
+              BRANCH_NAME: $(branchName)
             inputs:
               targetType: inline
               script: |
