@@ -414,7 +414,8 @@ stages:
                 assert branch_env in environ, f"ENV variable '{branch_env}' with git branch name missing."
                 branch = environ[branch_env]
                 print(f"Checking package version consistency with branch: {branch}")
-
+                if branch == "develop":
+                  exit(0)
                 assert (branch.startswith("release/") or branch.startswith("dev/")
                 ), "This check should only run on versioned branches – check pipeline."
 
