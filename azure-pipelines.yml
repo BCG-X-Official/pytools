@@ -401,6 +401,7 @@ stages:
               BRANCH_NAME: $(branchName)
             inputs:
               targetType: inline
+              condition: ne(variables['branchName'], 'develop')
               script: |
                 set -e
                 python -m pip install "toml==0.10.*"
