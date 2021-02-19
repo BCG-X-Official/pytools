@@ -106,12 +106,7 @@ stages:
     jobs:
     - job:
       displayName: 'pytest @ develop environment'
-      condition: >
-        and(
-        ne(variables.source_is_release_branch, 'True'),
-        ne(variables.is_scheduled, 'True'),
-        eq(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
-        )
+      condition: ne(variables.source_is_release_branch, 'True')
 
       pool:
           vmImage: 'ubuntu-latest'
