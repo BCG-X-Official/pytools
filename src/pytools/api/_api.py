@@ -544,6 +544,7 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
+    :param cls: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
     """
