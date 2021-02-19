@@ -2,7 +2,6 @@
 Core implementation of :mod:`pytools.api`.
 """
 
-import inspect
 import logging
 import re
 import warnings
@@ -570,14 +569,9 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         for name, member in vars(_cls).items():
             doc = _get_docstring(m=member)
             if doc == match:
-                parents = inspect.getmro(_cls)[1:]
                 _set_docstring(
                     m=member,
-                    d=(
-                        _get_docstring(m=getattr(parents[0], name, None))
-                        if parents
-                        else None
-                    ),
+                    d=_get_docstring(m=getattr(super(_cls, _cls), name, None)),
                 )
                 match_found = True
 
