@@ -5,7 +5,7 @@ import os
 import re
 from glob import glob
 from types import ModuleType
-from typing import Any, Iterable, List, Optional, Tuple
+from typing import Any, Iterable, List, Tuple
 
 # noinspection PyPackageRequirements
 import pytest
@@ -65,40 +65,41 @@ IGNORE_LIST_METHOD = []
 
 
 def member_children(
-    member: Any, module_filter: Optional[str]
+    member: Any,
 ) -> Tuple[
     List[Tuple[str, object]], List[Tuple[str, object]], List[Tuple[str, object]]
 ]:
     """
-    Return childs of a given member (module, class,..)
+    Return children of a given member (module, class,..)
     :param member: a Python module or class
-    :param module_filter: an optional filter for __module__ of the childs
     :return: three lists for classes, functions and methods
     """
 
-    all_children = inspect.getmembers(member)
+    if inspect.ismodule(member):
+        module = member.__name__
+    else:
+        module = member.__module__
 
-    if module_filter is not None:
-        all_children = [
-            c
-            for c in all_children
-            if hasattr(c[1], "__module__") and c[1].__module__ == module_filter
-        ]
+    all_children = [
+        (name, obj)
+        for name, obj in inspect.getmembers(member)
+        if getattr(obj, "__module__", None) == module
+    ]
 
     classes = [
-        c
-        for c in all_children
-        if inspect.isclass(c[1]) and c[0] not in IGNORE_LIST_CLASS
+        (name, obj)
+        for name, obj in all_children
+        if inspect.isclass(obj) and name not in IGNORE_LIST_CLASS
     ]
     functions = [
-        c
-        for c in all_children
-        if inspect.isfunction(c[1]) and c[0] not in IGNORE_LIST_FUNCTION
+        (name, obj)
+        for name, obj in all_children
+        if inspect.isfunction(obj) and name not in IGNORE_LIST_FUNCTION
     ]
     methods = [
-        c
-        for c in all_children
-        if inspect.ismethod(c[1]) and c[0] not in IGNORE_LIST_METHOD
+        (name, obj)
+        for name, obj in all_children
+        if inspect.ismethod(obj) and name not in IGNORE_LIST_METHOD
     ]
 
     return classes, functions, methods
@@ -182,7 +183,7 @@ def test_docstrings(all_script_objects) -> None:
         def full_name(name: str) -> str:
             return f"{module_name}.{name}"
 
-        classes, functions, methods = member_children(module, module_filter=module_name)
+        classes, functions, methods = member_children(module)
 
         # classes where docstring is None:
         classes_with_missing_docstr.extend(
@@ -214,7 +215,7 @@ def test_docstrings(all_script_objects) -> None:
             if cls_name.startswith("_"):
                 continue
 
-            _inner_classes, inner_functions, inner_methods = member_children(cls, None)
+            _inner_classes, inner_functions, inner_methods = member_children(cls)
 
             def full_name(name: str) -> str:
                 return f"{module_name}.{cls_name}.{name}"
