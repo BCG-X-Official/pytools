@@ -15,7 +15,7 @@ from ..base import (
     PrefixExpression,
 )
 from ..operator import BinaryOperator
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -262,6 +262,7 @@ class AtomicForm(TextualForm):
         return len(self.text)
 
 
+@inheritdoc(match="""[see superclass]""")
 class ComplexForm(TextualForm, metaclass=ABCMeta):
     """
     Base class of non-atomic forms.
@@ -322,6 +323,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
         return self._len
 
 
+@inheritdoc(match="""[see superclass]""")
 class BracketedForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
@@ -395,6 +397,7 @@ class BracketedForm(ComplexForm):
     to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
+@inheritdoc(match="""[see superclass]""")
 class PrefixForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
@@ -416,6 +419,8 @@ class PrefixForm(ComplexForm):
     def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
         """
         Create a prefixed form from the given prefix expression.
+
+        :param expression: the prefix expression for which to create a prefixed form
         """
 
         prefix = expression.prefix_
@@ -492,6 +497,7 @@ class PrefixForm(ComplexForm):
     to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
+@inheritdoc(match="""[see superclass]""")
 class InfixForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
