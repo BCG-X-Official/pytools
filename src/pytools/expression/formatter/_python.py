@@ -372,8 +372,6 @@ class BracketedForm(ComplexForm):
         else:
             return subform_text
 
-    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
-
     def to_multiple_lines(
         self,
         config: FormattingConfig,
@@ -393,8 +391,6 @@ class BracketedForm(ComplexForm):
             ),
             IndentedLine(indent=indent, text=self.brackets.closing),
         ]
-
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
 @inheritdoc(match="""[see superclass]""")
@@ -450,10 +446,6 @@ class PrefixForm(ComplexForm):
         """[see superclass]"""
         return self.prefix.needs_multi_line_encapsulation
 
-    needs_multi_line_encapsulation.__doc__ = (
-        TextualForm.needs_multi_line_encapsulation.__doc__
-    )
-
     def to_single_line(self) -> str:
         """[see superclass]"""
 
@@ -493,8 +485,6 @@ class PrefixForm(ComplexForm):
             subform_lines[0] = separator + subform_lines[0]
 
         return prefix_lines[:-1] + subform_lines
-
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
 
 @inheritdoc(match="""[see superclass]""")
@@ -599,10 +589,6 @@ class InfixForm(ComplexForm):
         """[see superclass]"""
         return True
 
-    needs_multi_line_encapsulation.__doc__ = (
-        TextualForm.needs_multi_line_encapsulation.__doc__
-    )
-
     def to_single_line(self) -> str:
         """[see superclass]"""
 
@@ -621,8 +607,6 @@ class InfixForm(ComplexForm):
             infix = ""
 
         return infix.join(subform.to_single_line() for subform in self.subforms)
-
-    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
 
     def to_multiple_lines(
         self,
@@ -699,8 +683,6 @@ class InfixForm(ComplexForm):
 
         return result
 
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
-
 
 #
 # Public classes
@@ -709,6 +691,7 @@ class InfixForm(ComplexForm):
 __tracker = AllTracker(globals())
 
 
+@inheritdoc(match="""[see superclass]""")
 class PythonExpressionFormatter(ExpressionFormatter):
     """
     Formats expression objects as Python expressions, in line with the `black` style.
@@ -739,8 +722,6 @@ class PythonExpressionFormatter(ExpressionFormatter):
         )
 
         return form.to_text(self._config)
-
-    to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
 
 __tracker.validate()
