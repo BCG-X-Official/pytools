@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 @pytest.fixture
 def all_script_files() -> List[str]:
     """
-    Fixture returning all .py script files in the src/yieldengine codebase
+    Fixture returning all .py script files in the src/pytools codebase
 
     :return: List of relative paths
     """
