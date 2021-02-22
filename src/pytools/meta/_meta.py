@@ -87,9 +87,10 @@ class SingletonMeta(type):
 
 def compose_meta(*metaclasses: type) -> type:
     """
-    Compose multiple metaclasses.
+    Compose multiple metaclasses by dynamically creating a new metaclass.
 
     :param metaclasses: one or more metaclasses
+    :return: a new metaclass, composing all given metaclasses
     """
     metaclasses = tuple(
         mcs

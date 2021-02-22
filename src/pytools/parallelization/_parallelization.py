@@ -256,6 +256,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all given jobs in parallel.
 
+        :param jobs: the jobs to run in parallel
         :return: the results of all jobs
         """
         simple_queue: JobQueue[T_Job_Result, List[T_Job_Result]] = SimpleQueue(
@@ -267,6 +268,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all jobs in the given queue, in parallel.
 
+        :param queue: the queue to run
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
         """
 
@@ -285,6 +287,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all jobs in the given queues, in parallel.
 
+        :param queues: the queues to run
         :return: the result of all jobs, collated per queue using method
             :meth:`.JobQueue.collate`
         """
