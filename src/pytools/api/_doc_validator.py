@@ -69,7 +69,7 @@ class DocValidator:
         """
         :param root_dir: the root directory of all Python files to be validated
         :param validate_protected: names of protected functions and methods to be
-            validated (default: %VALIDATE_PROTECTED%)
+            validated (default: ``%VALIDATE_PROTECTED%``)
         """
         self.root_dir = root_dir
         self.validate_protected = to_tuple(
