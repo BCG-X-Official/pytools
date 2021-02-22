@@ -224,6 +224,11 @@ class DocValidator:
             )
         )
 
+        validate_protected = self.validate_protected
+
+        def _filter_protected(name: str) -> bool:
+            return name in validate_protected or not name.startswith("_")
+
         # inspect classes recursively
         for cls in classes:
             self._validate_members(
@@ -231,7 +236,7 @@ class DocValidator:
                 members=[
                     attribute
                     for name, attribute in vars(cls).items()
-                    if self._filter_protected(name)
+                    if _filter_protected(name)
                 ],
             )
 
@@ -255,9 +260,6 @@ class DocValidator:
                 + _lines(self.functions_with_mismatched_parameter_doc)
             )
 
-    def _filter_protected(self, name: str) -> bool:
-        return name in self.validate_protected or not name.startswith("_")
-
     def _load_modules(self) -> List[ModuleType]:
         # list paths to all python files
         suffix = ".py"
@@ -268,15 +270,14 @@ class DocValidator:
         return [
             importlib.import_module(module_path)
             for module_path in (
-                path.replace(os.sep, ".").replace(".__init__", "")
-                for path in [
-                    path1[prefix_len:-suffix_len]
-                    for path1 in glob(
-                        os.path.join(root_dir, "**", f"*{suffix}"), recursive=True
-                    )
-                ]
+                path[prefix_len:-suffix_len]
+                .replace(os.sep, ".")
+                .replace(".__init__", "")
+                for path in glob(
+                    os.path.join(root_dir, "**", f"*{suffix}"), recursive=True
+                )
             )
-            if self._filter_protected(module_path[module_path.rfind(".") + 1 :])
+            if not module_path[module_path.rfind(".") + 1 :].startswith("_")
         ]
 
 
