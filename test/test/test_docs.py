@@ -4,8 +4,8 @@ import logging
 import os
 import re
 from glob import glob
-from types import ModuleType
-from typing import Any, Iterable, List, Tuple
+from types import FunctionType, ModuleType
+from typing import Any, Collection, Iterable, List, Optional
 
 log = logging.getLogger(__name__)
 
@@ -13,10 +13,190 @@ log = logging.getLogger(__name__)
 class DocValidator:
     root_dir: str
 
-    def __init__(self, root_dir: str) -> None:
-        self.root_dir = root_dir
+    classes_with_missing_doc: List[str]
+    functions_with_missing_doc: List[str]
+    functions_with_mismatched_parameter_doc: List[str]
 
-    def _list_python_files(self) -> List[str]:
+    VALIDATE_PROTECTED_DEFAULT = ("__init__",)
+
+    def __init__(
+        self, root_dir: str, validate_protected: Optional[Collection[str]] = None
+    ) -> None:
+        self.root_dir = root_dir
+        self.validate_protected = (
+            validate_protected
+            if validate_protected
+            else self.VALIDATE_PROTECTED_DEFAULT
+        )
+
+        self.classes_with_missing_doc = []
+        self.functions_with_missing_doc = []
+        self.functions_with_mismatched_parameter_doc = []
+
+    def validate_docstrings(self) -> bool:
+
+        modules = self._load_modules()
+
+        if not modules:
+            raise ValueError("no Python modules found")
+
+        for module in modules:
+
+            attributes = [
+                getattr(module, name)
+                for name in dir(module)
+                if not name.startswith("_")
+            ]
+
+            self._validate_members(module_name=module.__name__, members=attributes)
+
+        def lines(s: Iterable[str]) -> str:
+            return "\n".join(s)
+
+        if self.classes_with_missing_doc:
+            log.warning(
+                "One or more classes lack docstrings:\n"
+                + lines(self.classes_with_missing_doc)
+            )
+
+        if self.functions_with_missing_doc:
+            log.warning(
+                "One or more functions lack docstrings:\n"
+                + lines(self.functions_with_missing_doc)
+            )
+
+        if self.functions_with_mismatched_parameter_doc:
+            log.warning(
+                "One or more functions have mismatched parameter documentation:\n"
+                + lines(self.functions_with_mismatched_parameter_doc)
+            )
+
+        return not (
+            self.classes_with_missing_doc
+            or self.functions_with_missing_doc
+            or self.functions_with_mismatched_parameter_doc
+        )
+
+    @staticmethod
+    def is_docstring_missing(obj: Any) -> bool:
+        """
+        Check if __doc__ is missing or empty
+
+        :param obj: object to check
+        :return: boolean if docstr is missing
+        """
+        doc = getattr(obj, "__doc__", None)
+        return not (doc and str(doc).strip())
+
+    @staticmethod
+    def is_parameter_doc_mismatched(module_name: str, callable_obj: callable) -> bool:
+        """
+        Check if parameters are inconsistent between a callable's signature and docstr
+
+        :param module_name: Name of the module/class the callable appears in (for log)
+        :param callable_obj: the callable to check
+        :return: True if inconsistent, else False
+        """
+        documented_parameters = DocValidator.list_documented_parameters(
+            str(callable_obj.__doc__)
+        )
+
+        actual_parameters = DocValidator.list_actual_parameters(callable_obj)
+
+        if actual_parameters == documented_parameters:
+            return False
+
+        log.warning(
+            "Mismatched arguments in docstring for "
+            f"{module_name}.{callable_obj.__qualname__}: "
+            f"expected {actual_parameters} but got {documented_parameters}"
+        )
+
+        return True
+
+    @staticmethod
+    def list_documented_parameters(docstring: str) -> List[str]:
+        """
+        Extract all documented parameter names from a docstring, including ``return``
+        if the return parameter is documented.
+
+        :param docstring: the input docstring
+        :return: list of parameter names
+        """
+        all_params = re.findall(
+            pattern=r"\:param\s+(\w+)\s*\:|\:(return)s?:",
+            string=docstring,
+            flags=re.MULTILINE,
+        )
+
+        return [p[0] or p[1] for p in all_params]
+
+    @staticmethod
+    def list_actual_parameters(callable_obj: callable) -> List[str]:
+        """
+        Extract all parameter names from a function signature, including ``return``
+        if there is a type hint for a return parameter.
+
+        :param callable_obj: the function for which to get the signature
+        :return: list of parameter names
+        """
+        signature = inspect.signature(callable_obj)
+        actual_parameters = list(signature.parameters.keys())
+        if actual_parameters and actual_parameters[0] in ["self", "cls"]:
+            del actual_parameters[0]
+        if not (
+            signature.return_annotation is signature.empty
+            or signature.return_annotation is None
+        ):
+            actual_parameters.append("return")
+        return actual_parameters
+
+    def _validate_members(self, module_name: str, members: Collection[Any]) -> None:
+        def full_name(name: str) -> str:
+            return f"{module_name}.{name}"
+
+        classes = [cls for cls in members if isinstance(cls, type)]
+        functions = [func for func in members if isinstance(func, FunctionType)]
+
+        # classes where docstring is missing
+        self.classes_with_missing_doc.extend(
+            full_name(cls.__qualname__)
+            for cls in classes
+            if self.is_docstring_missing(cls)
+        )
+        # functions where docstring is missing
+        # (except __init__ - shares docstring with class)
+        self.functions_with_missing_doc.extend(
+            full_name(func.__qualname__)
+            for func in functions
+            if self.is_docstring_missing(func) and func.__name__ != "__init__"
+        )
+        self.functions_with_mismatched_parameter_doc.extend(
+            full_name(func.__qualname__)
+            for func in functions
+            if (
+                not self.is_docstring_missing(func)
+                and self.is_parameter_doc_mismatched(
+                    module_name=module_name, callable_obj=func
+                )
+            )
+        )
+
+        # inspect classes recursively
+        for cls in classes:
+            self._validate_members(
+                module_name=module_name,
+                members=[
+                    attribute
+                    for name, attribute in vars(cls).items()
+                    if self._filter_protected(name)
+                ],
+            )
+
+    def _filter_protected(self, name: str) -> bool:
+        return name in self.validate_protected or not name.startswith("_")
+
+    def _load_modules(self) -> List[ModuleType]:
         # list paths to all python files
         suffix = ".py"
         root_dir = self.root_dir
@@ -24,244 +204,19 @@ class DocValidator:
         suffix_len = len(suffix)
 
         return [
-            path[prefix_len:-suffix_len]
-            for path in glob(os.path.join(root_dir, "**", f"*{suffix}"), recursive=True)
-        ]
-
-    def _list_modules(self) -> List[ModuleType]:
-        """
-        Dynamically import all Python modules in the codebase
-
-        :return: list of imported Python modules as objects
-        """
-
-        return [
-            importlib.import_module(module)
-            for module in (
+            importlib.import_module(module_path)
+            for module_path in (
                 path.replace(os.sep, ".").replace(".__init__", "")
-                for path in self._list_python_files()
-            )
-        ]
-
-    @staticmethod
-    def list_members(
-        member: Any,
-    ) -> Tuple[
-        List[Tuple[str, object]], List[Tuple[str, object]], List[Tuple[str, object]]
-    ]:
-        """
-        Return children of a given member (module, class,..)
-        :param member: a Python module or class
-        :return: three lists for classes, functions and methods
-        """
-
-        if inspect.ismodule(member):
-            module = member.__name__
-        else:
-            module = member.__module__
-
-        all_children = [
-            (name, obj)
-            for name, obj in inspect.getmembers(member)
-            if getattr(obj, "__module__", None) == module
-        ]
-
-        classes = [(name, obj) for name, obj in all_children if inspect.isclass(obj)]
-        functions = [
-            (name, obj) for name, obj in all_children if inspect.isfunction(obj)
-        ]
-        methods = [(name, obj) for name, obj in all_children if inspect.ismethod(obj)]
-
-        return classes, functions, methods
-
-    @staticmethod
-    def docstring_missing(obj_name: str, obj: object) -> bool:
-        """
-        Check if __doc__ is missing or empty
-        :param obj_name: name of the object to check
-        :param obj: object to check
-        :return: boolean if docstr is missing
-        """
-        if obj_name.startswith("_"):
-            return False
-
-        doc = getattr(obj, "__doc__", None)
-        return not (doc and str(doc).strip())
-
-    @staticmethod
-    def extract_params_from_docstr(docstr: str) -> List[str]:
-        """
-        Extract all documented parameter names from a docstring
-
-        :param docstr: the input docstring
-        :return: list of parameter names
-        """
-        all_params = re.findall(
-            pattern=r"(\:param\s+)(\w+)(\:)", string=docstr, flags=re.MULTILINE
-        )
-
-        return [p[1].strip() for p in all_params]
-
-    def parameters_inconsistent(
-        self, parent: str, call_obj_name: str, call_obj: object
-    ) -> bool:
-        """
-        Check if parameters are inconsistent between a callable's signature and docstr
-
-        :param parent: Name of the module/class the callable appears in (for log)
-        :param call_obj_name: the name of the callable to check
-        :param call_obj: the callable to check
-        :return: True if inconsistent, else False
-        """
-        docstr_params = self.extract_params_from_docstr(str(call_obj.__doc__))
-        full_args = inspect.getfullargspec(call_obj)
-        func_args = full_args.args
-
-        if "self" in func_args:
-            func_args.remove("self")
-
-        if docstr_params is not None and len(docstr_params) > 0:
-
-            for idx, f_arg in enumerate(func_args):
-                if idx >= len(docstr_params) or docstr_params[idx] != f_arg:
-                    log.info(
-                        f"Wrong arguments in docstring for {parent}.{call_obj_name}: "
-                        f"{f_arg}"
+                for path in [
+                    path1[prefix_len:-suffix_len]
+                    for path1 in glob(
+                        os.path.join(root_dir, "**", f"*{suffix}"), recursive=True
                     )
-                    return True
-        else:
-            # the function has arguments defined but none were found from __doc__?
-            if len(full_args.args) > 0:
-                log.info(
-                    f"No documented arguments in docstring for {parent}.{call_obj_name}"
-                )
-                return True
-
-        # all ok
-        return False
-
-    def validate_docstrings(self) -> None:
-
-        modules: List[ModuleType] = self._list_modules()
-
-        if not modules:
-            raise ValueError("no Python modules found")
-
-        classes_with_missing_docstr = []
-        functions_with_missing_docstr = []
-        methods_with_missing_docstr = []
-        inconsistent_parameters = []
-
-        for module in modules:
-            module_name = module.__name__
-
-            def full_name(name: str) -> str:
-                return f"{module_name}.{name}"
-
-            classes, functions, methods = self.list_members(module)
-
-            # classes where docstring is None:
-            classes_with_missing_docstr.extend(
-                full_name(name)
-                for name, obj in classes
-                if self.docstring_missing(name, obj)
+                ]
             )
-
-            # functions where docstring is None:
-            functions_with_missing_docstr.extend(
-                full_name(name)
-                for name, obj in functions
-                if self.docstring_missing(name, obj)
-            )
-
-            # methods where docstring is None:
-            methods_with_missing_docstr.extend(
-                full_name(name)
-                for name, obj in methods
-                if self.docstring_missing(name, obj)
-            )
-
-            inconsistent_parameters.extend(
-                full_name(name)
-                for name, func in functions
-                if not (name.startswith("_") or self.docstring_missing(name, func))
-                and self.parameters_inconsistent(
-                    parent=module_name, call_obj_name=name, call_obj=func
-                )
-            )
-
-            # inspect found classes:
-            for cls_name, cls in classes:
-
-                if cls_name.startswith("_"):
-                    continue
-
-                _inner_classes, inner_functions, inner_methods = self.list_members(cls)
-
-                def full_name(name: str) -> str:
-                    return f"{module_name}.{cls_name}.{name}"
-
-                # functions where docstring is None:
-                functions_with_missing_docstr.extend(
-                    [
-                        full_name(name)
-                        for name, obj in inner_functions
-                        if self.docstring_missing(name, obj)
-                    ]
-                )
-
-                inconsistent_parameters.extend(
-                    full_name(name)
-                    for name, func in inner_functions
-                    if not (name.startswith("_") or self.docstring_missing(name, func))
-                    and self.parameters_inconsistent(
-                        parent=f"{module_name}.{cls_name}",
-                        call_obj_name=name,
-                        call_obj=func,
-                    )
-                )
-
-                # methods where docstring is None:
-                methods_with_missing_docstr.extend(
-                    [
-                        full_name(name)
-                        for name, obj in inner_methods
-                        if self.docstring_missing(name, obj)
-                    ]
-                )
-
-        def lines(s: Iterable[str]) -> str:
-            return "\n".join(s)
-
-        if classes_with_missing_docstr:
-            log.info(
-                "The following classes lack docstrings:\n"
-                + lines(classes_with_missing_docstr)
-            )
-
-        if functions_with_missing_docstr:
-            log.info(
-                "The following functions lack docstrings:\n"
-                + lines(functions_with_missing_docstr)
-            )
-
-        if methods_with_missing_docstr:
-            log.info(
-                "The following methods lack docstrings:\n"
-                + lines(methods_with_missing_docstr)
-            )
-
-        if inconsistent_parameters:
-            log.info(
-                "The following methods have inconsistently described parameters:\n"
-                + lines(inconsistent_parameters)
-            )
-
-        assert not classes_with_missing_docstr
-        assert not functions_with_missing_docstr
-        assert not methods_with_missing_docstr
-        assert not inconsistent_parameters
+            if self._filter_protected(module_path[module_path.rfind(".") + 1 :])
+        ]
 
 
 def test_docstrings() -> None:
-    DocValidator(root_dir="src").validate_docstrings()
+    assert DocValidator(root_dir="src").validate_docstrings(), "docstrings are valid"
