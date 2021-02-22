@@ -85,7 +85,7 @@ class SingletonMeta(type):
 #
 
 
-def compose_meta(*metaclasses: type):
+def compose_meta(*metaclasses: type) -> type:
     """
     Compose multiple metaclasses.
 

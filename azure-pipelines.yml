@@ -1,10 +1,12 @@
 trigger:
   - develop
+  - 1.1.x
   - dev/*
   - release/*
 
 pr:
   - develop
+  - 1.1.x
   - dev/*
   - release/*
 
@@ -17,7 +19,7 @@ schedules:
   displayName: Nightly full build
   branches:
     include:
-    - develop
+    - 1.1.x
 
 variables:
   ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
@@ -381,7 +383,7 @@ stages:
           eq(variables.source_is_release_branch, 'True'),
           eq(variables.source_is_develop_branch, 'True')
           )
-        
+
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -390,7 +392,7 @@ stages:
 
           - checkout: self
             path: pytools
-          
+
           - task: Bash@3
             env:
               BRANCH_NAME: $(branchName)
@@ -496,7 +498,7 @@ stages:
          eq(variables.source_is_release_branch, 'True'),
          eq(variables.source_is_develop_branch, 'True')
          )
-      
+
         pool:
           vmImage: 'ubuntu-latest'
 
@@ -526,7 +528,7 @@ stages:
                 cd $(System.DefaultWorkingDirectory)
                 git checkout --track origin/github-pages
                 mkdir -p docs
-                sudo apt-get install tree 
+                sudo apt-get install tree
                 echo "Current docs contents:"
                 tree docs
                 mkdir $(Build.ArtifactStagingDirectory)/old_docs
