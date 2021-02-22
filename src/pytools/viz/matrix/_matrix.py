@@ -80,7 +80,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colorbar_minor_formatter: Optional[Formatter] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
         cell_format: Union[str, Formatter, Callable[[Any], str], None] = None,
-        **kwargs,
     ) -> None:
         """
         :param max_ticks: the maximum number of ticks to put on the x and y axis;
@@ -116,7 +115,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             ),
             colorbar_major_formatter=colorbar_major_formatter,
             colorbar_minor_formatter=colorbar_minor_formatter,
-            **kwargs,
         )
 
         if max_ticks is not None and not (
@@ -268,24 +266,11 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
         max_ticks: Optional[Tuple[int, int]] = None,
-        **kwargs,
     ) -> None:
         """
         :param max_ticks: the maximum number of ticks to put on the x and y axis;
             ``None`` to determine the number of ticks automatically (default: ``None``)
         """
-        _unsupported_fields = {
-            "colorbar_major_formatter",
-            "colorbar_minor_formatter",
-            "cell_format",
-        }.intersection(kwargs.keys())
-        if _unsupported_fields:
-            if len(_unsupported_fields) == 1:
-                _args = f"arg {next(iter(_unsupported_fields))} is"
-            else:
-                _args = f'args {", ".join(_unsupported_fields)} are'
-            raise ValueError(f"{_args} not supported by class {type(self).__name__}")
-
         super().__init__(
             ax=ax,
             colors=colors,
@@ -302,10 +287,16 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
                 if abs(x) < 0.1
                 else f"{np.round(x * 100):.0f}"
             ),
-            **kwargs,
         )
 
-    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = (
+        "\n".join(
+            line
+            for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
+            if "_formatter:" not in line
+        )
+        + __init__.__doc__
+    )
 
     @classmethod
     def get_default_style_name(cls) -> str:

@@ -120,9 +120,16 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
             weight=weight,
         )
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+    ) -> None:
         """[see superclass]"""
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(title=title)
         self.ax.margins(0, 0)
 
     def _draw_hbar(self, x: float, y: float, w: float, h: float, weight: float) -> None:
@@ -162,7 +169,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class DendrogramReportStyle(TextStyle, DendrogramStyle):
+class DendrogramReportStyle(DendrogramStyle, TextStyle):
     """
     Renders dendrograms as ASCII graphics for inclusion in plain-text reports.
     """
@@ -287,17 +294,30 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         matrix[y1, x] = "/"
         matrix[y2, x] = "\\"
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+    ) -> None:
         """[see superclass]"""
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(title=title)
         self._char_matrix = CharacterMatrix(
             n_rows=self.max_height, n_columns=self.width
         )
 
-    def finalize_drawing(self, **kwargs) -> None:
+    def finalize_drawing(
+        self,
+        *,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+    ) -> None:
         """[see superclass]"""
         try:
-            super().finalize_drawing(**kwargs)
+            super().finalize_drawing()
             for row in reversed(range(self._n_labels + 1)):
                 self.out.write(f"{self._char_matrix[row, :]}\n")
         finally:

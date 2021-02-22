@@ -133,6 +133,8 @@ class AllTracker:
 
         :param name: the name of the item in the tracker's global namespace
         :param item: the item referred to by the name
+        :return: ``True`` if the given item is tracked by this tracker under the given
+            name; ``False`` otherwise
         """
         try:
             return self._globals[name] is item and self._is_eligible(name)
@@ -435,18 +437,18 @@ def validate_element_types(
             )
 
 
-def get_generic_bases(cls: type) -> Tuple[type, ...]:
+def get_generic_bases(class_: type) -> Tuple[type, ...]:
     """
     Bugfix version of :func:`typing_inspect.get_generic_bases`.
 
     Prevents getting the generic bases of the parent class if not defined for the given
     class.
 
-    :param cls: class to get the generic bases for
+    :param class_: class to get the generic bases for
     :return: the generic base classes of the given class
     """
-    bases = typing_inspect.get_generic_bases(cls)
-    if bases is typing_inspect.get_generic_bases(super(cls, cls)):
+    bases = typing_inspect.get_generic_bases(class_)
+    if bases is typing_inspect.get_generic_bases(super(class_, class_)):
         return ()
     else:
         return bases
@@ -509,7 +511,6 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     :param message: the warning message
     :param stacklevel: stack level relative to caller for emitting the context of the
         warning (default: 1)
-    :return:
     """
     if stacklevel < 1:
         raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
@@ -517,7 +518,9 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
 
 
 # noinspection PyIncorrectDocstring
-def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], type]]:
+def inheritdoc(
+    class_: type = None, *, match: str
+) -> Union[type, Callable[[type], type]]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -544,9 +547,11 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
-    :param cls: the decorated class
+    :param class_: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
+    :return: the decorated class, or the parameterized decorator if arg ``class_``
+        has not been provided
     """
 
     def _inheritdoc_inner(_cls: type) -> type:
@@ -590,17 +595,17 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
             f"not a {type(_cls).__name__}"
         )
 
-    if cls is None:
+    if class_ is None:
         return _inheritdoc_inner
-    elif type(cls):
-        return _inheritdoc_inner(cls)
-    elif isinstance(cls, str):
+    elif type(class_):
+        return _inheritdoc_inner(class_)
+    elif isinstance(class_, str):
         raise ValueError(
             "arg match not provided as a keyword argument. "
             f'Usage: @{inheritdoc.__name__}(match="...")'
         )
     else:
-        _raise_type_error(cls)
+        _raise_type_error(class_)
 
 
 __tracker.validate()

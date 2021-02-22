@@ -287,10 +287,10 @@ class MatplotColorScheme(ColorScheme):
         foreground: Union[RgbColor, str],
         background: Union[RgbColor, str],
         colormap: Union[Colormap, str],
-        **colors,
+        **colors: Union[RgbColor, str],
     ):
         """
-        :param colormap: the default colormap for this style
+        :param colormap: the colormap for this style
         """
         super().__init__(
             foreground=to_rgb(foreground),
@@ -305,7 +305,11 @@ class MatplotColorScheme(ColorScheme):
         else:
             raise ValueError("arg colormap must be a Colormap or a string")
 
-    __init__.__doc__ = ColorScheme.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = (
+        "\n".join(ColorScheme.__init__.__doc__.split("\n")[:-2])
+        + __init__.__doc__
+        + ColorScheme.__init__.__doc__.split("\n")[-2]
+    )
 
     @property
     def colormap(self) -> Colormap:

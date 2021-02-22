@@ -248,6 +248,7 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
             and signature was not specified in the directive
         :param return_annotation: function return annotation as a string of the form
             `` -> <annotation>``, or ``None`` if there is no return annotation
+        :return: a tuple with the revised signature and return annotation
         """
         pass
 

@@ -49,7 +49,6 @@ class ParallelizableMixin:
         shared_memory: Optional[bool] = None,
         pre_dispatch: Optional[Union[str, int]] = None,
         verbose: Optional[int] = None,
-        **kwargs,
     ) -> None:
         """
         :param n_jobs: number of jobs to use in parallel;
@@ -61,7 +60,7 @@ class ParallelizableMixin:
         :param verbose: verbosity level used in the parallel computation;
             if ``None``, use joblib default (default: ``None``)
         """
-        super().__init__(**kwargs)
+        super().__init__()
         #: Number of jobs to use in parallel; if ``None``, use joblib default.
         self.n_jobs = n_jobs
 

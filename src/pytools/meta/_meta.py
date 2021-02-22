@@ -45,6 +45,11 @@ class SingletonMeta(type):
     """
 
     def __init__(cls, *args, **kwargs) -> None:
+        """
+        :param args: arguments to be passed on to the initializer of the superclass
+        :param kwargs: keyword arguments to be passed on to the initializer of the
+            superclass
+        """
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None
 
