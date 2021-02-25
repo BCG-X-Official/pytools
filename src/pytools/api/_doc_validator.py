@@ -204,16 +204,15 @@ class DocValidator:
         }
         if parameters_without_annotations:
             log.warning(
-                "Function "
-                f"{module_name}.{callable_obj.__qualname__} "
-                f"lacks annotations for parameters {parameters_without_annotations}"
+                f"Function {module_name}.{callable_obj.__qualname__} "
+                "lacks type annotations for parameters "
+                f"{parameters_without_annotations}"
             )
         has_return_annotation = DocValidator._PARAM_RETURN in annotations
         if not has_return_annotation:
             log.warning(
-                "Function "
-                f"{module_name}.{callable_obj.__qualname__} "
-                f"lacks annotations for return type"
+                f"Function {module_name}.{callable_obj.__qualname__} "
+                "lacks type annotation for return value"
             )
 
         return has_return_annotation and not parameters_without_annotations
