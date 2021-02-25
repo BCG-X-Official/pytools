@@ -178,6 +178,10 @@ class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
     """
 
     def __init__(self, operator: UnaryOperator, operand: Any) -> None:
+        """
+        :param operator: the unary operator
+        :param operand: the operand
+        """
         super().__init__(prefix=Epsilon(), body=operand)
         self._operator = operator
 
