@@ -359,7 +359,7 @@ class SimplePrefixExpression(PrefixExpression, metaclass=ABCMeta):
     An abstract base implementation of simple prefix expressions.
     """
 
-    def __init__(self, prefix: Any, body: Any):
+    def __init__(self, prefix: Any, body: Any) -> None:
         """
         :param prefix: the prefix of the expression
         :param body: the body of the expression
@@ -388,7 +388,7 @@ class Invocation(PrefixExpression):
 
     _PRECEDENCE = BinaryOperator.DOT.precedence
 
-    def __init__(self, prefix: Any, brackets: BracketPair, args: Iterable[Any]):
+    def __init__(self, prefix: Any, brackets: BracketPair, args: Iterable[Any]) -> None:
         """
         :param prefix: the expression representing the object being invoked
         :param brackets: the brackets surrounding the invocation argument(s)

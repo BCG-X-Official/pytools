@@ -2,7 +2,6 @@
 Core implementation of :mod:`pytools.api`.
 """
 
-import inspect
 import logging
 import re
 import warnings
@@ -45,6 +44,8 @@ __all__ = [
 
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
+T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Any_Callable = TypeVar("T_Any_Callable", bound=Callable)
 
 
 class AllTracker:
@@ -66,7 +67,9 @@ class AllTracker:
     used in the private module.
     """
 
-    def __init__(self, globals_: Dict[str, Any], public_module: Optional[str] = None):
+    def __init__(
+        self, globals_: Dict[str, Any], public_module: Optional[str] = None
+    ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
             :meth:`._globals` in the current module scope
@@ -134,6 +137,8 @@ class AllTracker:
 
         :param name: the name of the item in the tracker's global namespace
         :param item: the item referred to by the name
+        :return: ``True`` if the given item is tracked by this tracker under the given
+            name; ``False`` otherwise
         """
         try:
             return self._globals[name] is item and self._is_eligible(name)
@@ -436,18 +441,18 @@ def validate_element_types(
             )
 
 
-def get_generic_bases(cls: type) -> Tuple[type, ...]:
+def get_generic_bases(class_: type) -> Tuple[type, ...]:
     """
     Bugfix version of :func:`typing_inspect.get_generic_bases`.
 
     Prevents getting the generic bases of the parent class if not defined for the given
     class.
 
-    :param cls: class to get the generic bases for
+    :param class_: class to get the generic bases for
     :return: the generic base classes of the given class
     """
-    bases = typing_inspect.get_generic_bases(cls)
-    if bases is typing_inspect.get_generic_bases(super(cls, cls)):
+    bases = typing_inspect.get_generic_bases(class_)
+    if bases is typing_inspect.get_generic_bases(super(class_, class_)):
         return ()
     else:
         return bases
@@ -458,22 +463,36 @@ def get_generic_bases(cls: type) -> Tuple[type, ...]:
 #
 
 
-def deprecated(function: Callable = None, *, message: Optional[str] = None):
+def deprecated(
+    function: Optional[T_Callable] = None, *, message: Optional[str] = None
+) -> Union[T_Callable, Callable[[T_Any_Callable], T_Any_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
     Logs a warning when the decorated function is called.
 
+    Usage:
+
+    .. codeblock: python
+
+        @deprecated(message=\
+"function f is deprecated and will be removed in the next minor release")
+        def f() -> None:
+            # ...
+
     To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
 
-    :param function: the function to be decorated
+    :param function: the function to be decorated (optional)
     :param message: custom message to include when logging the warning (optional)
+    :return: the decorated function if arg function was provided; else a decorator
+        function that will accept a function as its parameter, and will return the
+        decorated function
     """
 
-    def _deprecated_inner(func: callable) -> callable:
+    def _deprecated_inner(func: T_Callable) -> T_Callable:
         @wraps(func)
-        def new_func(*args, **kwargs) -> Any:
+        def new_func(*args, **kwargs: Any) -> Any:
             """
             Function wrapper
             """
@@ -510,7 +529,6 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     :param message: the warning message
     :param stacklevel: stack level relative to caller for emitting the context of the
         warning (default: 1)
-    :return:
     """
     if stacklevel < 1:
         raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
@@ -518,7 +536,9 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
 
 
 # noinspection PyIncorrectDocstring
-def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], type]]:
+def inheritdoc(
+    class_: type = None, *, match: str
+) -> Union[type, Callable[[type], type]]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -545,8 +565,11 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
+    :param class_: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
+    :return: the decorated class, or the parameterized decorator if arg ``class_``
+        has not been provided
     """
 
     def _inheritdoc_inner(_cls: type) -> type:
@@ -570,14 +593,9 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         for name, member in vars(_cls).items():
             doc = _get_docstring(m=member)
             if doc == match:
-                parents = inspect.getmro(_cls)[1:]
                 _set_docstring(
                     m=member,
-                    d=(
-                        _get_docstring(m=getattr(parents[0], name, None))
-                        if parents
-                        else None
-                    ),
+                    d=_get_docstring(m=getattr(super(_cls, _cls), name, None)),
                 )
                 match_found = True
 
@@ -595,17 +613,17 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
             f"not a {type(_cls).__name__}"
         )
 
-    if cls is None:
+    if class_ is None:
         return _inheritdoc_inner
-    elif type(cls):
-        return _inheritdoc_inner(cls)
-    elif isinstance(cls, str):
+    elif type(class_):
+        return _inheritdoc_inner(class_)
+    elif isinstance(class_, str):
         raise ValueError(
             "arg match not provided as a keyword argument. "
             f'Usage: @{inheritdoc.__name__}(match="...")'
         )
     else:
-        _raise_type_error(cls)
+        _raise_type_error(class_)
 
 
 __tracker.validate()

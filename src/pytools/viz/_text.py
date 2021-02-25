@@ -5,7 +5,7 @@ Text styles for the GAMMA visualization library.
 import logging
 import sys
 from abc import ABCMeta
-from typing import Optional, TextIO
+from typing import Any, Optional, TextIO
 
 from ..api import AllTracker, inheritdoc
 from ._viz import DrawingStyle
@@ -44,14 +44,14 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
     #: The maximum width of the text to be produced.
     width: int
 
-    def __init__(self, out: Optional[TextIO] = None, width: int = 80, **kwargs) -> None:
+    def __init__(self, out: Optional[TextIO] = None, width: int = 80) -> None:
         """
-        :param width: the maximum width available to render the text, defaults to 80
         :param out: the output stream this style instance writes to
             (defaults to :obj:`sys.stdout`)
+        :param width: the maximum width available to render the text, defaults to 80
         """
 
-        super().__init__(**kwargs)
+        super().__init__()
 
         if width <= 0:
             raise ValueError(
@@ -65,12 +65,16 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
         """[see superclass]"""
         return "text"
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Write the title to :attr:`.out`.
 
         :param title: the title of the drawing
+        :param kwargs: additional drawer-specific arguments
         """
+        if kwargs:
+            raise ValueError(f"unknown keyword arguments: {kwargs}")
+
         print(f"{f' {title} ':*^{self.width}s}", file=self.out)
 
 

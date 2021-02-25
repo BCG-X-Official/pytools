@@ -75,7 +75,6 @@ class ParallelizableMixin:
         shared_memory: Optional[bool] = None,
         pre_dispatch: Optional[Union[str, int]] = None,
         verbose: Optional[int] = None,
-        **kwargs,
     ) -> None:
         """
         :param n_jobs: number of jobs to use in parallel;
@@ -87,7 +86,7 @@ class ParallelizableMixin:
         :param verbose: verbosity level used in the parallel computation;
             if ``None``, use joblib default (default: ``None``)
         """
-        super().__init__(**kwargs)
+        super().__init__()
         #: Number of jobs to use in parallel; if ``None``, use joblib default.
         self.n_jobs = n_jobs
 
@@ -176,7 +175,7 @@ class Job(Generic[T_Job_Result], metaclass=ABCMeta):
         """
 
         @wraps(function)
-        def _delayed_function(*args, **kwargs) -> Job[T_Job_Result]:
+        def _delayed_function(*args, **kwargs: Any) -> Job[T_Job_Result]:
             @inheritdoc(match="""[see superclass]""")
             class _Job(Job[T_Job_Result]):
                 def run(self) -> T_Job_Result:
@@ -257,6 +256,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all given jobs in parallel.
 
+        :param jobs: the jobs to run in parallel
         :return: the results of all jobs
         """
         simple_queue: JobQueue[T_Job_Result, List[T_Job_Result]] = SimpleQueue(
@@ -268,6 +268,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all jobs in the given queue, in parallel.
 
+        :param queue: the queue to run
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
         """
 
@@ -286,6 +287,7 @@ class JobRunner(ParallelizableMixin):
         """
         Run all jobs in the given queues, in parallel.
 
+        :param queues: the queues to run
         :return: the result of all jobs, collated per queue using method
             :meth:`.JobQueue.collate`
         """

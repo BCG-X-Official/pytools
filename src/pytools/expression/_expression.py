@@ -184,9 +184,11 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     @abstractmethod
     def hash_(self) -> int:
         """
-        Calculate the hash for this expression.
+        Calculate the hash code for this expression.
 
         For using Python's native ``hash`` function, see :class:`.FrozenExpression`.
+
+        :return: the hash code for this expression
         """
         pass
 

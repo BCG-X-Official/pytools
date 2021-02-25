@@ -59,7 +59,7 @@ TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 
 class Builder(metaclass=ABCMeta):
-    def __init__(self, project: str, dependency_type: str):
+    def __init__(self, project: str, dependency_type: str) -> None:
         self.project = project
         self.dependency_type = dependency_type
 
