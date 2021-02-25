@@ -499,7 +499,6 @@ stages:
               anaconda logout
               echo "##vso[task.setvariable variable=conda_published]True"
             displayName: 'Publish to Anaconda'
-            condition: 
 
             condition: >
               and(
