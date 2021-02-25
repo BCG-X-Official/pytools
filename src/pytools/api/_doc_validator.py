@@ -334,6 +334,11 @@ class DocValidator:
                 "One or more functions have mismatched parameter documentation:\n"
                 + _lines(self.functions_with_mismatched_parameter_doc)
             )
+        if self.functions_with_mismatched_parameter_doc:
+            log.warning(
+                "One or more functions lack type hints:\n"
+                + _lines(self.functions_with_missing_type_annotations)
+            )
 
     def _load_modules(self) -> List[ModuleType]:
         # list paths to all python files
