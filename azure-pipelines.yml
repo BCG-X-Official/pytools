@@ -364,7 +364,7 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
-  - stage:
+  - stage: check_release
     displayName: 'Check Release Version'
     dependsOn: conda_tox_build
 
@@ -429,7 +429,7 @@ stages:
   # - upload conda and pip packages as artifacts to GitHub
   - stage:
     displayName: 'Release'
-    dependsOn: conda_tox_build
+    dependsOn: check_release
     variables:
     - group: artifact_publication
 
