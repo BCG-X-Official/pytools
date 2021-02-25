@@ -364,18 +364,13 @@ stages:
               importResults: false
               failBuildOnPolicyFail: false
 
-
-  # release on merges into release/*:
-  # - add release tag
-  # - create GitHub release with changelog
-  # - upload conda and pip packages as artifacts to GitHub
   - stage:
-    displayName: 'Release'
+    displayName: 'Check Release Version'
     dependsOn: conda_tox_build
 
     jobs:
       - job:
-        displayName: 'Release'
+        displayName: 'Check Release'
         condition: >
           or(
           eq(variables.source_is_release_branch, 'True'),
@@ -427,6 +422,35 @@ stages:
 
             displayName: "Check version consistency"
 
+
+  # release on merges into release/*:
+  # - add release tag
+  # - create GitHub release with changelog
+  # - upload conda and pip packages as artifacts to GitHub
+  - stage:
+    displayName: 'Release'
+    dependsOn: conda_tox_build
+    variables:
+    - group: artifact_publication
+
+    jobs:
+      - job:
+        displayName: 'Release'
+        condition: >
+          or(
+          eq(variables.source_is_release_branch, 'True'),
+          eq(variables.source_is_develop_branch, 'True')
+          )
+        
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.7.*'
+            displayName: 'use Python 3.7'
+
+          - checkout: self
+            path: pytools
+
           - task: Bash@3
             inputs:
               targetType: inline
@@ -453,8 +477,48 @@ stages:
             inputs:
               artifactName: conda_default
 
-          - task: GitHubRelease@1
+          - script: |
+              set -e
+              cd $(System.DefaultWorkingDirectory)
+              pip install flit
+              flit publish
+              echo "##vso[task.setvariable variable=pypi_published]True"
+            displayName: 'Publish to PyPi'
             condition: eq(variables['source_is_release_branch'], 'True')
+            env:
+              FLIT_PASSWORD: $(pypi_pw)
+              FLIT_USERNAME: $(pypi_user)
+
+          - script: |
+              set -e
+              cd $(System.DefaultWorkingDirectory)
+              eval "$(conda shell.bash hook)"
+              conda install anaconda-client
+              anaconda login --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}"
+              anaconda upload --user BCG_Gamma $(System.ArtifactsDirectory)/conda_default/conda/noarch/gamma-pytools-*.tar.bz2
+              anaconda logout
+              echo "##vso[task.setvariable variable=conda_published]True"
+            displayName: 'Publish to Anaconda'
+            condition: 
+
+            condition: >
+              and(
+              eq(variables['source_is_release_branch'], 'True'),
+              succeededOrFailed()
+              )
+            env:
+              CONDA_PASSWORD: $(anaconda_pw)
+              CONDA_USERNAME: $(anaconda_user)
+
+          - task: GitHubRelease@1
+            condition: >
+              and(
+                eq(variables['source_is_release_branch'], 'True'),
+                or(
+                  eq(variables['conda_published'], 'True'),
+                  eq(variables['pypi_published'], 'True')
+                )
+              )
             inputs:
               gitHubConnection: github_release
               repositoryName: $(Build.Repository.Name)
