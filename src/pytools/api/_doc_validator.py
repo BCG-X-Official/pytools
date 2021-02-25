@@ -192,7 +192,7 @@ class DocValidator:
 
         :param module_name: Name of the module/class the callable appears in (for log)
         :param callable_obj: the callable to check
-        :return: ``True`` if fully type hinted, else ``False``
+        :return: ``True`` if fully type hinted; ``False`` otherwise
         """
         annotations = callable_obj.__annotations__
         parameters_without_annotations = {
