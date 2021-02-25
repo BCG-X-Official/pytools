@@ -130,15 +130,15 @@ class DocValidator:
         )
 
     @staticmethod
-    def is_docstring_missing(obj: Any) -> bool:
+    def has_docstring(obj: Any) -> bool:
         """
         Check if __doc__ is missing or empty
 
         :param obj: object to check
-        :return: boolean if docstr is missing
+        :return: ``True`` if docstring is present; ``False`` otherwise
         """
         doc = getattr(obj, "__doc__", None)
-        return not (doc and str(doc).strip())
+        return bool(doc and str(doc).strip())
 
     @staticmethod
     def is_parameter_doc_mismatched(
@@ -255,20 +255,20 @@ class DocValidator:
         self.classes_with_missing_doc.extend(
             _full_name(cls.__qualname__)
             for cls in classes
-            if self.is_docstring_missing(cls)
+            if not self.has_docstring(cls)
         )
         # functions where docstring is missing
         # (except __init__ - shares docstring with class)
         self.functions_with_missing_doc.extend(
             _full_name(func.__qualname__)
             for func in functions
-            if self.is_docstring_missing(func) and func.__name__ != "__init__"
+            if not self.has_docstring(func) and func.__name__ != "__init__"
         )
         self.functions_with_mismatched_parameter_doc.extend(
             _full_name(func.__qualname__)
             for func in functions
             if (
-                not self.is_docstring_missing(func)
+                self.has_docstring(func)
                 and self.is_parameter_doc_mismatched(
                     module_name=module_name, callable_obj=func
                 )
