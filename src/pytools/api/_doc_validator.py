@@ -141,15 +141,15 @@ class DocValidator:
         return bool(doc and str(doc).strip())
 
     @staticmethod
-    def is_parameter_doc_mismatched(
+    def has_matching_parameter_doc(
         module_name: str, callable_obj: FunctionType
     ) -> bool:
         """
-        Check if parameters are inconsistent between a callable's signature and docstr
+        Check if parameters match between a callable's signature and its docstring
 
         :param module_name: Name of the module/class the callable appears in (for log)
         :param callable_obj: the callable to check
-        :return: ``True`` if inconsistent, else ``False``
+        :return: ``True`` if parameters match; ``False`` otherwise
         """
         documented_parameters = DocValidator.list_documented_parameters(
             str(callable_obj.__doc__)
@@ -157,16 +157,15 @@ class DocValidator:
 
         actual_parameters = DocValidator.list_actual_parameters(callable_obj)
 
-        if actual_parameters == documented_parameters:
+        if actual_parameters != documented_parameters:
+            log.warning(
+                "Mismatched arguments in docstring for "
+                f"{module_name}.{callable_obj.__qualname__}: "
+                f"expected {actual_parameters} but got {documented_parameters}"
+            )
             return False
-
-        log.warning(
-            "Mismatched arguments in docstring for "
-            f"{module_name}.{callable_obj.__qualname__}: "
-            f"expected {actual_parameters} but got {documented_parameters}"
-        )
-
-        return True
+        else:
+            return True
 
     @staticmethod
     def is_type_hinted(module_name: str, callable_obj: FunctionType) -> bool:
@@ -269,7 +268,7 @@ class DocValidator:
             for func in functions
             if (
                 self.has_docstring(func)
-                and self.is_parameter_doc_mismatched(
+                and not DocValidator.has_matching_parameter_doc(
                     module_name=module_name, callable_obj=func
                 )
             )
