@@ -8,6 +8,7 @@ import logging
 import os
 import re
 from glob import glob
+from inspect import Signature
 from types import FunctionType, ModuleType
 from typing import Any, Collection, Iterable, List, Optional, Tuple
 
@@ -60,8 +61,15 @@ class DocValidator:
     #: the documented parameters do not match the actual parameters
     functions_with_mismatched_parameter_doc: List[str]
 
+    #: after validation, lists the full names of all functions and methods whose
+    #: signature is not fully type-hinted
+    functions_with_missing_type_annotations: List[str]
+
     #: default value for
     VALIDATE_PROTECTED_DEFAULT = ("__init__",)
+
+    #: name of the special "return" parameter used in signatures and type annotations
+    _PARAM_RETURN = "return"
 
     def __init__(
         self, root_dir: str, validate_protected: Optional[Iterable[str]] = None
@@ -83,6 +91,7 @@ class DocValidator:
         self.classes_with_missing_doc = []
         self.functions_with_missing_doc = []
         self.functions_with_mismatched_parameter_doc = []
+        self.functions_with_missing_type_annotations = []
 
     __init__.__doc__ = __init__.__doc__.replace(
         "%VALIDATE_PROTECTED%", repr(VALIDATE_PROTECTED_DEFAULT)
@@ -117,6 +126,7 @@ class DocValidator:
             self.classes_with_missing_doc
             or self.functions_with_missing_doc
             or self.functions_with_mismatched_parameter_doc
+            or self.functions_with_missing_type_annotations
         )
 
     @staticmethod
@@ -131,13 +141,15 @@ class DocValidator:
         return not (doc and str(doc).strip())
 
     @staticmethod
-    def is_parameter_doc_mismatched(module_name: str, callable_obj: callable) -> bool:
+    def is_parameter_doc_mismatched(
+        module_name: str, callable_obj: FunctionType
+    ) -> bool:
         """
         Check if parameters are inconsistent between a callable's signature and docstr
 
         :param module_name: Name of the module/class the callable appears in (for log)
         :param callable_obj: the callable to check
-        :return: True if inconsistent, else False
+        :return: ``True`` if inconsistent, else ``False``
         """
         documented_parameters = DocValidator.list_documented_parameters(
             str(callable_obj.__doc__)
@@ -157,6 +169,39 @@ class DocValidator:
         return True
 
     @staticmethod
+    def is_type_hinted(module_name: str, callable_obj: FunctionType) -> bool:
+        """
+        Check if the given function is fully type hinted.
+
+        :param module_name: Name of the module/class the callable appears in (for log)
+        :param callable_obj: the callable to check
+        :return: ``True`` if fully type hinted, else ``False``
+        """
+        annotations = callable_obj.__annotations__
+        parameters_without_annotations = {
+            parameter
+            for parameter in DocValidator._get_parameters(
+                signature=inspect.signature(callable_obj)
+            )
+            if parameter not in annotations
+        }
+        if parameters_without_annotations:
+            log.warning(
+                "Function "
+                f"{module_name}.{callable_obj.__qualname__} "
+                f"lacks annotations for parameters {parameters_without_annotations}"
+            )
+        has_return_annotation = DocValidator._PARAM_RETURN in annotations
+        if not has_return_annotation:
+            log.warning(
+                "Function "
+                f"{module_name}.{callable_obj.__qualname__} "
+                f"lacks annotations for return type"
+            )
+
+        return has_return_annotation and not parameters_without_annotations
+
+    @staticmethod
     def list_documented_parameters(docstring: str) -> List[str]:
         """
         Extract all documented parameter names from a docstring, including ``return``
@@ -174,7 +219,7 @@ class DocValidator:
         return [p[0] or p[1] for p in all_params]
 
     @staticmethod
-    def list_actual_parameters(callable_obj: callable) -> List[str]:
+    def list_actual_parameters(callable_obj: FunctionType) -> List[str]:
         """
         Extract all parameter names from a function signature, including ``return``
         if there is a type hint for a return parameter.
@@ -182,16 +227,22 @@ class DocValidator:
         :param callable_obj: the function for which to get the signature
         :return: list of parameter names
         """
-        signature = inspect.signature(callable_obj)
-        actual_parameters = list(signature.parameters.keys())
-        if actual_parameters and actual_parameters[0] in ["self", "cls"]:
-            del actual_parameters[0]
+        signature: Signature = inspect.signature(callable_obj)
+        actual_parameters = DocValidator._get_parameters(signature)
         if not (
             signature.return_annotation is signature.empty
             or signature.return_annotation is None
         ):
-            actual_parameters.append("return")
+            actual_parameters.append(DocValidator._PARAM_RETURN)
         return actual_parameters
+
+    @staticmethod
+    def _get_parameters(signature: Signature) -> List[str]:
+        return [
+            parameter
+            for i, parameter in enumerate(signature.parameters.keys())
+            if i > 0 or parameter not in {"self", "cls"}
+        ]
 
     def _validate_members(self, module_name: str, members: Collection[Any]) -> None:
         def _full_name(name: str) -> str:
@@ -222,6 +273,11 @@ class DocValidator:
                     module_name=module_name, callable_obj=func
                 )
             )
+        )
+        self.functions_with_missing_type_annotations.extend(
+            _full_name(func.__qualname__)
+            for func in functions
+            if not self.is_type_hinted(module_name=module_name, callable_obj=func)
         )
 
         validate_protected = self.validate_protected
