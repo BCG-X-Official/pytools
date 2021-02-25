@@ -50,6 +50,9 @@ class DocValidator:
     #: names of protected functions and methods to be validated
     validate_protected: Tuple[str, ...]
 
+    #: after validation, lists the names of all modules with missing docstrings
+    modules_with_missing_doc: List[str]
+
     #: after validation, lists the full names of all classes with missing docstrings
     classes_with_missing_doc: List[str]
 
@@ -88,6 +91,7 @@ class DocValidator:
         if not all(name.startswith("_") for name in self.validate_protected):
             raise ValueError("all names in arg validate_protected must start with'_'")
 
+        self.modules_with_missing_doc = []
         self.classes_with_missing_doc = []
         self.functions_with_missing_doc = []
         self.functions_with_mismatched_parameter_doc = []
@@ -118,12 +122,18 @@ class DocValidator:
                 if not name.startswith("_")
             ]
 
-            self._validate_members(module_name=module.__name__, members=attributes)
+            module_name = module.__name__
+
+            if not self.has_docstring(module):
+                self.modules_with_missing_doc.append(module_name)
+
+            self._validate_members(module_name=module_name, members=attributes)
 
         self._log_validation_errors()
 
         return not (
-            self.classes_with_missing_doc
+            self.modules_with_missing_doc
+            or self.classes_with_missing_doc
             or self.functions_with_missing_doc
             or self.functions_with_mismatched_parameter_doc
             or self.functions_with_missing_type_annotations
@@ -138,7 +148,15 @@ class DocValidator:
         :return: ``True`` if docstring is present; ``False`` otherwise
         """
         doc = getattr(obj, "__doc__", None)
-        return bool(doc and str(doc).strip())
+        if doc and str(doc).strip():
+            return True
+        else:
+            if isinstance(obj, ModuleType):
+                obj_name = f"module {obj.__name__}"
+            else:
+                obj_name = f"{obj.__module__}.{obj.__qualname__}"
+            log.warning(f"Missing docstring for {obj_name}")
+            return False
 
     @staticmethod
     def has_matching_parameter_doc(
@@ -152,7 +170,7 @@ class DocValidator:
         :return: ``True`` if parameters match; ``False`` otherwise
         """
         documented_parameters = DocValidator.list_documented_parameters(
-            str(callable_obj.__doc__)
+            getattr(callable_obj, "__doc__", None) or ""
         )
 
         actual_parameters = DocValidator.list_actual_parameters(callable_obj)
@@ -261,16 +279,13 @@ class DocValidator:
         self.functions_with_missing_doc.extend(
             _full_name(func.__qualname__)
             for func in functions
-            if not self.has_docstring(func) and func.__name__ != "__init__"
+            if func.__name__ != "__init__" and not self.has_docstring(func)
         )
         self.functions_with_mismatched_parameter_doc.extend(
             _full_name(func.__qualname__)
             for func in functions
-            if (
-                self.has_docstring(func)
-                and not DocValidator.has_matching_parameter_doc(
-                    module_name=module_name, callable_obj=func
-                )
+            if not DocValidator.has_matching_parameter_doc(
+                module_name=module_name, callable_obj=func
             )
         )
         self.functions_with_missing_type_annotations.extend(
@@ -299,6 +314,11 @@ class DocValidator:
         def _lines(s: Iterable[str]) -> str:
             return "\n".join(s)
 
+        if self.modules_with_missing_doc:
+            log.warning(
+                "One or more modules lack docstrings:\n"
+                + _lines(self.modules_with_missing_doc)
+            )
         if self.classes_with_missing_doc:
             log.warning(
                 "One or more classes lack docstrings:\n"
