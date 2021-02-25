@@ -10,7 +10,18 @@ import re
 from glob import glob
 from inspect import Signature
 from types import FunctionType, ModuleType
-from typing import Any, Collection, Iterable, List, Optional, Tuple
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from pytools.api import AllTracker, to_tuple
 
@@ -21,6 +32,13 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = ["DocValidator"]
+
+
+#
+# Type variables
+#
+
+T = TypeVar("T")
 
 
 #
@@ -50,6 +68,10 @@ class DocValidator:
     #: names of protected functions and methods to be validated
     validate_protected: Tuple[str, ...]
 
+    #: names of modules for which parameter documentation and type hints should not be
+    #: validated
+    exclude_from_parameter_validation: re.Pattern
+
     #: after validation, lists the names of all modules with missing docstrings
     modules_with_missing_doc: List[str]
 
@@ -75,17 +97,32 @@ class DocValidator:
     _PARAM_RETURN = "return"
 
     def __init__(
-        self, root_dir: str, validate_protected: Optional[Iterable[str]] = None
+        self,
+        *,
+        root_dir: str,
+        validate_protected: Optional[Iterable[str]] = None,
+        exclude_from_parameter_validation: Optional[Union[str, re.Pattern]] = None,
     ) -> None:
         """
         :param root_dir: the root directory of all Python files to be validated
         :param validate_protected: names of protected functions and methods to be
             validated (default: ``%VALIDATE_PROTECTED%``)
+        :param exclude_from_parameter_validation: do not validate parameter
+            documentation and type hints for classes, methods or functions whose full
+            name (including the module prefix) matches the given regular expression
         """
         self.root_dir = root_dir
         self.validate_protected = to_tuple(
             validate_protected or self.VALIDATE_PROTECTED_DEFAULT,
             element_type=str,
+        )
+        self.exclude_from_parameter_validation = (
+            exclude_from_parameter_validation
+            if (
+                exclude_from_parameter_validation is None
+                or isinstance(exclude_from_parameter_validation, re.Pattern)
+            )
+            else re.compile(exclude_from_parameter_validation)
         )
 
         if not all(name.startswith("_") for name in self.validate_protected):
@@ -261,35 +298,45 @@ class DocValidator:
         ]
 
     def _validate_members(self, module_name: str, members: Collection[Any]) -> None:
-        def _full_name(name: str) -> str:
-            return f"{module_name}.{name}"
+        def _filter_excluded(kind: Type[T]) -> Dict[str, T]:
+            named_objects = (
+                (f"{module_name}.{obj.__qualname__}", obj)
+                for obj in members
+                if isinstance(obj, kind)
+            )
+            if self.exclude_from_parameter_validation:
+                return {
+                    name: obj
+                    for name, obj in named_objects
+                    if not self.exclude_from_parameter_validation.match(name)
+                }
+            else:
+                return dict(named_objects)
 
-        classes = [cls for cls in members if isinstance(cls, type)]
-        functions = [func for func in members if isinstance(func, FunctionType)]
+        classes = _filter_excluded(kind=type)
+        functions = _filter_excluded(kind=FunctionType)
 
         # classes where docstring is missing
         self.classes_with_missing_doc.extend(
-            _full_name(cls.__qualname__)
-            for cls in classes
-            if not self.has_docstring(cls)
+            name for name, cls in classes.items() if not self.has_docstring(cls)
         )
         # functions where docstring is missing
         # (except __init__ - shares docstring with class)
         self.functions_with_missing_doc.extend(
-            _full_name(func.__qualname__)
-            for func in functions
+            name
+            for name, func in functions.items()
             if func.__name__ != "__init__" and not self.has_docstring(func)
         )
         self.functions_with_mismatched_parameter_doc.extend(
-            _full_name(func.__qualname__)
-            for func in functions
+            name
+            for name, func in functions.items()
             if not DocValidator.has_matching_parameter_doc(
                 module_name=module_name, callable_obj=func
             )
         )
         self.functions_with_missing_type_annotations.extend(
-            _full_name(func.__qualname__)
-            for func in functions
+            name
+            for name, func in functions.items()
             if not self.is_type_hinted(module_name=module_name, callable_obj=func)
         )
 
@@ -299,7 +346,7 @@ class DocValidator:
             return name in validate_protected or not name.startswith("_")
 
         # inspect classes recursively
-        for cls in classes:
+        for cls in classes.values():
             self._validate_members(
                 module_name=module_name,
                 members=[
