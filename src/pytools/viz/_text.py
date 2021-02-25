@@ -5,7 +5,7 @@ Text styles for the GAMMA visualization library.
 import logging
 import sys
 from abc import ABCMeta
-from typing import Optional, TextIO
+from typing import Any, Optional, TextIO
 
 from ..api import AllTracker, inheritdoc
 from ._viz import DrawingStyle
@@ -65,7 +65,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
         """[see superclass]"""
         return "text"
 
-    def start_drawing(self, *, title: str, **kwargs) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Write the title to :attr:`.out`.
 

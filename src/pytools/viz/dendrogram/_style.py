@@ -50,7 +50,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         return f"{super().get_default_style_name()}_line"
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float, tree_height
+        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
         """[see superclass]"""
         self._draw_line(x1=bottom, x2=top, y1=leaf, y2=leaf, weight=weight)

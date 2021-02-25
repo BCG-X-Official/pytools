@@ -60,7 +60,7 @@ class CharacterMatrix:
     :param n_columns: the matrix width
     """
 
-    def __init__(self, n_rows: int, n_columns: int):
+    def __init__(self, n_rows: int, n_columns: int) -> None:
         if n_columns <= 0:
             raise ValueError(f"arg width must be positive but is {n_columns}")
         if n_rows <= 0:

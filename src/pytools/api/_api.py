@@ -44,6 +44,8 @@ __all__ = [
 
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
+T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Any_Callable = TypeVar("T_Any_Callable", bound=Callable)
 
 
 class AllTracker:
@@ -65,7 +67,9 @@ class AllTracker:
     used in the private module.
     """
 
-    def __init__(self, globals_: Dict[str, Any], public_module: Optional[str] = None):
+    def __init__(
+        self, globals_: Dict[str, Any], public_module: Optional[str] = None
+    ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
             :meth:`._globals` in the current module scope
@@ -459,22 +463,36 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 #
 
 
-def deprecated(function: Callable = None, *, message: Optional[str] = None):
+def deprecated(
+    function: Optional[T_Callable] = None, *, message: Optional[str] = None
+) -> Union[T_Callable, Callable[[T_Any_Callable], T_Any_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
     Logs a warning when the decorated function is called.
 
+    Usage:
+
+    .. codeblock: python
+
+        @deprecated(message=\
+"function f is deprecated and will be removed in the next minor release")
+        def f() -> None:
+            # ...
+
     To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
 
-    :param function: the function to be decorated
+    :param function: the function to be decorated (optional)
     :param message: custom message to include when logging the warning (optional)
+    :return: the decorated function if arg function was provided; else a decorator
+        function that will accept a function as its parameter, and will return the
+        decorated function
     """
 
-    def _deprecated_inner(func: callable) -> callable:
+    def _deprecated_inner(func: T_Callable) -> T_Callable:
         @wraps(func)
-        def new_func(*args, **kwargs) -> Any:
+        def new_func(*args, **kwargs: Any) -> Any:
             """
             Function wrapper
             """

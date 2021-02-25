@@ -699,7 +699,7 @@ class PythonExpressionFormatter(ExpressionFormatter):
 
     def __init__(
         self, max_width: int = 80, indent_width: int = 4, single_line: bool = False
-    ):
+    ) -> None:
         """
         :param max_width: the maximum line width (ignored when enforcing single-line
             text (default: 80)

@@ -3,7 +3,7 @@ Core implementation of :mod:`pytools.fit`.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from ..api import AllTracker
 
@@ -48,7 +48,7 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def fit(self: T_Self, _x: T_Data, **fit_params) -> T_Self:
+    def fit(self: T_Self, _x: T_Data, **fit_params: Any) -> T_Self:
         """
         Fit this object to the given data.
 

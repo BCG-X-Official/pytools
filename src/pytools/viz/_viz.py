@@ -96,7 +96,7 @@ class DrawingStyle(metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def start_drawing(self, *, title: str, **kwargs) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Prepare a new chart for drawing, using the given title.
 
@@ -108,7 +108,7 @@ class DrawingStyle(metaclass=ABCMeta):
         :param kwargs: additional drawer-specific arguments
         """
 
-    def finalize_drawing(self, **kwargs) -> None:
+    def finalize_drawing(self, **kwargs: Any) -> None:
         """
         Finalize the drawing.
 

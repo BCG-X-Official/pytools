@@ -4,7 +4,7 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib import text as mt
@@ -90,7 +90,11 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         return renderer
 
     def text_dimensions(
-        self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
+        self,
+        text: str,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        **kwargs: Any,
     ) -> Tuple[float, float]:
         """
         Calculate the horizontal and vertical dimensions of the given text in axis
@@ -130,7 +134,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         return abs(x1 - x0), abs(y1 - y0)
 
-    def start_drawing(self, *, title: str, **kwargs) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Set the title of the matplot chart to the given title, and set the foreground
         and background color according to the color scheme.
@@ -165,7 +169,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         ax.figure.set_facecolor(bg_color)
         ax.figure.__pytools_viz_background = bg_color
 
-    def finalize_drawing(self, **kwargs) -> None:
+    def finalize_drawing(self, **kwargs: Any) -> None:
         """[see superclass]"""
 
         super().finalize_drawing(**kwargs)
@@ -231,7 +235,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         colormap_normalize: Normalize = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-    ):
+    ) -> None:
         """
         :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object
             that maps values to color indices; unless otherwise specified, use a plain
@@ -268,7 +272,9 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         """
         return self.colors.colormap(self.colormap_normalize(z))
 
-    def finalize_drawing(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
+    def finalize_drawing(
+        self, colorbar_label: Optional[str] = None, **kwargs: Any
+    ) -> None:
         """
         Add the color bar to the chart.
 

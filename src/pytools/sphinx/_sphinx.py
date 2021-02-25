@@ -346,7 +346,7 @@ class AddInheritance(AutodocProcessDocstring):
     Ignore builtin classes and classes that have already been visited once before.
     """
 
-    def __init__(self, collapsible_submodules: Mapping[str, str]):
+    def __init__(self, collapsible_submodules: Mapping[str, str]) -> None:
         """
         :param collapsible_submodules: mapping of submodule paths to shorter
             *(collapsed)* versions they should be replaced with
@@ -609,7 +609,7 @@ class CollapseModulePaths(metaclass=ABCMeta):
         self,
         collapsible_submodules: Mapping[str, str],
         collapse_private_modules: bool = True,
-    ):
+    ) -> None:
         """
         :param collapsible_submodules: mapping from module paths to their public
             prefix, e.g., ``{"pandas.core.frame": "pandas"}``

@@ -116,7 +116,7 @@ class ListLiteral(CollectionLiteral):
     A list expression.
     """
 
-    def __init__(self, *elements: Any):
+    def __init__(self, *elements: Any) -> None:
         """
         :param elements: the list elements
         """
@@ -128,7 +128,7 @@ class TupleLiteral(CollectionLiteral):
     A tuple expression.
     """
 
-    def __init__(self, *elements: Any):
+    def __init__(self, *elements: Any) -> None:
         """
         :param elements: the tuple elements
         """
@@ -140,7 +140,7 @@ class SetLiteral(CollectionLiteral):
     A set expression.
     """
 
-    def __init__(self, *elements: Any):
+    def __init__(self, *elements: Any) -> None:
         """
         :param elements: the set elements
         """
@@ -152,7 +152,7 @@ class DictLiteral(CollectionLiteral):
     A dictionary expression.
     """
 
-    def __init__(self, *args: Tuple[Any, Any], **kwargs: Tuple[str, Any]):
+    def __init__(self, *args: Tuple[Any, Any], **kwargs: Tuple[str, Any]) -> None:
         """
         :param args: dictionary entries as tuples ``(key, value)``
         :param kwargs: dictionary entries as keyword arguments
@@ -177,7 +177,7 @@ class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
     A unary operation.
     """
 
-    def __init__(self, operator: UnaryOperator, operand: Any):
+    def __init__(self, operator: UnaryOperator, operand: Any) -> None:
         super().__init__(prefix=Epsilon(), body=operand)
         self._operator = operator
 
@@ -208,7 +208,7 @@ class BinaryOperation(InfixExpression, Operation):
     A operation with two or more operands.
     """
 
-    def __init__(self, operator: BinaryOperator, *operands: Any):
+    def __init__(self, operator: BinaryOperator, *operands: Any) -> None:
         """
         :param operator: the binary operator applied by this operation
         :param operands: the operands applied to the binary operator
@@ -266,7 +266,7 @@ class Call(Invocation):
     A call expression.
     """
 
-    def __init__(self, callee: Any, *args: Any, **kwargs: Any):
+    def __init__(self, callee: Any, *args: Any, **kwargs: Any) -> None:
         """
         :param callee: the expression representing the object being called
         :param args: the positional argument(s) of the call
@@ -294,7 +294,7 @@ class Index(Invocation):
     An indexing operation.
     """
 
-    def __init__(self, collection: Any, key: Any):
+    def __init__(self, collection: Any, key: Any) -> None:
         """
         :param collection: the collection to be indexed
         :param key: the index key
@@ -323,7 +323,7 @@ class Lambda(SimplePrefixExpression):
 
     _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
-    def __init__(self, *params: Id, body: Any):
+    def __init__(self, *params: Id, body: Any) -> None:
         """
         :param params: the parameters of the lambda expression
         :param body: the body of the lambda expression

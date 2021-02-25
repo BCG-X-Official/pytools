@@ -175,7 +175,7 @@ class Job(Generic[T_Job_Result], metaclass=ABCMeta):
         """
 
         @wraps(function)
-        def _delayed_function(*args, **kwargs) -> Job[T_Job_Result]:
+        def _delayed_function(*args, **kwargs: Any) -> Job[T_Job_Result]:
             @inheritdoc(match="""[see superclass]""")
             class _Job(Job[T_Job_Result]):
                 def run(self) -> T_Job_Result:
