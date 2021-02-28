@@ -62,6 +62,15 @@ class APIDefinition(metaclass=ABCMeta):
 
     @property
     @abstractmethod
+    def public_module(self) -> str:
+        """
+        The public module that exposes the API definition.
+        This may not necessarily be the same as the module in which the element
+        is actually defined.
+        """
+
+    @property
+    @abstractmethod
     def full_name(self) -> str:
         """
         The full name of this API element, including the full module name and containing
@@ -96,6 +105,9 @@ class APIDefinition(metaclass=ABCMeta):
 
         return [param[0] or param[1] for param in all_params]
 
+    def __str__(self) -> str:
+        return self.full_name
+
 
 @inheritdoc(match="""[see superclass]""")
 class ModuleDefinition(APIDefinition):
@@ -118,9 +130,14 @@ class ModuleDefinition(APIDefinition):
         return self.module.__name__
 
     @property
+    def public_module(self) -> str:
+        """[see superclass]"""
+        return self.name
+
+    @property
     def full_name(self) -> str:
         """[see superclass]"""
-        return self.module.__name__
+        return self.name
 
     @property
     def docstring(self) -> Optional[str]:
@@ -137,11 +154,12 @@ class ElementDefinition(APIDefinition, Generic[T]):
     #: the class or function
     element: T
 
-    def __init__(self, element: T) -> None:
+    def __init__(self, element: T, public_module: Optional[str] = None) -> None:
         """
         :param element: the API element
         """
         self.element = element
+        self._public_module = public_module or element.__module__
 
     @property
     def name(self) -> str:
@@ -149,10 +167,15 @@ class ElementDefinition(APIDefinition, Generic[T]):
         return self.element.__name__
 
     @property
+    def public_module(self) -> str:
+        """[see superclass]"""
+        return self._public_module
+
+    @property
     def full_name(self) -> str:
         """[see superclass]"""
         element = self.element
-        return f"{element.__module__}.{element.__qualname__}"
+        return f"{self._public_module}.{element.__qualname__}"
 
     @property
     def docstring(self) -> Optional[str]:

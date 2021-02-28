@@ -47,7 +47,7 @@ __all__ = ["DocValidator"]
 # Type variables
 #
 
-T_Definition = TypeVar("T_Definition", bound=APIDefinition)
+T_ElementDefinition = TypeVar("T_ElementDefinition", bound=ElementDefinition)
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -165,7 +165,8 @@ class DocValidator:
                     getattr(module, name)
                     for name in dir(module)
                     if not name.startswith("_")
-                ]
+                ],
+                public_module=module.__name__,
             )
 
         self._log_validation_errors()
@@ -190,12 +191,14 @@ class DocValidator:
             if errors:
                 self.validation_errors[definition.full_name] = errors
 
-    def _validate_members(self, members: Collection[Any]) -> None:
+    def _validate_members(self, members: Collection[Any], public_module: str) -> None:
         def _filter_excluded(
-            kind: type, definition_type: Type[T_Definition]
-        ) -> Iterable[T_Definition]:
+            kind: type, definition_type: Type[T_ElementDefinition]
+        ) -> Iterable[T_ElementDefinition]:
             definitions = (
-                definition_type(obj) for obj in members if isinstance(obj, kind)
+                definition_type(element=obj, public_module=public_module)
+                for obj in members
+                if isinstance(obj, kind)
             )
 
             if self.exclude_from_parameter_validation:
@@ -231,6 +234,7 @@ class DocValidator:
                     for name, attribute in vars(cls.element).items()
                     if _filter_protected(name)
                 ],
+                public_module=public_module,
             )
 
     def _log_validation_errors(self) -> None:
