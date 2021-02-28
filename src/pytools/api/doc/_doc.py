@@ -11,6 +11,7 @@ from types import FunctionType, ModuleType
 from typing import Generic, List, Optional, TypeVar, Union
 
 from pytools.api import AllTracker, inheritdoc
+from pytools.expression import Expression, HasExpressionRepr, make_expression
 
 log = logging.getLogger(__name__)
 
@@ -48,7 +49,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class APIDefinition(metaclass=ABCMeta):
+class APIDefinition(HasExpressionRepr, metaclass=ABCMeta):
     """
     A reference to the definition of an API element, e.g., a module, class, or function.
     """
@@ -144,6 +145,10 @@ class ModuleDefinition(APIDefinition):
         """[see superclass]"""
         return self.module.__doc__
 
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        return self.get_class_id()(self.module)
+
 
 @inheritdoc(match="""[see superclass]""")
 class ElementDefinition(APIDefinition, Generic[T]):
@@ -182,8 +187,16 @@ class ElementDefinition(APIDefinition, Generic[T]):
         """[see superclass]"""
         return self.element.__doc__
 
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        if self._public_module is self.element.__module__:
+            return self.get_class_id()(element=make_expression(self.element))
+        else:
+            return self.get_class_id()(
+                element=make_expression(self.element), public_module=self._public_module
+            )
 
-@inheritdoc(match="""[see superclass]""")
+
 class FunctionDefinition(ElementDefinition[FunctionType]):
     """
     A reference to a Python function definition.
