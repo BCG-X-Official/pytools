@@ -11,7 +11,6 @@ from types import FunctionType, ModuleType
 from typing import Generic, List, Optional, TypeVar, Union
 
 from pytools.api import AllTracker, inheritdoc
-from pytools.expression import Expression, HasExpressionRepr, make_expression
 
 log = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class APIDefinition(HasExpressionRepr, metaclass=ABCMeta):
+class APIDefinition(metaclass=ABCMeta):
     """
     A reference to the definition of an API element, e.g., a module, class, or function.
     """
@@ -145,9 +144,9 @@ class ModuleDefinition(APIDefinition):
         """[see superclass]"""
         return self.module.__doc__
 
-    def to_expression(self) -> Expression:
+    def __repr__(self) -> str:
         """[see superclass]"""
-        return self.get_class_id()(self.module)
+        return f"{type(self).__name__}({self.module!r})"
 
 
 @inheritdoc(match="""[see superclass]""")
@@ -159,7 +158,7 @@ class NamedElementDefinition(APIDefinition, Generic[T]):
     #: the class or function
     element: T
 
-    def __init__(self, element: T, public_module: Optional[str] = None) -> None:
+    def __init__(self, element: T, *, public_module: Optional[str] = None) -> None:
         """
         :param element: the API element
         """
@@ -187,14 +186,11 @@ class NamedElementDefinition(APIDefinition, Generic[T]):
         """[see superclass]"""
         return self.element.__doc__
 
-    def to_expression(self) -> Expression:
-        """[see superclass]"""
-        if self._public_module is self.element.__module__:
-            return self.get_class_id()(element=make_expression(self.element))
-        else:
-            return self.get_class_id()(
-                element=make_expression(self.element), public_module=self._public_module
-            )
+    def __repr__(self) -> str:
+        args = repr(self.element)
+        if self._public_module is not self.element.__module__:
+            args += f", public_module={self._public_module!r}"
+        return f"{type(self).__name__}({args})"
 
 
 class FunctionDefinition(NamedElementDefinition[FunctionType]):
