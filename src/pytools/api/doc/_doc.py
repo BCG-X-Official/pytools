@@ -1,32 +1,16 @@
 """
-Core implementation of :class:`pytools.api.DocValidator`.
+Core implementation of :mod:`pytools.api.doc`.
 """
 
-import importlib
 import inspect
 import logging
-import os
 import re
-import sys
 from abc import ABCMeta, abstractmethod
-from glob import glob
 from inspect import Signature
 from types import FunctionType, ModuleType
-from typing import (
-    Any,
-    Collection,
-    Dict,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Generic, List, Optional, TypeVar, Union
 
-from pytools.api import AllTracker, inheritdoc, to_tuple
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +20,6 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "DocTest",
-    "DocValidator",
     "ElementDefinition",
     "FunctionDefinition",
     "HasDocstring",
@@ -340,204 +323,6 @@ class HasTypeHints(DocTest):
             errors.append("missing type annotation for return value")
 
         return errors
-
-
-class DocValidator:
-    """
-    Validates docstrings and type hints in all Python sources in a given directory tree.
-
-    By default, only validates public classes, methods, and functions, and
-    class initializers (``__init__``).
-    Protected classes, methods, and functions are only validated if their name
-    is provided in parameter ``validate_protected``.
-    """
-
-    #: the root directory of all Python files to be validated
-    root_dir: str
-
-    #: names of protected functions and methods to be validated
-    validate_protected: Tuple[str, ...]
-
-    #: names of modules for which parameter documentation and type hints should not be
-    #: validated
-    exclude_from_parameter_validation: re.Pattern
-
-    #: after validation, lists all errors per definition
-    validation_errors: Dict[str, List[str]]
-
-    #: tests to run on each definition during validation
-    validation_tests: Tuple[DocTest]
-
-    #: default value for parameter ``validate_protected``
-    DEFAULT_VALIDATE_PROTECTED = ("__init__",)
-
-    #: default doc tests to run
-    DEFAULT_DOC_TESTS: Tuple[DocTest] = (
-        HasDocstring(),
-        HasMatchingParameterDoc(),
-        HasWellFormedDocstring(),
-        HasTypeHints(),
-    )
-
-    def __init__(
-        self,
-        *,
-        root_dir: str,
-        validate_protected: Optional[Iterable[str]] = None,
-        exclude_from_parameter_validation: Optional[Union[str, re.Pattern]] = None,
-        additional_tests: Optional[Iterable[DocTest]] = None,
-    ) -> None:
-        """
-        :param root_dir: the root directory of all Python files to be validated
-        :param validate_protected: names of protected functions and methods to be
-            validated (default: ``%VALIDATE_PROTECTED%``)
-        :param exclude_from_parameter_validation: do not validate parameter
-            documentation and type hints for classes, methods or functions whose full
-            name (including the module prefix) matches the given regular expression
-        :param additional_tests: additional documentation tests to run on each API
-            element
-        """
-        self.root_dir = root_dir
-        self.validate_protected = to_tuple(
-            validate_protected or self.DEFAULT_VALIDATE_PROTECTED,
-            element_type=str,
-        )
-        self.exclude_from_parameter_validation = (
-            exclude_from_parameter_validation
-            if (
-                exclude_from_parameter_validation is None
-                or isinstance(exclude_from_parameter_validation, re.Pattern)
-            )
-            else re.compile(exclude_from_parameter_validation)
-        )
-
-        if not all(name.startswith("_") for name in self.validate_protected):
-            raise ValueError("all names in arg validate_protected must start with'_'")
-
-        self.validation_errors = {}
-        self.validation_tests = (
-            tuple(*self.DEFAULT_DOC_TESTS, *additional_tests)
-            if additional_tests
-            else self.DEFAULT_DOC_TESTS
-        )
-
-    __init__.__doc__ = __init__.__doc__.replace(
-        "%VALIDATE_PROTECTED%", repr(DEFAULT_VALIDATE_PROTECTED)
-    )
-
-    def validate_docstrings(self) -> bool:
-        """
-        Run the validation.
-
-        :return: ``True`` if the validation was successful; ``False`` if the validation
-            failed
-        """
-
-        modules = self._load_modules()
-
-        if not modules:
-            raise ValueError("no Python modules found")
-
-        self._run_tests(definitions=map(ModuleDefinition, modules))
-
-        for module in modules:
-            self._validate_members(
-                members=[
-                    getattr(module, name)
-                    for name in dir(module)
-                    if not name.startswith("_")
-                ]
-            )
-
-        self._log_validation_errors()
-
-        return not self.validation_errors
-
-    def _run_tests(self, definitions: Iterable[APIDefinition]) -> None:
-        """
-        Run all validation tests on the given definitions, and store errors
-
-        :param definitions: the definitions to run validation tests on
-        """
-        for definition in definitions:
-            errors: List[str] = []
-            for test in self.validation_tests:
-                test_results = test.test(definition)
-                if test_results:
-                    if isinstance(test_results, str):
-                        errors.append(test_results)
-                    else:
-                        errors.extend(test_results)
-            if errors:
-                self.validation_errors[definition.full_name] = errors
-
-    def _validate_members(self, members: Collection[Any]) -> None:
-        def _filter_excluded(
-            kind: Type[T], definition_type: Type[ElementDefinition]
-        ) -> Iterable[ElementDefinition]:
-            definitions = (
-                definition_type(obj) for obj in members if isinstance(obj, kind)
-            )
-
-            if self.exclude_from_parameter_validation:
-                return filter(
-                    lambda definition: not self.exclude_from_parameter_validation.match(
-                        definition.full_name
-                    ),
-                    definitions,
-                )
-            else:
-                return definitions
-
-        classes: List[ElementDefinition] = list(
-            _filter_excluded(kind=type, definition_type=ElementDefinition)
-        )
-        functions: Iterable[ElementDefinition] = _filter_excluded(
-            kind=FunctionType, definition_type=FunctionDefinition
-        )
-
-        self._run_tests(functions)
-        self._run_tests(classes)
-
-        validate_protected = self.validate_protected
-
-        def _filter_protected(name: str) -> bool:
-            return name in validate_protected or not name.startswith("_")
-
-        # inspect classes recursively
-        for cls in classes:
-            self._validate_members(
-                members=[
-                    attribute
-                    for name, attribute in vars(cls.element).items()
-                    if _filter_protected(name)
-                ],
-            )
-
-    def _log_validation_errors(self) -> None:
-        for full_name, errors in self.validation_errors.items():
-            for error in errors:
-                print(f"{full_name}: {error}", file=sys.stderr)
-
-    def _load_modules(self) -> List[ModuleType]:
-        # list paths to all python files
-        suffix = ".py"
-        root_dir = self.root_dir
-        prefix_len = len(root_dir) + len(os.sep)
-        suffix_len = len(suffix)
-
-        return [
-            importlib.import_module(module_path)
-            for module_path in (
-                path[prefix_len:-suffix_len]
-                .replace(os.sep, ".")
-                .replace(".__init__", "")
-                for path in glob(
-                    os.path.join(root_dir, "**", f"*{suffix}"), recursive=True
-                )
-            )
-            if not module_path[module_path.rfind(".") + 1 :].startswith("_")
-        ]
 
 
 __tracker.validate()
