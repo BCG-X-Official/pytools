@@ -26,13 +26,13 @@ from ._api import AllTracker, to_tuple
 from .doc import (
     APIDefinition,
     DocTest,
-    ElementDefinition,
     FunctionDefinition,
     HasDocstring,
     HasMatchingParameterDoc,
     HasTypeHints,
     HasWellFormedDocstring,
     ModuleDefinition,
+    NamedElementDefinition,
 )
 
 log = logging.getLogger(__name__)
@@ -47,7 +47,9 @@ __all__ = ["DocValidator"]
 # Type variables
 #
 
-T_ElementDefinition = TypeVar("T_ElementDefinition", bound=ElementDefinition)
+T_NamedElementDefinition = TypeVar(
+    "T_NamedElementDefinition", bound=NamedElementDefinition
+)
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -193,8 +195,8 @@ class DocValidator:
 
     def _validate_members(self, members: Collection[Any], public_module: str) -> None:
         def _filter_excluded(
-            kind: type, definition_type: Type[T_ElementDefinition]
-        ) -> Iterable[T_ElementDefinition]:
+            kind: type, definition_type: Type[T_NamedElementDefinition]
+        ) -> Iterable[T_NamedElementDefinition]:
             definitions = (
                 definition_type(element=obj, public_module=public_module)
                 for obj in members
@@ -211,8 +213,8 @@ class DocValidator:
             else:
                 return definitions
 
-        classes: List[ElementDefinition] = list(
-            _filter_excluded(kind=type, definition_type=ElementDefinition)
+        classes: List[NamedElementDefinition] = list(
+            _filter_excluded(kind=type, definition_type=NamedElementDefinition)
         )
         functions: Iterable[FunctionDefinition] = _filter_excluded(
             kind=FunctionType, definition_type=FunctionDefinition

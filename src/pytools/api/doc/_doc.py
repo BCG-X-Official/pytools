@@ -21,7 +21,7 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "DocTest",
-    "ElementDefinition",
+    "NamedElementDefinition",
     "FunctionDefinition",
     "HasDocstring",
     "HasMatchingParameterDoc",
@@ -151,7 +151,7 @@ class ModuleDefinition(APIDefinition):
 
 
 @inheritdoc(match="""[see superclass]""")
-class ElementDefinition(APIDefinition, Generic[T]):
+class NamedElementDefinition(APIDefinition, Generic[T]):
     """
     A reference to a Python class or function definition.
     """
@@ -197,7 +197,7 @@ class ElementDefinition(APIDefinition, Generic[T]):
             )
 
 
-class FunctionDefinition(ElementDefinition[FunctionType]):
+class FunctionDefinition(NamedElementDefinition[FunctionType]):
     """
     A reference to a Python function definition.
     """
