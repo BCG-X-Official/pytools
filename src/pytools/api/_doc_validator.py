@@ -164,8 +164,8 @@ class DocValidator:
         for module in modules:
             self._validate_members(
                 members=[
-                    getattr(module, name)
-                    for name in dir(module)
+                    value
+                    for name, value in vars(module).items()
                     if not name.startswith("_")
                 ],
                 public_module=module.__name__,
