@@ -161,6 +161,9 @@ class NamedElementDefinition(APIDefinition, Generic[T]):
     def __init__(self, element: T, *, public_module: Optional[str] = None) -> None:
         """
         :param element: the API element
+        :param public_module: the public module exposing the element; this can be
+            different from a private module containing the actual definition of the
+            element
         """
         self.element = element
         self._public_module = public_module or element.__module__
