@@ -146,9 +146,9 @@ class DocValidator:
         "%VALIDATE_PROTECTED%", repr(DEFAULT_VALIDATE_PROTECTED)
     )
 
-    def validate_docstrings(self) -> bool:
+    def validate_doc(self) -> bool:
         """
-        Run the validation.
+        Validate documentation, including docstrings and type annotations.
 
         :return: ``True`` if the validation was successful; ``False`` if the validation
             failed
