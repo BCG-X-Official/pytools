@@ -47,6 +47,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """
         Prepare a new dendrogram for drawing, using the given title.
@@ -56,23 +57,25 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
         """
-        super().start_drawing(title=title)
+        super().start_drawing(title=title, **kwargs)
 
-    @abstractmethod
     def finalize_drawing(
         self,
         *,
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """
-        Finalize the dendrogram.
+        Finalize the dendrogram, adding labels to the axes.
 
         :param leaf_label: the label for the leaf axis
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
         """
+        super().finalize_drawing(**kwargs)
 
     @abstractmethod
     def draw_leaf_names(
@@ -165,6 +168,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
 
     def draw_leaf_names(self, *, names: Sequence[str]) -> None:
         """[see superclass]"""
+
         ax = self.ax
         y_axis = ax.yaxis
         y_axis.set_ticks(ticks=range(len(names)))
@@ -176,14 +180,10 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs,
     ) -> None:
-        """
-        Add labels to the axes of this drawing.
+        """[see superclass]"""
 
-        :param leaf_label: the label for the leaf axis
-        :param distance_label: the label for the distance axis
-        :param weight_label: the label for the color bar, indicating weights
-        """
         super().finalize_drawing(colorbar_label=weight_label)
 
         ax = self.ax

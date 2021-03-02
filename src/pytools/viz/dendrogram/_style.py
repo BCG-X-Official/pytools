@@ -3,7 +3,7 @@ Dendrogram styles.
 """
 
 import logging
-from typing import Optional, Sequence, TextIO
+from typing import Any, Optional, Sequence, TextIO
 
 from .. import TextStyle
 from ..color import text_contrast_color
@@ -127,6 +127,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """[see superclass]"""
         super().start_drawing(title=title)
@@ -301,9 +302,10 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs,
     ) -> None:
         """[see superclass]"""
-        super().start_drawing(title=title)
+        super().start_drawing(title=title, **kwargs)
         self._char_matrix = CharacterMatrix(
             n_rows=self.max_height, n_columns=self.width
         )
@@ -314,10 +316,11 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        **kwargs: Any,
     ) -> None:
         """[see superclass]"""
         try:
-            super().finalize_drawing()
+            super().finalize_drawing(**kwargs)
             for row in reversed(range(self._n_labels + 1)):
                 self.out.write(f"{self._char_matrix[row, :]}\n")
         finally:
