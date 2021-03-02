@@ -4,7 +4,7 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from matplotlib.axes import Axes
 from matplotlib.colors import LogNorm
@@ -47,7 +47,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Prepare a new dendrogram for drawing, using the given title.
@@ -56,6 +56,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param leaf_label: the label for the leaf axis
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
         """
         super().start_drawing(title=title, **kwargs)
 
@@ -65,7 +66,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Finalize the dendrogram, adding labels to the axes.
@@ -180,7 +181,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """[see superclass]"""
 

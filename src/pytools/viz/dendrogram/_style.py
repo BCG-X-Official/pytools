@@ -127,7 +127,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """[see superclass]"""
         super().start_drawing(title=title)
@@ -302,7 +302,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """[see superclass]"""
         super().start_drawing(title=title, **kwargs)
