@@ -1,16 +1,19 @@
-*pytools* Release Notes
-=======================
+Release Notes
+=============
+
+*pytools* 1.0
+-------------
 
 1.0.1
------
+~~~~~
 
-- initial release
+Initial release.
 
 
 1.0.2
------
+~~~~~
 
-This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with minor fixes
+This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with minor fixes.
 
 - API: sort list of items returned by ``AllTracker.get_tracked()``
 - API: add protected ``MatplotStyle`` method to apply color scheme to ``Axes`` object
