@@ -4,6 +4,7 @@ const DOCS_VERSIONS = {
         "1.0.1"
     ],
     "all": [
+        "1.0.2rc0",
         "1.0.1"
     ]
 }

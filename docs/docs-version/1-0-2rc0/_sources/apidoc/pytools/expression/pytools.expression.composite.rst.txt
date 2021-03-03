@@ -1,0 +1,58 @@
+pytools.expression.composite
+============================
+
+.. automodule:: pytools.expression.composite
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: composite
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      Attr
+      BinaryOperation
+      BracketedExpression
+      Call
+      DictLiteral
+      Index
+      Lambda
+      ListLiteral
+      SetLiteral
+      TupleLiteral
+      UnaryOperation
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+
+==========
+Submodules
+==========
+.. autosummary::
+   :toctree: composite
+   :template: custom-module-template.rst
+   :recursive:
+
+   pytools.expression.composite.base
+
