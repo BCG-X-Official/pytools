@@ -20,27 +20,35 @@ utilities for reuse, including:
 .. End-Badges
 
 Installation
----------------------
+------------
 
 *pytools*  supports both PyPI and Anaconda
 
 Anaconda
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: RST
 
     conda install gamma-pytools -c bcg_gamma -c conda-forge
 
 Pip
-~~~~~~~~~~~~~~~~~~~~~
+~~~
 
 .. code-block:: RST
 
     pip install gamma-pytools
 
 
+Documentation
+-------------
+
+For the *pytools* API guide see the `documentation <https://bcg-gamma.github.io/pytools/>`__
+
+Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__
+
+
 Contributing
----------------------------
+------------
 
 *pytools* is stable and is being supported long-term.
 
