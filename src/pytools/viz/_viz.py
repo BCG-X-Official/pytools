@@ -9,7 +9,7 @@ from threading import Lock
 from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
 
 from ..api import AllTracker, inheritdoc
-from .color import FacetDarkColorScheme, FacetLightColorScheme
+from .color import ColorScheme, FacetDarkColorScheme, FacetLightColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -68,6 +68,18 @@ class DrawingStyle(metaclass=ABCMeta):
     Many style objects can be further parameterised to control how objects are rendered.
     """
 
+    #: drawer status: drawing not started, started, finalized
+    _status: int
+
+    #: drawer status value: drawing not started
+    _STATUS_NOT_STARTED = 0
+
+    #: drawer status value: drawing started
+    _STATUS_STARTED = 1
+
+    #: drawer status value: drawing finalized
+    _STATUS_FINALIZED = 2
+
     def __init__(self) -> None:
         super().__init__()
         self._lock = Lock()
@@ -95,7 +107,6 @@ class DrawingStyle(metaclass=ABCMeta):
         :return: the name of the default style
         """
 
-    @abstractmethod
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Prepare a new chart for drawing, using the given title.
@@ -107,6 +118,9 @@ class DrawingStyle(metaclass=ABCMeta):
         :param title: the title of the chart
         :param kwargs: additional drawer-specific arguments
         """
+        if kwargs:
+            raise ValueError(f"unknown arguments: {kwargs}")
+        self._status = DrawingStyle._STATUS_STARTED
 
     def finalize_drawing(self, **kwargs: Any) -> None:
         """
@@ -120,6 +134,7 @@ class DrawingStyle(metaclass=ABCMeta):
         """
         if kwargs:
             raise ValueError(f"unknown arguments: {kwargs}")
+        self._status = DrawingStyle._STATUS_FINALIZED
 
 
 @inheritdoc(match="[see superclass]")
@@ -138,7 +153,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     @classmethod
     def dark(cls: T_Style_Class) -> T_Style_Class:
         """
-        Create a dark variant of the given drawing style, using the default dark
+        Create a dark variant of this drawing style class, using the default dark
         background color scheme :class:`.FacetDarkColorScheme`.
 
         :return: the dark drawing style class
@@ -150,7 +165,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
             :class:`.FacetDarkColorScheme`.
             """
 
-            def __init__(self) -> None:
+            def __init__(self, *, colors: Optional[ColorScheme] = None) -> None:
+                if colors:
+                    raise ValueError("arg colors of dark style must be None")
                 super().__init__(colors=FacetDarkColorScheme())
 
         dark_style_class = cast(
@@ -270,11 +287,24 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         # noinspection PyProtectedMember
         with style._lock:
             style_attributes = self._get_style_kwargs(data)
+
             # noinspection PyProtectedMember
+            style._status = style._STATUS_NOT_STARTED
             style.start_drawing(title=title, **style_attributes)
-            self._draw(data)
             # noinspection PyProtectedMember
+            if style._status != DrawingStyle._STATUS_STARTED:
+                raise AssertionError(
+                    "DrawingStyle.start_drawing() not called from overloaded method"
+                )
+
+            self._draw(data)
+
             style.finalize_drawing(**style_attributes)
+            # noinspection PyProtectedMember
+            if style._status != DrawingStyle._STATUS_FINALIZED:
+                raise AssertionError(
+                    "DrawingStyle.finalize_drawing() not called from overloaded method"
+                )
 
     def _get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
         """

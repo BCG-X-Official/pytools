@@ -143,8 +143,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         :param kwargs: additional drawer-specific arguments
         """
 
-        if kwargs:
-            raise ValueError(f"unknown keyword arguments: {kwargs}")
+        super().start_drawing(title=title, **kwargs)
 
         ax = self.ax
 
@@ -273,7 +272,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         return self.colors.colormap(self.colormap_normalize(z))
 
     def finalize_drawing(
-        self, colorbar_label: Optional[str] = None, **kwargs: Any
+        self, *, colorbar_label: Optional[str] = None, **kwargs: Any
     ) -> None:
         """
         Add the color bar to the chart.

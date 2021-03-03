@@ -72,8 +72,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
         :param title: the title of the drawing
         :param kwargs: additional drawer-specific arguments
         """
-        if kwargs:
-            raise ValueError(f"unknown keyword arguments: {kwargs}")
+        super().start_drawing(title=title, **kwargs)
 
         print(f"{f' {title} ':*^{self.width}s}", file=self.out)
 
