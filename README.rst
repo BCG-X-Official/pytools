@@ -42,9 +42,9 @@ Pip
 Documentation
 -------------
 
-For the *pytools* API guide see the `documentation <https://bcg-gamma.github.io/pytools/>`__
+For the *pytools* API reference see the `documentation <https://bcg-gamma.github.io/pytools/>`__.
 
-Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__
+Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__.
 
 
 Contributing
