@@ -6,6 +6,7 @@ import logging
 import re
 import warnings
 from functools import wraps
+from types import FunctionType
 from typing import (
     Any,
     Callable,
@@ -13,6 +14,7 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Mapping,
     Optional,
     Set,
     Tuple,
@@ -29,17 +31,18 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "AllTracker",
-    "is_list_like",
-    "to_tuple",
-    "to_list",
-    "to_set",
-    "validate_type",
-    "validate_element_types",
-    "get_generic_bases",
-    "public_module_prefix",
     "deprecated",
     "deprecation_warning",
+    "get_generic_bases",
     "inheritdoc",
+    "is_list_like",
+    "public_module_prefix",
+    "to_list",
+    "to_set",
+    "to_tuple",
+    "update_forward_references",
+    "validate_element_types",
+    "validate_type",
 ]
 
 T = TypeVar("T")
@@ -68,13 +71,21 @@ class AllTracker:
     """
 
     def __init__(
-        self, globals_: Dict[str, Any], public_module: Optional[str] = None
+        self,
+        globals_: Dict[str, Any],
+        *,
+        public_module: Optional[str] = None,
+        update_forward_references: Optional[bool] = True,
     ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
             :meth:`._globals` in the current module scope
         :param public_module: full name of the public module that will export the items
             managed by this tracker
+        :param update_forward_references: if ``True``, automatically replace all forward
+            type references in function annotations with the referenced classes; see
+            :func:`.update_forward_references`
+            (default: ``True``)
 
         """
         self._globals = globals_
@@ -82,7 +93,6 @@ class AllTracker:
 
         if public_module:
             self.public_module = public_module
-
         else:
             try:
                 module = globals_["__name__"]
@@ -93,6 +103,8 @@ class AllTracker:
                 )
 
             self.public_module = public_module_prefix(module)
+
+        self.update_forward_references = update_forward_references
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -118,10 +130,14 @@ class AllTracker:
         public_module = self.public_module
 
         for name in all_expected:
-            try:
-                globals_[name].__publicmodule__ = public_module
-            except AttributeError:
-                pass
+            obj = globals_[name]
+
+            # set public module field
+            obj.__publicmodule__ = public_module
+
+            if self.update_forward_references:
+                # update forward references in annotations
+                update_forward_references(obj, globals_=globals_)
 
     def get_tracked(self) -> List[str]:
         """
@@ -129,7 +145,7 @@ class AllTracker:
 
         :return: the list of object names, sorted alphabetically
         """
-        return sorted(name for name in self._globals if self._is_eligible(name=name))
+        return sorted(filter(self._is_eligible, self._globals))
 
     def is_tracked(self, name: str, item: Any) -> bool:
         """
@@ -624,6 +640,32 @@ def inheritdoc(
         )
     else:
         _raise_type_error(class_)
+
+
+def update_forward_references(
+    obj: Union[type, FunctionType], *, globals_: Mapping[str, Any]
+) -> None:
+    """
+    Replace all forward references with their referenced classes.
+
+    :param obj: a function or class
+    :param globals_: a global namespace to search the referenced classes in
+    """
+
+    def _update(obj: Any) -> None:
+        if isinstance(obj, type):
+            for member in vars(obj).values():
+                _update(member)
+        elif isinstance(obj, FunctionType):
+            annotations = obj.__annotations__
+            if annotations:
+                for arg, cls in annotations.items():
+                    if isinstance(cls, str):
+                        real_cls = globals_[cls]
+                        if isinstance(real_cls, type):
+                            annotations[arg] = real_cls
+
+    _update(obj)
 
 
 __tracker.validate()
