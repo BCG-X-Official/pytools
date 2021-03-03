@@ -1,4 +1,4 @@
-*pytools* Release notes
+*pytools* Release Notes
 =======================
 
 1.0.1
