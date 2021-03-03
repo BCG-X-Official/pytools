@@ -139,28 +139,19 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         :param title: the chart title
         """
 
-        fg_color = self.colors.foreground
-        bg_color = self.colors.background
-
         ax = self.ax
 
         # set title plus title color
-        ax.set_title(label=title, color=fg_color)
+        ax.set_title(label=title, color=self.colors.foreground)
 
-        # set face color
-        ax.set_facecolor(bg_color)
+        # color the axes
+        self._apply_color_scheme(ax)
 
-        # set figure face color
-        ax.patch.set_facecolor(bg_color)
+        bg_color = self.colors.background
 
-        # set tick and tick label color
-        ax.tick_params(color=fg_color, labelcolor=fg_color)
-
-        # set the outline color
-        for spine in ax.spines.values():
-            spine.set_edgecolor(fg_color)
-
+        # set the figure background color
         try:
+            # does the axes background color conflict with the figure background color?
             if ax.figure.__pytools_viz_background != bg_color:
                 log.warning(
                     "subplots have conflicting color schemes; setting background color "
@@ -168,14 +159,12 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
                 )
         except AttributeError:
             pass
-
-        # set the background color
         ax.figure.set_facecolor(bg_color)
-
         ax.figure.__pytools_viz_background = bg_color
 
     def finalize_drawing(self, **kwargs) -> None:
         """[see superclass]"""
+
         super().finalize_drawing(**kwargs)
 
         # set legend color
@@ -191,6 +180,35 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
             for text in legend.get_texts():
                 text.set_color(fg_color)
+
+    def _apply_color_scheme(self, ax: Axes) -> None:
+        """
+        Apply this style's color scheme to the given :class:`~matplotlib.axes.Axes`.
+
+        Style implementations can use this to apply the color scheme to sub-axes.
+        Does not need to be applied to main axes, as this is already done in method
+        :meth:`.start_drawing`.
+
+        This method will be public as of v1.1.
+
+        :param ax: the axes to apply the color scheme to
+        """
+
+        fg_color = self.colors.foreground
+        bg_color = self.colors.background
+
+        # set face color
+        ax.set_facecolor(bg_color)
+
+        # set figure face color
+        ax.patch.set_facecolor(bg_color)
+
+        # set tick and tick label color
+        ax.tick_params(color=fg_color, labelcolor=fg_color)
+
+        # set the outline color
+        for spine in ax.spines.values():
+            spine.set_edgecolor(fg_color)
 
 
 class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
