@@ -19,8 +19,10 @@ utilities for reuse, including:
 
 .. End-Badges
 
+
 Installation
 ------------
+
 
 *pytools*  supports both PyPI and Anaconda
 
@@ -64,15 +66,15 @@ For further information on contributing please see our `contribution guide
 <https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
 
 
-
 License
----------------------------
+-------
 
 *pytools* is licensed under Apache 2.0 as described in the
 `LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
 
+
 BCG GAMMA
----------------------------
+---------
 
 We are always on the lookout for passionate and talented data scientists to join the
 BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
