@@ -14,7 +14,8 @@ ENV_RUN_PACKAGE_VERSION_TEST = "RUN_PACKAGE_VERSION_TEST"
 
 
 @mark.skipif(
-    condition=environ.get(ENV_RUN_PACKAGE_VERSION_TEST, "") != pytools.__name__
+    condition=environ.get(ENV_RUN_PACKAGE_VERSION_TEST, "") != pytools.__name__,
+    reason="Parent build is not primarily for pytools.",
 )
 def test_package_version() -> None:
     dev_version = pytools.__version__
