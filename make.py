@@ -57,9 +57,6 @@ KNOWN_DEPENDENCY_TYPES = {DEFAULT_DEPS, MIN_DEPS, MAX_DEPS}
 CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
-ENV_SKIP_PYTOOLS_PACKAGE_VERSION_TEST = "SKIP_PYTOOLS_PACKAGE_VERSION_TEST"
-ENV_SKIP_SKLEARNDF_PACKAGE_VERSION_TEST = "SKIP_SKLEARNDF_PACKAGE_VERSION_TEST"
-
 
 class Builder(metaclass=ABCMeta):
     def __init__(self, project: str, dependency_type: str):
@@ -109,16 +106,6 @@ class Builder(metaclass=ABCMeta):
         ] = package_version
 
         self.package_version = package_version
-
-        # run the package version check (checks, if current sources have been released
-        # already on PyPi)
-        # only for the current project, not if a downstream package (e.g. facet)
-        # performs the build of an upstream package it needs (e.g. sklearndf, pytools)
-        if project != PROJ_PYTOOLS:
-            os.environ[ENV_SKIP_PYTOOLS_PACKAGE_VERSION_TEST] = "1"
-
-        if project != PROJ_SKLEARNDF:
-            os.environ[ENV_SKIP_SKLEARNDF_PACKAGE_VERSION_TEST] = "1"
 
     @staticmethod
     def for_build_system(
