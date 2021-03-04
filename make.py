@@ -316,7 +316,8 @@ class CondaBuilder(Builder):
         print(f"Building: {self.project}. Build path: {build_path}")
         os.makedirs(build_path, exist_ok=True)
         build_cmd = (
-            f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
+            f"conda-build -c conda-forge "
+            f"-c bcg_gamma {' '.join(local_channels)} {recipe_path}"
         )
         print(f"Build Command: {build_cmd}")
         subprocess.run(args=build_cmd, shell=True, check=True)
