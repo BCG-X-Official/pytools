@@ -74,7 +74,7 @@ _log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
-copyright = "2020, Boston Consulting Group (BCG)"
+copyright = "2021, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
 # -- General configuration ---------------------------------------------------
@@ -114,7 +114,6 @@ autodoc_default_options = {
 }
 
 nbsphinx_allow_errors = True
-nbsphinx_timeout = 60 * 15  # 15 minutes due to tutorial/model notebook
 
 # add intersphinx mapping
 intersphinx_mapping = {
@@ -133,7 +132,6 @@ intersphinx_mapping = {
     "pytools": ("https://bcg-gamma.github.io/pytools/", None),
     "sklearndf": ("https://bcg-gamma.github.io/sklearndf/", None),
     "facet": ("https://bcg-gamma.github.io/facet/", None),
-    "flow": ("https://bcg-gamma.github.io/flow/", None),
 }
 
 intersphinx_collapsible_submodules = {

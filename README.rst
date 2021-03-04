@@ -14,33 +14,43 @@ utilities for reuse, including:
 
 .. Begin-Badges
 
-|pypi| |conda|
+|pypi| |conda| |azure_build| |azure_code_cov|
 |python_versions| |code_style| |made_with_sphinx_doc| |License_badge|
 
 .. End-Badges
 
+
 Installation
----------------------
+------------
+
 
 *pytools*  supports both PyPI and Anaconda
 
 Anaconda
-~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
 
 .. code-block:: RST
 
     conda install gamma-pytools -c bcg_gamma -c conda-forge
 
 Pip
-~~~~~~~~~~~~~~~~~~~~~
+~~~
 
 .. code-block:: RST
 
     pip install gamma-pytools
 
 
+Documentation
+-------------
+
+For the *pytools* API reference see the `documentation <https://bcg-gamma.github.io/pytools/>`__.
+
+Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__.
+
+
 Contributing
----------------------------
+------------
 
 *pytools* is stable and is being supported long-term.
 
@@ -56,15 +66,15 @@ For further information on contributing please see our `contribution guide
 <https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
 
 
-
 License
----------------------------
+-------
 
 *pytools* is licensed under Apache 2.0 as described in the
 `LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
 
+
 BCG GAMMA
----------------------------
+---------
 
 We are always on the lookout for passionate and talented data scientists to join the
 BCG GAMMA team. If you would like to know more you can find out about BCG GAMMA
@@ -83,7 +93,7 @@ or have a look at
 .. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/_build?definitionId=9.svg
+.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/develop.svg
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
 .. |python_versions| image:: https://img.shields.io/badge/python-3.6|3.7|3.8-blue.svg

@@ -173,7 +173,6 @@ class ApiDoc(Command):
 
 
 class GettingStartedDoc(Command):
-
     @classmethod
     def get_description(cls) -> str:
         return "generate getting started documentation from sources"
@@ -190,29 +189,31 @@ class GettingStartedDoc(Command):
         os.makedirs(DIR_SPHINX_GSTART_GENERATED, exist_ok=True)
 
         # open the rst readme file
-        with open(os.path.join(DIR_REPO_ROOT, "README.rst"), 'r') as file:
+        with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
             readme_data = file.read()
 
         # modify links (step back needed as build will add sub directory to paths)
-        readme_data = readme_data.replace('sphinx/source/', '../')
-        readme_data = readme_data.replace('sphinx/auxiliary/', '../')
+        readme_data = readme_data.replace("sphinx/source/", "../")
+        readme_data = readme_data.replace("sphinx/auxiliary/", "../")
         readme_data = re.sub(
-            r'\.\. Begin-Badges.*?\.\. End-Badges',
-            '',
-            readme_data,
-            flags=re.S
+            r"\.\. Begin-Badges.*?\.\. End-Badges", "", readme_data, flags=re.S
         )
+
+        with open(os.path.join(DIR_SPHINX_SOURCE, "release_notes.rst"), "w") as dst:
+            dst.write(".. _release-notes:\n\n")
+            with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst"), "r") as src:
+                dst.write(src.read())
 
         # create a new getting_started.rst that combines the header from templates and
         # adds an include for the README
         with open(
-            os.path.join(DIR_SPHINX_TEMPLATES_BASE, "getting-started-header.rst"),
-            'r'
+            os.path.join(DIR_SPHINX_TEMPLATES_BASE, "getting-started-header.rst"), "r"
         ) as file:
             template_data = file.read()
 
-        with open(os.path.join(DIR_SPHINX_GSTART_GENERATED,
-                  "getting_started.rst"), "wt") as file:
+        with open(
+            os.path.join(DIR_SPHINX_GSTART_GENERATED, "getting_started.rst"), "wt"
+        ) as file:
             file.writelines(template_data)
             file.writelines(readme_data)
 
@@ -500,6 +501,13 @@ Available program arguments:
 
 available_commands: Dict[str, Type[Command]] = {
     cmd.get_name(): cmd
-    for cmd in (Clean, ApiDoc, GettingStartedDoc, Html, Help, FetchPkgVersions,
-                PrepareDocsDeployment)
+    for cmd in (
+        Clean,
+        ApiDoc,
+        GettingStartedDoc,
+        Html,
+        Help,
+        FetchPkgVersions,
+        PrepareDocsDeployment,
+    )
 }

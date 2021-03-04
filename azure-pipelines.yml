@@ -1,17 +1,19 @@
 trigger:
-  - master
   - develop
+  - dev/*
+  - release/*
 
 pr:
-  - master
   - develop
+  - dev/*
+  - release/*
 
 # set the build name
 name: $[ variables['branchName'] ]
 
 # run tests and full conda/tox build matrix every night at 4am
 schedules:
-- cron: "0 4 * * *"
+- cron: "0 4 * * 1-5"
   displayName: Nightly full build
   branches:
     include:
@@ -22,7 +24,9 @@ variables:
     branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
   ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
     branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  master_or_release: $[ or(startsWith(variables['branchName'], 'release'), eq(variables['branchName'], 'master'), eq(variables['Build.Reason'], 'Schedule')) ]
+  source_is_release_branch: $[ startsWith(variables['branchName'], 'release') ]
+  source_is_develop_branch: $[ or(startsWith(variables['branchName'], 'develop'), startsWith(variables['branchName'], 'dev/')) ]
+  is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
 
 stages:
   # check code quality first to fail fast (isort, flake8, black)
@@ -81,8 +85,8 @@ stages:
               script: |
                 cd $(System.DefaultWorkingDirectory)
                 files_changed=$(git diff $(Build.SourceVersion)^! --name-only)
-                echo "Files changed since last commit: ${files_changed}"
-                if [ "${files_changed}" == *"pyproject.toml"* ]
+                n_files_changed=$(git diff $(Build.SourceVersion)^! --name-only | grep -i -E 'meta.yaml|pyproject.toml|azure-pipelines.yml|tox.ini'  | wc -l | xargs)
+                if [ ${n_files_changed} -gt 0 ]
                 then
                 build_changed=1
                 echo "build config has been changed"
@@ -102,11 +106,7 @@ stages:
     jobs:
     - job:
       displayName: 'pytest @ develop environment'
-      condition: >
-        and(
-        ne(variables.master_or_release, 'True'),
-        eq(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
-        )
+      condition: ne(variables.source_is_release_branch, 'True')
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -142,10 +142,12 @@ stages:
               conda env create -f environment.yml
               conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)
-              pip install pytest-azurepipelines
-              coverage run -m pytest test/test/
-              coverage xml
-              coverage html
+              pytest \
+                 --cov pytools \
+                 --cov-config "tox.ini" \
+                 --cov-report=xml:coverage.xml --cov-report=html:htmlcov \
+                 --junitxml pytest.xml \
+                 . -s
           displayName: 'pytest'
 
         - task: PublishTestResults@2
@@ -176,7 +178,9 @@ stages:
       displayName: 'single'
       condition: >
         and(
-        ne(variables.master_or_release, 'True'),
+        ne(variables.source_is_release_branch, 'True'),
+        ne(variables.source_is_develop_branch, 'True'),
+        ne(variables.is_scheduled, 'True'),
         ne(stageDependencies.detect_build_config_changes.checkout_and_diff.outputs['diff.conda_build_config_changed'], '0')
         )
 
@@ -242,7 +246,12 @@ stages:
 
     - job:
       displayName: 'matrix'
-      condition: eq(variables.master_or_release, 'True')
+      condition: >
+        or(
+        eq(variables.source_is_develop_branch, 'True'),
+        eq(variables.source_is_release_branch, 'True'),
+        eq(variables.is_scheduled, 'True')
+        )
 
       pool:
         vmImage: 'ubuntu-latest'
@@ -261,10 +270,6 @@ stages:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'conda'
             PKG_DEPENDENCIES: 'max'
-          unconstrained_dependencies_conda:
-            FACET_V_PYTHON_BUILD: '>=3.6'
-            PKG_DEPENDENCIES: 'unconstrained'
-            BUILD_SYSTEM: 'conda'
           default_dependencies_tox:
             FACET_V_PYTHON_BUILD: '=3.7.*'
             BUILD_SYSTEM: 'tox'
@@ -277,10 +282,6 @@ stages:
             FACET_V_PYTHON_BUILD: '=3.8.*'
             BUILD_SYSTEM: 'tox'
             PKG_DEPENDENCIES: 'max'
-          unconstrained_dependencies_tox:
-            FACET_V_PYTHON_BUILD: '>=3.6'
-            PKG_DEPENDENCIES: 'unconstrained'
-            BUILD_SYSTEM: 'tox'
 
       steps:
         - task: UsePythonVersion@0
@@ -328,19 +329,119 @@ stages:
             artifactName: $(BUILD_SYSTEM)_$(PKG_DEPENDENCIES)
             publishLocation: Container
 
-  # release on merge from release branch to master:
+  # apply veracode static code analysis during nightly build
+  - stage: veracode_check
+    displayName: 'Veracode check'
+
+    jobs:
+      - job:
+        displayName: 'Veracode check'
+        condition: eq(variables['Build.Reason'], 'Schedule')
+
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -e
+                eval "$(conda shell.bash hook)"
+                cd $(System.DefaultWorkingDirectory)
+                mkdir static_scan
+                git archive --format=zip --output static_scan/archive.zip HEAD
+
+          - task: Veracode@3
+            inputs:
+              ConnectionDetailsSelection: 'Endpoint'
+              AnalysisService: 'veracode'
+              veracodeAppProfile: 'FACET'
+              version: '$(Build.BuildID)'
+              filepath: '$(System.DefaultWorkingDirectory)/static_scan'
+              sandboxName: 'pytools'
+              createSandBox: false
+              createProfile: false
+              failTheBuildIfVeracodeScanDidNotInitiate: false
+              scanStatusCheckInterval: '60'
+              importResults: false
+              failBuildOnPolicyFail: false
+
+  - stage: check_release
+    displayName: 'Check Release Version'
+    dependsOn: conda_tox_build
+
+    jobs:
+      - job:
+        displayName: 'Check Release'
+        condition: >
+          or(
+          eq(variables.source_is_release_branch, 'True'),
+          eq(variables.source_is_develop_branch, 'True')
+          )
+        
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.7.*'
+            displayName: 'use Python 3.7'
+
+          - checkout: self
+            path: pytools
+          
+          - task: Bash@3
+            env:
+              BRANCH_NAME: $(branchName)
+            inputs:
+              targetType: inline
+              condition: ne(variables.branchName, 'develop')
+              script: |
+                set -e
+                python -m pip install "toml==0.10.*"
+                cd $(System.DefaultWorkingDirectory)
+                python <<EOF
+                from os import environ
+                from make import ToxBuilder
+
+                branch_env = "BRANCH_NAME"
+                assert branch_env in environ, f"ENV variable '{branch_env}' with git branch name missing."
+                branch = environ[branch_env]
+                print(f"Checking package version consistency with branch: {branch}")
+                if branch == "develop":
+                  exit(0)
+                assert (branch.startswith("release/") or branch.startswith("dev/")
+                ), "This check should only run on versioned branches – check pipeline."
+
+                branch_version = branch.split("/", maxsplit=1)[1]
+                package_version = ToxBuilder("pytools", "default").package_version
+
+                assert (
+                    package_version == branch_version
+                ), f"Package version '{package_version}' does not match '{branch_version}' from branch."
+
+                print("Check passed.")
+
+                EOF
+
+            displayName: "Check version consistency"
+
+
+  # release on merges into release/*:
   # - add release tag
   # - create GitHub release with changelog
   # - upload conda and pip packages as artifacts to GitHub
   - stage:
     displayName: 'Release'
-    dependsOn: conda_tox_build
+    dependsOn: check_release
+    variables:
+    - group: artifact_publication
 
     jobs:
       - job:
         displayName: 'Release'
-        condition: eq(replace(variables['Build.SourceBranch'], 'refs/heads/', ''), 'master')
-
+        condition: >
+          or(
+          eq(variables.source_is_release_branch, 'True'),
+          eq(variables.source_is_develop_branch, 'True')
+          )
+        
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -376,7 +477,44 @@ stages:
             inputs:
               artifactName: conda_default
 
+          - script: |
+              set -eux
+              cd $(System.DefaultWorkingDirectory)
+              eval "$(conda shell.bash hook)"
+              conda install -y anaconda-client
+              anaconda login --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}"
+              anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/gamma-pytools-*.tar.bz2
+              anaconda logout
+              echo "##vso[task.setvariable variable=conda_published]True"
+            displayName: 'Publish to Anaconda'
+
+            condition: eq(variables['source_is_release_branch'], 'True')
+            env:
+              CONDA_PASSWORD: $(anaconda_pw)
+              CONDA_USERNAME: $(anaconda_user)
+
+          - script: |
+              set -eux
+              cd $(System.DefaultWorkingDirectory)
+              pip install flit
+              flit publish
+              echo "##vso[task.setvariable variable=pypi_published]True"
+            displayName: 'Publish to PyPi'
+            condition: eq(variables['source_is_release_branch'], 'True')
+            env:
+              FLIT_PASSWORD: $(pypi_pw)
+              FLIT_USERNAME: $(pypi_user)
+
           - task: GitHubRelease@1
+            condition: >
+              and(
+                eq(variables['source_is_release_branch'], 'True'),
+                succeededOrFailed(),
+                or(
+                  eq(variables['conda_published'], 'True'),
+                  eq(variables['pypi_published'], 'True')
+                )
+              )
             inputs:
               gitHubConnection: github_release
               repositoryName: $(Build.Repository.Name)
@@ -411,98 +549,103 @@ stages:
     - group: github_ssh
 
     jobs:
-    - job:
-      displayName: 'Build and publish docs'
-      condition: eq(variables.master_or_release, 'True')
-
-      pool:
+      - job:
+        displayName: 'Build and publish docs'
+        condition: >
+         or(
+         eq(variables.source_is_release_branch, 'True'),
+         eq(variables.source_is_develop_branch, 'True')
+         )
+      
+        pool:
           vmImage: 'ubuntu-latest'
 
-      steps:
-        - task: UsePythonVersion@0
-          inputs:
-            versionSpec: '3.8.*'
-          displayName: 'use Python 3.8'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: '3.8.*'
+            displayName: 'use Python 3.8'
 
-        - task: InstallSSHKey@0
-          inputs:
-            knownHostsEntry: $(knownHostsEntry)
-            sshPublicKey: $(sshPublicKey)
-            sshKeySecureFile: 'deploy_docs'
-          displayName: 'Install the deploy SSH key'
+          - task: InstallSSHKey@0
+            inputs:
+              knownHostsEntry: $(knownHostsEntry)
+              sshPublicKey: $(sshPublicKey)
+              sshKeySecureFile: 'deploy_docs'
+            displayName: 'Install the deploy SSH key'
 
-        - checkout: self
-          path: pytools
+          - checkout: self
+            path: pytools
 
-        - script: dir $(Build.SourcesDirectory)
+          - script: dir $(Build.SourcesDirectory)
 
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              set -e
-              cd $(System.DefaultWorkingDirectory)
-              git checkout --track origin/github-pages
-              mkdir -p docs
-              sudo apt-get install tree 
-              echo "Current docs contents:"
-              tree docs
-              mkdir $(Build.ArtifactStagingDirectory)/old_docs
-              cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
-          displayName: 'Save current docs version'
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -eux
+                cd $(System.DefaultWorkingDirectory)
+                git checkout --track origin/github-pages
+                mkdir -p docs
+                sudo apt-get install tree 
+                echo "Current docs contents:"
+                tree docs
+                mkdir $(Build.ArtifactStagingDirectory)/old_docs
+                cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
+            displayName: 'Save current docs version'
 
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              set -e
-              eval "$(conda shell.bash hook)"
-              cd $(System.DefaultWorkingDirectory)
-              echo "Checking out $(branchName)"
-              git checkout $(branchName)
-              git status
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
-              conda env create -f environment.yml
-              conda activate pytools-develop
-              python sphinx/make.py html
-              echo "Current docs contents:"
-              tree docs
-          displayName: 'Build new docs version'
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -eux
+                eval "$(conda shell.bash hook)"
+                cd $(System.DefaultWorkingDirectory)
+                echo "Checking out $(branchName)"
+                git checkout $(branchName)
+                git status
+                export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+                conda env create -f environment.yml
+                conda activate pytools-develop
+                python sphinx/make.py html
+                echo "Current docs contents:"
+                tree docs
+            displayName: 'Build new docs version'
 
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              set -e
-              eval "$(conda shell.bash hook)"
-              cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
-              echo "Current docs contents:"
-              tree docs
-              echo "Building sphinx docs"
-              conda activate pytools-develop
-              python sphinx/make.py prepare_docs_deployment
-              echo "Current docs contents:"
-              tree docs
-              mkdir $(Build.ArtifactStagingDirectory)/new_docs
-              mv docs $(Build.ArtifactStagingDirectory)/new_docs
-          displayName: 'Update saved docs'
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -eux
+                eval "$(conda shell.bash hook)"
+                cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
+                echo "Current docs contents:"
+                tree docs
+                echo "Building sphinx docs"
+                conda activate pytools-develop
+                python sphinx/make.py prepare_docs_deployment
+                echo "Current docs contents:"
+                tree docs
+                mkdir $(Build.ArtifactStagingDirectory)/new_docs
+                mv docs $(Build.ArtifactStagingDirectory)/new_docs
+            displayName: 'Update saved docs'
 
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              set -e
-              echo "Adjusting git credentials"
-              git config --global user.name "Azure Pipelines"
-              git config --global user.email "azuredevops@microsoft.com"
-              git config --global url.ssh://git@github.com/.insteadOf https://github.com/
-              git checkout github-pages
-              cp -r $(Build.ArtifactStagingDirectory)/new_docs/docs .
-              git status
-              git add docs
-              echo "Staged docs HTML build"
-              git status
-              git commit -m "Publish GitHub Pages [skip ci]"
-              echo "Committed to local branch github-pages"
-              git push --set-upstream origin github-pages
-          displayName: 'Publish docs'
+          - task: Bash@3
+            condition: eq(variables['source_is_release_branch'], 'True')
+            inputs:
+              targetType: 'inline'
+              script: |
+                set -eux
+                echo "Adjusting git credentials"
+                git config --global user.name "Azure Pipelines"
+                git config --global user.email "azuredevops@microsoft.com"
+                git config --global url.ssh://git@github.com/.insteadOf https://github.com/
+                git checkout github-pages
+                cp -r $(Build.ArtifactStagingDirectory)/new_docs/docs .
+                git status
+                git add docs
+                echo "Staged docs HTML build"
+                git status
+                git commit -m "Publish GitHub Pages [skip ci]"
+                echo "Committed to local branch github-pages"
+                git push --set-upstream origin github-pages
+            displayName: 'Publish docs'
