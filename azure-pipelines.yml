@@ -480,10 +480,10 @@ stages:
               artifactName: conda_default
 
           - script: |
-              set -e
+              set -eux
               cd $(System.DefaultWorkingDirectory)
               eval "$(conda shell.bash hook)"
-              conda install anaconda-client
+              conda install -y anaconda-client
               anaconda login --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}"
               anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/gamma-pytools-*.tar.bz2
               anaconda logout
@@ -496,7 +496,7 @@ stages:
               CONDA_USERNAME: $(anaconda_user)
 
           - script: |
-              set -e
+              set -eux
               cd $(System.DefaultWorkingDirectory)
               pip install flit
               flit publish
@@ -584,7 +584,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                set -e
+                set -eux
                 cd $(System.DefaultWorkingDirectory)
                 git checkout --track origin/github-pages
                 mkdir -p docs
@@ -599,7 +599,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                set -e
+                set -eux
                 eval "$(conda shell.bash hook)"
                 cd $(System.DefaultWorkingDirectory)
                 echo "Checking out $(branchName)"
@@ -617,7 +617,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                set -e
+                set -eux
                 eval "$(conda shell.bash hook)"
                 cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
                 echo "Current docs contents:"
@@ -636,7 +636,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                set -e
+                set -eux
                 echo "Adjusting git credentials"
                 git config --global user.name "Azure Pipelines"
                 git config --global user.email "azuredevops@microsoft.com"
