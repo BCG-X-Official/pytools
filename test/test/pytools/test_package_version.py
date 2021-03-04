@@ -48,7 +48,7 @@ def test_package_version() -> None:
         pre_releases = [
             version
             for version in releases
-            if re.match(r"^" + dev_version + r"rc\d+?$", version)
+            if re.match(r"^" + dev_version + r"rc\d+$", version)
         ]
 
         assert len(pre_releases), (
