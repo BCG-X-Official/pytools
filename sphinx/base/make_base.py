@@ -199,6 +199,11 @@ class GettingStartedDoc(Command):
             r"\.\. Begin-Badges.*?\.\. End-Badges", "", readme_data, flags=re.S
         )
 
+        with open(os.path.join(DIR_SPHINX_SOURCE, "release_notes.rst"), "w") as dst:
+            dst.write(".. _release-notes:\n\n")
+            with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst"), "r") as src:
+                dst.write(src.read())
+
         # create a new getting_started.rst that combines the header from templates and
         # adds an include for the README
         with open(
