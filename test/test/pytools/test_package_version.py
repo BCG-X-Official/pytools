@@ -50,7 +50,7 @@ def test_package_version() -> None:
             if re.match(f"{dev_version}rc\\d+$", version)
         ]
 
-        assert len(pre_releases), (
+        assert pre_releases, (
             f"Release of major or minor version {dev_version} "
             f"requires at least one pre-release, e.g. {dev_version}rc0"
         )
