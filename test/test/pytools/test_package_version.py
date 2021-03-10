@@ -35,8 +35,27 @@ def test_package_version() -> None:
     releases_nodes = tree.findall(path=".//channel//item//title")
     releases = [r.text for r in releases_nodes]
 
-    log.info(f"Found these releases on PyPi:{releases}")
+    log.info(f"Releases found on PyPi: {', '.join(releases)}")
 
     assert (
         dev_version not in releases
     ), f"Current package version {dev_version} already on PyPi"
+
+    is_minor_or_major_release = dev_version.endswith(".0")
+
+    if is_minor_or_major_release:
+        pre_releases = [
+            version
+            for version in releases
+            if re.match(f"{dev_version}rc\\d+$", version)
+        ]
+
+        assert pre_releases, (
+            f"Release of major or minor version {dev_version} "
+            f"requires at least one pre-release, e.g. {dev_version}rc0"
+        )
+
+        log.info(
+            f"Pre-releases {pre_releases} exist(s) – "
+            f"release of major/minor version {dev_version} allowed"
+        )
