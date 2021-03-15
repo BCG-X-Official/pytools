@@ -1,14 +1,23 @@
 import logging
 import re
+from os import environ
 from urllib import request
 from xml.etree import ElementTree
+
+from pytest import mark
 
 import pytools
 
 log = logging.getLogger(__name__)
 
+ENV_RUN_PACKAGE_VERSION_TEST = "RUN_PACKAGE_VERSION_TEST"
 
-def test_package_version():
+
+@mark.skipif(
+    condition=environ.get(ENV_RUN_PACKAGE_VERSION_TEST, "") != pytools.__name__,
+    reason="Parent build is not primarily for pytools.",
+)
+def test_package_version() -> None:
     dev_version = pytools.__version__
 
     log.info(f"Test package version – version set to: {dev_version}")
