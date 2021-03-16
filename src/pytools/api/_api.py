@@ -70,6 +70,21 @@ class AllTracker:
     used in the private module.
     """
 
+    #: if ``True``, automatically replace all forward
+    #: type references in function annotations with the referenced classes;
+    #: see :func:`.update_forward_references`
+    update_forward_references: bool
+
+    #: if ``True``, allow exporting public global constants in ``__all__``;
+    #: these typically have no ``__module__`` or ``__doc__`` attributes and will
+    #: not be properly rendered in generated documentation
+    allow_global_constants: bool
+
+    #: if ``True``, allow exporting definitions in ``__all__`` even if they have been
+    #: imported from another module
+    allow_imported_definitions: bool
+
+    # noinspection PyShadowingNames
     def __init__(
         self,
         globals_: Dict[str, Any],
