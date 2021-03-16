@@ -76,6 +76,7 @@ class AllTracker:
         *,
         public_module: Optional[str] = None,
         update_forward_references: Optional[bool] = True,
+        allow_global_constants: Optional[bool] = False,
     ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
@@ -86,7 +87,9 @@ class AllTracker:
             type references in function annotations with the referenced classes; see
             :func:`.update_forward_references`
             (default: ``True``)
-
+        :param allow_global_constants: if ``True``, allow public global constants; these
+            typically have no ``__module__`` or ``__doc__`` attributes and will not
+            be properly rendered in generated documentation (default: ``False``)
         """
         self._globals = globals_
         self._imported = set(globals_.keys())
@@ -99,17 +102,10 @@ class AllTracker:
         if public_module:
             self.public_module = public_module
         else:
-            try:
-                module = globals_["__name__"]
-            except KeyError:
-                raise ValueError(
-                    "cannot infer public module: "
-                    "arg globals_ does not define module name in __name__"
-                )
-
             self.public_module = public_module_prefix(module)
 
         self.update_forward_references = update_forward_references
+        self.allow_global_constants = allow_global_constants
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -132,10 +128,38 @@ class AllTracker:
                 f"expected:\n__all__ = {all_expected}"
             )
 
+        def _qualname(_obj: Any) -> str:
+            try:
+                return _obj.__qualname__
+            except AttributeError:
+                try:
+                    return _obj.__name__
+                except AttributeError:
+                    return repr(_obj)
+
+        module = self._module
         public_module = self.public_module
+        allow_global_constants = self.allow_global_constants
 
         for name in all_expected:
             obj = globals_[name]
+
+            # check that the object was defined locally
+            try:
+                obj_module = obj.__module__
+            except AttributeError:
+                if allow_global_constants:
+                    obj_module = None
+                else:
+                    raise AssertionError(
+                        f"exporting a global constant is not permitted: {obj!r}"
+                    )
+
+            if obj_module and obj_module != module:
+                raise AttributeError(
+                    f"{_qualname(obj)} is exported by module {module} "
+                    f"but defined in module {obj_module}"
+                )
 
             # set public module field
             try:
