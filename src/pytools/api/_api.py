@@ -91,6 +91,11 @@ class AllTracker:
         self._globals = globals_
         self._imported = set(globals_.keys())
 
+        try:
+            self._module = module = globals_["__name__"]
+        except KeyError:
+            raise ValueError("arg globals_ does not define module name in __name__")
+
         if public_module:
             self.public_module = public_module
         else:
