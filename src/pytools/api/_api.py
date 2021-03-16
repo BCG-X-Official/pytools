@@ -133,7 +133,11 @@ class AllTracker:
             obj = globals_[name]
 
             # set public module field
-            obj.__publicmodule__ = public_module
+            try:
+                obj.__publicmodule__ = public_module
+            except AttributeError:
+                # objects without a __dict__ will not permit setting the public module
+                pass
 
             if self.update_forward_references:
                 # update forward references in annotations
