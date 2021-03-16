@@ -27,7 +27,7 @@ T = TypeVar("T")
 T_Model = TypeVar("T_Model")
 T_Style = TypeVar("T_Style", bound="DrawingStyle")
 T_Style_Class = TypeVar("T_Style_Class", bound=Type["DrawingStyle"])
-T_ColorScheme = TypeVar("T_ColorScheme", bound="ColorScheme")
+T_ColorScheme = TypeVar("T_ColorScheme", bound=ColorScheme)
 
 
 #
