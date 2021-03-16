@@ -127,7 +127,7 @@ class AllTracker:
         globals_ = self._globals
 
         if set(globals_.get("__all__", [])) != set(all_expected):
-            raise RuntimeError(
+            raise AssertionError(
                 "missing or unexpected all declaration, "
                 f"expected:\n__all__ = {all_expected}"
             )
