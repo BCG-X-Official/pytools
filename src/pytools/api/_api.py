@@ -75,8 +75,9 @@ class AllTracker:
         globals_: Dict[str, Any],
         *,
         public_module: Optional[str] = None,
-        update_forward_references: Optional[bool] = True,
-        allow_global_constants: Optional[bool] = False,
+        update_forward_references: bool = True,
+        allow_global_constants: bool = False,
+        allow_imported_definitions: bool = False,
     ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
@@ -87,9 +88,13 @@ class AllTracker:
             type references in function annotations with the referenced classes; see
             :func:`.update_forward_references`
             (default: ``True``)
-        :param allow_global_constants: if ``True``, allow public global constants; these
-            typically have no ``__module__`` or ``__doc__`` attributes and will not
-            be properly rendered in generated documentation (default: ``False``)
+        :param allow_global_constants: if ``True``, allow exporting public global
+            constants in ``__all__``;
+            these typically have no ``__module__`` or ``__doc__`` attributes and will
+            not be properly rendered in generated documentation (default: ``False``)
+        :param allow_imported_definitions: if ``True``, allow exporting definitions in
+            ``__all__`` even if they have been imported from another module
+            (default: ``False``)
         """
         self._globals = globals_
         self._imported = set(globals_.keys())
@@ -106,6 +111,7 @@ class AllTracker:
 
         self.update_forward_references = update_forward_references
         self.allow_global_constants = allow_global_constants
+        self.allow_imported_definitions = allow_imported_definitions
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -140,6 +146,7 @@ class AllTracker:
         module = self._module
         public_module = self.public_module
         allow_global_constants = self.allow_global_constants
+        forbid_imported_definitions = not self.allow_imported_definitions
 
         for name in all_expected:
             obj = globals_[name]
@@ -155,7 +162,7 @@ class AllTracker:
                         f"exporting a global constant is not permitted: {obj!r}"
                     )
 
-            if obj_module and obj_module != module:
+            if forbid_imported_definitions and obj_module and obj_module != module:
                 raise AttributeError(
                     f"{_qualname(obj)} is exported by module {module} "
                     f"but defined in module {obj_module}"
