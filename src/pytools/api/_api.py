@@ -661,12 +661,12 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
-    def _update(obj: Any) -> None:
-        if isinstance(obj, type):
-            for member in vars(obj).values():
+    def _update(_obj: Any) -> None:
+        if isinstance(_obj, type):
+            for member in vars(_obj).values():
                 _update(member)
-        elif isinstance(obj, FunctionType):
-            annotations = obj.__annotations__
+        elif isinstance(_obj, FunctionType):
+            annotations = _obj.__annotations__
             if annotations:
                 for arg, cls in annotations.items():
                     if isinstance(cls, str):
