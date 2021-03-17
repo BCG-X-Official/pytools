@@ -68,6 +68,17 @@ class AllTracker:
 
     This ensures a clean namespace in the public package, uncluttered by any imports
     used in the private module.
+
+    The tracker also performs additional checks to validate the eligibility of
+    definitions for being exported:
+
+    - constant definitions should not be exported, as this will pose difficulties
+      with Sphinx documentation and - from a design perspective - provides less context
+      than defining constants inside classes
+    - definitions exported from other modules should not be re-exported by the importing
+      module
+
+    These validation checks can be overridden if required in special cases.
     """
 
     #: if ``True``, automatically replace all forward
@@ -137,7 +148,8 @@ class AllTracker:
         Validate that all eligible items that were defined since the creation of this
         tracker are listed in the ``__all__`` variable.
 
-        :raise RuntimeError: if ``__all__`` is not as expected
+        :raise AssertionError: if ``__all__`` is not as expected, or if one or more
+            definitions do not meet the required criteria to be exported (
         """
         all_expected = self.get_tracked()
 
