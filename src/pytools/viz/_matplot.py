@@ -18,7 +18,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker, inheritdoc
 from ._viz import ColoredStyle
-from .color import MatplotColorScheme, RgbaColor
+from .color import ColorScheme, MatplotColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -261,7 +261,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def color_for_value(self, z: float) -> RgbaColor:
+    def color_for_value(self, z: float) -> ColorScheme.RgbaColor:
         """
         Get the color associated with a given scalar, based on the color map and
         normalization defined for this style.

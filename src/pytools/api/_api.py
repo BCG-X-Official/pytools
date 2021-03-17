@@ -68,14 +68,42 @@ class AllTracker:
 
     This ensures a clean namespace in the public package, uncluttered by any imports
     used in the private module.
+
+    The tracker also performs additional checks to validate the eligibility of
+    definitions for being exported:
+
+    - constant definitions should not be exported, as this will pose difficulties
+      with Sphinx documentation and - from a design perspective - provides less context
+      than defining constants inside classes
+    - definitions exported from other modules should not be re-exported by the importing
+      module
+
+    These validation checks can be overridden if required in special cases.
     """
 
+    #: if ``True``, automatically replace all forward
+    #: type references in function annotations with the referenced classes;
+    #: see :func:`.update_forward_references`
+    update_forward_references: bool
+
+    #: if ``True``, allow exporting public global constants in ``__all__``;
+    #: these typically have no ``__module__`` or ``__doc__`` attributes and will
+    #: not be properly rendered in generated documentation
+    allow_global_constants: bool
+
+    #: if ``True``, allow exporting definitions in ``__all__`` even if they have been
+    #: imported from another module
+    allow_imported_definitions: bool
+
+    # noinspection PyShadowingNames
     def __init__(
         self,
         globals_: Dict[str, Any],
         *,
         public_module: Optional[str] = None,
-        update_forward_references: Optional[bool] = True,
+        update_forward_references: bool = True,
+        allow_global_constants: bool = False,
+        allow_imported_definitions: bool = False,
     ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
@@ -86,25 +114,30 @@ class AllTracker:
             type references in function annotations with the referenced classes; see
             :func:`.update_forward_references`
             (default: ``True``)
-
+        :param allow_global_constants: if ``True``, allow exporting public global
+            constants in ``__all__``;
+            these typically have no ``__module__`` or ``__doc__`` attributes and will
+            not be properly rendered in generated documentation (default: ``False``)
+        :param allow_imported_definitions: if ``True``, allow exporting definitions in
+            ``__all__`` even if they have been imported from another module
+            (default: ``False``)
         """
         self._globals = globals_
         self._imported = set(globals_.keys())
 
+        try:
+            self._module = module = globals_["__name__"]
+        except KeyError:
+            raise ValueError("arg globals_ does not define module name in __name__")
+
         if public_module:
             self.public_module = public_module
         else:
-            try:
-                module = globals_["__name__"]
-            except KeyError:
-                raise ValueError(
-                    "cannot infer public module: "
-                    "arg globals_ does not define module name in __name__"
-                )
-
             self.public_module = public_module_prefix(module)
 
         self.update_forward_references = update_forward_references
+        self.allow_global_constants = allow_global_constants
+        self.allow_imported_definitions = allow_imported_definitions
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -115,25 +148,59 @@ class AllTracker:
         Validate that all eligible items that were defined since the creation of this
         tracker are listed in the ``__all__`` variable.
 
-        :raise RuntimeError: if ``__all__`` is not as expected
+        :raise AssertionError: if ``__all__`` is not as expected, or if one or more
+            definitions do not meet the required criteria to be exported (
         """
         all_expected = self.get_tracked()
 
         globals_ = self._globals
 
         if set(globals_.get("__all__", [])) != set(all_expected):
-            raise RuntimeError(
+            raise AssertionError(
                 "missing or unexpected all declaration, "
                 f"expected:\n__all__ = {all_expected}"
             )
 
+        def _qualname(_obj: Any) -> str:
+            try:
+                return _obj.__qualname__
+            except AttributeError:
+                try:
+                    return _obj.__name__
+                except AttributeError:
+                    return repr(_obj)
+
+        module = self._module
         public_module = self.public_module
+        allow_global_constants = self.allow_global_constants
+        forbid_imported_definitions = not self.allow_imported_definitions
 
         for name in all_expected:
             obj = globals_[name]
 
+            # check that the object was defined locally
+            try:
+                obj_module = obj.__module__
+            except AttributeError:
+                if allow_global_constants:
+                    obj_module = None
+                else:
+                    raise AssertionError(
+                        f"exporting a global constant is not permitted: {obj!r}"
+                    )
+
+            if forbid_imported_definitions and obj_module and obj_module != module:
+                raise AttributeError(
+                    f"{_qualname(obj)} is exported by module {module} "
+                    f"but defined in module {obj_module}"
+                )
+
             # set public module field
-            obj.__publicmodule__ = public_module
+            try:
+                obj.__publicmodule__ = public_module
+            except AttributeError:
+                # objects without a __dict__ will not permit setting the public module
+                pass
 
             if self.update_forward_references:
                 # update forward references in annotations
@@ -652,12 +719,12 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
-    def _update(obj: Any) -> None:
-        if isinstance(obj, type):
-            for member in vars(obj).values():
+    def _update(_obj: Any) -> None:
+        if isinstance(_obj, type):
+            for member in vars(_obj).values():
                 _update(member)
-        elif isinstance(obj, FunctionType):
-            annotations = obj.__annotations__
+        elif isinstance(_obj, FunctionType):
+            annotations = _obj.__annotations__
             if annotations:
                 for arg, cls in annotations.items():
                     if isinstance(cls, str):
