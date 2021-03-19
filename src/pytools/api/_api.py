@@ -719,10 +719,19 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
+    # keep track of classes we already visited to prevent infinite recursion
+    visited: Set[type] = set()
+
     def _update(_obj: Any) -> None:
         if isinstance(_obj, type):
-            for member in vars(_obj).values():
-                _update(member)
+            if id(_obj) in visited:
+                log.debug(
+                    f"update_forward_references: class {_obj.__name__} already visited"
+                )
+            else:
+                visited.add(_obj)
+                for member in vars(_obj).values():
+                    _update(member)
         elif isinstance(_obj, FunctionType):
             annotations = _obj.__annotations__
             if annotations:
