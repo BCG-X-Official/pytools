@@ -784,6 +784,11 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
     ) -> None:
         """[see superclass]"""
 
+        if what == "attribute":
+            # we cannot determine docstrings for attributes, as the object represents
+            # the value of the attribute, and not the attribute itself
+            return
+
         try:
             obj_module = obj.__module__
         except AttributeError:
