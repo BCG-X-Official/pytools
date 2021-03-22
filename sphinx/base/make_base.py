@@ -17,6 +17,8 @@ from typing import Dict, Iterable, List, Set, Tuple, Type
 
 from packaging import version as pkg_version
 
+from pytools.meta import SingletonMeta
+
 cwd = os.getcwd()
 
 # Sphinx commands
@@ -229,34 +231,12 @@ class FetchPkgVersions(Command):
 
     @classmethod
     def _run(cls) -> None:
-        os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
-        start_from_version_tag = "1.0.1"
-        sp = subprocess.run(
-            args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
-        )
-        version_tags = sp.stdout.decode("UTF-8").split("\n")
-        version_tags = [
-            vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
-        ]
-
-        # add version currently build into version_tags
-        version_built = get_package_version()
-
-        if version_built not in version_tags:
-            version_tags.append(version_built)
-
-        version_tags.sort()
-        version_tags.reverse()
-        version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
-        latest_non_rc_version = version_tags_non_rc[0]
-
-        print("Found the following version tags: ", version_tags)
-        print("Latest non-RC version: ", latest_non_rc_version)
+        versions = Versions()
 
         version_data = {
-            "current": latest_non_rc_version,
-            "non_rc": version_tags_non_rc,
-            "all": version_tags,
+            "current": versions.latest_non_rc_version,
+            "non_rc": versions.version_tags_non_rc,
+            "all": versions.version_tags,
         }
 
         version_data_as_js = (
@@ -383,6 +363,41 @@ class Help(Command):
     @classmethod
     def _run(cls) -> None:
         print_usage()
+
+
+class Versions(metaclass=SingletonMeta):
+    """
+    Helper class that lists all versions that have already been released.
+    """
+
+    def __init__(self) -> None:
+        os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
+        start_from_version_tag = "1.0.1"
+        sp = subprocess.run(
+            args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
+        )
+        version_tags: List[str] = sp.stdout.decode("UTF-8").split("\n")
+        version_tags = [
+            vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
+        ]
+
+        # add version currently build into version_tags
+        version_built: str = get_package_version()
+
+        if version_built not in version_tags:
+            version_tags.append(version_built)
+
+        version_tags.sort()
+        version_tags.reverse()
+        version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
+        latest_non_rc_version = version_tags_non_rc[0]
+
+        print("Found the following version tags: ", version_tags)
+        print("Latest non-RC version: ", latest_non_rc_version)
+
+        self.version_tags = version_tags
+        self.version_tags_non_rc = version_tags_non_rc
+        self.latest_non_rc_version = latest_non_rc_version
 
 
 def make(*, modules: List[str]) -> None:
