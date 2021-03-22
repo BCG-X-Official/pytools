@@ -15,7 +15,7 @@ from ..base import (
     PrefixExpression,
 )
 from ..operator import BinaryOperator
-from pytools.api import AllTracker
+from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -262,6 +262,7 @@ class AtomicForm(TextualForm):
         return len(self.text)
 
 
+@inheritdoc(match="""[see superclass]""")
 class ComplexForm(TextualForm, metaclass=ABCMeta):
     """
     Base class of non-atomic forms.
@@ -322,6 +323,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
         return self._len
 
 
+@inheritdoc(match="""[see superclass]""")
 class BracketedForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
@@ -370,8 +372,6 @@ class BracketedForm(ComplexForm):
         else:
             return subform_text
 
-    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
-
     def to_multiple_lines(
         self,
         config: FormattingConfig,
@@ -392,9 +392,8 @@ class BracketedForm(ComplexForm):
             IndentedLine(indent=indent, text=self.brackets.closing),
         ]
 
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
-
+@inheritdoc(match="""[see superclass]""")
 class PrefixForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
@@ -416,6 +415,8 @@ class PrefixForm(ComplexForm):
     def from_prefix_expression(expression: PrefixExpression) -> TextualForm:
         """
         Create a prefixed form from the given prefix expression.
+
+        :param expression: the prefix expression for which to create a prefixed form
         """
 
         prefix = expression.prefix_
@@ -444,10 +445,6 @@ class PrefixForm(ComplexForm):
     def needs_multi_line_encapsulation(self) -> bool:
         """[see superclass]"""
         return self.prefix.needs_multi_line_encapsulation
-
-    needs_multi_line_encapsulation.__doc__ = (
-        TextualForm.needs_multi_line_encapsulation.__doc__
-    )
 
     def to_single_line(self) -> str:
         """[see superclass]"""
@@ -489,9 +486,8 @@ class PrefixForm(ComplexForm):
 
         return prefix_lines[:-1] + subform_lines
 
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
 
-
+@inheritdoc(match="""[see superclass]""")
 class InfixForm(ComplexForm):
     """
     A hierarchical textual representation of a complex expression.
@@ -593,10 +589,6 @@ class InfixForm(ComplexForm):
         """[see superclass]"""
         return True
 
-    needs_multi_line_encapsulation.__doc__ = (
-        TextualForm.needs_multi_line_encapsulation.__doc__
-    )
-
     def to_single_line(self) -> str:
         """[see superclass]"""
 
@@ -615,8 +607,6 @@ class InfixForm(ComplexForm):
             infix = ""
 
         return infix.join(subform.to_single_line() for subform in self.subforms)
-
-    to_single_line.__doc__ = TextualForm.to_single_line.__doc__
 
     def to_multiple_lines(
         self,
@@ -693,8 +683,6 @@ class InfixForm(ComplexForm):
 
         return result
 
-    to_multiple_lines.__doc__ = ComplexForm.to_multiple_lines.__doc__
-
 
 #
 # Public classes
@@ -703,6 +691,7 @@ class InfixForm(ComplexForm):
 __tracker = AllTracker(globals())
 
 
+@inheritdoc(match="""[see superclass]""")
 class PythonExpressionFormatter(ExpressionFormatter):
     """
     Formats expression objects as Python expressions, in line with the `black` style.
@@ -710,7 +699,7 @@ class PythonExpressionFormatter(ExpressionFormatter):
 
     def __init__(
         self, max_width: int = 80, indent_width: int = 4, single_line: bool = False
-    ):
+    ) -> None:
         """
         :param max_width: the maximum line width (ignored when enforcing single-line
             text (default: 80)
@@ -733,8 +722,6 @@ class PythonExpressionFormatter(ExpressionFormatter):
         )
 
         return form.to_text(self._config)
-
-    to_text.__doc__ = ExpressionFormatter.to_text.__doc__
 
 
 __tracker.validate()

@@ -1,10 +1,12 @@
 trigger:
   - develop
+  - 1.1.x
   - dev/*
   - release/*
 
 pr:
   - develop
+  - 1.1.x
   - dev/*
   - release/*
 
@@ -17,7 +19,7 @@ schedules:
   displayName: Nightly full build
   branches:
     include:
-    - develop
+    - 1.1.x
 
 variables:
   ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
@@ -63,7 +65,7 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
           - script: |
-              python -m pip install flake8 flake8-comprehensions flake8-import-order
+              python -m pip install flake8==3.9.0 flake8-comprehensions flake8-import-order
               python -m flake8 --config tox.ini -v .
             displayName: 'Run flake8'
 
@@ -142,6 +144,7 @@ stages:
               conda env create -f environment.yml
               conda activate pytools-develop
               cd $(System.DefaultWorkingDirectory)
+              export RUN_PACKAGE_VERSION_TEST=pytools
               pytest \
                  --cov pytools \
                  --cov-config "tox.ini" \
@@ -229,6 +232,7 @@ stages:
             script: |
               if [ "$BUILD_SYSTEM" = "conda" ] ; then eval "$(conda shell.bash hook)" ; fi
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+              export RUN_PACKAGE_VERSION_TEST=pytools
               cd $(System.DefaultWorkingDirectory)
               ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
           displayName: "build & test conda/pip packages"
@@ -314,6 +318,7 @@ stages:
             script: |
               if [ "$BUILD_SYSTEM" = "conda" ] ; then eval "$(conda shell.bash hook)" ; fi
               export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
+              export RUN_PACKAGE_VERSION_TEST=pytools
               cd $(System.DefaultWorkingDirectory)
               ./make.py pytools $(BUILD_SYSTEM) $(PKG_DEPENDENCIES)
           displayName: "build & test conda/pip packages"
@@ -376,7 +381,7 @@ stages:
           eq(variables.source_is_release_branch, 'True'),
           eq(variables.source_is_develop_branch, 'True')
           )
-        
+
         steps:
           - task: UsePythonVersion@0
             inputs:
@@ -385,7 +390,7 @@ stages:
 
           - checkout: self
             path: pytools
-          
+
           - task: Bash@3
             env:
               BRANCH_NAME: $(branchName)
@@ -556,7 +561,7 @@ stages:
          eq(variables.source_is_release_branch, 'True'),
          eq(variables.source_is_develop_branch, 'True')
          )
-      
+
         pool:
           vmImage: 'ubuntu-latest'
 
@@ -586,7 +591,7 @@ stages:
                 cd $(System.DefaultWorkingDirectory)
                 git checkout --track origin/github-pages
                 mkdir -p docs
-                sudo apt-get install tree 
+                sudo apt-get install tree
                 echo "Current docs contents:"
                 tree docs
                 mkdir $(Build.ArtifactStagingDirectory)/old_docs

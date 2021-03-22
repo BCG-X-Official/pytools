@@ -59,7 +59,7 @@ TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 
 class Builder(metaclass=ABCMeta):
-    def __init__(self, project: str, dependency_type: str):
+    def __init__(self, project: str, dependency_type: str) -> None:
         self.project = project
         self.dependency_type = dependency_type
 
@@ -316,7 +316,8 @@ class CondaBuilder(Builder):
         print(f"Building: {self.project}. Build path: {build_path}")
         os.makedirs(build_path, exist_ok=True)
         build_cmd = (
-            f"conda-build -c conda-forge {' '.join(local_channels)} {recipe_path}"
+            "conda-build -c conda-forge -c bcg_gamma "
+            f"{' '.join(local_channels)} {recipe_path}"
         )
         print(f"Build Command: {build_cmd}")
         subprocess.run(args=build_cmd, shell=True, check=True)

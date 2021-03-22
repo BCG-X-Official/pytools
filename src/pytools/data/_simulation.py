@@ -31,7 +31,7 @@ def sim_data(
     outcome: str = "classification",
     regression_err: Optional[float] = None,
     seed_val: int = 4763546,
-):
+) -> pd.DataFrame:
     """
     Simulate data for classification or regression that includes an interaction between
     two linear features, and some non-linear and linear features.

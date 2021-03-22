@@ -2,7 +2,7 @@
 Core implementation of :mod:`pytools.meta`.
 """
 import logging
-from typing import Optional, Type, TypeVar
+from typing import Any, Optional, Type, TypeVar
 from weakref import ref
 
 from ..api import AllTracker
@@ -44,11 +44,16 @@ class SingletonMeta(type):
     Singleton classes may not accept any parameters upon instantiation.
     """
 
-    def __init__(cls, *args, **kwargs) -> None:
+    def __init__(cls, *args: Any, **kwargs: Any) -> None:
+        """
+        :param args: arguments to be passed on to the initializer of the superclass
+        :param kwargs: keyword arguments to be passed on to the initializer of the
+            superclass
+        """
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None
 
-    def __call__(cls: Type[T], *args, **kwargs) -> T:
+    def __call__(cls: Type[T], *args, **kwargs: Any) -> T:
         """
         Return the existing singleton instance, or create a new one if none exists yet.
 
@@ -82,9 +87,10 @@ class SingletonMeta(type):
 
 def compose_meta(*metaclasses: type) -> type:
     """
-    Compose multiple metaclasses.
+    Compose multiple metaclasses by dynamically creating a new metaclass.
 
     :param metaclasses: one or more metaclasses
+    :return: a new metaclass, composing all given metaclasses
     """
     metaclasses = tuple(
         mcs

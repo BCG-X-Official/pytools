@@ -2,11 +2,11 @@
 Core implementation of :mod:`pytools.api`.
 """
 
-import inspect
 import logging
 import re
 import warnings
 from functools import wraps
+from types import FunctionType
 from typing import (
     Any,
     Callable,
@@ -14,6 +14,7 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Mapping,
     Optional,
     Set,
     Tuple,
@@ -30,21 +31,24 @@ log = logging.getLogger(__name__)
 
 __all__ = [
     "AllTracker",
-    "is_list_like",
-    "to_tuple",
-    "to_list",
-    "to_set",
-    "validate_type",
-    "validate_element_types",
-    "get_generic_bases",
-    "public_module_prefix",
     "deprecated",
     "deprecation_warning",
+    "get_generic_bases",
     "inheritdoc",
+    "is_list_like",
+    "public_module_prefix",
+    "to_list",
+    "to_set",
+    "to_tuple",
+    "update_forward_references",
+    "validate_element_types",
+    "validate_type",
 ]
 
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
+T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Any_Callable = TypeVar("T_Any_Callable", bound=Callable)
 
 
 class AllTracker:
@@ -64,32 +68,76 @@ class AllTracker:
 
     This ensures a clean namespace in the public package, uncluttered by any imports
     used in the private module.
+
+    The tracker also performs additional checks to validate the eligibility of
+    definitions for being exported:
+
+    - constant definitions should not be exported, as this will pose difficulties
+      with Sphinx documentation and - from a design perspective - provides less context
+      than defining constants inside classes
+    - definitions exported from other modules should not be re-exported by the importing
+      module
+
+    These validation checks can be overridden if required in special cases.
     """
 
-    def __init__(self, globals_: Dict[str, Any], public_module: Optional[str] = None):
+    #: if ``True``, automatically replace all forward
+    #: type references in function annotations with the referenced classes;
+    #: see :func:`.update_forward_references`
+    update_forward_references: bool
+
+    #: if ``True``, allow exporting public global constants in ``__all__``;
+    #: these typically have no ``__module__`` or ``__doc__`` attributes and will
+    #: not be properly rendered in generated documentation
+    allow_global_constants: bool
+
+    #: if ``True``, allow exporting definitions in ``__all__`` even if they have been
+    #: imported from another module
+    allow_imported_definitions: bool
+
+    # noinspection PyShadowingNames
+    def __init__(
+        self,
+        globals_: Dict[str, Any],
+        *,
+        public_module: Optional[str] = None,
+        update_forward_references: bool = True,
+        allow_global_constants: bool = False,
+        allow_imported_definitions: bool = False,
+    ) -> None:
         """
         :param globals_: the dictionary of global variables returned by calling
             :meth:`._globals` in the current module scope
         :param public_module: full name of the public module that will export the items
             managed by this tracker
-
+        :param update_forward_references: if ``True``, automatically replace all forward
+            type references in function annotations with the referenced classes; see
+            :func:`.update_forward_references`
+            (default: ``True``)
+        :param allow_global_constants: if ``True``, allow exporting public global
+            constants in ``__all__``;
+            these typically have no ``__module__`` or ``__doc__`` attributes and will
+            not be properly rendered in generated documentation (default: ``False``)
+        :param allow_imported_definitions: if ``True``, allow exporting definitions in
+            ``__all__`` even if they have been imported from another module
+            (default: ``False``)
         """
         self._globals = globals_
         self._imported = set(globals_.keys())
 
+        try:
+            self._module = module = globals_["__name__"]
+        except KeyError:
+            raise ValueError("arg globals_ does not define module name in __name__")
+
         if public_module:
             self.public_module = public_module
-
         else:
-            try:
-                module = globals_["__name__"]
-            except KeyError:
-                raise ValueError(
-                    "cannot infer public module: "
-                    "arg globals_ does not define module name in __name__"
-                )
-
             self.public_module = public_module_prefix(module)
+
+        self.update_forward_references = update_forward_references
+        self.allow_global_constants = allow_global_constants
+        self.allow_imported_definitions = allow_imported_definitions
 
     #: Full name of the public module that will export the items managed by this
     #: tracker.
@@ -100,25 +148,63 @@ class AllTracker:
         Validate that all eligible items that were defined since the creation of this
         tracker are listed in the ``__all__`` variable.
 
-        :raise RuntimeError: if ``__all__`` is not as expected
+        :raise AssertionError: if ``__all__`` is not as expected, or if one or more
+            definitions do not meet the required criteria to be exported (
         """
         all_expected = self.get_tracked()
 
         globals_ = self._globals
 
         if set(globals_.get("__all__", [])) != set(all_expected):
-            raise RuntimeError(
+            raise AssertionError(
                 "missing or unexpected all declaration, "
                 f"expected:\n__all__ = {all_expected}"
             )
 
+        def _qualname(_obj: Any) -> str:
+            try:
+                return _obj.__qualname__
+            except AttributeError:
+                try:
+                    return _obj.__name__
+                except AttributeError:
+                    return repr(_obj)
+
+        module = self._module
         public_module = self.public_module
+        allow_global_constants = self.allow_global_constants
+        forbid_imported_definitions = not self.allow_imported_definitions
 
         for name in all_expected:
+            obj = globals_[name]
+
+            # check that the object was defined locally
             try:
-                globals_[name].__publicmodule__ = public_module
+                obj_module = obj.__module__
             except AttributeError:
+                if allow_global_constants:
+                    obj_module = None
+                else:
+                    raise AssertionError(
+                        f"exporting a global constant is not permitted: {obj!r}"
+                    )
+
+            if forbid_imported_definitions and obj_module and obj_module != module:
+                raise AttributeError(
+                    f"{_qualname(obj)} is exported by module {module} "
+                    f"but defined in module {obj_module}"
+                )
+
+            # set public module field
+            try:
+                obj.__publicmodule__ = public_module
+            except AttributeError:
+                # objects without a __dict__ will not permit setting the public module
                 pass
+
+            if self.update_forward_references:
+                # update forward references in annotations
+                update_forward_references(obj, globals_=globals_)
 
     def get_tracked(self) -> List[str]:
         """
@@ -126,7 +212,7 @@ class AllTracker:
 
         :return: the list of object names, sorted alphabetically
         """
-        return sorted(name for name in self._globals if self._is_eligible(name=name))
+        return sorted(filter(self._is_eligible, self._globals))
 
     def is_tracked(self, name: str, item: Any) -> bool:
         """
@@ -134,6 +220,8 @@ class AllTracker:
 
         :param name: the name of the item in the tracker's global namespace
         :param item: the item referred to by the name
+        :return: ``True`` if the given item is tracked by this tracker under the given
+            name; ``False`` otherwise
         """
         try:
             return self._globals[name] is item and self._is_eligible(name)
@@ -436,18 +524,18 @@ def validate_element_types(
             )
 
 
-def get_generic_bases(cls: type) -> Tuple[type, ...]:
+def get_generic_bases(class_: type) -> Tuple[type, ...]:
     """
     Bugfix version of :func:`typing_inspect.get_generic_bases`.
 
     Prevents getting the generic bases of the parent class if not defined for the given
     class.
 
-    :param cls: class to get the generic bases for
+    :param class_: class to get the generic bases for
     :return: the generic base classes of the given class
     """
-    bases = typing_inspect.get_generic_bases(cls)
-    if bases is typing_inspect.get_generic_bases(super(cls, cls)):
+    bases = typing_inspect.get_generic_bases(class_)
+    if bases is typing_inspect.get_generic_bases(super(class_, class_)):
         return ()
     else:
         return bases
@@ -458,22 +546,36 @@ def get_generic_bases(cls: type) -> Tuple[type, ...]:
 #
 
 
-def deprecated(function: Callable = None, *, message: Optional[str] = None):
+def deprecated(
+    function: Optional[T_Callable] = None, *, message: Optional[str] = None
+) -> Union[T_Callable, Callable[[T_Any_Callable], T_Any_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
     Logs a warning when the decorated function is called.
 
+    Usage:
+
+    .. codeblock: python
+
+        @deprecated(message=\
+"function f is deprecated and will be removed in the next minor release")
+        def f() -> None:
+            # ...
+
     To deprecate classes, apply this decorator to the ``__init__`` method, not to the
     class itself.
 
-    :param function: the function to be decorated
+    :param function: the function to be decorated (optional)
     :param message: custom message to include when logging the warning (optional)
+    :return: the decorated function if arg function was provided; else a decorator
+        function that will accept a function as its parameter, and will return the
+        decorated function
     """
 
-    def _deprecated_inner(func: callable) -> callable:
+    def _deprecated_inner(func: T_Callable) -> T_Callable:
         @wraps(func)
-        def new_func(*args, **kwargs) -> Any:
+        def new_func(*args, **kwargs: Any) -> Any:
             """
             Function wrapper
             """
@@ -510,7 +612,6 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     :param message: the warning message
     :param stacklevel: stack level relative to caller for emitting the context of the
         warning (default: 1)
-    :return:
     """
     if stacklevel < 1:
         raise ValueError(f"arg stacklevel={stacklevel} must be a positive integer")
@@ -518,7 +619,9 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
 
 
 # noinspection PyIncorrectDocstring
-def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], type]]:
+def inheritdoc(
+    class_: type = None, *, match: str
+) -> Union[type, Callable[[type], type]]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -545,8 +648,11 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
+    :param class_: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
+    :return: the decorated class, or the parameterized decorator if arg ``class_``
+        has not been provided
     """
 
     def _inheritdoc_inner(_cls: type) -> type:
@@ -570,14 +676,9 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
         for name, member in vars(_cls).items():
             doc = _get_docstring(m=member)
             if doc == match:
-                parents = inspect.getmro(_cls)[1:]
                 _set_docstring(
                     m=member,
-                    d=(
-                        _get_docstring(m=getattr(parents[0], name, None))
-                        if parents
-                        else None
-                    ),
+                    d=_get_docstring(m=getattr(super(_cls, _cls), name, None)),
                 )
                 match_found = True
 
@@ -595,17 +696,52 @@ def inheritdoc(cls: type = None, *, match: str) -> Union[type, Callable[[type], 
             f"not a {type(_cls).__name__}"
         )
 
-    if cls is None:
+    if class_ is None:
         return _inheritdoc_inner
-    elif type(cls):
-        return _inheritdoc_inner(cls)
-    elif isinstance(cls, str):
+    elif type(class_):
+        return _inheritdoc_inner(class_)
+    elif isinstance(class_, str):
         raise ValueError(
             "arg match not provided as a keyword argument. "
             f'Usage: @{inheritdoc.__name__}(match="...")'
         )
     else:
-        _raise_type_error(cls)
+        _raise_type_error(class_)
+
+
+def update_forward_references(
+    obj: Union[type, FunctionType], *, globals_: Mapping[str, Any]
+) -> None:
+    """
+    Replace all forward references with their referenced classes.
+
+    :param obj: a function or class
+    :param globals_: a global namespace to search the referenced classes in
+    """
+
+    # keep track of classes we already visited to prevent infinite recursion
+    visited: Set[type] = set()
+
+    def _update(_obj: Any) -> None:
+        if isinstance(_obj, type):
+            if _obj in visited:
+                log.debug(
+                    f"update_forward_references: class {_obj.__name__} already visited"
+                )
+            else:
+                visited.add(_obj)
+                for member in vars(_obj).values():
+                    _update(member)
+        elif isinstance(_obj, FunctionType):
+            annotations = _obj.__annotations__
+            if annotations:
+                for arg, cls in annotations.items():
+                    if isinstance(cls, str):
+                        real_cls = globals_[cls]
+                        if isinstance(real_cls, type):
+                            annotations[arg] = real_cls
+
+    _update(obj)
 
 
 __tracker.validate()

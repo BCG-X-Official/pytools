@@ -36,7 +36,7 @@ class XYSeries:
     separate sequences of the same length.
     """
 
-    def __init__(self, x: Sequence[float], y: Sequence[float]):
+    def __init__(self, x: Sequence[float], y: Sequence[float]) -> None:
         """
         :param x: series of all `x` coordinate values
         :param y: series of all `y` coordinate values
@@ -58,7 +58,9 @@ class ECDF:
     outliers.
     """
 
-    def __init__(self, inliers: XYSeries, outliers: XYSeries, far_outliers: XYSeries):
+    def __init__(
+        self, inliers: XYSeries, outliers: XYSeries, far_outliers: XYSeries
+    ) -> None:
         """
         :param inliers: coordinates for inliers in the ECDF
         :param outliers: coordinates for outliers in the ECDF
