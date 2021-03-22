@@ -388,7 +388,7 @@ class Versions(metaclass=SingletonMeta):
         ]
         latest_stable_version: pkg_version.Version = version_tags_stable[0]
 
-        print(f"Found versions: {','.join(map(str, version_tags))}")
+        print(f"Found versions: {', '.join(map(str, version_tags))}")
         print("Latest stable version: ", latest_stable_version)
 
         self.version_tags = version_tags
