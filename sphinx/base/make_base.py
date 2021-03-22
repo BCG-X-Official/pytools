@@ -13,11 +13,11 @@ import sys
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from tempfile import TemporaryDirectory
-from typing import Dict, Iterable, List, Set, Tuple, Type
+from typing import Dict, Iterable, List, Set, Tuple
 
 from packaging import version as pkg_version
 
-from pytools.meta import SingletonMeta
+from pytools.meta import SingletonMeta, compose_meta
 
 cwd = os.getcwd()
 
@@ -52,38 +52,30 @@ DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 ENV_PYTHON_PATH = "PYTHONPATH"
 
 
-class Command(metaclass=ABCMeta):
+class Command(metaclass=compose_meta(ABCMeta, SingletonMeta)):
     """ Defines an available command that can be launched from this module."""
 
     __RE_CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
 
-    @classmethod
-    def get_name(cls) -> str:
-        try:
-            return cls.__name
-        except AttributeError:
-            cls.__name = cls.__RE_CAMEL_TO_SNAKE.sub("_", cls.__name__).lower()
-            return cls.__name
+    def __init__(self) -> None:
+        self.name = self.__RE_CAMEL_TO_SNAKE.sub("_", type(self).__name__).lower()
 
-    @classmethod
     @abstractmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         pass
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        return ()
+    @abstractmethod
+    def get_dependencies(self) -> Tuple["Command", ...]:
+        pass
 
-    @classmethod
-    def get_prerequisites(cls) -> Iterable[Type["Command"]]:
-        dependencies_extended: List[Type["Command"]] = []
+    def get_prerequisites(self) -> Iterable["Command"]:
+        dependencies_extended: List[Command] = []
 
-        for dependency in cls.get_dependencies():
+        for dependency in self.get_dependencies():
             dependencies_inherited = dependency.get_dependencies()
-            if cls in dependencies_inherited:
+            if self in dependencies_inherited:
                 raise ValueError(
-                    f"circular dependency: {dependency.get_name()} "
-                    f"depends on {cls.get_name()}"
+                    f"circular dependency: {dependency.name} " f"depends on {self.name}"
                 )
             dependencies_extended.extend(
                 dependency
@@ -94,14 +86,12 @@ class Command(metaclass=ABCMeta):
 
         return dependencies_extended
 
-    @classmethod
-    def run(cls) -> None:
-        print(f"Running command {cls.get_name()} – {cls.get_description()}")
-        cls._run()
+    def run(self) -> None:
+        print(f"Running command {self.name} – {self.get_description()}")
+        self._run()
 
-    @classmethod
     @abstractmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
         pass
 
 
@@ -111,12 +101,13 @@ class Command(metaclass=ABCMeta):
 
 
 class Clean(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "remove Sphinx build output"
 
-    @classmethod
-    def _run(cls) -> None:
+    def get_dependencies(self) -> Tuple[Command, ...]:
+        return ()
+
+    def _run(self) -> None:
         if os.path.exists(DIR_SPHINX_BUILD):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
         if os.path.exists(DIR_SPHINX_API_GENERATED):
@@ -126,17 +117,13 @@ class Clean(Command):
 
 
 class ApiDoc(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "generate Sphinx API documentation from sources"
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        # noinspection PyRedundantParentheses
-        return (Clean,)
+    def get_dependencies(self) -> Tuple[Command, ...]:
+        return (Clean(),)
 
-    @classmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
         packages = [
             package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
         ]
@@ -175,17 +162,13 @@ class ApiDoc(Command):
 
 
 class GettingStartedDoc(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "generate getting started documentation from sources"
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        # noinspection PyRedundantParentheses
-        return (Clean,)
+    def get_dependencies(self) -> Tuple[Command, ...]:
+        return (Clean(),)
 
-    @classmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
 
         # make dir if it does not exist
         os.makedirs(DIR_SPHINX_GSTART_GENERATED, exist_ok=True)
@@ -221,16 +204,13 @@ class GettingStartedDoc(Command):
 
 
 class FetchPkgVersions(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "fetch available package versions with docs"
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+    def get_dependencies(self) -> Tuple[Command, ...]:
         return ()
 
-    @classmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
         versions = Versions()
 
         version_data = {
@@ -250,16 +230,13 @@ class FetchPkgVersions(Command):
 
 
 class PrepareDocsDeployment(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "update versions of rendered documentation"
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
+    def get_dependencies(self) -> Tuple[Command, ...]:
         return ()
 
-    @classmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
         if not is_azure_build():
             raise RuntimeError("only implemented for Azure Pipelines")
 
@@ -310,16 +287,13 @@ class PrepareDocsDeployment(Command):
 
 
 class Html(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "build Sphinx docs as HTML"
 
-    @classmethod
-    def get_dependencies(cls) -> Tuple[Type["Command"], ...]:
-        return Clean, FetchPkgVersions, ApiDoc, GettingStartedDoc
+    def get_dependencies(self) -> Tuple[Command, ...]:
+        return Clean(), FetchPkgVersions(), ApiDoc(), GettingStartedDoc()
 
-    @classmethod
-    def _run(cls) -> None:
+    def _run(self) -> None:
 
         check_sphinx_version()
 
@@ -364,12 +338,13 @@ class Html(Command):
 
 
 class Help(Command):
-    @classmethod
-    def get_description(cls) -> str:
+    def get_description(self) -> str:
         return "print this help message"
 
-    @classmethod
-    def _run(cls) -> None:
+    def get_dependencies(self) -> Tuple[Command, ...]:
+        return ()
+
+    def _run(self) -> None:
         print_usage()
 
 
@@ -443,11 +418,11 @@ def make(*, modules: List[str]) -> None:
     os.environ[ENV_PYTHON_PATH] = os.pathsep.join(module_paths)
 
     # run all given commands:
-    executed_commands: Set[Type[Command]] = set()
+    executed_commands: Set[Command] = set()
 
     for next_command_name in commands_passed:
 
-        next_command: Type[Command] = available_commands[next_command_name]
+        next_command: Command = available_commands[next_command_name]
 
         for prerequisite_command in next_command.get_prerequisites():
 
@@ -531,15 +506,15 @@ Available program arguments:
     print(usage)
 
 
-available_commands: Dict[str, Type[Command]] = {
-    cmd.get_name(): cmd
+available_commands: Dict[str, Command] = {
+    cmd.name: cmd
     for cmd in (
-        Clean,
-        ApiDoc,
-        GettingStartedDoc,
-        Html,
-        Help,
-        FetchPkgVersions,
-        PrepareDocsDeployment,
+        Clean(),
+        ApiDoc(),
+        GettingStartedDoc(),
+        Html(),
+        Help(),
+        FetchPkgVersions(),
+        PrepareDocsDeployment(),
     )
 }
