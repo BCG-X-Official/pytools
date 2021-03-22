@@ -272,7 +272,7 @@ class PrepareDocsDeployment(Command):
                 shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
 
         # get current version of package in the form of folder/URL name (e.g., "1-0-0")
-        current_version = get_package_version()
+        current_version: pkg_version.Version = get_package_version()
 
         # copy new docs version to deployment path
         if current_version == Versions().latest_non_rc_version:
@@ -341,7 +341,7 @@ class Html(Command):
         sys.path.append(DIR_MAKE_BASE)
 
         # create copy of this build for the docs archive
-        version_built = get_package_version()
+        version_built: pkg_version.Version = get_package_version()
         dir_path_this_build = os.path.join(
             DIR_ALL_DOCS_VERSIONS, version_string_to_url(version_built)
         )
@@ -378,26 +378,35 @@ class Versions(metaclass=SingletonMeta):
     Helper class that lists all versions that have already been released.
     """
 
+    INITIAL_VERSION_TAG = pkg_version.parse("1.0.1")
+
     def __init__(self) -> None:
         os.makedirs(DIR_SPHINX_BUILD, exist_ok=True)
-        start_from_version_tag = "1.0.1"
+        start_from_version_tag: pkg_version.Version = Versions.INITIAL_VERSION_TAG
         sp = subprocess.run(
             args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
         )
-        version_tags: List[str] = sp.stdout.decode("UTF-8").split("\n")
         version_tags = [
-            vt for vt in version_tags if vt != "" and vt >= start_from_version_tag
+            version_tag
+            for version_tag in (
+                pkg_version.parse(version_string)
+                for version_string in sp.stdout.decode("UTF-8").split("\n")
+                if version_string
+            )
+            if version_tag >= start_from_version_tag
         ]
 
         # add version currently build into version_tags
-        version_built: str = get_package_version()
+        version_built: pkg_version.Version = get_package_version()
 
         if version_built not in version_tags:
             version_tags.append(version_built)
 
         version_tags.sort()
         version_tags.reverse()
-        version_tags_non_rc = [vt for vt in version_tags if "rc" not in vt]
+        version_tags_non_rc = [
+            vt for vt in version_tags if not (vt.is_prerelease or vt.is_devrelease)
+        ]
         latest_non_rc_version = version_tags_non_rc[0]
 
         print("Found the following version tags: ", version_tags)
@@ -460,7 +469,7 @@ def quote_path(path: str) -> str:
         return path
 
 
-def get_package_version() -> str:
+def get_package_version() -> pkg_version.Version:
     """
     Retrieve the package version for the project from __init__ or _version
     """
@@ -482,7 +491,7 @@ def get_package_version() -> str:
     # noinspection PyUnresolvedReferences
     spec.loader.exec_module(version_module)
     # noinspection PyUnresolvedReferences
-    return version_module.__version__
+    return pkg_version.parse(version_module.__version__)
 
 
 def is_azure_build() -> bool:
@@ -492,13 +501,13 @@ def is_azure_build() -> bool:
     return "BUILD_REASON" in os.environ
 
 
-def version_string_to_url(version: str) -> str:
+def version_string_to_url(version: pkg_version.Version) -> str:
     """
     Make a Python package version string safe for URLs/folders.
 
     Our convention is to only replace all dots with dashes.
     """
-    return version.replace(".", "-")
+    return str(version).replace(".", "-")
 
 
 def check_sphinx_version() -> None:
