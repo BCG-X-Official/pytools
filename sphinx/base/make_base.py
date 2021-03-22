@@ -234,9 +234,9 @@ class FetchPkgVersions(Command):
         versions = Versions()
 
         version_data = {
-            "current": versions.latest_non_rc_version,
-            "non_rc": versions.version_tags_non_rc,
-            "all": versions.version_tags,
+            "current": str(versions.latest_non_rc_version),
+            "non_rc": list(map(str, versions.version_tags_non_rc)),
+            "all": list(map(str, versions.version_tags)),
         }
 
         version_data_as_js = (
@@ -386,7 +386,7 @@ class Versions(metaclass=SingletonMeta):
         sp = subprocess.run(
             args='git tag -l "*.*.*"', shell=True, check=True, stdout=subprocess.PIPE
         )
-        version_tags = [
+        version_tags: List[pkg_version.Version] = [
             version_tag
             for version_tag in (
                 pkg_version.parse(version_string)
@@ -404,10 +404,10 @@ class Versions(metaclass=SingletonMeta):
 
         version_tags.sort()
         version_tags.reverse()
-        version_tags_non_rc = [
+        version_tags_non_rc: List[pkg_version.Version] = [
             vt for vt in version_tags if not (vt.is_prerelease or vt.is_devrelease)
         ]
-        latest_non_rc_version = version_tags_non_rc[0]
+        latest_non_rc_version: pkg_version.Version = version_tags_non_rc[0]
 
         print("Found the following version tags: ", version_tags)
         print("Latest non-RC version: ", latest_non_rc_version)
