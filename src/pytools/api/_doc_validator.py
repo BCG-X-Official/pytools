@@ -52,6 +52,16 @@ T_NamedElementDefinition = TypeVar(
 )
 
 #
+# Pattern type
+#
+try:
+    Pattern = re.Pattern
+except AttributeError:
+    # Python 3.6 does not implement the Pattern object
+    # todo: remove this when we drop support for Python 3.6
+    Pattern = type(re.compile(""))
+
+#
 # Ensure all symbols introduced below are included in __all__
 #
 
@@ -81,7 +91,7 @@ class DocValidator:
 
     #: names of modules for which parameter documentation and type hints should not be
     #: validated
-    exclude_from_parameter_validation: re.Pattern
+    exclude_from_parameter_validation: Pattern
 
     #: after validation, lists all errors per definition
     validation_errors: Dict[str, List[str]]
@@ -105,7 +115,7 @@ class DocValidator:
         *,
         root_dir: str,
         validate_protected: Optional[Iterable[str]] = None,
-        exclude_from_parameter_validation: Optional[Union[str, re.Pattern]] = None,
+        exclude_from_parameter_validation: Optional[Union[str, Pattern]] = None,
         additional_tests: Optional[Iterable[DocTest]] = None,
     ) -> None:
         """
@@ -127,7 +137,7 @@ class DocValidator:
             exclude_from_parameter_validation
             if (
                 exclude_from_parameter_validation is None
-                or isinstance(exclude_from_parameter_validation, re.Pattern)
+                or isinstance(exclude_from_parameter_validation, Pattern)
             )
             else re.compile(exclude_from_parameter_validation)
         )
