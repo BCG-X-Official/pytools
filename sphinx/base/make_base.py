@@ -260,9 +260,9 @@ class PrepareDocsDeployment(Command):
 
     @classmethod
     def _run(cls) -> None:
-        assert is_azure_build(), "Only implemented for Azure Pipelines"
-        # get current version of package in the form of folder/URL name (e.g., "1-0-0")
-        current_version = version_string_to_url(get_package_version())
+        if not is_azure_build():
+            raise RuntimeError("only implemented for Azure Pipelines")
+
         # remove docs build currently deployed, except for the docs versions folder
         if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
             with TemporaryDirectory() as DIR_TMP:
@@ -271,13 +271,21 @@ class PrepareDocsDeployment(Command):
                 os.makedirs(DIR_DOCS)
                 shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
 
+        # get current version of package in the form of folder/URL name (e.g., "1-0-0")
+        current_version = get_package_version()
+
         # copy new docs version to deployment path
-        os.makedirs(DIR_DOCS, exist_ok=True)
-        shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
+        if current_version == Versions().latest_non_rc_version:
+            # only copy to deployment path if our version is the latest stable release
+            os.makedirs(DIR_DOCS, exist_ok=True)
+            shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
 
         # update latest version in docs history
-        if os.path.exists(os.path.join(DIR_DOCS, "docs-version", current_version)):
-            shutil.rmtree(path=os.path.join(DIR_DOCS, "docs-version", current_version))
+        current_version_path = os.path.join(
+            DIR_DOCS, "docs-version", version_string_to_url(current_version)
+        )
+        if os.path.exists(current_version_path):
+            shutil.rmtree(path=current_version_path)
         shutil.copytree(
             src=DIR_ALL_DOCS_VERSIONS,
             dst=os.path.join(DIR_DOCS, "docs-version"),
