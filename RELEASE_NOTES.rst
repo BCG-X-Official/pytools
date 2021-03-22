@@ -7,10 +7,11 @@ Release Notes
 1.1.0
 ~~~~~
 
-- API: AllTracker detects and prohibits exporting objects imported from other modules
-- API: AllTracker detects and prohibits exporting global constants (the preferred
-  approach is to define constants inside classes as this provides better context,
-  and will be properly documented via Sphinx)
+- API: :class:`.AllTracker` detects and prohibits exporting objects imported from other
+  modules
+- API: :class:`.AllTracker` detects and prohibits exporting global constants (the
+  preferred approach is to define constants inside classes as this provides better
+  context, and will be properly documented via Sphinx)
 
 
 *pytools* 1.0
