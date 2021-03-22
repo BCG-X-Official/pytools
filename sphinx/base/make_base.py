@@ -234,8 +234,8 @@ class FetchPkgVersions(Command):
         versions = Versions()
 
         version_data = {
-            "current": str(versions.latest_non_rc_version),
-            "non_rc": list(map(str, versions.version_tags_non_rc)),
+            "current": str(versions.latest_stable_version),
+            "non_rc": list(map(str, versions.version_tags_stable)),
             "all": list(map(str, versions.version_tags)),
         }
 
@@ -275,7 +275,7 @@ class PrepareDocsDeployment(Command):
         current_version: pkg_version.Version = get_package_version()
 
         # copy new docs version to deployment path
-        if current_version == Versions().latest_non_rc_version:
+        if current_version == Versions().latest_stable_version:
             # only copy to deployment path if our version is the latest stable release
             os.makedirs(DIR_DOCS, exist_ok=True)
             shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
@@ -404,17 +404,17 @@ class Versions(metaclass=SingletonMeta):
 
         version_tags.sort()
         version_tags.reverse()
-        version_tags_non_rc: List[pkg_version.Version] = [
+        version_tags_stable: List[pkg_version.Version] = [
             vt for vt in version_tags if not (vt.is_prerelease or vt.is_devrelease)
         ]
-        latest_non_rc_version: pkg_version.Version = version_tags_non_rc[0]
+        latest_stable_version: pkg_version.Version = version_tags_stable[0]
 
-        print("Found the following version tags: ", version_tags)
-        print("Latest non-RC version: ", latest_non_rc_version)
+        print(f"Found versions: {','.join(map(str, version_tags))}")
+        print("Latest stable version: ", latest_stable_version)
 
         self.version_tags = version_tags
-        self.version_tags_non_rc = version_tags_non_rc
-        self.latest_non_rc_version = latest_non_rc_version
+        self.version_tags_stable = version_tags_stable
+        self.latest_stable_version = latest_stable_version
 
 
 def make(*, modules: List[str]) -> None:
