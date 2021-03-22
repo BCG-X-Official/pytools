@@ -1,0 +1,44 @@
+pytools.viz.util.PercentageFormatter
+====================================
+
+.. currentmodule:: pytools.viz.util
+
+.. autoclass:: PercentageFormatter
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PercentageFormatter.create_dummy_axis
+      ~PercentageFormatter.fix_minus
+      ~PercentageFormatter.format_data
+      ~PercentageFormatter.format_data_short
+      ~PercentageFormatter.format_ticks
+      ~PercentageFormatter.get_offset
+      ~PercentageFormatter.set_axis
+      ~PercentageFormatter.set_bounds
+      ~PercentageFormatter.set_data_interval
+      ~PercentageFormatter.set_locs
+      ~PercentageFormatter.set_view_interval
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~PercentageFormatter.axis
+      ~PercentageFormatter.locs
+   
+   
+
+   .. rubric:: Definitions

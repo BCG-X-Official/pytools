@@ -1,0 +1,27 @@
+pytools.api.doc.HasDocstring
+============================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: HasDocstring
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HasDocstring.test
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

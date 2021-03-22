@@ -1,0 +1,29 @@
+pytools.parallelization.SimpleQueue
+===================================
+
+.. currentmodule:: pytools.parallelization
+
+.. autoclass:: SimpleQueue
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SimpleQueue.collate
+      ~SimpleQueue.jobs
+      ~SimpleQueue.start
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

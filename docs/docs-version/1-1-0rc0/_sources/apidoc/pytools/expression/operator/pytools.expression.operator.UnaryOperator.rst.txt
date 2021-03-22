@@ -1,0 +1,34 @@
+pytools.expression.operator.UnaryOperator
+=========================================
+
+.. currentmodule:: pytools.expression.operator
+
+.. autoclass:: UnaryOperator
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~UnaryOperator.INVERT
+      ~UnaryOperator.LAMBDA
+      ~UnaryOperator.MAX_PRECEDENCE
+      ~UnaryOperator.MIN_PRECEDENCE
+      ~UnaryOperator.NEG
+      ~UnaryOperator.NOT
+      ~UnaryOperator.POS
+      ~UnaryOperator.is_unary
+      ~UnaryOperator.precedence
+   
+   
+
+   .. rubric:: Definitions
