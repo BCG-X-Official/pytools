@@ -1,6 +1,0 @@
-pytools.api.public\_module\_prefix
-==================================
-
-.. currentmodule:: pytools.api
-
-.. autofunction:: public_module_prefix
