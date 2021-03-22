@@ -611,7 +611,7 @@ stages:
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
                 conda env create -f environment.yml
                 conda activate pytools-develop
-                echo "Building sphinx docs"
+                echo "Building sphinx docs into sphinx/build/html"
                 python sphinx/make.py html
                 echo "Current docs contents:"
                 tree docs
