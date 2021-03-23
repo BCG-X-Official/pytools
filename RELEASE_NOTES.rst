@@ -7,6 +7,8 @@ Release Notes
 1.1.0
 ~~~~~
 
+- API: :class:`.JobRunner` provides a new object-oriented interface to :mod:`joblib`,
+  running instances of :class:`.Job` and :class:`.JobQueue` in parallel
 - API: :class:`.AllTracker` detects and prohibits exporting objects imported from other
   modules
 - API: :class:`.AllTracker` detects and prohibits exporting global constants (the
