@@ -1,16 +1,18 @@
 Release Notes
 =============
 
-*pytools* 1.0
+*pytools* 1.1
 -------------
 
 1.1.0
 ~~~~~
 
+- API: :class:`.JobRunner` provides a new object-oriented interface to :mod:`joblib`,
+  running instances of :class:`.Job` and :class:`.JobQueue` in parallel
 - API: AllTracker detects and prohibits exporting objects imported from other modules
 - API: AllTracker detects and prohibits exporting global constants (the preferred
-       approach is to define constants inside classes as this provides better context,
-       and will be properly documented via Sphinx)
+  approach is to define constants inside classes as this provides better context,
+  and will be properly documented via Sphinx)
 
 
 *pytools* 1.0
@@ -24,7 +26,7 @@ minor fixes.
 
 - API: sort list of items returned by :meth:`.AllTracker.get_tracked`
 - API: add protected method to class :class:`.MatplotStyle` to apply color scheme to
-       :class:`~matplotlib.axes.Axes` object
+  :class:`~matplotlib.axes.Axes` object
 - FIX: preserve correct instance for subclasses of singleton classes
 - FIX: add a few missing type hints
 - BUILD: add support for numpy 1.20
