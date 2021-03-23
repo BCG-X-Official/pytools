@@ -1,0 +1,670 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.expression.operator.BinaryOperator &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/gamma.js"></script>
+    <script src="../../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pytools.expression.operator.Operator" href="pytools.expression.operator.Operator.html" />
+    <link rel="prev" title="pytools.expression.operator" href="../pytools.expression.operator.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../../index.html">
+    
+      <img src="../../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../../../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../release_notes.html">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../../pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../../pytools.expression.html">pytools.expression</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.Expression.html">pytools.expression.Expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.ExpressionAlias.html">pytools.expression.ExpressionAlias</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.ExpressionFormatter.html">pytools.expression.ExpressionFormatter</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.FrozenExpression.html">pytools.expression.FrozenExpression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.HasExpressionRepr.html">pytools.expression.HasExpressionRepr</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.freeze.html">pytools.expression.freeze</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.make_expression.html">pytools.expression.make_expression</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.atomic.html">pytools.expression.atomic</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.base.html">pytools.expression.base</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.composite.html">pytools.expression.composite</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.expression.formatter.html">pytools.expression.formatter</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="../pytools.expression.operator.html">pytools.expression.operator</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.sphinx.html">pytools.sphinx</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.viz.html">pytools.viz</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pytools-expression-operator-binaryoperator">
+<h1>pytools.expression.operator.BinaryOperator<a class="headerlink" href="#pytools-expression-operator-binaryoperator" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pytools.expression.operator.BinaryOperator">
+<em class="property">class </em><code class="sig-prename descclassname">pytools.expression.operator.</code><code class="sig-name descname">BinaryOperator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">symbol</span></em>, <em class="sig-param"><span class="n">precedence</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/expression/operator/_operator.html#BinaryOperator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.expression.operator.BinaryOperator" title="Permalink to this definition">¶</a></dt>
+<dd><p>A binary operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Bases</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.expression.operator.Operator.html#pytools.expression.operator.Operator" title="pytools.expression.operator.Operator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operator</span></code></a></p>
+</dd>
+<dt class="field-even">Metaclasses</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABCMeta" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the symbol representing this operator</p></li>
+<li><p><strong>precedence</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – the precedence of this operator; defaults to Python’s
+standard precedence for symbols representing Python operators, and to
+<a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE" title="pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">MIN_PRECEDENCE</span></code></a> for all other operators</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Attribute summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.ADD" title="pytools.expression.operator.BinaryOperator.ADD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ADD</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">+</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.AND" title="pytools.expression.operator.BinaryOperator.AND"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AND</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">and</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.AND_BITWISE" title="pytools.expression.operator.BinaryOperator.AND_BITWISE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AND_BITWISE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.ASSIGN" title="pytools.expression.operator.BinaryOperator.ASSIGN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ASSIGN</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">=</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.COLON" title="pytools.expression.operator.BinaryOperator.COLON"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COLON</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.COMMA" title="pytools.expression.operator.BinaryOperator.COMMA"><code class="xref py py-obj docutils literal notranslate"><span class="pre">COMMA</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">,</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.DIV" title="pytools.expression.operator.BinaryOperator.DIV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DIV</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">/</span></code> operator (same as <a class="reference internal" href="#pytools.expression.operator.BinaryOperator.TRUE_DIV" title="pytools.expression.operator.BinaryOperator.TRUE_DIV"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TRUE_DIV</span></code></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.DOT" title="pytools.expression.operator.BinaryOperator.DOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DOT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">.</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.EQ" title="pytools.expression.operator.BinaryOperator.EQ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EQ</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">==</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.FLOOR_DIV" title="pytools.expression.operator.BinaryOperator.FLOOR_DIV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FLOOR_DIV</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">//</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.GE" title="pytools.expression.operator.BinaryOperator.GE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.GT" title="pytools.expression.operator.BinaryOperator.GT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.IN" title="pytools.expression.operator.BinaryOperator.IN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IN</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">in</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.IS" title="pytools.expression.operator.BinaryOperator.IS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IS</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">is</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.IS_NOT" title="pytools.expression.operator.BinaryOperator.IS_NOT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IS_NOT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.LE" title="pytools.expression.operator.BinaryOperator.LE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.LSHIFT" title="pytools.expression.operator.BinaryOperator.LSHIFT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LSHIFT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.LT" title="pytools.expression.operator.BinaryOperator.LT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MATMUL" title="pytools.expression.operator.BinaryOperator.MATMUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MATMUL</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MAX_PRECEDENCE" title="pytools.expression.operator.BinaryOperator.MAX_PRECEDENCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MAX_PRECEDENCE</span></code></a></p></td>
+<td><p>Inherited from <a class="reference internal" href="pytools.expression.operator.Operator.html#pytools.expression.operator.Operator.MAX_PRECEDENCE" title="pytools.expression.operator.Operator.MAX_PRECEDENCE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Operator.MAX_PRECEDENCE</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE" title="pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN_PRECEDENCE</span></code></a></p></td>
+<td><p>Inherited from <a class="reference internal" href="pytools.expression.operator.Operator.html#pytools.expression.operator.Operator.MIN_PRECEDENCE" title="pytools.expression.operator.Operator.MIN_PRECEDENCE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Operator.MIN_PRECEDENCE</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MOD" title="pytools.expression.operator.BinaryOperator.MOD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MOD</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.MUL" title="pytools.expression.operator.BinaryOperator.MUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MUL</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">*</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.NEQ" title="pytools.expression.operator.BinaryOperator.NEQ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEQ</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">!=</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.NEQ_" title="pytools.expression.operator.BinaryOperator.NEQ_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEQ_</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.NONE" title="pytools.expression.operator.BinaryOperator.NONE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NONE</span></code></a></p></td>
+<td><p>The empty operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.NOT_IN" title="pytools.expression.operator.BinaryOperator.NOT_IN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NOT_IN</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">in</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.OR" title="pytools.expression.operator.BinaryOperator.OR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OR</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">or</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.OR_BITWISE" title="pytools.expression.operator.BinaryOperator.OR_BITWISE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OR_BITWISE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">|</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.POW" title="pytools.expression.operator.BinaryOperator.POW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">POW</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">**</span></code> operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.RSHIFT" title="pytools.expression.operator.BinaryOperator.RSHIFT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RSHIFT</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.SLICE" title="pytools.expression.operator.BinaryOperator.SLICE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SLICE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> operator used in slice expressions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.SUB" title="pytools.expression.operator.BinaryOperator.SUB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SUB</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">-</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.TRUE_DIV" title="pytools.expression.operator.BinaryOperator.TRUE_DIV"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TRUE_DIV</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">/</span></code> operator (same as <a class="reference internal" href="#pytools.expression.operator.BinaryOperator.DIV" title="pytools.expression.operator.BinaryOperator.DIV"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DIV</span></code></a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.XOR_BITWISE" title="pytools.expression.operator.BinaryOperator.XOR_BITWISE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">XOR_BITWISE</span></code></a></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">^</span></code> operator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.is_unary" title="pytools.expression.operator.BinaryOperator.is_unary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_unary</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code>, as this is not a unary operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.expression.operator.BinaryOperator.precedence" title="pytools.expression.operator.BinaryOperator.precedence"><code class="xref py py-obj docutils literal notranslate"><span class="pre">precedence</span></code></a></p></td>
+<td><p>The precedence of this operator (higher integers denote higher precedence).</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Definitions</p>
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.ADD">
+<code class="sig-name descname">ADD</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;+&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.ADD" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">+</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.AND">
+<code class="sig-name descname">AND</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;and&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.AND" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">and</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.AND_BITWISE">
+<code class="sig-name descname">AND_BITWISE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&amp;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.AND_BITWISE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&amp;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.ASSIGN">
+<code class="sig-name descname">ASSIGN</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;=&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.ASSIGN" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">=</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.COLON">
+<code class="sig-name descname">COLON</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;:&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.COLON" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.COMMA">
+<code class="sig-name descname">COMMA</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;,&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.COMMA" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">,</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.DIV">
+<code class="sig-name descname">DIV</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;/&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.DIV" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">/</span></code> operator (same as <a class="reference internal" href="#pytools.expression.operator.BinaryOperator.TRUE_DIV" title="pytools.expression.operator.BinaryOperator.TRUE_DIV"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TRUE_DIV</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.DOT">
+<code class="sig-name descname">DOT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;.&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.DOT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">.</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.EQ">
+<code class="sig-name descname">EQ</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;==&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.EQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">==</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.FLOOR_DIV">
+<code class="sig-name descname">FLOOR_DIV</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;//&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.FLOOR_DIV" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">//</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.GE">
+<code class="sig-name descname">GE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&gt;=&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.GE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.GT">
+<code class="sig-name descname">GT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&gt;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.GT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&gt;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.IN">
+<code class="sig-name descname">IN</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;in&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.IN" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">in</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.IS">
+<code class="sig-name descname">IS</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;is&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.IS" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">is</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.IS_NOT">
+<code class="sig-name descname">IS_NOT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;is not&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.IS_NOT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">is</span> <span class="pre">not</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.LE">
+<code class="sig-name descname">LE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&lt;=&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.LE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.LSHIFT">
+<code class="sig-name descname">LSHIFT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&lt;&lt;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.LSHIFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.LT">
+<code class="sig-name descname">LT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&lt;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.LT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.MATMUL">
+<code class="sig-name descname">MATMUL</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&#64;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.MATMUL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.MAX_PRECEDENCE">
+<code class="sig-name descname">MAX_PRECEDENCE</code><em class="property">: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)">int</a></em><em class="property"> = 18</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.MAX_PRECEDENCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherited from <a class="reference internal" href="pytools.expression.operator.Operator.html#pytools.expression.operator.Operator.MAX_PRECEDENCE" title="pytools.expression.operator.Operator.MAX_PRECEDENCE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Operator.MAX_PRECEDENCE</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE">
+<code class="sig-name descname">MIN_PRECEDENCE</code><em class="property">: <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)">int</a></em><em class="property"> = -1</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.MIN_PRECEDENCE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherited from <a class="reference internal" href="pytools.expression.operator.Operator.html#pytools.expression.operator.Operator.MIN_PRECEDENCE" title="pytools.expression.operator.Operator.MIN_PRECEDENCE"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Operator.MIN_PRECEDENCE</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.MOD">
+<code class="sig-name descname">MOD</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;%&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.MOD" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">%</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.MUL">
+<code class="sig-name descname">MUL</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;*&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.MUL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">*</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.NEQ">
+<code class="sig-name descname">NEQ</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;!=&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.NEQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">!=</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.NEQ_">
+<code class="sig-name descname">NEQ_</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&lt;&gt;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.NEQ_" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&lt;&gt;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.NONE">
+<code class="sig-name descname">NONE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The empty operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.NOT_IN">
+<code class="sig-name descname">NOT_IN</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;not in&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.NOT_IN" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">in</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.OR">
+<code class="sig-name descname">OR</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;or&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.OR" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">or</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.OR_BITWISE">
+<code class="sig-name descname">OR_BITWISE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;|&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.OR_BITWISE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">|</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.POW">
+<code class="sig-name descname">POW</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;**&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.POW" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">**</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.RSHIFT">
+<code class="sig-name descname">RSHIFT</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;&gt;&gt;&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.RSHIFT" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.SLICE">
+<code class="sig-name descname">SLICE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;:&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.SLICE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">:</span></code> operator used in slice expressions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.SUB">
+<code class="sig-name descname">SUB</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;-&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.SUB" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">-</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.TRUE_DIV">
+<code class="sig-name descname">TRUE_DIV</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;/&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.TRUE_DIV" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">/</span></code> operator (same as <a class="reference internal" href="#pytools.expression.operator.BinaryOperator.DIV" title="pytools.expression.operator.BinaryOperator.DIV"><code class="xref py py-attr docutils literal notranslate"><span class="pre">DIV</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="pytools.expression.operator.BinaryOperator.XOR_BITWISE">
+<code class="sig-name descname">XOR_BITWISE</code><em class="property">: <a class="reference internal" href="#pytools.expression.operator.BinaryOperator" title="pytools.expression.operator.BinaryOperator">BinaryOperator</a></em><em class="property"> = BinaryOperator(&quot;^&quot;)</em><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.XOR_BITWISE" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">^</span></code> operator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.expression.operator.BinaryOperator.is_unary">
+<em class="property">property </em><code class="sig-name descname">is_unary</code><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.is_unary" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">False</span></code>, as this is not a unary operator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.expression.operator.BinaryOperator.precedence">
+<em class="property">property </em><code class="sig-name descname">precedence</code><a class="headerlink" href="#pytools.expression.operator.BinaryOperator.precedence" title="Permalink to this definition">¶</a></dt>
+<dd><p>The precedence of this operator (higher integers denote higher precedence).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="../pytools.expression.operator.html" title="previous page">pytools.expression.operator</a>
+    <a class='right-next' id="next-link" href="pytools.expression.operator.Operator.html" title="next page">pytools.expression.operator.Operator</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
