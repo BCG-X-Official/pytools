@@ -1,0 +1,35 @@
+pytools.viz.distribution.ECDFDrawer
+===================================
+
+.. currentmodule:: pytools.viz.distribution
+
+.. autoclass:: ECDFDrawer
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ECDFDrawer.draw
+      ~ECDFDrawer.get_named_styles
+      ~ECDFDrawer.get_style_classes
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ECDFDrawer.DEFAULT_STYLE
+   
+   
+
+   .. rubric:: Definitions
