@@ -203,11 +203,12 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
         """
         pass
 
-    def start(self) -> None:
+    def on_run(self) -> None:
         """
         Called by :meth:`.JobRunner.run` when starting to run the jobs in this queue.
 
-        Does nothing by default; overload as required to initialize the queue.
+        Does nothing by default; overload as required to initialize the queue before
+        each run.
         """
 
     @abstractmethod
@@ -272,7 +273,7 @@ class JobRunner(ParallelizableMixin):
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
         """
 
-        queue.start()
+        queue.on_run()
 
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
@@ -293,7 +294,7 @@ class JobRunner(ParallelizableMixin):
         """
 
         for queue in queues:
-            queue.start()
+            queue.on_run()
 
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
