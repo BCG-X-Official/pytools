@@ -13,11 +13,10 @@ import sys
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from tempfile import TemporaryDirectory
-from typing import Dict, Iterable, List, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar
+from weakref import ref
 
 from packaging import version as pkg_version
-
-from pytools.meta import SingletonMeta, compose_meta
 
 cwd = os.getcwd()
 
@@ -35,7 +34,7 @@ DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
 DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
-DIR_SPHINX_GSTART_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
+DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
 DIR_SPHINX_BUILD = os.path.join(cwd, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
@@ -51,8 +50,42 @@ DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 # noinspection SpellCheckingInspection
 ENV_PYTHON_PATH = "PYTHONPATH"
 
+T = TypeVar("T")
 
-class Command(metaclass=compose_meta(ABCMeta, SingletonMeta)):
+
+class CommandMeta(ABCMeta):
+    """
+    Meta-class for command classes.
+
+    Subsequent instantiations of a command class return the identical object.
+    """
+
+    def __init__(cls, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        cls.__instance_ref: Optional[ref] = None
+
+    def __call__(cls: Type[T], *args, **kwargs: Any) -> T:
+        """
+        Return the existing command instance, or create a new one if none exists yet.
+
+        :return: the command instance
+        """
+        if args or kwargs:
+            raise ValueError("command classes may not take any arguments")
+
+        cls: CommandMeta
+
+        if cls.__instance_ref:
+            obj = cls.__instance_ref()
+            if obj is not None:
+                return obj
+
+        instance = super(CommandMeta, cls).__call__()
+        cls.__instance_ref = ref(instance)
+        return instance
+
+
+class Command(metaclass=CommandMeta):
     """ Defines an available command that can be launched from this module."""
 
     __RE_CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
@@ -112,8 +145,8 @@ class Clean(Command):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
         if os.path.exists(DIR_SPHINX_API_GENERATED):
             shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
-        if os.path.exists(DIR_SPHINX_GSTART_GENERATED):
-            shutil.rmtree(path=DIR_SPHINX_GSTART_GENERATED)
+        if os.path.exists(DIR_SPHINX_GET_STARTED_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_GET_STARTED_GENERATED)
 
 
 class ApiDoc(Command):
@@ -121,6 +154,7 @@ class ApiDoc(Command):
         return "generate Sphinx API documentation from sources"
 
     def get_dependencies(self) -> Tuple[Command, ...]:
+        # noinspection PyRedundantParentheses
         return (Clean(),)
 
     def _run(self) -> None:
@@ -166,12 +200,13 @@ class GettingStartedDoc(Command):
         return "generate getting started documentation from sources"
 
     def get_dependencies(self) -> Tuple[Command, ...]:
+        # noinspection PyRedundantParentheses
         return (Clean(),)
 
     def _run(self) -> None:
 
         # make dir if it does not exist
-        os.makedirs(DIR_SPHINX_GSTART_GENERATED, exist_ok=True)
+        os.makedirs(DIR_SPHINX_GET_STARTED_GENERATED, exist_ok=True)
 
         # open the rst readme file
         with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
@@ -197,7 +232,8 @@ class GettingStartedDoc(Command):
             template_data = file.read()
 
         with open(
-            os.path.join(DIR_SPHINX_GSTART_GENERATED, "getting_started.rst"), "wt"
+            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"),
+            "wt",
         ) as file:
             file.writelines(template_data)
             file.writelines(readme_data)
@@ -285,6 +321,7 @@ class PrepareDocsDeployment(Command):
             os.remove(os.path.join(DIR_DOCS, ".buildinfo"))
 
         # create empty file to signal that no GitHub auto-rendering is required
+        # noinspection SpellCheckingInspection
         open(os.path.join(DIR_DOCS, ".nojekyll"), "a").close()
 
         print("Docs moved to ./docs and historic versions updated")
@@ -352,7 +389,7 @@ class Help(Command):
         print_usage()
 
 
-class Versions(metaclass=SingletonMeta):
+class Versions:
     """
     Helper class that lists all versions that have already been released.
     """
