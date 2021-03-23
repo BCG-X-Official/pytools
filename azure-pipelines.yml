@@ -611,6 +611,7 @@ stages:
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/src
                 conda env create -f environment.yml
                 conda activate pytools-develop
+                echo "Building sphinx docs into sphinx/build/html"
                 python sphinx/make.py html
                 echo "Current docs contents:"
                 tree docs
@@ -625,7 +626,6 @@ stages:
                 cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
                 echo "Current docs contents:"
                 tree docs
-                echo "Building sphinx docs"
                 conda activate pytools-develop
                 python sphinx/make.py prepare_docs_deployment
                 echo "Current docs contents:"
