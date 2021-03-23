@@ -9,10 +9,11 @@ Release Notes
 
 - API: :class:`.JobRunner` provides a new object-oriented interface to :mod:`joblib`,
   running instances of :class:`.Job` and :class:`.JobQueue` in parallel
-- API: AllTracker detects and prohibits exporting objects imported from other modules
-- API: AllTracker detects and prohibits exporting global constants (the preferred
-  approach is to define constants inside classes as this provides better context,
-  and will be properly documented via Sphinx)
+- API: :class:`.AllTracker` detects and prohibits exporting objects imported from other
+  modules
+- API: :class:`.AllTracker` detects and prohibits exporting global constants (the
+  preferred approach is to define constants inside classes as this provides better
+  context, and will be properly documented via Sphinx)
 
 
 *pytools* 1.0
