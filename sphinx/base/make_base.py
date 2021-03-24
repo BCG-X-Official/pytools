@@ -189,9 +189,7 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
-            shell=True,
-            check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
         )
 
 
@@ -232,8 +230,7 @@ class GettingStartedDoc(Command):
             template_data = file.read()
 
         with open(
-            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"),
-            "wt",
+            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"), "wt",
         ) as file:
             file.writelines(template_data)
             file.writelines(readme_data)
@@ -303,6 +300,20 @@ class PrepareDocsDeployment(Command):
         # update latest version in docs history
         if os.path.exists(current_version_path):
             shutil.rmtree(path=current_version_path)
+
+        print(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
+        print("Pre-existing docs contents:")
+
+        if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
+            DIR_ALL_DOCS_VERSIONS
+        ):
+            print(os.listdir(DIR_ALL_DOCS_VERSIONS))
+
+        else:
+            raise FileNotFoundError(
+                f"'{DIR_ALL_DOCS_VERSIONS}' is missing or not a dir"
+            )
+
         shutil.copytree(
             src=DIR_ALL_DOCS_VERSIONS,
             dst=os.path.join(DIR_DOCS, "docs-version"),
@@ -314,6 +325,10 @@ class PrepareDocsDeployment(Command):
         new_versions_js = os.path.join(DIR_DOCS, "_static", "js", "versions.js")
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
             old_versions_js = os.path.join(d, "_static", "js", "versions.js")
+            print(
+                "Copying versions.js file from "
+                f"'{new_versions_js}' to '{old_versions_js}'"
+            )
             shutil.copyfile(src=new_versions_js, dst=old_versions_js)
 
         # remove .buildinfo which interferes with GitHub Pages build
@@ -366,8 +381,7 @@ class Html(Command):
             shutil.rmtree(dir_path_this_build)
 
         shutil.copytree(
-            src=DIR_SPHINX_BUILD_HTML,
-            dst=dir_path_this_build,
+            src=DIR_SPHINX_BUILD_HTML, dst=dir_path_this_build,
         )
 
         if not is_azure_build():
