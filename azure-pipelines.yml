@@ -626,6 +626,8 @@ stages:
                 cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
                 echo "Current docs contents:"
                 tree docs
+                mkdir -p sphinx/build/
+                cp -R docs/docs-version sphinx/build/
                 conda activate pytools-develop
                 python sphinx/make.py prepare_docs_deployment
                 echo "Current docs contents:"
