@@ -189,7 +189,9 @@ class ApiDoc(Command):
         )
 
         subprocess.run(
-            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}", shell=True, check=True,
+            args=f"{CMD_SPHINX_AUTOGEN} {autogen_options}",
+            shell=True,
+            check=True,
         )
 
 
@@ -230,7 +232,8 @@ class GettingStartedDoc(Command):
             template_data = file.read()
 
         with open(
-            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"), "wt",
+            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"),
+            "wt",
         ) as file:
             file.writelines(template_data)
             file.writelines(readme_data)
@@ -381,7 +384,8 @@ class Html(Command):
             shutil.rmtree(dir_path_this_build)
 
         shutil.copytree(
-            src=DIR_SPHINX_BUILD_HTML, dst=dir_path_this_build,
+            src=DIR_SPHINX_BUILD_HTML,
+            dst=dir_path_this_build,
         )
 
         if not is_azure_build():
