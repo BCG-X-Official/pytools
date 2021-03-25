@@ -271,6 +271,8 @@ class JobRunner(ParallelizableMixin):
 
         :param queue: the queue to run
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
+        :raise AssertionError: the number of results does not match the number of jobs
+            in the queue
         """
 
         queue.on_run()
@@ -278,6 +280,12 @@ class JobRunner(ParallelizableMixin):
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
                 joblib.delayed(lambda job: job.run())(job) for job in queue.jobs()
+            )
+
+        if len(results) != len(queue):
+            raise AssertionError(
+                f"Number of results ({len(results)}) does not match length of "
+                f"queue ({len(queue)}): check method {type(queue).__name__}.__len__()"
             )
 
         return queue.collate(job_results=results)
@@ -291,6 +299,8 @@ class JobRunner(ParallelizableMixin):
         :param queues: the queues to run
         :return: the result of all jobs, collated per queue using method
             :meth:`.JobQueue.collate`
+        :raise AssertionError: the number of results does not match the total number of
+            jobs in the queues
         """
 
         for queue in queues:
@@ -301,6 +311,13 @@ class JobRunner(ParallelizableMixin):
                 joblib.delayed(lambda job: job.run())(job)
                 for queue in queues
                 for job in queue.jobs()
+            )
+
+        queues_len = sum(len(queue) for queue in queues)
+        if len(results) != queues_len:
+            raise AssertionError(
+                f"Number of results ({len(results)}) does not match length of "
+                f"queues ({queues_len}): check method __len__() of the queue class(es)"
             )
 
         first_job = 0
