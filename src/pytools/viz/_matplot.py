@@ -74,8 +74,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         """
         ax = self._ax
         if ax is None:
-            _, ax = plt.subplots()
-            self._ax = ax
+            self._ax = ax = plt.gca()
         return ax
 
     @property
