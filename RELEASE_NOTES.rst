@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.1
+~~~~~
+
+- API: :class:`.MatplotStyle` now uses PyPlot's current axes by default, instead of
+  creating a new figure and axis
+
 1.1.0
 ~~~~~
 
