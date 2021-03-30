@@ -724,11 +724,7 @@ def update_forward_references(
 
     def _update(_obj: Any) -> None:
         if isinstance(_obj, type):
-            if _obj in visited:
-                log.debug(
-                    f"update_forward_references: class {_obj.__name__} already visited"
-                )
-            else:
+            if _obj not in visited:
                 visited.add(_obj)
                 for member in vars(_obj).values():
                     _update(member)
