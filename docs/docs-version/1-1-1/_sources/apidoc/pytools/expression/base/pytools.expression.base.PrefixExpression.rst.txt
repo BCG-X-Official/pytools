@@ -1,0 +1,43 @@
+pytools.expression.base.PrefixExpression
+========================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: PrefixExpression
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PrefixExpression.and_
+      ~PrefixExpression.eq_
+      ~PrefixExpression.get_class_id
+      ~PrefixExpression.hash_
+      ~PrefixExpression.not_
+      ~PrefixExpression.or_
+      ~PrefixExpression.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~PrefixExpression.body_
+      ~PrefixExpression.precedence_
+      ~PrefixExpression.prefix_
+      ~PrefixExpression.separator_
+      ~PrefixExpression.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

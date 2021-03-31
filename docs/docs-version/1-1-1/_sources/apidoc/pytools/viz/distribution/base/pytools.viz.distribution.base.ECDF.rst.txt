@@ -1,0 +1,28 @@
+pytools.viz.distribution.base.ECDF
+==================================
+
+.. currentmodule:: pytools.viz.distribution.base
+
+.. autoclass:: ECDF
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ECDF.far_outliers
+      ~ECDF.inliers
+      ~ECDF.outliers
+   
+   
+
+   .. rubric:: Definitions

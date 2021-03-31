@@ -1,0 +1,6 @@
+pytools.viz.color.text\_contrast\_color
+=======================================
+
+.. currentmodule:: pytools.viz.color
+
+.. autofunction:: text_contrast_color
