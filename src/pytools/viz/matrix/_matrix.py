@@ -248,8 +248,17 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # create a white grid using minor tick positions
         ax.set_xticks(np.arange(n_columns + 1) - 0.5, minor=True)
         ax.set_yticks(np.arange(n_rows + 1) - 0.5, minor=True)
-        ax.grid(which="minor", color=self.colors.foreground, linestyle="-", linewidth=2)
+        ax.grid(
+            b=True,
+            which="minor",
+            color=self.colors.foreground,
+            linestyle="-",
+            linewidth=2,
+        )
         ax.tick_params(which="minor", bottom=False, left=False)
+
+        # make sure we have no major grid, overriding any global settings
+        ax.grid(b=None, which="major")
 
 
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
