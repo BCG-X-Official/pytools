@@ -335,7 +335,7 @@ class ToxBuilder(Builder):
 
     def adapt_version_syntax(self, version: str) -> str:
         # PIP expects == instead of =
-        return re.sub(r"(?<![<>])=(?![<>])", "==", version)
+        return re.sub(r"(?<![<=>])=(?![<=>])", "==", version)
 
     def clean(self) -> None:
         # nothing to do – .tar.gz of same version will simply be replaced and
