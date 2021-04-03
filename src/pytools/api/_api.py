@@ -37,6 +37,7 @@ __all__ = [
     "inheritdoc",
     "is_list_like",
     "public_module_prefix",
+    "subsdoc",
     "to_list",
     "to_set",
     "to_tuple",
@@ -698,6 +699,33 @@ def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
         return _cls
 
     return _inheritdoc_inner
+
+
+def subsdoc(*, pattern: str, replacement: str) -> Callable[[T], T]:
+    """
+    Decorator that matches a given pattern in the decorated object's docstring, and
+    substitutes it with the given replacement string (see :func:`re.sub`)
+
+    :param pattern: a regular expression for the pattern to match
+    :param replacement: the replacement for substrings matching the pattern
+    :return: the parameterized decorator
+    """
+
+    def _decorate(_obj: T) -> T:
+        if not isinstance(_obj.__doc__, str):
+            raise ValueError(f"docstring of {_obj!r} is not a string: {_obj.__doc__!r}")
+        _obj.__doc__, n = re.subn(pattern, replacement, _obj.__doc__)
+        if not n:
+            raise ValueError(
+                f"subsdoc: pattern {pattern!r} not found in docstring {_obj.__doc__!r}"
+            )
+        return _obj
+
+    if not (isinstance(pattern, str)):
+        raise ValueError("arg pattern must be a string")
+    if not (isinstance(replacement, str)):
+        raise ValueError("arg replacement must be a string")
+    return _decorate
 
 
 def update_forward_references(
