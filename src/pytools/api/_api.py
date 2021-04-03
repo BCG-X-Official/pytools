@@ -48,7 +48,6 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
-T_Any_Callable = TypeVar("T_Any_Callable", bound=Callable)
 
 
 class AllTracker:
@@ -548,7 +547,7 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 
 def deprecated(
     function: Optional[T_Callable] = None, *, message: Optional[str] = None
-) -> Union[T_Callable, Callable[[T_Any_Callable], T_Any_Callable]]:
+) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
@@ -573,7 +572,13 @@ def deprecated(
         decorated function
     """
 
+    def _validate_function(func: Callable):
+        if not callable(func):
+            raise ValueError("Deprecated object must be callable")
+
     def _deprecated_inner(func: T_Callable) -> T_Callable:
+        _validate_function(func)
+
         @wraps(func)
         def new_func(*args, **kwargs: Any) -> Any:
             """
@@ -594,15 +599,14 @@ def deprecated(
 
     if function is None:
         return _deprecated_inner
-    elif callable(function):
-        return _deprecated_inner(function)
     elif isinstance(function, str):
         raise ValueError(
             "Deprecation message not provided as a keyword argument. "
             f'Usage: @{deprecated.__name__}(message="...")'
         )
     else:
-        raise ValueError("Deprecated object must be callable")
+        _validate_function(function)
+        return _deprecated_inner(function)
 
 
 def deprecation_warning(message: str, stacklevel: int = 1) -> None:
