@@ -48,6 +48,7 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Type = TypeVar("T_Type", bound=type)
 
 
 class AllTracker:
@@ -622,10 +623,7 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
 
 
-# noinspection PyIncorrectDocstring
-def inheritdoc(
-    class_: type = None, *, match: str
-) -> Union[type, Callable[[type], type]]:
+def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -652,16 +650,17 @@ def inheritdoc(
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
-    :param class_: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
-    :return: the decorated class, or the parameterized decorator if arg ``class_``
-        has not been provided
+    :return: the parameterized decorator
     """
 
     def _inheritdoc_inner(_cls: type) -> type:
         if not type(_cls):
-            _raise_type_error(_cls)
+            raise TypeError(
+                f"@{inheritdoc.__name__} can only decorate classes, "
+                f"not a {type(_cls).__name__}"
+            )
 
         match_found = False
 
@@ -677,12 +676,16 @@ def inheritdoc(
             except AttributeError:
                 m.__doc__ = d
 
+        if _cls.__doc__ == match:
+            _cls.__doc__ = _cls.mro()[1].__doc__
+            match_found = True
+
         for name, member in vars(_cls).items():
-            doc = _get_docstring(m=member)
+            doc = _get_docstring(member)
             if doc == match:
                 _set_docstring(
-                    m=member,
-                    d=_get_docstring(m=getattr(super(_cls, _cls), name, None)),
+                    member,
+                    _get_docstring(getattr(super(_cls, _cls), name, None)),
                 )
                 match_found = True
 
@@ -694,23 +697,7 @@ def inheritdoc(
 
         return _cls
 
-    def _raise_type_error(_cls: type) -> None:
-        raise TypeError(
-            f"@{inheritdoc.__name__} can only decorate classes, "
-            f"not a {type(_cls).__name__}"
-        )
-
-    if class_ is None:
-        return _inheritdoc_inner
-    elif type(class_):
-        return _inheritdoc_inner(class_)
-    elif isinstance(class_, str):
-        raise ValueError(
-            "arg match not provided as a keyword argument. "
-            f'Usage: @{inheritdoc.__name__}(match="...")'
-        )
-    else:
-        _raise_type_error(class_)
+    return _inheritdoc_inner
 
 
 def update_forward_references(
