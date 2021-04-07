@@ -7,6 +7,7 @@ import importlib
 import importlib.util
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -333,11 +334,8 @@ class ToxBuilder(Builder):
         return TOX_BUILD_PATH_SUFFIX
 
     def adapt_version_syntax(self, version: str) -> str:
-        if ">" in version or "<" in version:
-            return version
-        else:
-            # PIP expects == instead of =
-            return version.replace("=", "==")
+        # PIP expects == instead of =
+        return re.sub(r"(?<![<=>])=(?![<=>])", "==", version)
 
     def clean(self) -> None:
         # nothing to do – .tar.gz of same version will simply be replaced and

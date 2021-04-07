@@ -25,6 +25,21 @@ Release Notes
 *pytools* 1.0
 -------------
 
+1.0.3
+~~~~~
+
+This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
+minor fixes.
+
+- BUILD: add the bcg_gamma conda channel when building
+- BUILD: Enforce pre-release for minor and major releases
+- DOC: add pre-commit hook instructions to contribution guide
+- BUILD: update flake8 to v3.9.0
+- BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
+  of package versions)
+- FIX: version syntax adaptation with mixed = and >=
+
+
 1.0.2
 ~~~~~
 
