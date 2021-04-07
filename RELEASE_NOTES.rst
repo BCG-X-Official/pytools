@@ -25,6 +25,12 @@ Release Notes
 *pytools* 1.0
 -------------
 
+1.0.4
+~~~~~
+
+- FIX: do not substitute ~= by ~== when adapting version syntax for tox
+
+
 1.0.3
 ~~~~~
 
