@@ -29,6 +29,7 @@ Release Notes
 ~~~~~
 
 - FIX: do not substitute ~= by ~== when adapting version syntax for tox
+- API: use background color for matrix grid in :class:`.MatrixMatplotStyle`
 
 
 1.0.3
