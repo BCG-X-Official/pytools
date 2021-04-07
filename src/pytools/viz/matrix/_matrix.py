@@ -251,7 +251,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.grid(
             b=True,
             which="minor",
-            color=self.colors.foreground,
+            color=self.colors.background,
             linestyle="-",
             linewidth=2,
         )
