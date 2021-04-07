@@ -1,0 +1,62 @@
+pytools.expression.operator.BinaryOperator
+==========================================
+
+.. currentmodule:: pytools.expression.operator
+
+.. autoclass:: BinaryOperator
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~BinaryOperator.ADD
+      ~BinaryOperator.AND
+      ~BinaryOperator.AND_BITWISE
+      ~BinaryOperator.ASSIGN
+      ~BinaryOperator.COLON
+      ~BinaryOperator.COMMA
+      ~BinaryOperator.DIV
+      ~BinaryOperator.DOT
+      ~BinaryOperator.EQ
+      ~BinaryOperator.FLOOR_DIV
+      ~BinaryOperator.GE
+      ~BinaryOperator.GT
+      ~BinaryOperator.IN
+      ~BinaryOperator.IS
+      ~BinaryOperator.IS_NOT
+      ~BinaryOperator.LE
+      ~BinaryOperator.LSHIFT
+      ~BinaryOperator.LT
+      ~BinaryOperator.MATMUL
+      ~BinaryOperator.MAX_PRECEDENCE
+      ~BinaryOperator.MIN_PRECEDENCE
+      ~BinaryOperator.MOD
+      ~BinaryOperator.MUL
+      ~BinaryOperator.NEQ
+      ~BinaryOperator.NEQ_
+      ~BinaryOperator.NONE
+      ~BinaryOperator.NOT_IN
+      ~BinaryOperator.OR
+      ~BinaryOperator.OR_BITWISE
+      ~BinaryOperator.POW
+      ~BinaryOperator.RSHIFT
+      ~BinaryOperator.SLICE
+      ~BinaryOperator.SUB
+      ~BinaryOperator.TRUE_DIV
+      ~BinaryOperator.XOR_BITWISE
+      ~BinaryOperator.is_unary
+      ~BinaryOperator.precedence
+   
+   
+
+   .. rubric:: Definitions
