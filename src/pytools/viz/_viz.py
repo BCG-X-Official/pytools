@@ -9,7 +9,7 @@ from threading import Lock
 from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
 
 from ..api import AllTracker, inheritdoc
-from .color import FacetDarkColorScheme, FacetLightColorScheme
+from .color import ColorScheme, FacetDarkColorScheme, FacetLightColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ T = TypeVar("T")
 T_Model = TypeVar("T_Model")
 T_Style = TypeVar("T_Style", bound="DrawingStyle")
 T_Style_Class = TypeVar("T_Style_Class", bound=Type["DrawingStyle"])
-T_ColorScheme = TypeVar("T_ColorScheme", bound="ColorScheme")
+T_ColorScheme = TypeVar("T_ColorScheme", bound=ColorScheme)
 
 
 #
