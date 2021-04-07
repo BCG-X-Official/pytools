@@ -28,11 +28,12 @@ Citation
 --------
 If you use *pytools* in your work please cite us as follows:
 
-Bibtex entry::
+Bibtex entry:
 
+.. parsed-literal::
      @manual{
      title={pytools},
      author={Pytools Team at BCG Gamma},
      year={2021},
-     note={Python package version 1.0.3}
+     note={Python package version |version|}
      }
