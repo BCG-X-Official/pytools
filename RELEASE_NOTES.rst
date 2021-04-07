@@ -4,6 +4,15 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.2
+~~~~~
+
+- Catch up with fixes and pipeline updates introduced by pytools 1.0.3 and 1.0.4
+- API: support inheriting class docstrings from superclasses using the
+  :func:`.inheritdoc` decorator
+- API: new :func:`.subsdoc` decorator to replace text in docstrings
+
+
 1.1.1
 ~~~~~
 
@@ -29,9 +38,6 @@ Release Notes
 ~~~~~
 
 - FIX: do not substitute ~= by ~== when adapting version syntax for tox
-- API: support inheriting class docstrings from superclasses using the
-  :func:`.inheritdoc` decorator
-- API: new :func:`.subsdoc` decorator to replace text in docstrings
 
 
 1.0.3
