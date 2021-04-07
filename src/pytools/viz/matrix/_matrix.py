@@ -258,7 +258,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.tick_params(which="minor", bottom=False, left=False)
 
         # make sure we have no major grid, overriding any global settings
-        ax.grid(b=None, which="major")
+        ax.grid(b=False, which="major")
 
 
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
