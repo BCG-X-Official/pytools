@@ -7,6 +7,10 @@ Release Notes
 1.1.2
 ~~~~~
 
+- Catch up with fixes and pipeline updates introduced by pytools 1.0.3 and 1.0.4
+- API: support inheriting class docstrings from superclasses using the
+  :func:`.inheritdoc` decorator
+- API: new :func:`.subsdoc` decorator to replace text in docstrings
 - API: use background color for matrix grid in :class:`.MatrixMatplotStyle`
 
 
@@ -35,7 +39,7 @@ Release Notes
 1.0.4
 ~~~~~
 
-- FIX: do not substitute ~= by ~== when adapting version syntax for tox
+- FIX: do not substitute `~=` by `~==` when adapting version syntax for tox
 
 
 1.0.3
@@ -44,13 +48,13 @@ Release Notes
 This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
 minor fixes.
 
-- BUILD: add the bcg_gamma conda channel when building
+- BUILD: add the `bcg_gamma` conda channel when building
 - BUILD: Enforce pre-release for minor and major releases
 - DOC: add pre-commit hook instructions to contribution guide
 - BUILD: update flake8 to v3.9.0
 - BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
   of package versions)
-- FIX: version syntax adaptation with mixed = and >=
+- FIX: version syntax adaptation with mixed `=` and `>=`
 
 
 1.0.2

@@ -37,6 +37,7 @@ __all__ = [
     "inheritdoc",
     "is_list_like",
     "public_module_prefix",
+    "subsdoc",
     "to_list",
     "to_set",
     "to_tuple",
@@ -48,7 +49,7 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
-T_Any_Callable = TypeVar("T_Any_Callable", bound=Callable)
+T_Type = TypeVar("T_Type", bound=type)
 
 
 class AllTracker:
@@ -548,7 +549,7 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 
 def deprecated(
     function: Optional[T_Callable] = None, *, message: Optional[str] = None
-) -> Union[T_Callable, Callable[[T_Any_Callable], T_Any_Callable]]:
+) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
@@ -573,7 +574,13 @@ def deprecated(
         decorated function
     """
 
+    def _validate_function(func: Callable):
+        if not callable(func):
+            raise ValueError("Deprecated object must be callable")
+
     def _deprecated_inner(func: T_Callable) -> T_Callable:
+        _validate_function(func)
+
         @wraps(func)
         def new_func(*args, **kwargs: Any) -> Any:
             """
@@ -594,15 +601,14 @@ def deprecated(
 
     if function is None:
         return _deprecated_inner
-    elif callable(function):
-        return _deprecated_inner(function)
     elif isinstance(function, str):
         raise ValueError(
             "Deprecation message not provided as a keyword argument. "
             f'Usage: @{deprecated.__name__}(message="...")'
         )
     else:
-        raise ValueError("Deprecated object must be callable")
+        _validate_function(function)
+        return _deprecated_inner(function)
 
 
 def deprecation_warning(message: str, stacklevel: int = 1) -> None:
@@ -618,10 +624,7 @@ def deprecation_warning(message: str, stacklevel: int = 1) -> None:
     warnings.warn(message, FutureWarning, stacklevel=stacklevel + 1)
 
 
-# noinspection PyIncorrectDocstring
-def inheritdoc(
-    class_: type = None, *, match: str
-) -> Union[type, Callable[[type], type]]:
+def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -648,16 +651,17 @@ def inheritdoc(
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
-    :param class_: the decorated class
     :param match: the parent docstring will be inherited if the current docstring
         is equal to match
-    :return: the decorated class, or the parameterized decorator if arg ``class_``
-        has not been provided
+    :return: the parameterized decorator
     """
 
     def _inheritdoc_inner(_cls: type) -> type:
         if not type(_cls):
-            _raise_type_error(_cls)
+            raise TypeError(
+                f"@{inheritdoc.__name__} can only decorate classes, "
+                f"not a {type(_cls).__name__}"
+            )
 
         match_found = False
 
@@ -673,12 +677,16 @@ def inheritdoc(
             except AttributeError:
                 m.__doc__ = d
 
+        if _cls.__doc__ == match:
+            _cls.__doc__ = _cls.mro()[1].__doc__
+            match_found = True
+
         for name, member in vars(_cls).items():
-            doc = _get_docstring(m=member)
+            doc = _get_docstring(member)
             if doc == match:
                 _set_docstring(
-                    m=member,
-                    d=_get_docstring(m=getattr(super(_cls, _cls), name, None)),
+                    member,
+                    _get_docstring(getattr(super(_cls, _cls), name, None)),
                 )
                 match_found = True
 
@@ -690,23 +698,34 @@ def inheritdoc(
 
         return _cls
 
-    def _raise_type_error(_cls: type) -> None:
-        raise TypeError(
-            f"@{inheritdoc.__name__} can only decorate classes, "
-            f"not a {type(_cls).__name__}"
-        )
+    return _inheritdoc_inner
 
-    if class_ is None:
-        return _inheritdoc_inner
-    elif type(class_):
-        return _inheritdoc_inner(class_)
-    elif isinstance(class_, str):
-        raise ValueError(
-            "arg match not provided as a keyword argument. "
-            f'Usage: @{inheritdoc.__name__}(match="...")'
-        )
-    else:
-        _raise_type_error(class_)
+
+def subsdoc(*, pattern: str, replacement: str) -> Callable[[T], T]:
+    """
+    Decorator that matches a given pattern in the decorated object's docstring, and
+    substitutes it with the given replacement string (see :func:`re.sub`)
+
+    :param pattern: a regular expression for the pattern to match
+    :param replacement: the replacement for substrings matching the pattern
+    :return: the parameterized decorator
+    """
+
+    def _decorate(_obj: T) -> T:
+        if not isinstance(_obj.__doc__, str):
+            raise ValueError(f"docstring of {_obj!r} is not a string: {_obj.__doc__!r}")
+        _obj.__doc__, n = re.subn(pattern, replacement, _obj.__doc__)
+        if not n:
+            raise ValueError(
+                f"subsdoc: pattern {pattern!r} not found in docstring {_obj.__doc__!r}"
+            )
+        return _obj
+
+    if not (isinstance(pattern, str)):
+        raise ValueError("arg pattern must be a string")
+    if not (isinstance(replacement, str)):
+        raise ValueError("arg replacement must be a string")
+    return _decorate
 
 
 def update_forward_references(
