@@ -303,6 +303,20 @@ class PrepareDocsDeployment(Command):
         # update latest version in docs history
         if os.path.exists(current_version_path):
             shutil.rmtree(path=current_version_path)
+
+        print(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
+        print("Pre-existing docs contents:")
+
+        if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
+            DIR_ALL_DOCS_VERSIONS
+        ):
+            print(os.listdir(DIR_ALL_DOCS_VERSIONS))
+
+        else:
+            raise FileNotFoundError(
+                f"'{DIR_ALL_DOCS_VERSIONS}' is missing or not a dir"
+            )
+
         shutil.copytree(
             src=DIR_ALL_DOCS_VERSIONS,
             dst=os.path.join(DIR_DOCS, "docs-version"),
@@ -314,6 +328,10 @@ class PrepareDocsDeployment(Command):
         new_versions_js = os.path.join(DIR_DOCS, "_static", "js", "versions.js")
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
             old_versions_js = os.path.join(d, "_static", "js", "versions.js")
+            print(
+                "Copying versions.js file from "
+                f"'{new_versions_js}' to '{old_versions_js}'"
+            )
             shutil.copyfile(src=new_versions_js, dst=old_versions_js)
 
         # remove .buildinfo which interferes with GitHub Pages build
