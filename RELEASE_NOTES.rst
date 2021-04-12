@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.0
 -------------
 
+1.0.5
+~~~~~
+
+- FIX: back-port 1.1 bugfix for building multi-version documentation
+
+
 1.0.4
 ~~~~~
 
