@@ -77,7 +77,7 @@ class _IdentifierMeta(type):
             raise AttributeError(name)
 
         identifier = _IdentifierMeta._identifiers.get(name, None)
-        if not identifier:
+        if identifier is None:
             _IdentifierMeta._identifiers[name] = identifier = Id(name)
 
         return identifier
