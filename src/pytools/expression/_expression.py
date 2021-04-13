@@ -437,6 +437,9 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         # loops through iterating via __getitem__
         raise TypeError(f"'{type(self).__name__}' object is not iterable: {repr(self)}")
 
+    def __bool__(self) -> bool:
+        raise TypeError(f"{Expression.__name__} does not permit casting to bool type")
+
     def __repr__(self) -> str:
         # get a textual representation of the expression using the default formatter
         return ExpressionFormatter.default(single_line=True).to_text(self)
