@@ -1,0 +1,6 @@
+pytools.api.inheritdoc
+======================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: inheritdoc
