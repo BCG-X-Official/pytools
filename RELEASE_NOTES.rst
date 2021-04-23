@@ -4,6 +4,15 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.3
+~~~~~
+
+- FIX: comparing two :class:`.InfixExpression` objects using method
+  :meth:`~.Expression.eq_` would erroneously yield ``True`` if both expressions
+  had the same operator but a different number of operands, and the operands of the
+  shorter expression were equal to the operands at the start of the longer expression
+
+
 1.1.2
 ~~~~~
 
