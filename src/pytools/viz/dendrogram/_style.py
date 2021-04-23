@@ -3,7 +3,7 @@ Dendrogram styles.
 """
 
 import logging
-from typing import Optional, Sequence, TextIO
+from typing import Any, Optional, Sequence, TextIO
 
 from .. import TextStyle
 from ..color import text_contrast_color
@@ -50,7 +50,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         return f"{super().get_default_style_name()}_line"
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float, tree_height
+        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
     ) -> None:
         """[see superclass]"""
         self._draw_line(x1=bottom, x2=top, y1=leaf, y2=leaf, weight=weight)
@@ -120,9 +120,17 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
             weight=weight,
         )
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         """[see superclass]"""
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(title=title)
         self.ax.margins(0, 0)
 
     def _draw_hbar(self, x: float, y: float, w: float, h: float, weight: float) -> None:
@@ -162,7 +170,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class DendrogramReportStyle(TextStyle, DendrogramStyle):
+class DendrogramReportStyle(DendrogramStyle, TextStyle):
     """
     Renders dendrograms as ASCII graphics for inclusion in plain-text reports.
     """
@@ -287,14 +295,29 @@ class DendrogramReportStyle(TextStyle, DendrogramStyle):
         matrix[y1, x] = "/"
         matrix[y2, x] = "\\"
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         """[see superclass]"""
         super().start_drawing(title=title, **kwargs)
         self._char_matrix = CharacterMatrix(
             n_rows=self.max_height, n_columns=self.width
         )
 
-    def finalize_drawing(self, **kwargs) -> None:
+    def finalize_drawing(
+        self,
+        *,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         """[see superclass]"""
         try:
             super().finalize_drawing(**kwargs)

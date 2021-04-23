@@ -4,7 +4,7 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Optional, Tuple
+from typing import Any, Optional, Tuple
 
 import matplotlib.pyplot as plt
 from matplotlib import text as mt
@@ -18,7 +18,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker, inheritdoc
 from ._viz import ColoredStyle
-from .color import MatplotColorScheme, RgbaColor
+from .color import ColorScheme, MatplotColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -52,12 +52,11 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[MatplotColorScheme] = None,
-        **kwargs,
     ) -> None:
         """
         :param ax: optional axes object to draw on; create a new figure if not specified
         """
-        super().__init__(colors=colors, **kwargs)
+        super().__init__(colors=colors)
         self._ax = ax
         self._renderer: Optional[RendererBase] = None
 
@@ -75,8 +74,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         """
         ax = self._ax
         if ax is None:
-            _, ax = plt.subplots()
-            self._ax = ax
+            self._ax = ax = plt.gca()
         return ax
 
     @property
@@ -91,7 +89,11 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         return renderer
 
     def text_dimensions(
-        self, text: str, x: Optional[float] = None, y: Optional[float] = None, **kwargs
+        self,
+        text: str,
+        x: Optional[float] = None,
+        y: Optional[float] = None,
+        **kwargs: Any,
     ) -> Tuple[float, float]:
         """
         Calculate the horizontal and vertical dimensions of the given text in axis
@@ -131,13 +133,16 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         return abs(x1 - x0), abs(y1 - y0)
 
-    def start_drawing(self, title: str, **kwargs) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
         Set the title of the matplot chart to the given title, and set the foreground
         and background color according to the color scheme.
 
         :param title: the chart title
+        :param kwargs: additional drawer-specific arguments
         """
+
+        super().start_drawing(title=title, **kwargs)
 
         ax = self.ax
 
@@ -145,7 +150,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         ax.set_title(label=title, color=self.colors.foreground)
 
         # color the axes
-        self._apply_color_scheme(ax)
+        self.apply_color_scheme(ax)
 
         bg_color = self.colors.background
 
@@ -162,7 +167,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         ax.figure.set_facecolor(bg_color)
         ax.figure.__pytools_viz_background = bg_color
 
-    def finalize_drawing(self, **kwargs) -> None:
+    def finalize_drawing(self, **kwargs: Any) -> None:
         """[see superclass]"""
 
         super().finalize_drawing(**kwargs)
@@ -181,15 +186,13 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
             for text in legend.get_texts():
                 text.set_color(fg_color)
 
-    def _apply_color_scheme(self, ax: Axes) -> None:
+    def apply_color_scheme(self, ax: Axes) -> None:
         """
         Apply this style's color scheme to the given :class:`~matplotlib.axes.Axes`.
 
         Style implementations can use this to apply the color scheme to sub-axes.
         Does not need to be applied to main axes, as this is already done in method
         :meth:`.start_drawing`.
-
-        This method will be public as of v1.1.
 
         :param ax: the axes to apply the color scheme to
         """
@@ -230,8 +233,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         colormap_normalize: Normalize = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        **kwargs,
-    ):
+    ) -> None:
         """
         :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object
             that maps values to color indices; unless otherwise specified, use a plain
@@ -241,7 +243,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         :param colorbar_minor_formatter: minor tick formatter for the color bar
             (optional; requires that also a major formatter is specified)
         """
-        super().__init__(ax=ax, colors=colors, **kwargs)
+        super().__init__(ax=ax, colors=colors)
 
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize
@@ -258,7 +260,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def color_for_value(self, z: float) -> RgbaColor:
+    def color_for_value(self, z: float) -> ColorScheme.RgbaColor:
         """
         Get the color associated with a given scalar, based on the color map and
         normalization defined for this style.
@@ -268,11 +270,14 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         """
         return self.colors.colormap(self.colormap_normalize(z))
 
-    def finalize_drawing(self, colorbar_label: Optional[str] = None, **kwargs) -> None:
+    def finalize_drawing(
+        self, *, colorbar_label: Optional[str] = None, **kwargs: Any
+    ) -> None:
         """
         Add the color bar to the chart.
 
         :param colorbar_label: the label for the color bar
+        :param kwargs: additional arguments, to be passed on to the superclass
         """
 
         super().finalize_drawing(**kwargs)

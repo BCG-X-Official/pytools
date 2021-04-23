@@ -20,8 +20,6 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "RgbColor",
-    "RgbaColor",
     "ColorScheme",
     "MatplotColorScheme",
     "FacetLightColorScheme",
@@ -35,55 +33,46 @@ __all__ = [
 
 __tracker = AllTracker(globals())
 
-#
-# Type definitions
-#
-
-#: RGB color type for use in color schemas and colored drawing styles.
-RgbColor = Tuple[float, float, float]
-
-#: RGB + Alpha color type for use in color schemas and colored drawing styles.
-RgbaColor = Tuple[float, float, float, float]
 
 #
 # Constants
 #
 
 #: Black.
-_RGB_BLACK: RgbColor = to_rgb("black")
+_RGB_BLACK: "ColorScheme.RgbColor" = to_rgb("black")
 
 #: White.
-_RGB_WHITE: RgbColor = to_rgb("white")
+_RGB_WHITE: "ColorScheme.RgbColor" = to_rgb("white")
 
 #: FACET light grey.
-_RGB_LIGHT_GREY: RgbColor = to_rgb("#c8c8c8")
+_RGB_LIGHT_GREY: "ColorScheme.RgbColor" = to_rgb("#c8c8c8")
 
 #: FACET grey.
-_RGB_GREY: RgbColor = to_rgb("#9a9a9a")
+_RGB_GREY: "ColorScheme.RgbColor" = to_rgb("#9a9a9a")
 
 #: FACET dark grey.
-_RGB_DARK_GREY: RgbColor = to_rgb("#3d3a40")
+_RGB_DARK_GREY: "ColorScheme.RgbColor" = to_rgb("#3d3a40")
 
 #: FACET dark blue.
-_RGB_DARK_BLUE: RgbColor = to_rgb("#295e7e")
+_RGB_DARK_BLUE: "ColorScheme.RgbColor" = to_rgb("#295e7e")
 
 #: FACET blue.
-_RGB_LIGHT_BLUE: RgbColor = to_rgb("#30c1d7")
+_RGB_LIGHT_BLUE: "ColorScheme.RgbColor" = to_rgb("#30c1d7")
 
 #: FACET green.
-_RGB_LIGHT_GREEN: RgbColor = to_rgb("#43fda2")
+_RGB_LIGHT_GREEN: "ColorScheme.RgbColor" = to_rgb("#43fda2")
 
 #: FACET status green.
-_RGB_GREEN: RgbColor = to_rgb("#3ead92")
+_RGB_GREEN: "ColorScheme.RgbColor" = to_rgb("#3ead92")
 
 #: FACET status amber.
-_RGB_AMBER: RgbColor = to_rgb("#a8b21c")
+_RGB_AMBER: "ColorScheme.RgbColor" = to_rgb("#a8b21c")
 
 #: FACET status red.
-_RGB_RED: RgbColor = to_rgb("#e61c57")
+_RGB_RED: "ColorScheme.RgbColor" = to_rgb("#e61c57")
 
 #: FACET dark red.
-_RGB_DARK_RED: RgbColor = to_rgb("#c41310")
+_RGB_DARK_RED: "ColorScheme.RgbColor" = to_rgb("#c41310")
 
 #: Standard colormap for FACET.
 _COLORMAP_FACET = LinearSegmentedColormap.from_list(
@@ -109,7 +98,15 @@ class ColorScheme(HasExpressionRepr):
     allowing code to refer to colors by usage rather than specific RGB values.
     """
 
-    def __init__(self, foreground: RgbColor, background: RgbColor, **colors: RgbColor):
+    #: RGB color type for use in color schemas and colored drawing styles.
+    RgbColor = Tuple[float, float, float]
+
+    #: RGB + Alpha color type for use in color schemas and colored drawing styles.
+    RgbaColor = Tuple[float, float, float, float]
+
+    def __init__(
+        self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
+    ) -> None:
         """
         :param foreground: the foreground color
         :param background: the background color
@@ -284,13 +281,13 @@ class MatplotColorScheme(ColorScheme):
 
     def __init__(
         self,
-        foreground: Union[RgbColor, str],
-        background: Union[RgbColor, str],
+        foreground: Union[ColorScheme.RgbColor, str],
+        background: Union[ColorScheme.RgbColor, str],
         colormap: Union[Colormap, str],
-        **colors,
-    ):
+        **colors: Union[ColorScheme.RgbColor, str],
+    ) -> None:
         """
-        :param colormap: the default colormap for this style
+        :param colormap: the colormap for this style
         """
         super().__init__(
             foreground=to_rgb(foreground),
@@ -305,7 +302,11 @@ class MatplotColorScheme(ColorScheme):
         else:
             raise ValueError("arg colormap must be a Colormap or a string")
 
-    __init__.__doc__ = ColorScheme.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = (
+        "\n".join(ColorScheme.__init__.__doc__.split("\n")[:-2])
+        + __init__.__doc__
+        + ColorScheme.__init__.__doc__.split("\n")[-2]
+    )
 
     @property
     def colormap(self) -> Colormap:
@@ -321,7 +322,9 @@ class MatplotColorScheme(ColorScheme):
 
 @inheritdoc(match="[see superclass]")
 class _FacetColorScheme(MatplotColorScheme):
-    def __init__(self, foreground: RgbColor, background: RgbColor) -> None:
+    def __init__(
+        self, foreground: ColorScheme.RgbColor, background: ColorScheme.RgbColor
+    ) -> None:
         super().__init__(
             foreground=foreground,
             background=background,
@@ -372,8 +375,8 @@ class FacetDarkColorScheme(
 
 
 def text_contrast_color(
-    bg_color: Union[RgbColor, RgbaColor]
-) -> Union[RgbColor, RgbaColor]:
+    bg_color: Union[ColorScheme.RgbColor, ColorScheme.RgbaColor]
+) -> Union[ColorScheme.RgbColor, ColorScheme.RgbaColor]:
     """
     Get a text color that maximises contrast with the given background color.
 

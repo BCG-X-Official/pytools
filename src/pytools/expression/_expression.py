@@ -84,6 +84,8 @@ class HasExpressionRepr(metaclass=ABCMeta):
     representations using expression objects.
     """
 
+    __ATTR_CLASS_ID = "__HasExpressionRepr__class_id"
+
     @abstractmethod
     def to_expression(self) -> "Expression":
         """
@@ -92,6 +94,21 @@ class HasExpressionRepr(metaclass=ABCMeta):
         :return: the expression representing this object
         """
         pass
+
+    @classmethod
+    def get_class_id(cls) -> "Expression":
+        """
+        Get an :class:`.Id` instance named after this class.
+        """
+        id_ = vars(cls).get(HasExpressionRepr.__ATTR_CLASS_ID, None)
+
+        if not id_:
+            from .atomic import Id
+
+            id_ = Id(cls.__name__)
+            setattr(cls, HasExpressionRepr.__ATTR_CLASS_ID, id_)
+
+        return id_
 
     def __repr__(self) -> str:
         # get the expression representing this object, and use the default formatter
@@ -184,9 +201,11 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     @abstractmethod
     def hash_(self) -> int:
         """
-        Calculate the hash for this expression.
+        Calculate the hash code for this expression.
 
         For using Python's native ``hash`` function, see :class:`.FrozenExpression`.
+
+        :return: the hash code for this expression
         """
         pass
 
@@ -417,6 +436,9 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         # we need to rule iteration out explicitly, otherwise we'd get infinite 'for'
         # loops through iterating via __getitem__
         raise TypeError(f"'{type(self).__name__}' object is not iterable: {repr(self)}")
+
+    def __bool__(self) -> bool:
+        raise TypeError(f"{Expression.__name__} does not permit casting to bool type")
 
     def __repr__(self) -> str:
         # get a textual representation of the expression using the default formatter

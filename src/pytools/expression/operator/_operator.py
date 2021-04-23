@@ -23,6 +23,9 @@ class Operator(metaclass=ABCMeta):
     Base class for operators used in expressions.
     """
 
+    #: the symbol representing this operator
+    symbol: str
+
     #: Minimal value for :attr:`.precedence` (lower than the precedence of any
     #: Python operator).
     MIN_PRECEDENCE: int = -1

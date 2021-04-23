@@ -48,7 +48,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
     A literal value (usually a number or string).
     """
 
-    def __init__(self, value: T_Literal):
+    def __init__(self, value: T_Literal) -> None:
         """
         :param value: the literal value represented by this expression
         """
@@ -77,7 +77,7 @@ class _IdentifierMeta(type):
             raise AttributeError(name)
 
         identifier = _IdentifierMeta._identifiers.get(name, None)
-        if not identifier:
+        if identifier is None:
             _IdentifierMeta._identifiers[name] = identifier = Id(name)
 
         return identifier
