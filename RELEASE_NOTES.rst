@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.0
 -------------
 
+1.0.6
+~~~~~
+
+- FIX: back-port 1.1 bugfix for :meth:`~.Expression.eq_`
+
+
 1.0.5
 ~~~~~
 
