@@ -353,12 +353,12 @@ def to_tuple(
       element
 
     :param values: one or more elements to return as a tuple
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
@@ -385,12 +385,12 @@ def to_list(
       element
 
     :param values: one or more elements to return as a list
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a list
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
@@ -413,16 +413,16 @@ def to_set(
 
     - if arg `values` is a set, return arg `values` unchanged
     - if arg `values` is an iterable other than a set, return a set of its elements
-    - if arg `values` is not an iterable, return a list with the value as its only
+    - if arg `values` is not an iterable, return a set with the value as its only
       element
 
     :param values: one or more elements to return as a set
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a set
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
