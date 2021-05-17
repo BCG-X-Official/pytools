@@ -1,6 +1,20 @@
 Release Notes
 =============
 
+*pytools* 1.2
+-------------
+
+1.2.0
+~~~~~
+
+- API: new function :func:`.to_collection` preserves any type of collection, and
+  converts iterators into :class:`tuple` instances
+- API: functions :func:`.to_set`, :func:`.to_list`, :func:`.to_tuple`,
+  :func:`.to_collection`, and :func:`.validate_element_types` now accept multiple
+  alternative types to validate elements against, in line with how :func:`isinstance`
+  tests for multiple types
+
+
 *pytools* 1.1
 -------------
 
