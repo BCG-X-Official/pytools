@@ -4,11 +4,31 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.3
+~~~~~
+
+- FIX: comparing two :class:`.InfixExpression` objects using method
+  :meth:`~.Expression.eq_` would erroneously yield ``True`` if both expressions
+  had the same operator but a different number of operands, and the operands of the
+  shorter expression were equal to the operands at the start of the longer expression
+
+
+1.1.2
+~~~~~
+
+- Catch up with fixes and pipeline updates introduced by pytools 1.0.3 and 1.0.4
+- API: support inheriting class docstrings from superclasses using the
+  :func:`.inheritdoc` decorator
+- API: new :func:`.subsdoc` decorator to replace text in docstrings
+- API: use background color for matrix grid in :class:`.MatrixMatplotStyle`
+
+
 1.1.1
 ~~~~~
 
 - API: :class:`.MatplotStyle` now uses PyPlot's current axes by default, instead of
   creating a new figure and axis
+
 
 1.1.0
 ~~~~~
@@ -24,6 +44,39 @@ Release Notes
 
 *pytools* 1.0
 -------------
+
+1.0.6
+~~~~~
+
+- FIX: back-port 1.1 bugfix for :meth:`~.Expression.eq_`
+
+
+1.0.5
+~~~~~
+
+- FIX: back-port 1.1 bugfix for building multi-version documentation
+
+
+1.0.4
+~~~~~
+
+- FIX: do not substitute `~=` by `~==` when adapting version syntax for tox
+
+
+1.0.3
+~~~~~
+
+This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
+minor fixes.
+
+- BUILD: add the `bcg_gamma` conda channel when building
+- BUILD: Enforce pre-release for minor and major releases
+- DOC: add pre-commit hook instructions to contribution guide
+- BUILD: update flake8 to v3.9.0
+- BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
+  of package versions)
+- FIX: version syntax adaptation with mixed `=` and `>=`
+
 
 1.0.2
 ~~~~~
