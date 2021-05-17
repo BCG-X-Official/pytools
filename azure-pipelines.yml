@@ -1,12 +1,12 @@
 trigger:
   - develop
-  - 1.1.x
+  - 1.2.x
   - dev/*
   - release/*
 
 pr:
   - develop
-  - 1.1.x
+  - 1.2.x
   - dev/*
   - release/*
 
@@ -19,7 +19,7 @@ schedules:
   displayName: Nightly full build
   branches:
     include:
-    - 1.1.x
+    - 1.2.x
 
 variables:
   ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
