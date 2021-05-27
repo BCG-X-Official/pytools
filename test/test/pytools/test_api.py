@@ -8,7 +8,7 @@ import pytest
 
 print(sys.path)
 
-from pytools.api import deprecated
+from pytools.api import deprecated, subsdoc
 
 
 def test_deprecated() -> None:
@@ -31,3 +31,12 @@ def test_deprecated() -> None:
         match="Call to deprecated function test_deprecated.<locals>._g: test message",
     ):
         _g()
+
+
+def test_subsdoc() -> None:
+    class _A:
+        @subsdoc(pattern=r"a(\d)c", replacement=r"A\1C")
+        def _f(self) -> None:
+            """a5c aac a3c"""
+
+    assert _A._f.__doc__ == "A5C aac A3C"

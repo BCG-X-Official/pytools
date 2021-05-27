@@ -7,6 +7,7 @@ import importlib
 import importlib.util
 import os
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
@@ -59,7 +60,7 @@ TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 
 class Builder(metaclass=ABCMeta):
-    def __init__(self, project: str, dependency_type: str):
+    def __init__(self, project: str, dependency_type: str) -> None:
         self.project = project
         self.dependency_type = dependency_type
 
@@ -316,8 +317,8 @@ class CondaBuilder(Builder):
         print(f"Building: {self.project}. Build path: {build_path}")
         os.makedirs(build_path, exist_ok=True)
         build_cmd = (
-            f"conda-build -c conda-forge "
-            f"-c bcg_gamma {' '.join(local_channels)} {recipe_path}"
+            "conda-build -c conda-forge -c bcg_gamma "
+            f"{' '.join(local_channels)} {recipe_path}"
         )
         print(f"Build Command: {build_cmd}")
         subprocess.run(args=build_cmd, shell=True, check=True)
@@ -333,11 +334,8 @@ class ToxBuilder(Builder):
         return TOX_BUILD_PATH_SUFFIX
 
     def adapt_version_syntax(self, version: str) -> str:
-        if ">" in version or "<" in version:
-            return version
-        else:
-            # PIP expects == instead of =
-            return version.replace("=", "==")
+        # PIP expects == instead of =
+        return re.sub(r"(?<![<=>~])=(?![<=>])", "==", version)
 
     def clean(self) -> None:
         # nothing to do – .tar.gz of same version will simply be replaced and

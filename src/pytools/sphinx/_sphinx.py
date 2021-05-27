@@ -248,6 +248,7 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
             and signature was not specified in the directive
         :param return_annotation: function return annotation as a string of the form
             `` -> <annotation>``, or ``None`` if there is no return annotation
+        :return: a tuple with the revised signature and return annotation
         """
         pass
 
@@ -345,7 +346,7 @@ class AddInheritance(AutodocProcessDocstring):
     Ignore builtin classes and classes that have already been visited once before.
     """
 
-    def __init__(self, collapsible_submodules: Mapping[str, str]):
+    def __init__(self, collapsible_submodules: Mapping[str, str]) -> None:
         """
         :param collapsible_submodules: mapping of submodule paths to shorter
             *(collapsed)* versions they should be replaced with
@@ -608,7 +609,7 @@ class CollapseModulePaths(metaclass=ABCMeta):
         self,
         collapsible_submodules: Mapping[str, str],
         collapse_private_modules: bool = True,
-    ):
+    ) -> None:
         """
         :param collapsible_submodules: mapping from module paths to their public
             prefix, e.g., ``{"pandas.core.frame": "pandas"}``
@@ -782,6 +783,11 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
         lines: List[str],
     ) -> None:
         """[see superclass]"""
+
+        if what == "attribute":
+            # we cannot determine docstrings for attributes, as the object represents
+            # the value of the attribute, and not the attribute itself
+            return
 
         try:
             obj_module = obj.__module__

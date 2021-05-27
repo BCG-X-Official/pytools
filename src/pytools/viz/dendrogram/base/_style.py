@@ -4,7 +4,7 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence
+from typing import Any, Optional, Sequence
 
 from matplotlib.axes import Axes
 from matplotlib.colors import LogNorm
@@ -39,6 +39,44 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
     """
     Base class for dendrogram drawing styles.
     """
+
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Prepare a new dendrogram for drawing, using the given title.
+
+        :param title: the title of the chart
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
+        """
+        super().start_drawing(title=title, **kwargs)
+
+    def finalize_drawing(
+        self,
+        *,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Finalize the dendrogram, adding labels to the axes.
+
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
+        """
+        super().finalize_drawing(**kwargs)
 
     @abstractmethod
     def draw_leaf_names(
@@ -131,6 +169,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
 
     def draw_leaf_names(self, *, names: Sequence[str]) -> None:
         """[see superclass]"""
+
         ax = self.ax
         y_axis = ax.yaxis
         y_axis.set_ticks(ticks=range(len(names)))
@@ -142,16 +181,11 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
-        """
-        Add labels to the axes of this drawing.
+        """[see superclass]"""
 
-        :param leaf_label: the label for the leaf axis
-        :param distance_label: the label for the distance axis
-        :param weight_label: the label for the color bar, indicating weights
-        """
-        super().finalize_drawing(colorbar_label=weight_label, **kwargs)
+        super().finalize_drawing(colorbar_label=weight_label)
 
         ax = self.ax
 

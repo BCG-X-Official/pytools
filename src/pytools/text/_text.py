@@ -55,12 +55,13 @@ class CharacterMatrix:
     - ``matrix[r1:r2, …] = …`` applies the same insertion at each of rows `r1 … r2 – 1`
     - full slice notation is supported so even slices of shape ``start:stop:step`` work
       as expected
-
-    :param n_rows: the matrix height
-    :param n_columns: the matrix width
     """
 
-    def __init__(self, n_rows: int, n_columns: int):
+    def __init__(self, n_rows: int, n_columns: int) -> None:
+        """
+        :param n_rows: the matrix height
+        :param n_columns: the matrix width
+        """
         if n_columns <= 0:
             raise ValueError(f"arg width must be positive but is {n_columns}")
         if n_rows <= 0:

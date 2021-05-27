@@ -44,7 +44,7 @@ class KeywordArgument(SimplePrefixExpression):
 
     _PRECEDENCE = BinaryOperator.EQ.precedence
 
-    def __init__(self, name: str, value: Any):
+    def __init__(self, name: str, value: Any) -> None:
         """
         :param name: the name of the keyword
         :param value: the value for the keyword
@@ -85,7 +85,7 @@ class DictEntry(SimplePrefixExpression):
 
     _PRECEDENCE = BinaryOperator.COLON.precedence
 
-    def __init__(self, key: Any, value: Any):
+    def __init__(self, key: Any, value: Any) -> None:
         """
         :param key: the key of the dictionary entry
         :param value: the value of the dictionary entry
@@ -125,7 +125,7 @@ class LambdaDefinition(SimplePrefixExpression):
 
     _PRECEDENCE = UnaryOperator.LAMBDA.precedence
 
-    def __init__(self, *params: Id, body: Any):
+    def __init__(self, *params: Id, body: Any) -> None:
         """
         :param params: the parameters of the lambda expression
         :param body: the body of the lambda expression

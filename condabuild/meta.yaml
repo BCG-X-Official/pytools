@@ -40,7 +40,8 @@ test:
     - python -c 'import pytools;
                  import os;
                  assert pytools.__version__ == os.environ["PKG_VERSION"]'
-    - pytest -vs ${FACET_PATH}/pytools/test
+    - cd "${FACET_PATH}/pytools"
+    - pytest -vs test
 
 about:
   home: https://github.com/BCG-Gamma/pytools
