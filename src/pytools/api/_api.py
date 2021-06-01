@@ -5,12 +5,14 @@ Core implementation of :mod:`pytools.api`.
 import logging
 import re
 import warnings
+from collections import deque
 from functools import wraps
 from types import FunctionType
 from typing import (
     Any,
     Callable,
     Collection,
+    Deque,
     Dict,
     Iterable,
     List,
@@ -46,10 +48,20 @@ __all__ = [
     "validate_type",
 ]
 
+
+#
+# Type variables
+#
+
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
 T_Type = TypeVar("T_Type", bound=type)
+
+
+#
+# The AllTracker, used to check that __all__ includes all publicly defined symbols
+#
 
 
 class AllTracker:
@@ -738,6 +750,34 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
+    def _parse_cls_with_generic_arguments(cls: str) -> type:
+        def _parse(cls_tokens: Deque[str]) -> type:
+            real_cls = globals_[cls_tokens.popleft()]
+            if cls_tokens and cls_tokens[0] not in ",]":
+                real_args: List[type] = list()
+                sep = cls_tokens.popleft()
+                if sep != "[":
+                    raise TypeError(
+                        f"invalid separator for generic type arguments: {sep}"
+                    )
+                while True:
+                    real_args.append(_parse(cls_tokens))
+                    sep = cls_tokens.popleft()
+                    if sep == "]":
+                        break
+                    elif sep != ",":
+                        raise TypeError(
+                            f"invalid separator for generic type arguments: {sep}"
+                        )
+                return real_cls.__class_getitem__(tuple(real_args))
+            else:
+                return real_cls
+
+        try:
+            return _parse(deque(map(str.strip, re.split(r"([,\[\]])", cls))))
+        except TypeError as e:
+            raise TypeError(f"invalid type syntax in forward reference: {cls}") from e
+
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()
 
@@ -752,9 +792,7 @@ def update_forward_references(
             if annotations:
                 for arg, cls in annotations.items():
                     if isinstance(cls, str):
-                        real_cls = globals_[cls]
-                        if isinstance(real_cls, type):
-                            annotations[arg] = real_cls
+                        annotations[arg] = _parse_cls_with_generic_arguments(cls)
 
     _update(obj)
 
