@@ -15,6 +15,7 @@ from typing import (
     List,
     Mapping,
     Optional,
+    Pattern,
     Set,
     Tuple,
     TypeVar,
@@ -24,13 +25,6 @@ from typing import (
 import typing_inspect
 
 from pytools.api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
-
-try:
-    # re.Pattern was introduced in Python 3.7 …
-    Pattern = re.Pattern
-except AttributeError:
-    # … in older versions, we set it to the wildcard type
-    Pattern = Any
 
 try:
     # ForwardRef was introduced in Python 3.7 …
