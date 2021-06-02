@@ -421,7 +421,7 @@ class AddInheritance(AutodocProcessDocstring):
             def _insert_position() -> int:
                 for n, line in enumerate(lines):
                     if re.match(r"\s*:\w+(?:\s+\w+)*:", line) and (
-                        n == 0 or not line[n - 1].strip()
+                        n == 0 or not lines[n - 1].strip()
                     ):
                         return n
                 return len(lines)
