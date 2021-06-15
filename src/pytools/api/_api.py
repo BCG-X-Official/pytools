@@ -491,7 +491,7 @@ def validate_type(
         verifying positional arguments
     :raise TypeException: the value did not match the expected type
     """
-    if expected_type == object:
+    if expected_type is object:
         return
 
     if optional and value is None:
