@@ -84,7 +84,7 @@ class APIDefinition(metaclass=ABCMeta):
         The docstring of this API element; ``None`` if the docstring is undefined.
         """
 
-    def list_documented_parameters(self) -> List[str]:
+    def list_documented_parameters(self) -> Optional[List[str]]:
         """
         Extract all documented parameter names from the docstring, including ``return``
         if the return parameter is documented.
@@ -94,8 +94,8 @@ class APIDefinition(metaclass=ABCMeta):
 
         docstring = self.docstring
 
-        if not docstring:
-            return []
+        if docstring is None:
+            return None
 
         all_params = re.findall(
             pattern=r"\:param\s+(\w+)\s*\:|\:(return)s?:",
@@ -279,7 +279,10 @@ class HasMatchingParameterDoc(DocTest):
         actual_parameters = definition.list_actual_parameters(include_return=True)
         documented_parameters = definition.list_documented_parameters()
 
-        if actual_parameters != documented_parameters:
+        if (
+            documented_parameters is not None
+            and actual_parameters != documented_parameters
+        ):
             return (
                 "mismatched arguments: "
                 f"expected {actual_parameters} but got {documented_parameters}"
