@@ -8,6 +8,7 @@ dependencies:
   - docutils = 0.16.*
   - flit = 3.0.*
   - isort = 5.5.*
+  - jinja2 ~= 2.11  # required by Sphinx
   - joblib >= 0.16
   - jupyter >= 1.0
   - m2r = 0.2.*
