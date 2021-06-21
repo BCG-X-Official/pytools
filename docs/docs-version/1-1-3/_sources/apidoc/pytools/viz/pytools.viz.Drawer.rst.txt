@@ -1,0 +1,35 @@
+pytools.viz.Drawer
+==================
+
+.. currentmodule:: pytools.viz
+
+.. autoclass:: Drawer
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Drawer.draw
+      ~Drawer.get_named_styles
+      ~Drawer.get_style_classes
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Drawer.DEFAULT_STYLE
+   
+   
+
+   .. rubric:: Definitions

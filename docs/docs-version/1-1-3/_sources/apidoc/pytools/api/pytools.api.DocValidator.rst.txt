@@ -1,0 +1,34 @@
+pytools.api.DocValidator
+========================
+
+.. currentmodule:: pytools.api
+
+.. autoclass:: DocValidator
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DocValidator.validate_doc
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~DocValidator.DEFAULT_DOC_TESTS
+      ~DocValidator.DEFAULT_VALIDATE_PROTECTED
+   
+   
+
+   .. rubric:: Definitions

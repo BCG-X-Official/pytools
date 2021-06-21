@@ -1,0 +1,34 @@
+pytools.sphinx.Replace3rdPartyDoc
+=================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: Replace3rdPartyDoc
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Replace3rdPartyDoc.connect
+      ~Replace3rdPartyDoc.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Replace3rdPartyDoc.event
+   
+   
+
+   .. rubric:: Definitions
