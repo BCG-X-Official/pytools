@@ -16,6 +16,7 @@ from typing import (
     Iterable,
     List,
     Optional,
+    Pattern,
     Tuple,
     Type,
     TypeVar,
@@ -51,15 +52,6 @@ T_NamedElementDefinition = TypeVar(
     "T_NamedElementDefinition", bound=NamedElementDefinition
 )
 
-#
-# Pattern type
-#
-try:
-    Pattern = re.Pattern
-except AttributeError:
-    # Python 3.6 does not implement the Pattern object
-    # todo: remove this when we drop support for Python 3.6
-    Pattern = type(re.compile(""))
 
 #
 # Ensure all symbols introduced below are included in __all__
