@@ -19,7 +19,7 @@ requires = [
     "numpy          >=1.16,<1.21a",
     "pandas         >=0.24,<2a",
     "scipy          ~=1.2",
-    "typing_inspect >=0.4,<0.7a",
+    "typing_inspect >=0.4,<0.8a",
 ]
 
 requires-python = "~=3.6"
@@ -84,7 +84,7 @@ packaging      = "=20.*"
 pandas         = "~=1.2"
 python         = "~=3.8"
 scipy          = "~=1.6"
-typing_inspect = "=0.6.*"
+typing_inspect = "=0.7.*"
 
 [tool.black]
 # quiet = "True"

@@ -40,6 +40,7 @@ __all__ = [
     "is_list_like",
     "public_module_prefix",
     "subsdoc",
+    "to_collection",
     "to_list",
     "to_set",
     "to_tuple",
@@ -257,6 +258,7 @@ class AllTracker:
 
 # regular expression to extract the public prefix of a private module
 # this is the module path up to the first submodule with a leading underscore
+# noinspection RegExpUnnecessaryNonCapturingGroup
 __RE_PUBLIC_MODULE = re.compile(
     # start of match group for the public part of the module path
     r"("
@@ -351,7 +353,7 @@ def is_list_like(obj: Any) -> bool:
 def to_tuple(
     values: Union[Iterable[T], T],
     *,
-    element_type: Optional[Type[T]] = None,
+    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
@@ -363,17 +365,18 @@ def to_tuple(
       element
 
     :param values: one or more elements to return as a tuple
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
         values=values,
         collection_type=tuple,
+        new_collection_type=tuple,
         element_type=element_type,
         arg_name=arg_name,
     )
@@ -382,7 +385,7 @@ def to_tuple(
 def to_list(
     values: Union[Iterable[T], T],
     *,
-    element_type: Optional[Type[T]] = None,
+    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
     arg_name: Optional[str] = None,
 ) -> List[T]:
     """
@@ -394,17 +397,18 @@ def to_list(
       element
 
     :param values: one or more elements to return as a list
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a list
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
         values=values,
         collection_type=list,
+        new_collection_type=list,
         element_type=element_type,
         arg_name=arg_name,
     )
@@ -413,7 +417,7 @@ def to_list(
 def to_set(
     values: Union[Iterable[T], T],
     *,
-    element_type: Optional[Type[T]] = None,
+    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
     """
@@ -421,28 +425,64 @@ def to_set(
 
     - if arg `values` is a set, return arg `values` unchanged
     - if arg `values` is an iterable other than a set, return a set of its elements
-    - if arg `values` is not an iterable, return a list with the value as its only
+    - if arg `values` is not an iterable, return a set with the value as its only
       element
 
     :param values: one or more elements to return as a set
-    :param element_type: expected type of the values; raise a ``TypeException`` if one
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
         or more values do not implement this type
     :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the ``TypeException`` message
+        or method; used when composing the :class:`TypeError` message
     :return: the values as a set
-    :raise TypeException: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type
     """
 
     return _to_collection(
-        values=values, collection_type=set, element_type=element_type, arg_name=arg_name
+        values=values,
+        collection_type=set,
+        new_collection_type=set,
+        element_type=element_type,
+        arg_name=arg_name,
+    )
+
+
+def to_collection(
+    values: Union[Iterable[T], T],
+    *,
+    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    arg_name: Optional[str] = None,
+) -> Collection[T]:
+    """
+    Return the given values as a collection, i.e., an iterable container.
+
+    - if arg `values` is a collection, return arg `values` unchanged
+    - if arg `values` is an iterator, return a tuple with its elements
+    - if arg `values` is not an iterable, return a tuple with the value as its only
+      element
+
+    :param values: one or more elements to return as a collection
+    :param element_type: expected type of the values; raise a :class:`TypeError` if one
+        or more values do not implement this type
+    :param arg_name: name of the argument as which the values were passed to a function
+        or method; used when composing the :class:`TypeError` message
+    :return: the values as a collection
+    :raise TypeError: one or more values did not match the expected type
+    """
+    return _to_collection(
+        values=values,
+        collection_type=None,
+        new_collection_type=tuple,
+        element_type=element_type,
+        arg_name=arg_name,
     )
 
 
 def _to_collection(
     values: Union[T, Iterable[T]],
     *,
-    collection_type: Type[T_Collection],
-    element_type: Optional[Type[T]],
+    collection_type: Optional[Type[Collection]],
+    new_collection_type: Type[T_Collection],
+    element_type: Union[Type[T], Tuple[Type, ...], None],
     arg_name: Optional[str] = None,
 ) -> T_Collection:
 
@@ -453,17 +493,17 @@ def _to_collection(
         and not isinstance(values, str)
         and not isinstance(values, bytes)
     ):
-        if isinstance(values, collection_type):
+        if isinstance(values, collection_type or Collection):
             # no change needed, values already is the collection we need
             elements = values
         elif element_type and isinstance(values, element_type):
             # create a single-element collection
-            elements = collection_type((values,))
+            elements = new_collection_type((values,))
         else:
-            elements = collection_type(values)
+            elements = new_collection_type(values)
     else:
         # create a single-element collection
-        elements = collection_type((values,))
+        elements = new_collection_type((values,))
 
     if element_type:
         validate_element_types(
@@ -509,7 +549,10 @@ def validate_type(
 
 
 def validate_element_types(
-    iterable: Iterable[T], *, expected_type: Type[T], name: Optional[str] = None
+    iterable: Iterable[T],
+    *,
+    expected_type: Union[Type[T], Tuple[Type, ...], None],
+    name: Optional[str] = None,
 ) -> None:
     """
     Validate that all elements in the given iterable implement the expected type.
