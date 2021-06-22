@@ -86,8 +86,8 @@ class APIDefinition(metaclass=ABCMeta):
 
     def list_documented_parameters(self) -> Optional[List[str]]:
         """
-        Extract all documented parameter names from the docstring, including ``return``
-        if the return parameter is documented.
+        Extract all documented parameter names from the docstring, including
+        ``"return"`` if the return parameter is documented.
 
         :return: list of parameter names
         """
