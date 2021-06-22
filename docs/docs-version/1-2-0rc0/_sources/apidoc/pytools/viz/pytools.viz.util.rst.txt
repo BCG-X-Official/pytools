@@ -1,0 +1,37 @@
+pytools.viz.util
+================
+
+.. automodule:: pytools.viz.util
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: util
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      PercentageFormatter
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
