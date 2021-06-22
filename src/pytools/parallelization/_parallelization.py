@@ -8,7 +8,6 @@ from functools import wraps
 from typing import (
     Any,
     Callable,
-    Dict,
     Generic,
     Iterable,
     Iterator,
@@ -23,7 +22,7 @@ from typing import (
 
 import joblib
 
-from ..api import AllTracker, deprecated, inheritdoc, to_tuple
+from ..api import AllTracker, inheritdoc, to_tuple
 
 log = logging.getLogger(__name__)
 
@@ -111,38 +110,6 @@ class ParallelizableMixin:
             ]
             if value is not None
         }
-
-    @deprecated(message="this method is deprecated and will be removed in v1.1")
-    def _parallel(self) -> joblib.Parallel:
-        """
-        Generate a :class:`joblib.Parallel` instance using the parallelization
-        parameters of ``self``.
-
-        `This method is deprecated and will be removed in v1.1.`
-
-        :meta public:
-        :return: the new :class:`joblib.Parallel` instance
-        """
-        return joblib.Parallel(**self._parallel_kwargs)
-
-    @staticmethod
-    @deprecated(message="this method is deprecated and will be removed in v1.1")
-    def _delayed(
-        function: Callable[..., T]
-    ) -> Callable[..., Tuple[Callable[..., T], Tuple, Dict[str, Any]]]:
-        """
-        Decorate the given function for delayed execution.
-
-        Convenience method preventing having to import :mod:`joblib`;
-        defers to function :func:`joblib.delayed`.
-
-        `This method is deprecated and will be removed in v1.1.`
-
-        :meta public:
-        :param function: the function to be delayed
-        :return: the delayed function
-        """
-        return joblib.delayed(function)
 
 
 class Job(Generic[T_Job_Result], metaclass=ABCMeta):

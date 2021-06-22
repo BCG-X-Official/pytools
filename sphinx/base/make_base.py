@@ -452,7 +452,7 @@ class Versions:
             if version_tag >= start_from_version_tag
         ]
 
-        # add version currently build into version_tags
+        # append the version we are building to version_tags
         version_built: pkg_version.Version = get_package_version()
 
         if version_built not in version_tags:
