@@ -1,0 +1,43 @@
+pytools.expression.composite.BinaryOperation
+============================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: BinaryOperation
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~BinaryOperation.and_
+      ~BinaryOperation.eq_
+      ~BinaryOperation.get_class_id
+      ~BinaryOperation.hash_
+      ~BinaryOperation.not_
+      ~BinaryOperation.or_
+      ~BinaryOperation.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~BinaryOperation.infix_
+      ~BinaryOperation.operands_
+      ~BinaryOperation.operator_
+      ~BinaryOperation.precedence_
+      ~BinaryOperation.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

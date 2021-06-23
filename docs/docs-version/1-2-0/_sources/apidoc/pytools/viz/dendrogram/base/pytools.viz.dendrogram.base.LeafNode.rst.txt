@@ -1,0 +1,30 @@
+pytools.viz.dendrogram.base.LeafNode
+====================================
+
+.. currentmodule:: pytools.viz.dendrogram.base
+
+.. autoclass:: LeafNode
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~LeafNode.children_distance
+      ~LeafNode.index
+      ~LeafNode.is_leaf
+      ~LeafNode.name
+      ~LeafNode.weight
+   
+   
+
+   .. rubric:: Definitions
