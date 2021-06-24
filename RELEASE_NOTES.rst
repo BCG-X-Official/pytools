@@ -7,7 +7,7 @@ Release Notes
 1.1.4
 ~~~~~
 
-- BUILD: allow joblib 1.0.* in joblib package requirements
+- BUILD: allow `joblib` 1.0.* in joblib package requirements
 
 
 1.1.3
