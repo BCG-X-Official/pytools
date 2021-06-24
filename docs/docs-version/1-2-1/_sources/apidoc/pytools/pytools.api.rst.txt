@@ -1,0 +1,72 @@
+pytools.api
+===========
+
+.. automodule:: pytools.api
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: api
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      AllTracker
+      DocValidator
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: api
+      :nosignatures:
+   
+      deprecated
+      deprecation_warning
+      get_generic_bases
+      inheritdoc
+      is_list_like
+      public_module_prefix
+      subsdoc
+      to_collection
+      to_list
+      to_set
+      to_tuple
+      update_forward_references
+      validate_element_types
+      validate_type
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+
+==========
+Submodules
+==========
+.. autosummary::
+   :toctree: api
+   :template: custom-module-template.rst
+   :recursive:
+
+   pytools.api.doc
+

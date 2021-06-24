@@ -1,0 +1,28 @@
+pytools.expression.formatter.PythonExpressionFormatter
+======================================================
+
+.. currentmodule:: pytools.expression.formatter
+
+.. autoclass:: PythonExpressionFormatter
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~PythonExpressionFormatter.default
+      ~PythonExpressionFormatter.to_text
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions
