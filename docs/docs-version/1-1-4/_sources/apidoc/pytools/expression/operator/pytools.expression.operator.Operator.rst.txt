@@ -1,0 +1,29 @@
+pytools.expression.operator.Operator
+====================================
+
+.. currentmodule:: pytools.expression.operator
+
+.. autoclass:: Operator
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Operator.MAX_PRECEDENCE
+      ~Operator.MIN_PRECEDENCE
+      ~Operator.is_unary
+      ~Operator.precedence
+   
+   
+
+   .. rubric:: Definitions

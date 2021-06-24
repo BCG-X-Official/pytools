@@ -1,0 +1,36 @@
+pytools.data
+============
+
+.. automodule:: pytools.data
+   :no-imported-members:
+
+   
+
+   
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: data
+      :nosignatures:
+   
+      sim_data
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
