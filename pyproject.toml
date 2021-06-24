@@ -14,7 +14,7 @@ dist-name = "gamma-pytools"
 license = "Apache Software License v2.0"
 
 requires = [
-    "joblib         ~=0.14,<1.1a",
+    "joblib         >=0.14,<1.1a",
     "matplotlib     ==3.*",
     "numpy          >=1.16,<1.21a",
     "pandas         >=0.24,<2a",
