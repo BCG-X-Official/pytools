@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.2
 -------------
 
+1.2.1
+~~~~~
+
+This is a maintenance release to catch up with *pytools* 1.1.4.
+
+
 1.2.0
 ~~~~~
 
@@ -38,7 +44,7 @@ Release Notes
 1.1.2
 ~~~~~
 
-- Catch up with fixes and pipeline updates introduced by pytools 1.0.3 and 1.0.4
+- Catch up with fixes and pipeline updates introduced by *pytools* 1.0.3 and 1.0.4
 - API: support inheriting class docstrings from superclasses using the
   :func:`.inheritdoc` decorator
 - API: new :func:`.subsdoc` decorator to replace text in docstrings
