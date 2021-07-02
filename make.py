@@ -5,8 +5,8 @@ dependency definition of pyproject.toml as environment variables
 """
 import importlib
 import importlib.util
+import itertools
 import os
-import pathlib
 import re
 import shutil
 import subprocess
@@ -14,12 +14,10 @@ import sys
 import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
-from typing import Any, Dict, List
+from typing import Any, Dict, Iterator, Set, cast
 from urllib.request import pathname2url
 
 import toml
-
-ALL_PROJECTS_QUALIFIER = "all"
 
 CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -39,24 +37,23 @@ TOML_REQUIRES = "requires"
 TOML_REQUIRES_PYTHON = "requires-python"
 TOML_TOOL = "tool"
 
-
-PROJ_PYTOOLS = "pytools"
-PROJ_FACET = "facet"
-PROJ_FLOW = "flow"
-PROJ_SKLEARNDF = "sklearndf"
-KNOWN_PROJECTS = {PROJ_PYTOOLS, PROJ_SKLEARNDF, PROJ_FACET, PROJ_FLOW}
-
 B_CONDA = "conda"
 B_TOX = "tox"
 KNOWN_BUILD_SYSTEMS = {B_CONDA, B_TOX}
 
-DEFAULT_DEPS = "default"
-MIN_DEPS = "min"
-MAX_DEPS = "max"
-KNOWN_DEPENDENCY_TYPES = {DEFAULT_DEPS, MIN_DEPS, MAX_DEPS}
+DEP_DEFAULT = "default"
+DEP_MIN = "min"
+DEP_MAX = "max"
+KNOWN_DEPENDENCY_TYPES = {DEP_DEFAULT, DEP_MIN, DEP_MAX}
 
 CONDA_BUILD_PATH_SUFFIX = os.path.join("dist", "conda")
 TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
+
+PKG_PYTHON = "python"
+
+RE_VERSION = re.compile(
+    r"(?:\s*(?:[<>]=?|[!~=]=)\s*\d+(?:\.\d+)*(?:a\d*|b\d*|rc\d*|\.\*)?\s*,?)+(?<!,)"
+)
 
 
 class Builder(metaclass=ABCMeta):
@@ -64,38 +61,36 @@ class Builder(metaclass=ABCMeta):
         self.project = project
         self.dependency_type = dependency_type
 
-        # determine the FACET root path containing the project working directories
-
-        if (FACET_PATH_ENV in os.environ) and os.environ[FACET_PATH_ENV]:
-            facet_path = os.environ[FACET_PATH_ENV]
-        else:
-            facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-            os.environ[FACET_PATH_ENV] = facet_path
-
-        if " " in facet_path:
-            warnings.warn(
-                f"The build base path '{facet_path}' contains spaces – "
-                f"this causes issues with conda-build. "
-                f"Consider to set a different path using the "
-                f"environment variable {FACET_PATH_ENV} ahead of running make.py."
+        if dependency_type not in KNOWN_DEPENDENCY_TYPES:
+            raise ValueError(
+                f"arg dependency_type must be one of {KNOWN_DEPENDENCY_TYPES}"
             )
-        os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(facet_path)}"
+
+        # determine the projects root path containing the project working directories
+
+        self.projects_root_path = projects_root_path = get_projects_root_path()
+
+        # add the project roots path to the environment as a URI
+
+        os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(projects_root_path)}"
 
         # determine the package version of the project
 
-        project_src = os.path.abspath(os.path.join(facet_path, project, "src"))
-        if project in (PROJ_SKLEARNDF, PROJ_FLOW):
-            # For sklearndf and flow,
-            # __init__ can't be trivially imported due to import dependencies.
-            # Load the version as defined in project._version module.
-            spec = importlib.util.spec_from_file_location(
-                "_version", os.path.join(project_src, project, "_version.py")
-            )
+        project_root_path = os.path.abspath(os.path.join(projects_root_path, project))
+        src_root_path = os.path.join(project_root_path, "src", project)
+        version_path = os.path.join(src_root_path, "_version.py")
+
+        if os.path.exists(version_path):
+            # For some projects, __init__ can't be trivially imported due to import
+            # dependencies.
+            # Therefore we first try to get the version from a project._version module.
+            spec = importlib.util.spec_from_file_location("_version", version_path)
         else:
-            # pytools/facet: retrieve version from __init__.py
+            # otherwise: retrieve the version from __init__.py
             spec = importlib.util.spec_from_file_location(
-                "_version", os.path.join(project_src, project, "__init__.py")
+                "_version", os.path.join(src_root_path, "__init__.py")
             )
+
         version_module = importlib.util.module_from_spec(spec)
         # noinspection PyUnresolvedReferences
         spec.loader.exec_module(version_module)
@@ -117,7 +112,7 @@ class Builder(metaclass=ABCMeta):
         elif build_system == B_TOX:
             return ToxBuilder(project=project, dependency_type=dependency_type)
         else:
-            raise KeyError(f"Unknown build system: {build_system}")
+            raise ValueError(f"Unknown build system: {build_system}")
 
     @property
     @abstractmethod
@@ -129,28 +124,27 @@ class Builder(metaclass=ABCMeta):
     def build_path_suffix(self) -> str:
         pass
 
-    def make_build_path(self, project: str = None) -> str:
+    def make_build_path(self) -> str:
         """
         Return the target build path for Conda or Tox build.
         """
 
-        if project is None:
-            project = self.project
-
         return os.path.abspath(
-            os.path.join(os.environ[FACET_PATH_ENV], project, self.build_path_suffix)
+            os.path.join(
+                os.environ[FACET_PATH_ENV], self.project, self.build_path_suffix
+            )
         )
 
     def make_local_pypi_index_path(self) -> str:
         """
         Return the path where the local PyPi index for
-        the given self.project should be placed.
+        the given project should be placed.
         """
         return os.path.join(self.make_build_path(), "simple")
 
     def get_pyproject_toml(self) -> Dict[str, Any]:
         """
-        Retrieve a parsed Dict for a given self.project's pyproject.toml.
+        Retrieve a parsed Dict for a given project's pyproject.toml.
         """
         pyproject_toml_path = os.path.join(
             os.environ[FACET_PATH_ENV], self.project, "pyproject.toml"
@@ -161,8 +155,8 @@ class Builder(metaclass=ABCMeta):
 
     def get_package_dist_name(self) -> str:
         """
-        Retrieves from pyproject.toml for a self.project the appropriate
-        dist-name. E.g. "gamma-pytools" for self.project "pytools".
+        Retrieves from pyproject.toml for a project the appropriate
+        dist-name. E.g. "gamma-pytools" for project "pytools".
         """
         return self.get_pyproject_toml()[TOML_TOOL][TOML_FLIT][TOML_METADATA][
             TOML_DIST_NAME
@@ -172,49 +166,93 @@ class Builder(metaclass=ABCMeta):
     def adapt_version_syntax(self, version: str) -> str:
         pass
 
-    def expose_deps(self) -> None:
+    def expose_package_dependencies(self) -> None:
         """
-        Expose package dependencies for builds as environment variables.
+        Export package dependencies for builds as environment variables.
         """
+
+        # get full project specification from the TOML file
         pyproject_toml = self.get_pyproject_toml()
 
-        dependencies_to_expose = {}
-
+        # get the python version and run dependencies from the flit metadata
         flit_metadata = pyproject_toml[TOML_TOOL][TOML_FLIT][TOML_METADATA]
 
-        pkg_requires_python_version = flit_metadata[TOML_REQUIRES_PYTHON]
-
-        dependencies_to_expose["python"] = pkg_requires_python_version
-
-        default_deps_definition: List[str] = flit_metadata[TOML_REQUIRES]
-
-        for default_dep in default_deps_definition:
-            dependency_name: str
-            dependency_version: str
-            dependency_name, dependency_version = default_dep.strip().split(
-                " ", maxsplit=1
+        python_version = flit_metadata[TOML_REQUIRES_PYTHON]
+        run_dependencies: Dict[str, str] = {
+            name: validate_pip_version_spec(
+                dependency_type=DEP_DEFAULT, package=name, spec=version.lstrip()
             )
-            dependencies_to_expose[dependency_name] = dependency_version.strip()
+            for name, version in (
+                (*package_spec.strip().split(" ", maxsplit=1), "")[:2]
+                for package_spec in flit_metadata[TOML_REQUIRES]
+            )
+        }
 
-        if self.dependency_type != DEFAULT_DEPS:
-            build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
-            dependencies = build_matrix_definition[self.dependency_type]
-            for (dependency_name, dependency_version) in dependencies.items():
-                dependencies_to_expose[dependency_name] = self.adapt_version_syntax(
-                    dependency_version
+        if PKG_PYTHON in run_dependencies:
+            raise ValueError(
+                f"do not include '{PKG_PYTHON}' in flit 'requires' property; "
+                "use dedicated 'requires-python' property instead"
+            )
+        run_dependencies[PKG_PYTHON] = python_version
+
+        # get the matrix test dependencies (min and max)
+        build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
+
+        def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
+            return {
+                name: self.adapt_version_syntax(
+                    validate_pip_version_spec(
+                        dependency_type=matrix_type, package=name, spec=version
+                    )
                 )
+                for name, version in build_matrix_definition[matrix_type].items()
+            }
 
-        for d_name, d_version in dependencies_to_expose.items():
+        min_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MIN)
+        max_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MAX)
+
+        # check that the matrix dependencies cover all run dependencies
+
+        dependencies_not_covered_in_matrix: Set[str] = (
+            run_dependencies.keys() - min_dependencies.keys()
+        ) | (run_dependencies.keys() - max_dependencies.keys())
+
+        if dependencies_not_covered_in_matrix:
+            raise ValueError(
+                "one or more run dependencies are not covered "
+                "by the min and max matrix dependencies: "
+                + ", ".join(dependencies_not_covered_in_matrix)
+            )
+
+        # expose requirements as environment variables
+
+        if self.dependency_type == DEP_DEFAULT:
+            requirements_to_expose = run_dependencies
+        elif self.dependency_type == DEP_MIN:
+            requirements_to_expose = min_dependencies
+        else:
+            assert self.dependency_type == DEP_MAX
+            requirements_to_expose = max_dependencies
+
+        # add packages that are only mentioned in the matrix requirements
+        requirements_to_expose.update(
+            {
+                package: ""
+                for package in itertools.chain(min_dependencies, max_dependencies)
+                if package not in requirements_to_expose
+            }
+        )
+
+        for package, version in requirements_to_expose.items():
             # bash ENV variables can not use dash, replace it to _
-            env_var_key = f"FACET_V_{d_name.replace('-','_')}".upper().strip()
-            env_var_value = d_version.strip()
-            print(f"Exposing: '{env_var_key}' as: '{env_var_value}'")
-            os.environ[env_var_key] = env_var_value
+            env_var_name = "FACET_V_" + re.sub(r"[^\w]", "_", package.upper())
+            print(f"Exporting {env_var_name}={version !r}")
+            os.environ[env_var_name] = version
 
     @abstractmethod
     def clean(self) -> None:
         """
-        Cleans the dist folder for the given self.project and build system.
+        Cleans the dist folder for the given project and build system.
         """
 
     def print_build_info(self, stage: str) -> None:
@@ -229,50 +267,38 @@ class Builder(metaclass=ABCMeta):
     def build(self) -> None:
         pass
 
-    def create_local_pypi_index(self) -> None:
-        """
-        Creates/updates a local PyPI PEP 503 (the simple repository API) compliant
-        folder structure, so that it can be used with PIP's --extra-index-url
-        setting.
-        """
-        main_tox_build_path = self.make_build_path()
-        pypi_index_path = self.make_local_pypi_index_path()
-        project_dist_name = self.get_package_dist_name()
-        project_repo_path = os.path.join(pypi_index_path, project_dist_name)
-        project_index_html_path = os.path.join(project_repo_path, "index.html")
-        os.makedirs(project_repo_path, exist_ok=True)
-
-        package_glob = f"{project_dist_name}-*.tar.gz"
-
-        # copy all relevant packages into the index subfolder
-        for package in glob(os.path.join(main_tox_build_path, package_glob)):
-            shutil.copy(package, project_repo_path)
-
-        # remove index.html, if exists already
-        if os.path.exists(project_index_html_path):
-            os.remove(project_index_html_path)
-
-        # create an index.html with entries for all existing packages
-        package_file_links = [
-            f"<a href='{os.path.basename(package)}'>{os.path.basename(package)}</a>"
-            f"<br/>"
-            for package in glob(os.path.join(project_repo_path, package_glob))
-        ]
-        # store index.html
-        with open(project_index_html_path, "wt") as f:
-            f.writelines(package_file_links)
-
-        print(f"Local PyPi Index created at: {pypi_index_path}")
-
     def run(self) -> None:
         self.print_build_info(stage="STARTING")
         self.clean()
-        self.expose_deps()
+        self.expose_package_dependencies()
         self.build()
         self.print_build_info(stage="COMPLETED")
 
 
+def validate_pip_version_spec(dependency_type: str, package: str, spec: str) -> str:
+    if re.fullmatch(
+        RE_VERSION,
+        spec,
+    ):
+        return spec
+
+    raise ValueError(
+        f"invalid version spec in {dependency_type} dependency {package}{spec}"
+    )
+
+
 class CondaBuilder(Builder):
+    def __init__(self, project: str, dependency_type: str):
+        super().__init__(project, dependency_type)
+
+        if " " in self.projects_root_path:
+            warnings.warn(
+                f"The build base path '{self.projects_root_path}' contains spaces – "
+                f"this causes issues with conda-build. "
+                f"Consider to set a different path using the "
+                f"environment variable {FACET_PATH_ENV} ahead of running make.py."
+            )
+
     @property
     def build_system(self) -> str:
         return B_CONDA
@@ -282,7 +308,8 @@ class CondaBuilder(Builder):
         return CONDA_BUILD_PATH_SUFFIX
 
     def adapt_version_syntax(self, version: str) -> str:
-        return version
+        # CONDA expects = instead of ==
+        return re.sub(r"==", "=", version)
 
     def clean(self) -> None:
         build_path = self.make_build_path()
@@ -297,7 +324,7 @@ class CondaBuilder(Builder):
 
     def build(self) -> None:
         """
-        Build a facet self.project using conda-build.
+        Build a facet project using conda-build.
         """
 
         build_path = self.make_build_path()
@@ -307,20 +334,13 @@ class CondaBuilder(Builder):
             os.path.join(os.environ[FACET_PATH_ENV], self.project, "condabuild")
         )
 
-        local_channels = [
-            f'-c "{pathlib.Path(_build_path).as_uri()}"'
-            for _build_path in map(self.make_build_path, KNOWN_PROJECTS)
-            if os.path.exists(_build_path)
-            and os.path.exists(os.path.join(_build_path, "noarch/repodata.json"))
-        ]
-
-        print(f"Building: {self.project}. Build path: {build_path}")
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = (
-            f"conda-build -c conda-forge "
-            f"-c bcg_gamma {' '.join(local_channels)} {recipe_path}"
+        build_cmd = f"conda-build -c conda-forge -c bcg_gamma {recipe_path}"
+        print(
+            f"Building: {self.project}\n"
+            f"Build path: {build_path}\n"
+            f"Build Command: {build_cmd}"
         )
-        print(f"Build Command: {build_cmd}")
         subprocess.run(args=build_cmd, shell=True, check=True)
 
 
@@ -334,8 +354,7 @@ class ToxBuilder(Builder):
         return TOX_BUILD_PATH_SUFFIX
 
     def adapt_version_syntax(self, version: str) -> str:
-        # PIP expects == instead of =
-        return re.sub(r"(?<![<=>~])=(?![<=>])", "==", version)
+        return version
 
     def clean(self) -> None:
         # nothing to do – .tar.gz of same version will simply be replaced and
@@ -344,18 +363,80 @@ class ToxBuilder(Builder):
 
     def build(self) -> None:
         """
-        Build a facet self.project using tox.
+        Build a facet project using tox.
         """
-        if self.dependency_type == DEFAULT_DEPS:
+        if self.dependency_type == DEP_DEFAULT:
             tox_env = "py3"
         else:
             tox_env = "py3-custom-deps"
 
-        build_cmd = f"tox -e {tox_env} -v"
-        print(f"Build Command: {build_cmd}")
-        subprocess.run(args=build_cmd, shell=True, check=True)
-        print("Tox build completed – creating local PyPi index")
-        self.create_local_pypi_index()
+        original_dir = os.getcwd()
+
+        try:
+
+            build_path = self.make_build_path()
+            os.makedirs(build_path, exist_ok=True)
+            os.chdir(build_path)
+
+            build_cmd = f"tox -e {tox_env} -v"
+            print(f"Build Command: {build_cmd}")
+            subprocess.run(args=build_cmd, shell=True, check=True)
+            print("Tox build completed – creating local PyPi index")
+
+            # Create/update a local PyPI PEP 503 (the simple repository API) compliant
+            # folder structure, so that it can be used with PIP's --extra-index-url
+            # setting.
+
+            pypi_index_path = self.make_local_pypi_index_path()
+            project_dist_name = self.get_package_dist_name()
+            project_repo_path = os.path.join(pypi_index_path, project_dist_name)
+            project_index_html_path = os.path.join(project_repo_path, "index.html")
+            os.makedirs(project_repo_path, exist_ok=True)
+
+            package_glob = f"{project_dist_name}-*.tar.gz"
+
+            # copy all relevant packages into the index subfolder
+            for package in glob(package_glob):
+                shutil.copy(package, project_repo_path)
+
+            # remove index.html, if exists already
+            if os.path.exists(project_index_html_path):
+                os.remove(project_index_html_path)
+
+            # create an index.html with entries for all existing packages
+            package_file_links = [
+                f"<a href='{os.path.basename(package)}'>{os.path.basename(package)}</a>"
+                f"<br/>"
+                for package in glob(os.path.join(project_repo_path, package_glob))
+            ]
+            # store index.html
+            with open(project_index_html_path, "wt") as f:
+                f.writelines(package_file_links)
+
+            print(f"Local PyPi Index created at: {pypi_index_path}")
+
+        finally:
+            os.chdir(original_dir)
+
+
+def get_projects_root_path() -> str:
+    if (FACET_PATH_ENV in os.environ) and os.environ[FACET_PATH_ENV]:
+        facet_path = os.environ[FACET_PATH_ENV]
+    else:
+        facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
+        os.environ[FACET_PATH_ENV] = facet_path
+
+    return facet_path
+
+
+def get_known_projects() -> Set[str]:
+    return {
+        dir_entry.name
+        for dir_entry in cast(
+            Iterator[os.DirEntry], os.scandir(get_projects_root_path())
+        )
+        if dir_entry.is_dir()
+    }
 
 
 def print_usage() -> None:
@@ -367,8 +448,7 @@ def print_usage() -> None:
 Build a distribution package for given project.
 
 Available arguments:
-    project:    {' | '.join((ALL_PROJECTS_QUALIFIER,*KNOWN_PROJECTS))}
-                use "{ALL_PROJECTS_QUALIFIER}" to build all projects
+    project:    {' | '.join(get_known_projects())}
 
     build-system: {B_CONDA} | {B_TOX}
 
@@ -400,34 +480,25 @@ def run_make() -> None:
     if len(sys.argv) > 3:
         dependency_type = sys.argv[3]
     else:
-        dependency_type = DEFAULT_DEPS
+        dependency_type = DEP_DEFAULT
 
     # sanitize input
-    for arg_name, arg_passed, known_args in (
-        ("project", project, KNOWN_PROJECTS),
+    for arg_name, arg_value, valid_values in (
+        ("project", project, get_known_projects()),
         ("build system", build_system, KNOWN_BUILD_SYSTEMS),
         ("dependency type", dependency_type, KNOWN_DEPENDENCY_TYPES),
     ):
 
-        if arg_name == "project" and arg_passed == "all":
-            continue
-        elif arg_passed not in known_args:
+        if arg_value not in valid_values:
             print(
-                f"Wrong {arg_name}: {arg_passed}; fallowed are: {', '.join(known_args)}"
+                f"Wrong value for {arg_name} argument: "
+                f"got {arg_value} but expected one of {', '.join(valid_values)}"
             )
             exit(1)
 
-    if project == ALL_PROJECTS_QUALIFIER:
-        for _project in KNOWN_PROJECTS:
-            Builder.for_build_system(
-                build_system=build_system,
-                project=_project,
-                dependency_type=dependency_type,
-            ).run()
-    else:
-        Builder.for_build_system(
-            build_system=build_system, project=project, dependency_type=dependency_type
-        ).run()
+    Builder.for_build_system(
+        build_system=build_system, project=project, dependency_type=dependency_type
+    ).run()
 
 
 if __name__ == "__main__":
