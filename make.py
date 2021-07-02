@@ -374,7 +374,9 @@ class ToxBuilder(Builder):
 
         try:
 
-            os.chdir(self.make_build_path())
+            build_path = self.make_build_path()
+            os.makedirs(build_path, exist_ok=True)
+            os.chdir(build_path)
 
             build_cmd = f"tox -e {tox_env} -v"
             print(f"Build Command: {build_cmd}")
@@ -385,7 +387,6 @@ class ToxBuilder(Builder):
             # folder structure, so that it can be used with PIP's --extra-index-url
             # setting.
 
-            main_tox_build_path = "."
             pypi_index_path = self.make_local_pypi_index_path()
             project_dist_name = self.get_package_dist_name()
             project_repo_path = os.path.join(pypi_index_path, project_dist_name)
@@ -395,7 +396,7 @@ class ToxBuilder(Builder):
             package_glob = f"{project_dist_name}-*.tar.gz"
 
             # copy all relevant packages into the index subfolder
-            for package in glob(os.path.join(main_tox_build_path, package_glob)):
+            for package in glob(package_glob):
                 shutil.copy(package, project_repo_path)
 
             # remove index.html, if exists already
