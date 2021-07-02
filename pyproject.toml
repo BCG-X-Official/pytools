@@ -80,7 +80,7 @@ joblib         = "~=1.0"
 matplotlib     = "~=3.3"
 numpy          = ">=1.20,<2a"  # cannot use ~= due to conda bug
 pandas         = "~=1.2"
-python         = ">=3.9,<4a"  # cannot use ~= due to conda bug
+python         = ">=3.8,<4a"  # cannot use ~= due to conda bug
 scipy          = "~=1.5"
 typing_inspect = "~=0.6"
 
