@@ -25,13 +25,13 @@ variables:
   source_is_release_branch: $[ startsWith(variables['branchName'], 'release') ]
   source_is_develop_branch: $[ or(startsWith(variables['branchName'], 'develop'), startsWith(variables['branchName'], 'dev/')) ]
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
-  project_name: pytools
+  project_name: $(Build.Repository.Name)
   package_name: gamma-pytools
   sshPublicKey: $(sshPublicKey)
 
-  ${{ if eq(variables.project_name, 'pytools') }}:
+  ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
     project_root: .
-  ${{ if not(eq(variables.project_name, 'pytools')) }}:
+  ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
     project_root: $(project_name)
 
 stages:
