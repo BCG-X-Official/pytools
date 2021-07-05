@@ -200,7 +200,7 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
-        - checkout: pytools
+          path: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
@@ -287,7 +287,7 @@ stages:
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
         - checkout: self
-        - checkout: pytools
+          path: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
@@ -383,7 +383,7 @@ stages:
             displayName: 'use Python 3.7'
 
           - checkout: self
-          - checkout: pytools
+            path: pytools
 
           - task: Bash@3
             env:
@@ -448,7 +448,7 @@ stages:
             displayName: 'use Python 3.7'
 
           - checkout: self
-          - checkout: pytools
+            path: pytools
 
           - task: Bash@3
             inputs:
@@ -575,7 +575,7 @@ stages:
           displayName: 'Install the deploy SSH key'
 
         - checkout: self
-        - checkout: pytools
+          path: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
