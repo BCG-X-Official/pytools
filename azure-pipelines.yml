@@ -199,10 +199,10 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if eq(variables.project_name, 'pytools') }}:
+        - ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(eq(variables.project_name, 'pytools')) }}:
+        - ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
           - checkout: self
           - checkout: pytools
 
@@ -290,10 +290,10 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if eq(variables.project_name, 'pytools') }}:
+        - ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(eq(variables.project_name, 'pytools')) }}:
+        - ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
           - checkout: self
           - checkout: pytools
 
@@ -390,10 +390,10 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if eq(variables.project_name, 'pytools') }}:
+          - ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
             - checkout: self
               path: pytools
-          - ${{ if not(eq(variables.project_name, 'pytools')) }}:
+          - ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
             - checkout: self
             - checkout: pytools
 
@@ -459,10 +459,10 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if eq(variables.project_name, 'pytools') }}:
+          - ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
             - checkout: self
               path: pytools
-          - ${{ if not(eq(variables.project_name, 'pytools')) }}:
+          - ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
             - checkout: self
             - checkout: pytools
 
@@ -590,10 +590,10 @@ stages:
             sshKeySecureFile: 'deploy_docs_$(project_name)'
           displayName: 'Install the deploy SSH key'
 
-        - ${{ if eq(variables.project_name, 'pytools') }}:
+        - ${{ if eq(variables.Build.Repository.Name, 'pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(eq(variables.project_name, 'pytools')) }}:
+        - ${{ if not(eq(variables.Build.Repository.Name, 'pytools')) }}:
           - checkout: self
           - checkout: pytools
 
