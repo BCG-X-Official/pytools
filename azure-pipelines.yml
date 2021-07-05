@@ -34,9 +34,9 @@ variables:
   source_is_develop_branch: $[ or(startsWith(variables['branchName'], 'develop'), startsWith(variables['branchName'], 'dev/')) ]
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
   project_name: pytools
-  project_root: .
+  project_root: $(project_name)
   package_name: pytools
-  sshPublicKey: $(sshPublicKey)
+  sshPublicKey: $(sshPublicKey_pytools)
 
 stages:
   # check code quality first to fail fast (isort, flake8, black)
