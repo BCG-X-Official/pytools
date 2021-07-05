@@ -25,13 +25,13 @@ variables:
   source_is_release_branch: $[ startsWith(variables['branchName'], 'release') ]
   source_is_develop_branch: $[ or(startsWith(variables['branchName'], 'develop'), startsWith(variables['branchName'], 'dev/')) ]
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
-  project_name: $(Build.Repository.Name)
+  project_name: pytools
   package_name: gamma-pytools
   sshPublicKey: $(sshPublicKey)
 
-  ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+  ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
     project_root: .
-  ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+  ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
     project_root: $(project_name)
 
 stages:
@@ -199,10 +199,10 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+        - ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+        - ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
           - checkout: self
           - checkout: pytools
 
@@ -290,10 +290,10 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+        - ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+        - ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
           - checkout: self
           - checkout: pytools
 
@@ -390,10 +390,10 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+          - ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
             - checkout: self
               path: pytools
-          - ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+          - ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
             - checkout: self
             - checkout: pytools
 
@@ -459,10 +459,10 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+          - ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
             - checkout: self
               path: pytools
-          - ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+          - ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
             - checkout: self
             - checkout: pytools
 
@@ -590,10 +590,10 @@ stages:
             sshKeySecureFile: 'deploy_docs_$(project_name)'
           displayName: 'Install the deploy SSH key'
 
-        - ${{ if endsWith(variables.Build.Repository.Name, '.pytools') }}:
+        - ${{ if endsWith(variables.Build.DefinitionName, '.pytools') }}:
           - checkout: self
             path: pytools
-        - ${{ if not(endsWith(variables.Build.Repository.Name, '.pytools')) }}:
+        - ${{ if not(endsWith(variables.Build.DefinitionName, '.pytools')) }}:
           - checkout: self
           - checkout: pytools
 
