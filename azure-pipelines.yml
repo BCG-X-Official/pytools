@@ -199,12 +199,8 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if endsWith(variables['Build.DefinitionName'], '.pytools') }}:
-          - checkout: self
-            path: pytools
-        - ${{ if not(endsWith(variables['Build.DefinitionName'], '.pytools')) }}:
-          - checkout: self
-          - checkout: pytools
+        - checkout: self
+        - checkout: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
@@ -290,12 +286,8 @@ stages:
             versionSpec: '$(FACET_V_PYTHON_BUILD)'
           displayName: 'Use Python $(FACET_V_PYTHON_BUILD)'
 
-        - ${{ if endsWith(variables['Build.DefinitionName'], '.pytools') }}:
-          - checkout: self
-            path: pytools
-        - ${{ if not(endsWith(variables['Build.DefinitionName'], '.pytools')) }}:
-          - checkout: self
-          - checkout: pytools
+        - checkout: self
+        - checkout: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
@@ -390,12 +382,8 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if endsWith(variables['Build.DefinitionName'], '.pytools') }}:
-            - checkout: self
-              path: pytools
-          - ${{ if not(endsWith(variables['Build.DefinitionName'], '.pytools')) }}:
-            - checkout: self
-            - checkout: pytools
+          - checkout: self
+          - checkout: pytools
 
           - task: Bash@3
             env:
@@ -459,12 +447,8 @@ stages:
               versionSpec: '3.7.*'
             displayName: 'use Python 3.7'
 
-          - ${{ if endsWith(variables['Build.DefinitionName'], '.pytools') }}:
-            - checkout: self
-              path: pytools
-          - ${{ if not(endsWith(variables['Build.DefinitionName'], '.pytools')) }}:
-            - checkout: self
-            - checkout: pytools
+          - checkout: self
+          - checkout: pytools
 
           - task: Bash@3
             inputs:
@@ -590,12 +574,8 @@ stages:
             sshKeySecureFile: 'deploy_docs_$(project_name)'
           displayName: 'Install the deploy SSH key'
 
-        - ${{ if endsWith(variables['Build.DefinitionName'], '.pytools') }}:
-          - checkout: self
-            path: pytools
-        - ${{ if not(endsWith(variables['Build.DefinitionName'], '.pytools')) }}:
-          - checkout: self
-          - checkout: pytools
+        - checkout: self
+        - checkout: pytools
 
         - script: dir $(Build.SourcesDirectory)
 
