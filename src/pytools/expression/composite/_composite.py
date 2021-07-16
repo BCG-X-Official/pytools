@@ -7,7 +7,7 @@ from abc import ABCMeta
 from typing import Any, Tuple, TypeVar, Union, cast
 
 from ...api import AllTracker, inheritdoc
-from .. import Expression, make_expression
+from .. import Expression, ExpressionAlias, make_expression
 from ..atomic import Epsilon, Id
 from ..base import (
     BracketPair,
@@ -184,11 +184,13 @@ class BinaryOperation(InfixExpression, Operation):
 
         first_operand = operands[0]
 
-        if isinstance(first_operand, BinaryOperation):
-            if first_operand.operator_ == operator:
-                # if first operand has the same operator, we flatten the operand
-                # noinspection PyUnresolvedReferences
-                operands = (*first_operand.operands_, *operands[1:])
+        if (
+            isinstance(first_operand, BinaryOperation)
+            and first_operand.operator_ == operator
+        ):
+            # if first operand has the same operator, we flatten the operand
+            # noinspection PyUnresolvedReferences
+            operands = (*first_operand.operands_, *operands[1:])
 
         self._operator = operator
         self._operands = operands
@@ -212,6 +214,31 @@ class BinaryOperation(InfixExpression, Operation):
     def precedence_(self) -> int:
         """[see superclass]"""
         return self.infix_.precedence
+
+    def _flattened_operands(self) -> Tuple[Expression, ...]:
+        operands = self.operands_
+        first_operand = operands[0]
+
+        while isinstance(first_operand, ExpressionAlias):
+            first_operand = first_operand.expression_
+
+            if (
+                isinstance(first_operand, BinaryOperation)
+                and first_operand.operator_ == self.operator_
+            ):
+                return (*first_operand._flattened_operands(), *operands[1:])
+
+        return operands
+
+    def _eq_same_type(self, other: "BinaryOperation") -> bool:
+        if self.operator_ == other.operator_:
+            self_operands_ = self._flattened_operands()
+            other_operands_ = other._flattened_operands()
+            return len(self_operands_) == len(other_operands_) and all(
+                a.eq_(b) for a, b in zip(self_operands_, other_operands_)
+            )
+        else:
+            return False
 
 
 #
