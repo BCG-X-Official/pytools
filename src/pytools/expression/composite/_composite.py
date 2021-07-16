@@ -16,9 +16,8 @@ from ..base import (
     Invocation,
     Operation,
     SimplePrefixExpression,
-    SingletonExpression,
 )
-from ..operator import BinaryOperator, Operator, UnaryOperator
+from ..operator import BinaryOperator, UnaryOperator
 from .base import DictEntry, KeywordArgument, LambdaDefinition
 
 log = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "BracketedExpression",
     "ListLiteral",
     "TupleLiteral",
     "SetLiteral",
@@ -65,50 +63,6 @@ __tracker = AllTracker(globals())
 #
 # Bracketed expressions
 #
-
-
-@inheritdoc(match="[see superclass]")
-class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
-    """
-    An expression surrounded by brackets.
-    """
-
-    def __init__(self, brackets: BracketPair, subexpression: Any) -> None:
-        """
-        :param brackets: the brackets enclosing this expression's subexpressions
-        :param subexpression: the subexpression enclosed by brackets
-        """
-        super().__init__()
-        self._brackets = brackets
-        self._subexpression = make_expression(subexpression)
-
-    @property
-    def brackets_(self) -> BracketPair:
-        """
-        The brackets enclosing this expression's subexpressions.
-        """
-        return self._brackets
-
-    @property
-    def subexpression_(self) -> Expression:
-        """
-        The subexpression enclosed by the brackets.
-        """
-        return self._subexpression
-
-    @property
-    def precedence_(self) -> int:
-        """[see superclass]"""
-        return Operator.MAX_PRECEDENCE
-
-    def hash_(self) -> int:
-        """[see superclass]"""
-        return hash((type(self), self.brackets_, self.subexpression_.hash_()))
-
-    def _eq_same_type(self, other: "BracketedExpression") -> bool:
-        return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
-            other.subexpression_
-        )
 
 
 class ListLiteral(CollectionLiteral):
