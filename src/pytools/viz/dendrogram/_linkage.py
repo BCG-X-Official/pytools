@@ -105,7 +105,7 @@ class LinkageTree:
 
         def _validate_leaves(var: Sequence[Any], var_name: str):
             if len(var) != n_leaves:
-                raise ValueError(f"expected {n_leaves} values " f"for arg {var_name}")
+                raise ValueError(f"expected {n_leaves} values for arg {var_name}")
 
         self.scipy_linkage_matrix = scipy_linkage_matrix
 
