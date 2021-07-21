@@ -35,7 +35,7 @@ variables:
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
   project_name: pytools
   project_root: $(project_name)
-  package_name: pytools
+  package_name: gamma-pytools
   sshPublicKey: $(sshPublicKey_pytools)
 
 stages:
