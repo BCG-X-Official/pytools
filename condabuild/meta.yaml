@@ -17,7 +17,7 @@ requirements:
     - flit   =3
   run:
     - joblib          {{ environ.get('FACET_V_JOBLIB') }}
-    - matplotlib-base {{ environ.get('FACET_V_MATPLOTLIB_BASE') }}
+    - matplotlib-base {{ environ.get('FACET_V_MATPLOTLIB') }}
     - numpy           {{ environ.get('FACET_V_NUMPY') }}
     - pandas          {{ environ.get('FACET_V_PANDAS') }}
     - python          {{ environ.get('FACET_V_PYTHON') }}
