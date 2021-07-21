@@ -26,6 +26,14 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 *pytools* 1.1
 -------------
 
+1.1.5
+~~~~~
+
+- FIX: fixed a rare case where :meth:`~.Expression.eq_` returned `False` for two
+  equivalent expressions if one of them included an :class:`~.ExpressionAlias`
+- FIX: accept any type of numerical values as leaf weights of :class:`~.LinkageTree`
+
+
 1.1.4
 ~~~~~
 

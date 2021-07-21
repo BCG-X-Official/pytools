@@ -11,7 +11,7 @@ from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from pytools.api import AllTracker, to_tuple
+from pytools.api import AllTracker
 from pytools.viz.dendrogram.base import LeafNode, LinkageNode, Node
 
 #
@@ -105,16 +105,12 @@ class LinkageTree:
 
         def _validate_leaves(var: Sequence[Any], var_name: str):
             if len(var) != n_leaves:
-                raise ValueError(f"expected {n_leaves} values " f"for arg {var_name}")
+                raise ValueError(f"expected {n_leaves} values for arg {var_name}")
 
         self.scipy_linkage_matrix = scipy_linkage_matrix
 
-        leaf_names: Tuple[str, ...] = to_tuple(
-            leaf_names, element_type=str, arg_name="leaf_names"
-        )
-        leaf_weights: Tuple[float, ...] = to_tuple(
-            leaf_weights, element_type=float, arg_name="leaf_weights"
-        )
+        leaf_names: List[str] = [str(name) for name in leaf_names]
+        leaf_weights: List[float] = [float(weight) for weight in leaf_weights]
 
         _validate_leaves(leaf_names, "leaf_labels")
         _validate_leaves(leaf_weights, "leaf_weights")
