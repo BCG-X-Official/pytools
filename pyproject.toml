@@ -14,12 +14,12 @@ dist-name = "gamma-pytools"
 license = "Apache Software License v2.0"
 
 requires = [
-    "joblib         >=0.14,<2a",
-    "matplotlib     ~=3.0",
-    "numpy          >=1.16,<2a",
-    "pandas         >=0.24,<2a",
-    "scipy          ~=1.2",
-    "typing_inspect ~=0.4",
+    "joblib          >=0.14,<2a",
+    "matplotlib-base ~=3.0",
+    "numpy           >=1.16,<2a",
+    "pandas          >=0.24,<2a",
+    "scipy           ~=1.2",
+    "typing_inspect  ~=0.4",
 ]
 
 requires-python = ">=3.6,<4a"
@@ -66,22 +66,22 @@ Repository = "https://github.com/BCG-Gamma/pytools"
 
 [build.matrix.min]
 # minimum requirements of gamma-pytools
-joblib         = "~=0.14.0"
-matplotlib     = "~=3.0.3"
-numpy          = ">=1.16.6,<1.17a"  # cannot use ~= due to conda bug
-pandas         = "~=0.24.2"
-python         = ">=3.6.8,<3.7a"  # cannot use ~= due to conda bug
-scipy          = "~=1.2.1"
-typing_inspect = "~=0.4.0"
+joblib          = "~=0.14.0"
+matplotlib-base = "~=3.0.3"
+numpy           = ">=1.16.6,<1.17a"  # cannot use ~= due to conda bug
+pandas          = "~=0.24.2"
+python          = ">=3.6.8,<3.7a"  # cannot use ~= due to conda bug
+scipy           = "~=1.2.1"
+typing_inspect  = "~=0.4.0"
 
 [build.matrix.max]
-joblib         = "~=1.0"
-matplotlib     = "~=3.4"
-numpy          = ">=1.20,<2a"  # cannot use ~= due to conda bug
-pandas         = "~=1.2"
-python         = ">=3.8,<4a"  # cannot use ~= due to conda bug
-scipy          = "~=1.6"
-typing_inspect = "~=0.7"
+joblib          = "~=1.0"
+matplotlib-base = "~=3.4"
+numpy           = ">=1.20,<2a"  # cannot use ~= due to conda bug
+pandas          = "~=1.2"
+python          = ">=3.8,<4a"  # cannot use ~= due to conda bug
+scipy           = "~=1.6"
+typing_inspect  = "~=0.7"
 
 [tool.black]
 # quiet = "True"
