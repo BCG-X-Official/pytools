@@ -1,0 +1,6 @@
+pytools.api.update\_forward\_references
+=======================================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: update_forward_references

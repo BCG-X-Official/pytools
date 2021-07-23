@@ -1,0 +1,43 @@
+pytools.expression.base.CollectionLiteral
+=========================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: CollectionLiteral
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~CollectionLiteral.and_
+      ~CollectionLiteral.eq_
+      ~CollectionLiteral.get_class_id
+      ~CollectionLiteral.hash_
+      ~CollectionLiteral.not_
+      ~CollectionLiteral.or_
+      ~CollectionLiteral.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~CollectionLiteral.brackets_
+      ~CollectionLiteral.elements_
+      ~CollectionLiteral.precedence_
+      ~CollectionLiteral.subexpression_
+      ~CollectionLiteral.subexpressions_
+   
+   
+
+   .. rubric:: Definitions
