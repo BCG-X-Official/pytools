@@ -3,7 +3,7 @@ package:
   version: {{ environ.get('FACET_BUILD_PYTOOLS_VERSION') }}
 
 source:
-  git_url: {{FACET_PATH}}/pytools
+  git_url: ../
 
 build:
   noarch: python
@@ -11,18 +11,18 @@ build:
 
 requirements:
   host:
-    - pip>=20.*
-    - python {{ environ.get('FACET_V_PYTHON', '=3.8.*') }}
-    - numpy {{ environ.get('FACET_V_NUMPY', '>=1.11.*') }}
-    - flit>=3.0.*
+    - pip    >=20
+    - python {{ environ.get('FACET_V_PYTHON') }}
+    - numpy  {{ environ.get('FACET_V_NUMPY') }}
+    - flit   =3
   run:
-    - joblib{{ environ.get('FACET_V_JOBLIB') }}
-    - matplotlib{{ environ.get('FACET_V_MATPLOTLIB') }}
-    - numpy{{ environ.get('FACET_V_NUMPY') }}
-    - pandas{{ environ.get('FACET_V_PANDAS') }}
-    - python{{ environ.get('FACET_V_PYTHON') }}
-    - scipy{{ environ.get('FACET_V_SCIPY') }}
-    - typing_inspect{{ environ.get('FACET_V_TYPING_INSPECT') }}
+    - joblib          {{ environ.get('FACET_V_JOBLIB') }}
+    - matplotlib-base {{ environ.get('FACET_V_MATPLOTLIB') }}
+    - numpy           {{ environ.get('FACET_V_NUMPY') }}
+    - pandas          {{ environ.get('FACET_V_PANDAS') }}
+    - python          {{ environ.get('FACET_V_PYTHON') }}
+    - scipy           {{ environ.get('FACET_V_SCIPY') }}
+    - typing_inspect  {{ environ.get('FACET_V_TYPING_INSPECT') }}
 test:
   imports:
     - pytools

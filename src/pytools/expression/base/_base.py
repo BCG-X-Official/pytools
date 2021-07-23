@@ -445,14 +445,5 @@ class InfixExpression(Expression, metaclass=ABCMeta):
             )
         )
 
-    def _eq_same_type(self, other: "InfixExpression") -> bool:
-        return (
-            self.infix_ == other.infix_
-            and len(self.subexpressions_) == len(other.subexpressions_)
-            and all(
-                a.eq_(b) for a, b in zip(self.subexpressions_, other.subexpressions_)
-            )
-        )
-
 
 __tracker.validate()
