@@ -171,7 +171,7 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
                 app=app, what=what, name=name, obj=obj, options=options, lines=lines
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
             raise
 
 
@@ -204,7 +204,8 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         try:
             return self.process(app=app, obj=obj, bound_method=bound_method)
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
+            raise
 
 
 class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
@@ -272,7 +273,8 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
                 return_annotation=return_annotation,
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
+            raise
 
 
 class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
@@ -333,7 +335,7 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
                 app=app, what=what, name=name, obj=obj, skip=skip, options=options
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
             raise
 
 
