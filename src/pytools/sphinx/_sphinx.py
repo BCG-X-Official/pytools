@@ -6,6 +6,7 @@ import itertools
 import logging
 import re
 from abc import ABCMeta, abstractmethod
+from types import FunctionType, MethodType
 from typing import (
     Any,
     Callable,
@@ -18,8 +19,11 @@ from typing import (
     Pattern,
     Set,
     Tuple,
+    Type,
     TypeVar,
+    Union,
     cast,
+    get_type_hints,
 )
 
 import typing_inspect
@@ -43,17 +47,18 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "SphinxCallback",
-    "AutodocProcessDocstring",
+    "AddInheritance",
     "AutodocBeforeProcessSignature",
+    "AutodocProcessDocstring",
     "AutodocProcessSignature",
     "AutodocSkipMember",
-    "AddInheritance",
     "CollapseModulePaths",
     "CollapseModulePathsInDocstring",
     "CollapseModulePathsInSignature",
-    "SkipIndirectImports",
     "Replace3rdPartyDoc",
+    "ResolveGenericClassParameters",
+    "SkipIndirectImports",
+    "SphinxCallback",
 ]
 
 #
@@ -804,6 +809,199 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
     def __root_package(name: str) -> str:
         root_package_match = Replace3rdPartyDoc.__RE_ROOT_PACKAGE.match(name)
         return root_package_match[0] if root_package_match else ""
+
+
+class _TypeVarBindings:
+    def __init__(self, current_class: type) -> None:
+        self.current_class = current_class
+        self._bindings = self._get_parameter_bindings(
+            cls=current_class, subclass_bindings={}
+        )
+
+    def resolve_parameter(
+        self, defining_class: type, parameter: TypeVar
+    ) -> Union[Type, TypeVar]:
+        """
+        Resolve a type parameter, substituting it with an actual type if the parameter
+        is bound to a type argument in the context of the current class;
+        otherwise return the parameter unchanged.
+
+        :param defining_class: the class that introduced the type parameter; this is
+            the the current class itself, or a base class of the current class
+        :param parameter: the type variable
+        :return: the resolved parameter if bound to a type argument; else the original
+            parameter as a type variable
+        """
+        return self._bindings.get(defining_class, {}).get(parameter, parameter)
+
+    def _get_parameter_bindings(
+        self,
+        cls: type,
+        subclass_bindings: Dict[TypeVar, Union[Type, TypeVar]] = None,
+    ) -> Dict[Type, Dict[TypeVar, Union[Type, TypeVar]]]:
+        # get type variable bindings for all generic types defined in the class
+        # hierarchy of the given parent class, applying the given bindings derived from
+        # child classes
+
+        # if arg cls has generic type parameters, it will have a corresponding
+        cls_origin: Optional[type] = None
+        if typing_inspect.is_generic_type(cls):
+            cls_origin: type = typing_inspect.get_origin(cls)
+
+        if cls_origin:
+            class_bindings: Dict[TypeVar, type] = {
+                param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
+                for param, arg in zip(
+                    typing_inspect.get_parameters(cls_origin),
+                    typing_inspect.get_args(cls),
+                )
+            }
+            cls = cls_origin
+        else:
+            # this class has no generic parameters of itself, so we adopt the existing
+            # parameter bindings from the subclass(es)
+            class_bindings = subclass_bindings
+
+        superclass_bindings = {
+            superclass: bindings
+            for generic_superclass in get_generic_bases(cls)
+            for superclass, bindings in (
+                self._get_parameter_bindings(
+                    cls=generic_superclass, subclass_bindings=class_bindings
+                ).items()
+            )
+            if bindings
+        }
+
+        if cls_origin:
+            # we have generic type parameters in this class, so we remember the
+            # associated bindings
+            return {cls_origin: class_bindings, **superclass_bindings}
+        else:
+            # we have no generic type parameters in this class, so we return the
+            # parameter bindings of the superclasses
+            return superclass_bindings
+
+
+@inheritdoc(match="""[see superclass]""")
+class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
+    """
+    Resolve type variables that can be inferred through generic class parameters.
+
+    For example, the Sphinx documentation for the inherited method ``B.f`` in the
+    following example will be rendered with the signature ``(int) -> int``:
+
+    .. codeblock: python
+
+        T = TypeVar("T")
+
+        class A(Generic[T]):
+            def f(x: T) -> T:
+                return x
+
+        class B(A[int]):
+            pass
+
+    """
+
+    original_signatures: Dict[Any, Dict[str, Union[Type, TypeVar]]]
+
+    _current_class_bindings: Optional[_TypeVarBindings]
+
+    def __init__(self) -> None:
+        self.original_signatures = {}
+        self._current_class_bindings = None
+
+    @staticmethod
+    def _get_defining_class(method: FunctionType) -> Optional[type]:
+        # get the class that defined the callable
+
+        print(f"find class for method {method.__module__}.{method.__qualname__}")
+
+        qualname_sep = method.__qualname__.rfind(".")
+        if qualname_sep < 0:
+            return None
+        try:
+            return eval(method.__qualname__[:qualname_sep], method.__globals__)
+        except AttributeError:
+            return None
+
+    def _resolve_signature(
+        self, bindings: _TypeVarBindings, func: FunctionType
+    ) -> None:
+        defining_class = self._get_defining_class(func)
+        print(f"XX function {func} was defined in {defining_class}")
+
+        def _substitute(_tp: Union[Type, TypeVar]) -> type:
+            if isinstance(_tp, TypeVar):
+                return bindings.resolve_parameter(defining_class, _tp)
+            args = typing_inspect.get_args(_tp)
+            if args:
+                # noinspection PyUnresolvedReferences
+                return _tp.copy_with(tuple(map(_substitute, args)))
+            else:
+                return _tp
+
+        # get the original signature as defined in the code
+        signature_original: Dict[str, Union[type, TypeVar]]
+        try:
+            signature_original = self.original_signatures[func]
+        except KeyError:
+            signature_original = get_type_hints(func)
+            self.original_signatures[func] = signature_original
+
+        # get the actual signature object that we will modify
+        signature = func.__annotations__
+        if signature:
+            for name, tp in signature_original.items():
+                signature[name] = _substitute(tp)
+
+    def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
+        """[see superclass]"""
+
+        try:
+            if isinstance(obj, type):
+                # we are starting to process a new class, remember it so we can
+                # attribute unbound methods to it
+                self._update_current_class(obj)
+
+            elif isinstance(obj, FunctionType):
+                if obj.__qualname__ == "__init__":
+                    # we are starting to process a new class, remember it so we can
+                    # attribute unbound methods to it
+                    bindings = self._update_current_class(self._get_defining_class(obj))
+                else:
+                    bindings = self._current_class_bindings
+
+                # instance method definitions are unbound, so we need to remember
+                # the class we are currently in
+                self._resolve_signature(bindings=bindings, func=obj),
+
+            elif isinstance(obj, MethodType):
+                # class method definitions are bound, so we can infer the current class
+                cls = obj.__self__
+                assert isinstance(cls, type), "methods are class methods"
+                self._resolve_signature(
+                    bindings=self._update_current_class(cls), func=obj.__func__
+                )
+            else:
+                return
+            print(
+                f"XX updated signature: {getattr(obj, '__annotations__','<undefined>')}"
+            )
+        finally:
+            print()
+
+    def _update_current_class(self, cls: type) -> _TypeVarBindings:
+        bindings = self._current_class_bindings
+        if bindings is None or cls is not bindings.current_class:
+            bindings = self._current_class_bindings = _TypeVarBindings(cls)
+        return bindings
+
+
+#
+# helper functions
+#
 
 
 __tracker.validate()
