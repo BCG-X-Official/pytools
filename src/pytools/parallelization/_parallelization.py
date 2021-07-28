@@ -334,7 +334,7 @@ class SimpleQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
 
 
 @inheritdoc(match="""[see superclass]""")
-class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]]):
+class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
     """
     Runs all jobs in a given list of compatible queues and returns their results as a
     flat list.

@@ -188,13 +188,13 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         return "autodoc-before-process-signature"
 
     @abstractmethod
-    def process(self, app: Sphinx, obj: object, bound_method: bool) -> None:
+    def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
         """
         Process an event.
 
         :param app: the Sphinx application object
         :param obj: the object itself
-        :param bound_method: a boolean indicates an object is bound method or not
+        :param bound_method: indicates an object is bound method or not
         """
         pass
 
