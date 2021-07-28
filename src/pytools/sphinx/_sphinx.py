@@ -49,6 +49,7 @@ log = logging.getLogger(__name__)
 __all__ = [
     "AddInheritance",
     "AutodocBeforeProcessSignature",
+    "AutodocProcessBases",
     "AutodocProcessDocstring",
     "AutodocProcessSignature",
     "AutodocSkipMember",
@@ -334,6 +335,47 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
             return self.process(
                 app=app, what=what, name=name, obj=obj, skip=skip, options=options
             )
+        except Exception as e:
+            log.error(repr(e))
+            raise
+
+
+class AutodocProcessBases(SphinxCallback, metaclass=ABCMeta):
+    """
+    An autodoc-process-bases processor.
+    """
+
+    @property
+    def event(self) -> str:
+        """
+        ``autodoc-process-bases``
+        """
+        return "autodoc-process-bases"
+
+    @abstractmethod
+    def process(
+        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+    ) -> None:
+        """
+        Decide whether a member should be included in the documentation.
+
+        :param app: the Sphinx application object
+        :param name: the fully qualified name of the object
+        :param obj: the object itself
+        :param options: the options given to the directive: an object with attributes
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and
+            ``noindex`` that are ``True`` if the flag option of same name was given to
+            the auto directive
+        :param bases: list of classes that the event handler can modify in place to
+            change what Sphinx puts into the output
+        """
+        pass
+
+    def __call__(
+        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+    ) -> None:
+        try:
+            self.process(app=app, name=name, obj=obj, options=options, bases=bases)
         except Exception as e:
             log.error(repr(e))
             raise
