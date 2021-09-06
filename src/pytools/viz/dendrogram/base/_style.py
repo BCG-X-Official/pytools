@@ -79,15 +79,14 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         super().finalize_drawing(**kwargs)
 
     @abstractmethod
-    def draw_leaf_names(
-        self,
-        *,
-        names: Sequence[str],
+    def draw_leaf_labels(
+        self, *, names: Sequence[str], weights: Sequence[float]
     ) -> None:
         """
-        Render the names for all leaves.
+        Render the labels for all leaves.
 
         :param names: the names of all leaves
+        :param weights: the weights of all leaves
         """
         pass
 
@@ -167,7 +166,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def draw_leaf_names(self, *, names: Sequence[str]) -> None:
+    def draw_leaf_labels(
+        self, *, names: Sequence[str], weights: Sequence[float]
+    ) -> None:
         """[see superclass]"""
 
         ax = self.ax

@@ -142,7 +142,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
         _calculate_weights(data.root)
 
         tree_info = _draw_node(node=data.root, y=0, width=data.max_distance)
-        self.style.draw_leaf_names(names=tree_info.names)
+        self.style.draw_leaf_labels(names=tree_info.names, weights=tree_info.weights)
 
 
 __tracker.validate()

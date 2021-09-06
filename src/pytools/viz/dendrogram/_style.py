@@ -226,7 +226,9 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         "%DEFAULT_LABEL_WIDTH%", str(DEFAULT_LABEL_WIDTH)
     )
 
-    def draw_leaf_names(self, *, names: Sequence[str]) -> None:
+    def draw_leaf_labels(
+        self, *, names: Sequence[str], weights: Sequence[float]
+    ) -> None:
         """[see superclass]"""
 
         matrix = self._char_matrix
@@ -235,9 +237,11 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
             n_labels = self.max_height - 1
             matrix[n_labels, :] = f"{'clipped':~^{self.width}s}\n"
         self._n_labels = n_labels
-        label_width = self.__weight_column
-        for row, label in enumerate(names[:n_labels]):
-            matrix[row, :label_width] = label + " "
+        name_width = self.__weight_column
+        label_width = self.label_width
+        for row, name, weight in zip(range(n_labels), names, weights):
+            matrix[row, :name_width] = name + " "
+            matrix[row, name_width:label_width] = f"{weight * 100:3.0f}%"
 
     def draw_link_leg(
         self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
@@ -258,12 +262,6 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         ] = (
             "_" if is_in_between_line else "-"
         )
-
-        # if we're in a leaf, we can draw the weight next to he label
-        if bottom == 0:
-            self._char_matrix[
-                line_y, self.__weight_column : self.label_width
-            ] = f"{weight * 100:3.0f}%"
 
     def draw_link_connector(
         self,
