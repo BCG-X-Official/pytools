@@ -92,7 +92,14 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
 
     @abstractmethod
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
+        self,
+        *,
+        bottom: float,
+        top: float,
+        leaf: float,
+        weight: float,
+        weight_cumulative: float,
+        tree_height: float,
     ) -> None:
         """
         Draw a "leg" connecting two levels of the linkage tree hierarchy.
@@ -102,6 +109,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param leaf: the index of the leaf where the link leg should be drawn (may be
             a ``float``, indicating a position in between two leaves)
         :param weight: the weight of the child node
+        :param weight_cumulative: the cumulative weight of all nodes with a lower
+            position index than the current one
         :param tree_height: the total height of the linkage tree
         """
         pass
@@ -109,12 +118,14 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
     @abstractmethod
     def draw_link_connector(
         self,
+        *,
         bottom: float,
         top: float,
         first_leaf: int,
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        weight_cumulative: float,
         tree_height: float,
     ) -> None:
         """
@@ -126,6 +137,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param n_leaves_left: the number of leaves in the left sub-tree
         :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
+        :param weight_cumulative: the cumulative weight of all nodes with a lower
+            position index than the current one
         :param tree_height: the total height of the linkage tree
         """
         pass

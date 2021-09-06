@@ -37,7 +37,8 @@ __tracker = AllTracker(globals())
 
 class _SubtreeInfo(NamedTuple):
     names: List[str]
-    weight: float
+    weights: List[float]
+    weight_total: float
 
 
 @inheritdoc(match="[see superclass]")
@@ -70,7 +71,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     def _draw(self, data: LinkageTree) -> None:
         # draw the linkage tree
 
-        node_weight = np.zeros(len(data), float)
+        mean_leaf_weight = np.zeros(len(data), float)
 
         def _calculate_weights(n: Node) -> (float, int):
             # calculate the weight of a node and number of leaves below
@@ -83,65 +84,87 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                 rw, rn = _calculate_weights(r)
                 weight = lw + rw
                 n_leaves = ln + rn
-            node_weight[n.index] = weight / n_leaves
+            mean_leaf_weight[n.index] = weight / n_leaves
             return weight, n_leaves
 
-        def _draw_node(node: Node, y: int, width: float) -> _SubtreeInfo:
+        def _draw_node(
+            node: Node, node_idx: int, weight_cumulative: float, width: float
+        ) -> _SubtreeInfo:
             # Recursively draw the part of the dendrogram under a node.
             #
             # Arguments:
-            # - node:  the node to be drawn
-            # - y:     the value determining the position of the node with respect to
-            #          the leaves of the tree
-            # - width: width difference in the tree covered by the node
+            #   node:     the node to be drawn
+            #   node_idx: an integer determining the position of the node with respect
+            #             to the leaves of the tree
+            #   weight_cumulative:
+            #             the cumulative weight of all nodes with a lower position
+            #   width:    width difference in the tree covered by the node
             #
-            # Returns: _SubtreeInfo instance with labels and weights
+            # Returns:
+            #   _SubtreeInfo instance with labels and weights
 
             if node.is_leaf:
                 self.style.draw_link_leg(
                     bottom=0.0,
                     top=width,
-                    leaf=y,
+                    leaf=node_idx,
                     weight=node.weight,
+                    weight_cumulative=weight_cumulative,
                     tree_height=data.max_distance,
                 )
 
-                return _SubtreeInfo(names=[node.name], weight=node.weight)
+                return _SubtreeInfo(
+                    names=[node.name], weights=[node.weight], weight_total=node.weight
+                )
 
             else:
                 child_left, child_right = data.children(node=node)
-                if node_weight[child_left.index] > node_weight[child_right.index]:
+                if (
+                    mean_leaf_weight[child_left.index]
+                    > mean_leaf_weight[child_right.index]
+                ):
                     child_left, child_right = child_right, child_left
 
-                info_left = _draw_node(
-                    node=child_left, y=y, width=node.children_distance
+                subtree_left_info = _draw_node(
+                    node=child_left,
+                    node_idx=node_idx,
+                    weight_cumulative=weight_cumulative,
+                    width=node.children_distance,
                 )
-                info_right = _draw_node(
+                subtree_right_info = _draw_node(
                     node=child_right,
-                    y=y + len(info_left.names),
+                    node_idx=node_idx + len(subtree_left_info.names),
+                    weight_cumulative=weight_cumulative
+                    + subtree_left_info.weight_total,
                     width=node.children_distance,
                 )
 
-                info = _SubtreeInfo(
-                    names=info_left.names + info_right.names,
-                    weight=info_left.weight + info_right.weight,
+                parent_info = _SubtreeInfo(
+                    names=subtree_left_info.names + subtree_right_info.names,
+                    weights=subtree_left_info.weights + subtree_right_info.weights,
+                    weight_total=(
+                        subtree_left_info.weight_total + subtree_right_info.weight_total
+                    ),
                 )
 
                 self.style.draw_link_connector(
                     bottom=node.children_distance,
                     top=width,
-                    first_leaf=y,
-                    n_leaves_left=len(info_left.names),
-                    n_leaves_right=len(info_right.names),
-                    weight=info.weight,
+                    first_leaf=node_idx,
+                    n_leaves_left=len(subtree_left_info.names),
+                    n_leaves_right=len(subtree_right_info.names),
+                    weight=parent_info.weight_total,
+                    weight_cumulative=weight_cumulative,
                     tree_height=data.max_distance,
                 )
 
-                return info
+                return parent_info
 
         _calculate_weights(data.root)
 
-        tree_info = _draw_node(node=data.root, y=0, width=data.max_distance)
+        tree_info = _draw_node(
+            node=data.root, node_idx=0, weight_cumulative=0.0, width=data.max_distance
+        )
         self.style.draw_leaf_labels(names=tree_info.names, weights=tree_info.weights)
 
 

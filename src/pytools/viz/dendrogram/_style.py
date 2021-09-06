@@ -50,19 +50,28 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         return f"{super().get_default_style_name()}_line"
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
+        self,
+        *,
+        bottom: float,
+        top: float,
+        leaf: float,
+        weight: float,
+        weight_cumulative: float,
+        tree_height: float,
     ) -> None:
         """[see superclass]"""
         self._draw_line(x1=bottom, x2=top, y1=leaf, y2=leaf, weight=weight)
 
     def draw_link_connector(
         self,
+        *,
         bottom: float,
         top: float,
         first_leaf: int,
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        weight_cumulative: float,
         tree_height: float,
     ) -> None:
         """[see superclass]"""
@@ -79,6 +88,7 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
             top=top,
             leaf=(first_leaf + (n_leaves_left + n_leaves_right - 1) / 2),
             weight=weight,
+            weight_cumulative=weight_cumulative,
             tree_height=0,
         )
 
@@ -96,7 +106,14 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
     """
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: int, weight: float, tree_height: float
+        self,
+        *,
+        bottom: float,
+        top: float,
+        leaf: int,
+        weight: float,
+        weight_cumulative: float,
+        tree_height: float,
     ) -> None:
         """[see superclass]"""
         self._draw_hbar(x=bottom, w=top - bottom, y=leaf, h=1, weight=weight)
@@ -109,6 +126,7 @@ class DendrogramHeatmapStyle(DendrogramMatplotStyle):
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        weight_cumulative: float,
         tree_height: float,
     ) -> None:
         """[see superclass]"""
@@ -244,7 +262,14 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
             matrix[row, name_width:label_width] = f"{weight * 100:3.0f}%"
 
     def draw_link_leg(
-        self, bottom: float, top: float, leaf: float, weight: float, tree_height: float
+        self,
+        *,
+        bottom: float,
+        top: float,
+        leaf: float,
+        weight: float,
+        weight_cumulative: float,
+        tree_height: float,
     ) -> None:
         """[see superclass]"""
 
@@ -265,12 +290,14 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
 
     def draw_link_connector(
         self,
+        *,
         bottom: float,
         top: float,
         first_leaf: int,
         n_leaves_left: int,
         n_leaves_right: int,
         weight: float,
+        weight_cumulative: float,
         tree_height: float,
     ) -> None:
         """[see superclass]"""
@@ -283,6 +310,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
             top=top,
             leaf=(first_leaf - 0.5) + (n_leaves_left + n_leaves_right) / 2,
             weight=weight,
+            weight_cumulative=weight_cumulative,
             tree_height=tree_height,
         )
 
