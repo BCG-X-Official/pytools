@@ -300,6 +300,9 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
+            cb.minorticks_on()
+        else:
+            cb.minorticks_off()
 
         # set colorbar tick color
         cb.ax.yaxis.set_tick_params(colors=fg_color)
