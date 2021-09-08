@@ -3,15 +3,16 @@ Base classes for dendrogram styles.
 """
 
 import logging
+import math
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Sequence
+from typing import Any, Iterable, Optional, Sequence, Union
 
 from matplotlib.axes import Axes
 from matplotlib.colors import LogNorm
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.viz import ColorbarMatplotStyle, DrawingStyle, MatplotStyle
-from pytools.viz.color import ColorScheme
+from pytools.viz.color import ColorScheme, text_contrast_color
 from pytools.viz.util import PercentageFormatter
 
 log = logging.getLogger(__name__)
@@ -47,6 +48,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        max_distance: Optional[float] = None,
+        n_leaves: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -56,6 +59,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param leaf_label: the label for the leaf axis
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
+        :param max_distance: the height (= maximum possible distance) of the dendrogram
+        :param n_leaves: the number of leaves in the dendrogram
         :param kwargs: additional drawer-specific arguments
         """
         super().start_drawing(title=title, **kwargs)
@@ -66,6 +71,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         leaf_label: Optional[str] = None,
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
+        max_distance: Optional[float] = None,
+        n_leaves: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -74,6 +81,8 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param leaf_label: the label for the leaf axis
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
+        :param max_distance: the height (= maximum possible distance) of the dendrogram
+        :param n_leaves: the number of leaves in the dendrogram
         :param kwargs: additional drawer-specific arguments
         """
         super().finalize_drawing(**kwargs)
@@ -135,7 +144,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param top: the height of the parent node
         :param first_leaf: the index of the first leaf in the left sub-tree
         :param n_leaves_left: the number of leaves in the left sub-tree
-        :param n_leaves_right: the number of leaves in the right sub-tree
+        :param n_leaves_right: the number of leaves in the left sub-tree
         :param weight: the weight of the parent node
         :param weight_cumulative: the cumulative weight of all nodes with a lower
             position index than the current one
@@ -184,10 +193,29 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
     ) -> None:
         """[see superclass]"""
 
-        ax = self.ax
-        y_axis = ax.yaxis
-        y_axis.set_ticks(ticks=range(len(names)))
-        y_axis.set_ticklabels(ticklabels=names)
+        _, text_height = self.text_dimensions("0")
+
+        # only create tick locations where there is enough vertical space for the label
+        tick_locations = list(self.get_ytick_locations(weights=weights))
+
+        ticks, tick_labels = zip(
+            *(
+                (loc, name)
+                for lo, loc, hi, name in zip(
+                    [-math.inf, *tick_locations],
+                    tick_locations,
+                    [*tick_locations[1:], math.inf],
+                    names,
+                )
+                if (hi - lo) / 2 >= text_height
+            )
+        )
+
+        # set the tick locations and labels
+        y_axis = self.ax.yaxis
+        y_axis.set_ticks(ticks=ticks)
+        y_axis.set_ticklabels(ticklabels=tick_labels)
+        # y_axis.set_tick_params(left=False)
 
     def finalize_drawing(
         self,
@@ -197,18 +225,87 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle, metaclass=AB
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
-        """[see superclass]"""
+        """
+        Finalize the dendrogram, adding labels to the axes.
+
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
+        """
 
         super().finalize_drawing(colorbar_label=weight_label)
 
-        ax = self.ax
+        self.colorbar.ax.yaxis.set_ticks([0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00])
 
+        ax = self.ax
         # configure the axes
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
         if distance_label:
             ax.set_xlabel(distance_label)
         if leaf_label:
             ax.set_ylabel(leaf_label)
+
+    @abstractmethod
+    def get_ytick_locations(
+        self, *, weights: Sequence[float]
+    ) -> Iterable[Union[int, float]]:
+        """
+        Get the tick locations for the y axis.
+
+        :param weights: weights of all leaves
+        :return: the tick locations for the y axis
+        """
+        pass
+
+    def plot_weight_label(
+        self,
+        *,
+        weight: float,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        fill_color: ColorScheme.RgbaColor,
+    ) -> None:
+        """
+        Plot a weight label for a link leg.
+
+        :param weight: the weight to be shown in the label
+        :param x: the x location of the label area
+        :param y: the y location of the label area
+        :param w: the width of the label area
+        :param h: the height of the label area
+        :param fill_color: the fill color for the label background
+        """
+
+        weight_percent = weight * 100
+
+        label = (
+            f"{weight_percent:.2g}%"
+            if weight_percent < 99.5
+            else f"{round(weight_percent):.3g}%"
+        )
+
+        x_text = x + w / 2
+        y_text = y + h / 2
+        text_width, text_height = self.text_dimensions(text=label, x=x_text, y=y_text)
+        if text_width <= w and text_height <= h:
+            t = self.ax.text(
+                x_text,
+                y_text,
+                label,
+                ha="center",
+                va="center",
+                color=text_contrast_color(fill_color),
+            )
+            t.set_bbox(
+                dict(
+                    facecolor=fill_color,
+                    linewidth=0.0,
+                    pad=t.get_fontsize() * self._TEXT_PADDING_RATIO,
+                )
+            )
 
 
 __tracker.validate()
