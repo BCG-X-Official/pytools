@@ -47,6 +47,8 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     Base class of drawing styles using `matplotlib`.
     """
 
+    _TEXT_PADDING_RATIO = 0.1
+
     def __init__(
         self,
         *,
@@ -58,7 +60,6 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         """
         super().__init__(colors=colors)
         self._ax = ax
-        self._renderer: Optional[RendererBase] = None
 
     __init__.__doc__ += ColoredStyle.__init__.__doc__
 
@@ -77,16 +78,14 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
             self._ax = ax = plt.gca()
         return ax
 
-    @property
-    def renderer(self) -> RendererBase:
+    def get_renderer(self) -> RendererBase:
         """
-        The renderer used by this style's :class:`~matplotlib.axes.Axes` object
+        Get the renderer used by this style's :class:`~matplotlib.axes.Axes` object
         (see :attr:`.ax`).
+
+        :return: the renderer
         """
-        renderer = self._renderer
-        if renderer is None:
-            self._renderer = renderer = get_renderer(self.ax.figure)
-        return renderer
+        return get_renderer(self.ax.figure)
 
     def text_dimensions(
         self,
@@ -96,7 +95,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         **kwargs: Any,
     ) -> Tuple[float, float]:
         """
-        Calculate the horizontal and vertical dimensions of the given text in axis
+        Calculate the horizontal and vertical dimensions of the given text in data
         units.
 
         Constructs a :class:`~matplotlib.text.Text` artist then calculates it size
@@ -105,33 +104,35 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         so the intended placement (in data coordinates) should be provided.
 
         :param text: text to calculate the dimensions for
-        :param x: intended horizontal text placement (optional, defaults to left of
+        :param x: intended horizontal text placement (optional, defaults to center of
             view)
-        :param y: intended vertical text placement (optional, defaults to bottom of
+        :param y: intended vertical text placement (optional, defaults to center of
             view)
         :param kwargs: additional keyword arguments to use when constructing the
             :class:`~matplotlib.text.Text` artist, e.g., rotation
-        :return: tuple `(width, height)` in axis units
+        :return: tuple `(width, height)` in data units
         """
 
         ax = self.ax
 
-        if x is None or y is None:
-            x0, y0, _, _ = ax.dataLim.bounds
-            if x is None:
-                x = x0
-            if y is None:
-                y = y0
+        assert not (
+            ax.get_autoscalex_on() or ax.get_autoscaley_on()
+        ), "text_dimensions requires x and y autoscaling to be off"
 
-        fig = ax.figure
+        if x is None:
+            x = sum(ax.get_xlim()) / 2
+        if y is None:
+            y = sum(ax.get_ylim()) / 2
 
-        extent = mt.Text(x, y, text, figure=fig, **kwargs).get_window_extent(
-            self.renderer
+        (x0, y0), (x1, y1) = ax.transData.inverted().transform(
+            mt.Text(x, y, text, figure=ax.figure, **kwargs).get_window_extent(
+                self.get_renderer()
+            )
         )
 
-        (x0, y0), (x1, y1) = ax.transData.inverted().transform(extent)
+        text_padding = 1.0 + 2 * self._TEXT_PADDING_RATIO
 
-        return abs(x1 - x0), abs(y1 - y0)
+        return abs(x1 - x0) * text_padding, abs(y1 - y0) * text_padding
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
@@ -164,6 +165,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
                 )
         except AttributeError:
             pass
+
         ax.figure.set_facecolor(bg_color)
         ax.figure.__pytools_viz_background = bg_color
 

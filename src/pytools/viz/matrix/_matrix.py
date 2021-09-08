@@ -133,7 +133,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     def draw_matrix(self, matrix: pd.DataFrame) -> None:
         """[see superclass]"""
         ax: Axes = self.ax
-        self.ax.margins(0, 0)
+        ax.margins(0)
 
         # store values locally so we can label the matrix cells when finalizing the plot
         data = matrix.values
@@ -208,12 +208,11 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
         # only draw labels if a cell formatter is defined, and minimal height/width
         # is available
+        ax.set_autoscale_on(False)
+
         if self.cell_formatter is not None and all(
             size <= 1 for size in self.text_dimensions("0")
         ):
-            # draw the axis to ensure we'll get correct coordinates
-            ax.draw(self.renderer)
-
             # get the cell formatter as a local field
             cell_formatter = self.cell_formatter
 
