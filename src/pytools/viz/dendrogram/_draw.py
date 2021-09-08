@@ -9,7 +9,7 @@ import numpy as np
 
 from .. import Drawer
 from ._linkage import LinkageTree
-from ._style import DendrogramHeatmapStyle, DendrogramLineStyle, DendrogramReportStyle
+from ._style import DendrogramMatplotStyle, DendrogramReportStyle
 from .base import DendrogramStyle, Node
 from pytools.api import AllTracker, inheritdoc
 
@@ -55,8 +55,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     def get_style_classes(cls) -> Iterable[Type[DendrogramStyle]]:
         """[see superclass]"""
         return [
-            DendrogramHeatmapStyle,
-            DendrogramLineStyle,
+            DendrogramMatplotStyle,
             DendrogramReportStyle,
         ]
 

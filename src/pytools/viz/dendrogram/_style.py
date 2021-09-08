@@ -6,13 +6,15 @@ import logging
 from typing import Any, Iterable, Optional, Sequence, TextIO, Union
 
 import numpy as np
-from matplotlib.axes import Axes
+from matplotlib.axes import Axes, math
+from matplotlib.colors import LogNorm
 
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
-from .. import TextStyle
-from ..color import ColorScheme
-from .base import DendrogramMatplotStyle, DendrogramStyle
+from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
+from ..color import ColorScheme, text_contrast_color
+from ..util import PercentageFormatter
+from .base import DendrogramStyle
 
 log = logging.getLogger(__name__)
 
@@ -22,8 +24,7 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "DendrogramLineStyle",
-    "DendrogramHeatmapStyle",
+    "DendrogramMatplotStyle",
     "DendrogramReportStyle",
 ]
 
@@ -41,10 +42,14 @@ __tracker = AllTracker(globals())
 
 
 @inheritdoc(match="[see superclass]")
-class DendrogramLineStyle(DendrogramMatplotStyle):
+class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
+
     """
-    Draws dendrograms as "classical" trees, using coloring lines along a color gradient
-    to indicate leaf/branch weights.
+    Draws dendrograms as trees, using line color and thickness to indicate leaf/branch
+    weights.
+
+    Supports color maps to indicate feature importance on a logarithmic scale,
+    and renders a color bar as a legend.
     """
 
     def __init__(
@@ -56,22 +61,30 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
         padding: float = 0.1,
     ) -> None:
         """
+        :param min_weight: the minimum weight on the logarithmic feature importance
+            color scale; must be greater than `0` and smaller than `1`
+            (default: `0.01`, i.e., 1%)
         :param padding: vertical padding to apply between lines, as a multiple of
             100% feature weight
         """
-        super().__init__(ax=ax, colors=colors, min_weight=min_weight)
+        if min_weight >= 1.0 or min_weight <= 0.0:
+            raise ValueError("arg min_weight must be > 0.0 and < 1.0")
+
+        percentage_formatter = PercentageFormatter()
+        super().__init__(
+            ax=ax,
+            colors=colors,
+            colormap_normalize=LogNorm(min_weight, 1),
+            colorbar_major_formatter=percentage_formatter,
+            colorbar_minor_formatter=percentage_formatter,
+        )
 
         if not 0.0 <= padding <= 1.0:
             raise ValueError("arg padding must be in the range from 0.0 to 1.0")
 
         self.padding = padding
 
-    __init__.__doc__ = DendrogramMatplotStyle.__init__.__doc__ + __init__.__doc__
-
-    @classmethod
-    def get_default_style_name(cls) -> str:
-        """[see superclass]"""
-        return f"{super().get_default_style_name()}_line"
+    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
     def start_drawing(
         self,
@@ -112,6 +125,35 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
             -0.5 * self.padding - margin_y,
             1.0 + (n_leaves - 0.5) * self.padding + margin_y,
         )
+
+    def finalize_drawing(
+        self,
+        *,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        """
+        Finalize the dendrogram, adding labels to the axes.
+
+        :param leaf_label: the label for the leaf axis
+        :param distance_label: the label for the distance axis
+        :param weight_label: the label for the weight scale
+        :param kwargs: additional drawer-specific arguments
+        """
+
+        super().finalize_drawing(colorbar_label=weight_label)
+
+        self.colorbar.ax.yaxis.set_ticks([0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00])
+
+        ax = self.ax
+        # configure the axes
+        ax.ticklabel_format(axis="x", scilimits=(-3, 3))
+        if distance_label:
+            ax.set_xlabel(distance_label)
+        if leaf_label:
+            ax.set_ylabel(leaf_label)
 
     def draw_link_leg(
         self,
@@ -167,16 +209,99 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
                 (bottom, bottom), (y_0, y_1), color=self.colors.foreground, linewidth=1
             )
 
+    def draw_leaf_labels(
+        self, *, names: Sequence[str], weights: Sequence[float]
+    ) -> None:
+        """[see superclass]"""
+
+        _, text_height = self.text_dimensions("0")
+
+        # only create tick locations where there is enough vertical space for the label
+        tick_locations = list(self.get_ytick_locations(weights=weights))
+
+        ticks, tick_labels = zip(
+            *(
+                (loc, name)
+                for lo, loc, hi, name in zip(
+                    [-math.inf, *tick_locations],
+                    tick_locations,
+                    [*tick_locations[1:], math.inf],
+                    names,
+                )
+                if (hi - lo) / 2 >= text_height
+            )
+        )
+
+        # set the tick locations and labels
+        y_axis = self.ax.yaxis
+        y_axis.set_ticks(ticks=ticks)
+        y_axis.set_ticklabels(ticklabels=tick_labels)
+        # y_axis.set_tick_params(left=False)
+
     def get_ytick_locations(
         self, *, weights: Sequence[float]
     ) -> Iterable[Union[int, float]]:
-        """[see superclass]"""
+        """
+        Get the tick locations for the y axis.
+
+        :param weights: weights of all leaves
+        :return: the tick locations for the y axis
+        """
         weights_array = np.array(weights)
         return (
             weights_array.cumsum()
             - weights_array / 2
             + np.arange(len(weights)) * self.padding
         )
+
+    def plot_weight_label(
+        self,
+        *,
+        weight: float,
+        x: float,
+        y: float,
+        w: float,
+        h: float,
+        fill_color: ColorScheme.RgbaColor,
+    ) -> None:
+        """
+        Plot a weight label for a link leg.
+
+        :param weight: the weight to be shown in the label
+        :param x: the x location of the label area
+        :param y: the y location of the label area
+        :param w: the width of the label area
+        :param h: the height of the label area
+        :param fill_color: the fill color for the label background
+        """
+
+        weight_percent = weight * 100
+
+        label = (
+            f"{weight_percent:.2g}%"
+            if weight_percent < 99.5
+            else f"{round(weight_percent):.3g}%"
+        )
+
+        x_text = x + w / 2
+        y_text = y + h / 2
+        text_width, text_height = self.text_dimensions(text=label, x=x_text, y=y_text)
+        if text_width <= w and text_height <= h:
+            t = self.ax.text(
+                x_text,
+                y_text,
+                label,
+                ha="center",
+                va="center",
+                color=text_contrast_color(fill_color),
+            )
+            t.set_bbox(
+                dict(
+                    facecolor=fill_color,
+                    linewidth=0.0,
+                    pad=t.get_fontsize() * self._TEXT_PADDING_RATIO,
+                )
+            )
 
     def _draw_hline(
         self, x1: float, x2: float, y: float, weight: float, max_height: float
@@ -202,99 +327,6 @@ class DendrogramLineStyle(DendrogramMatplotStyle):
             h=max_height,
             fill_color=fill_color,
         )
-
-
-@inheritdoc(match="[see superclass]")
-class DendrogramHeatmapStyle(DendrogramMatplotStyle):
-    """
-    Draws dendrograms as a tree composed of color tiles, coloring tiles as a heat map
-    indicating leaf/branch weights.
-    """
-
-    def draw_link_leg(
-        self,
-        *,
-        bottom: float,
-        top: float,
-        leaf: int,
-        weight: float,
-        weight_cumulative: float,
-        tree_height: float,
-    ) -> None:
-        """[see superclass]"""
-        self._draw_hbar(
-            x=bottom, w=top - bottom, y=weight_cumulative, h=weight, weight=weight
-        )
-
-    def draw_link_connector(
-        self,
-        *,
-        bottom: float,
-        top: int,
-        first_leaf: int,
-        n_leaves_left: int,
-        n_leaves_right: float,
-        weight: float,
-        weight_cumulative: float,
-        tree_height: float,
-    ) -> None:
-        """[see superclass]"""
-        self._draw_hbar(
-            x=bottom,
-            w=top - bottom,
-            y=weight_cumulative,
-            h=weight,
-            weight=weight,
-        )
-
-    def start_drawing(
-        self,
-        *,
-        title: str,
-        max_distance: Optional[float] = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Prepare a new dendrogram for drawing, using the given title.
-
-        :param title: the title of the chart
-        :param max_distance: the height (= maximum possible distance) of the dendrogram
-        :param kwargs: additional drawer-specific arguments
-        """
-        super().start_drawing(
-            title=title,
-            max_distance=max_distance,
-            **kwargs,
-        )
-
-        ax = self.ax
-        ax.margins(0)
-
-        ax.set_xlim(0.0, max_distance)
-        ax.set_ylim(0, 1)
-
-    def get_ytick_locations(
-        self, *, weights: Sequence[float]
-    ) -> Iterable[Union[int, float]]:
-        """[see superclass]"""
-        weights_array = np.array(weights)
-        return weights_array.cumsum() - weights_array / 2
-
-    def _draw_hbar(self, x: float, y: float, w: float, h: float, weight: float) -> None:
-        fill_color = self.color_for_value(weight)
-
-        self.ax.barh(
-            y=y,
-            width=w,
-            height=h,
-            left=x,
-            align="edge",
-            color=fill_color,
-            edgecolor=self.colors.foreground,
-            linewidth=1,
-        )
-
-        self.plot_weight_label(weight=weight, x=x, y=y, w=w, h=h, fill_color=fill_color)
 
 
 @inheritdoc(match="[see superclass]")
