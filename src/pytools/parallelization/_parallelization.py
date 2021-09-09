@@ -220,17 +220,14 @@ class JobRunner(ParallelizableMixin):
             verbose=parallelizable.verbose,
         )
 
-    def run_jobs(self, *jobs: Job[T_Job_Result]) -> List[T_Job_Result]:
+    def run_jobs(self, jobs: Iterable[Job[T_Job_Result]]) -> List[T_Job_Result]:
         """
         Run all given jobs in parallel.
 
         :param jobs: the jobs to run in parallel
         :return: the results of all jobs
         """
-        simple_queue: JobQueue[T_Job_Result, List[T_Job_Result]] = SimpleQueue(
-            jobs=jobs
-        )
-        return self.run_queue(simple_queue)
+        return self.run_queue(SimpleQueue(jobs=jobs))
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
@@ -238,8 +235,6 @@ class JobRunner(ParallelizableMixin):
 
         :param queue: the queue to run
         :return: the result of all jobs, collated using method :meth:`.JobQueue.collate`
-        :raise AssertionError: the number of results does not match the number of jobs
-            in the queue
         """
 
         queue.on_run()
@@ -258,29 +253,31 @@ class JobRunner(ParallelizableMixin):
         return queue.collate(job_results=results)
 
     def run_queues(
-        self, *queues: JobQueue[Any, T_Queue_Result]
+        self, queues: Iterable[JobQueue[Any, T_Queue_Result]]
     ) -> Iterator[T_Queue_Result]:
         """
         Run all jobs in the given queues, in parallel.
 
-        :param queues: the queues to run
-        :return: the result of all jobs, collated per queue using method
+        :param queues: the queues to run in parallel
+        :return: the result of all jobs in all queues, collated per queue using method
             :meth:`.JobQueue.collate`
-        :raise AssertionError: the number of results does not match the total number of
-            jobs in the queues
         """
 
-        for queue in queues:
+        queues_sequence: Sequence[JobQueue[T_Queue_Result]] = to_tuple(
+            queues, element_type=JobQueue, arg_name="queues"
+        )
+
+        for queue in queues_sequence:
             queue.on_run()
 
         with self._parallel() as parallel:
             results: List[T_Job_Result] = parallel(
                 joblib.delayed(lambda job: job.run())(job)
-                for queue in queues
+                for queue in queues_sequence
                 for job in queue.jobs()
             )
 
-        queues_len = sum(len(queue) for queue in queues)
+        queues_len = sum(len(queue) for queue in queues_sequence)
         if len(results) != queues_len:
             raise AssertionError(
                 f"Number of results ({len(results)}) does not match length of "
@@ -288,7 +285,7 @@ class JobRunner(ParallelizableMixin):
             )
 
         first_job = 0
-        for queue in queues:
+        for queue in queues_sequence:
             last_job = first_job + len(queue)
             yield queue.collate(results[first_job:last_job])
             first_job = last_job
@@ -313,7 +310,7 @@ class SimpleQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(jobs)
+        self._jobs = to_tuple(jobs, element_type=Job, arg_name="jobs")
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """[see superclass]"""
@@ -334,7 +331,7 @@ class SimpleQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
 
 
 @inheritdoc(match="""[see superclass]""")
-class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]]):
+class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
     """
     Runs all jobs in a given list of compatible queues and returns their results as a
     flat list.
