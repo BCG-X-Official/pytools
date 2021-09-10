@@ -11,6 +11,8 @@ Release Notes
   objects instead of individual jobs as positional arguments
 - API: method :meth:`.JobRunner.run_queues` now expects a single iterable of
   :class:`.JobQueue` objects instead of individual queues as positional arguments
+- API: rename method `collate` of class :class:`.JobQueue` to
+  :meth:`.JobQueue.aggregate`
 
 
 *pytools* 1.2
