@@ -366,7 +366,7 @@ class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
         """[see superclass]"""
         return itertools.chain.from_iterable(queue.jobs() for queue in self.queues)
 
-    def aggregate(self, job_results: List[T_Job_Result]) -> T_Queue_Result:
+    def aggregate(self, job_results: List[T_Job_Result]) -> List[T_Job_Result]:
         """
         Return the list of job results as-is, without aggregating them any further.
 
