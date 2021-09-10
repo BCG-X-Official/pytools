@@ -19,8 +19,8 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "DendrogramLineStyle",
     "DendrogramHeatmapStyle",
+    "DendrogramLineStyle",
     "DendrogramReportStyle",
 ]
 
@@ -251,8 +251,11 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         # between two text lines (using an underscore symbol)
         is_in_between_line = round(leaf * 2) & 1
 
+        # get the character matrix
+        matrix = self._char_matrix
+
         # draw the link leg in the character matrix
-        self._char_matrix[
+        matrix[
             line_y + is_in_between_line,
             self._x_pos(bottom, tree_height) : self._x_pos(top, tree_height),
         ] = (
@@ -260,8 +263,8 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         )
 
         # if we're in a leaf, we can draw the weight next to he label
-        if bottom == 0:
-            self._char_matrix[
+        if bottom == 0.0 and matrix[line_y, self.label_width - 2] == " ":
+            matrix[
                 line_y, self.__weight_column : self.label_width
             ] = f"{weight * 100:3.0f}%"
 
