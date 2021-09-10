@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Release Notes &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/js/gamma.js"></script>
+    <script src="_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="FAQ" href="faqs.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="index.html">
+    
+      <img src="_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="apidoc/pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+          
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#pytools-2-0" class="nav-link">pytools 2.0</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id2" class="nav-link">2.0.0</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#pytools-1-2" class="nav-link">pytools 1.2</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id3" class="nav-link">1.2.3</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id4" class="nav-link">1.2.2</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id5" class="nav-link">1.2.1</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id6" class="nav-link">1.2.0</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#pytools-1-1" class="nav-link">pytools 1.1</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id7" class="nav-link">1.1.6</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id8" class="nav-link">1.1.5</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id9" class="nav-link">1.1.4</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id10" class="nav-link">1.1.3</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id11" class="nav-link">1.1.2</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id12" class="nav-link">1.1.1</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id13" class="nav-link">1.1.0</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h2">
+            <a href="#pytools-1-0" class="nav-link">pytools 1.0</a><ul class="nav section-nav flex-column">
+                
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id14" class="nav-link">1.0.6</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id15" class="nav-link">1.0.5</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id16" class="nav-link">1.0.4</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id17" class="nav-link">1.0.3</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id18" class="nav-link">1.0.2</a>
+        </li>
+    
+        <li class="nav-item toc-entry toc-h3">
+            <a href="#id19" class="nav-link">1.0.1</a>
+        </li>
+    
+            </ul>
+        </li>
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="release-notes">
+<span id="id1"></span><h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="pytools-2-0">
+<h2><em>pytools</em> 2.0<a class="headerlink" href="#pytools-2-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>2.0.0<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><dl class="simple">
+<dt>API: revised job/queue API in <a class="reference internal" href="apidoc/pytools/pytools.parallelization.html#module-pytools.parallelization" title="pytools.parallelization"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.parallelization</span></code></a></dt><dd><ul>
+<li><p>method <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_jobs" title="pytools.parallelization.JobRunner.run_jobs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_jobs()</span></code></a> now expects a single iterable of <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.Job.html#pytools.parallelization.Job" title="pytools.parallelization.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>
+objects instead of individual jobs as positional arguments</p></li>
+<li><p>method <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queues" title="pytools.parallelization.JobRunner.run_queues"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queues()</span></code></a> now expects a single iterable of
+<a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobQueue</span></code></a> objects instead of individual queues as positional arguments</p></li>
+<li><p>method <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queues" title="pytools.parallelization.JobRunner.run_queues"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queues()</span></code></a> returns a list of results instead of an
+iterator</p></li>
+<li><p>methods <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queue" title="pytools.parallelization.JobRunner.run_queue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queue()</span></code></a> and <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queues" title="pytools.parallelization.JobRunner.run_queues"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queues()</span></code></a> are now
+thread-safe</p></li>
+<li><p>rename method <cite>collate</cite> of class <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobQueue</span></code></a> to <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue.aggregate" title="pytools.parallelization.JobQueue.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobQueue.aggregate()</span></code></a></p></li>
+<li><p><a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.SimpleQueue.html#pytools.parallelization.SimpleQueue" title="pytools.parallelization.SimpleQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleQueue</span></code></a> is now an abstract class, expecting subclasses to implement
+method <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.SimpleQueue.html#pytools.parallelization.SimpleQueue.aggregate" title="pytools.parallelization.SimpleQueue.aggregate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SimpleQueue.aggregate()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="pytools-1-2">
+<h2><em>pytools</em> 1.2<a class="headerlink" href="#pytools-1-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id3">
+<h3>1.2.3<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>This is a maintenance release to catch up with <em>pytools</em> 1.1.6.</p>
+</div>
+<div class="section" id="id4">
+<h3>1.2.2<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>This is a maintenance release to catch up with <em>pytools</em> 1.1.5.</p>
+</div>
+<div class="section" id="id5">
+<h3>1.2.1<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>This is a maintenance release to catch up with <em>pytools</em> 1.1.4.</p>
+</div>
+<div class="section" id="id6">
+<h3>1.2.0<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>API: new function <a class="reference internal" href="apidoc/pytools/api/pytools.api.to_collection.html#pytools.api.to_collection" title="pytools.api.to_collection"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code></a> preserves any type of collection, and
+converts iterators into <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#tuple" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> instances</p></li>
+<li><p>API: functions <a class="reference internal" href="apidoc/pytools/api/pytools.api.to_set.html#pytools.api.to_set" title="pytools.api.to_set"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_set()</span></code></a>, <a class="reference internal" href="apidoc/pytools/api/pytools.api.to_list.html#pytools.api.to_list" title="pytools.api.to_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_list()</span></code></a>, <a class="reference internal" href="apidoc/pytools/api/pytools.api.to_tuple.html#pytools.api.to_tuple" title="pytools.api.to_tuple"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_tuple()</span></code></a>,
+<a class="reference internal" href="apidoc/pytools/api/pytools.api.to_collection.html#pytools.api.to_collection" title="pytools.api.to_collection"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code></a>, and <a class="reference internal" href="apidoc/pytools/api/pytools.api.validate_element_types.html#pytools.api.validate_element_types" title="pytools.api.validate_element_types"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate_element_types()</span></code></a> now accept multiple
+alternative types to validate elements against, in line with how <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#isinstance" title="(in Python v3.6)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a>
+tests for multiple types</p></li>
+<li><p>BUILD: add support for <cite>matplotlib &gt;= 3.4</cite>, <cite>scipy &gt;= 1.6</cite>,
+and <cite>typing-inspect == 0.7</cite></p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="pytools-1-1">
+<h2><em>pytools</em> 1.1<a class="headerlink" href="#pytools-1-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>1.1.6<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: ensure correct weight labels when rendering dendograms as plain text using the
+<a class="reference internal" href="apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle" title="pytools.viz.dendrogram.DendrogramReportStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramReportStyle</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h3>1.1.5<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: fixed a rare case where <a class="reference internal" href="apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression.eq_" title="pytools.expression.Expression.eq_"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Expression.eq_()</span></code></a> returned <cite>False</cite> for two
+equivalent expressions if one of them included an <a class="reference internal" href="apidoc/pytools/expression/pytools.expression.ExpressionAlias.html#pytools.expression.ExpressionAlias" title="pytools.expression.ExpressionAlias"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpressionAlias</span></code></a></p></li>
+<li><p>FIX: accept any type of numerical values as leaf weights of <a class="reference internal" href="apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.LinkageTree.html#pytools.viz.dendrogram.LinkageTree" title="pytools.viz.dendrogram.LinkageTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">LinkageTree</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="id9">
+<h3>1.1.4<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>BUILD: allow <cite>joblib</cite> 1.0.* in joblib package requirements</p></li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h3>1.1.3<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: comparing two <a class="reference internal" href="apidoc/pytools/expression/base/pytools.expression.base.InfixExpression.html#pytools.expression.base.InfixExpression" title="pytools.expression.base.InfixExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">InfixExpression</span></code></a> objects using method
+<a class="reference internal" href="apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression.eq_" title="pytools.expression.Expression.eq_"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Expression.eq_()</span></code></a> would erroneously yield <code class="docutils literal notranslate"><span class="pre">True</span></code> if both expressions
+had the same operator but a different number of operands, and the operands of the
+shorter expression were equal to the operands at the start of the longer expression</p></li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h3>1.1.2<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Catch up with fixes and pipeline updates introduced by <em>pytools</em> 1.0.3 and 1.0.4</p></li>
+<li><p>API: support inheriting class docstrings from superclasses using the
+<a class="reference internal" href="apidoc/pytools/api/pytools.api.inheritdoc.html#pytools.api.inheritdoc" title="pytools.api.inheritdoc"><code class="xref py py-func docutils literal notranslate"><span class="pre">inheritdoc()</span></code></a> decorator</p></li>
+<li><p>API: new <a class="reference internal" href="apidoc/pytools/api/pytools.api.subsdoc.html#pytools.api.subsdoc" title="pytools.api.subsdoc"><code class="xref py py-func docutils literal notranslate"><span class="pre">subsdoc()</span></code></a> decorator to replace text in docstrings</p></li>
+<li><p>API: use background color for matrix grid in <a class="reference internal" href="apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixMatplotStyle.html#pytools.viz.matrix.MatrixMatplotStyle" title="pytools.viz.matrix.MatrixMatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatrixMatplotStyle</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h3>1.1.1<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>API: <a class="reference internal" href="apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a> now uses PyPlot’s current axes by default, instead of
+creating a new figure and axis</p></li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h3>1.1.0<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>API: <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner" title="pytools.parallelization.JobRunner"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobRunner</span></code></a> provides a new object-oriented interface to <a class="reference external" href="https://joblib.readthedocs.io/en/latest/index.html#module-joblib" title="(in joblib v1.1.0.dev0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">joblib</span></code></a>,
+running instances of <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.Job.html#pytools.parallelization.Job" title="pytools.parallelization.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> and <a class="reference internal" href="apidoc/pytools/parallelization/pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobQueue</span></code></a> in parallel</p></li>
+<li><p>API: <a class="reference internal" href="apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker" title="pytools.api.AllTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllTracker</span></code></a> detects and prohibits exporting objects imported from other
+modules</p></li>
+<li><p>API: <a class="reference internal" href="apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker" title="pytools.api.AllTracker"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllTracker</span></code></a> detects and prohibits exporting global constants (the
+preferred approach is to define constants inside classes as this provides better
+context, and will be properly documented via Sphinx)</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="pytools-1-0">
+<h2><em>pytools</em> 1.0<a class="headerlink" href="#pytools-1-0" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id14">
+<h3>1.0.6<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: back-port 1.1 bugfix for <a class="reference internal" href="apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression.eq_" title="pytools.expression.Expression.eq_"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Expression.eq_()</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h3>1.0.5<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: back-port 1.1 bugfix for building multi-version documentation</p></li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h3>1.0.4<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>FIX: do not substitute <cite>~=</cite> by <cite>~==</cite> when adapting version syntax for tox</p></li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h3>1.0.3<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<p>This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
+minor fixes.</p>
+<ul class="simple">
+<li><p>BUILD: add the <cite>bcg_gamma</cite> conda channel when building</p></li>
+<li><p>BUILD: Enforce pre-release for minor and major releases</p></li>
+<li><p>DOC: add pre-commit hook instructions to contribution guide</p></li>
+<li><p>BUILD: update flake8 to v3.9.0</p></li>
+<li><p>BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
+of package versions)</p></li>
+<li><p>FIX: version syntax adaptation with mixed <cite>=</cite> and <cite>&gt;=</cite></p></li>
+</ul>
+</div>
+<div class="section" id="id18">
+<h3>1.0.2<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<p>This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
+minor fixes.</p>
+<ul class="simple">
+<li><p>API: sort list of items returned by <a class="reference internal" href="apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.get_tracked" title="pytools.api.AllTracker.get_tracked"><code class="xref py py-meth docutils literal notranslate"><span class="pre">AllTracker.get_tracked()</span></code></a></p></li>
+<li><p>API: add protected method to class <a class="reference internal" href="apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a> to apply color scheme to
+<a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object</p></li>
+<li><p>FIX: preserve correct instance for subclasses of singleton classes</p></li>
+<li><p>FIX: add a few missing type hints</p></li>
+<li><p>BUILD: add support for numpy 1.20</p></li>
+<li><p>BUILD: updates and changes to the CI/CD pipeline</p></li>
+</ul>
+</div>
+<div class="section" id="id19">
+<h3>1.0.1<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<p>Initial release.</p>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="faqs.html" title="previous page">FAQ</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

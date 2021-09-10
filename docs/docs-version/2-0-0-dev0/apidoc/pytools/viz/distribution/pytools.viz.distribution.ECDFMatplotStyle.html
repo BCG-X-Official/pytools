@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.viz.distribution.ECDFMatplotStyle &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/gamma.js"></script>
+    <script src="../../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pytools.viz.distribution.base" href="pytools.viz.distribution.base.html" />
+    <link rel="prev" title="pytools.viz.distribution.ECDFDrawer" href="pytools.viz.distribution.ECDFDrawer.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../../index.html">
+    
+      <img src="../../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../../../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../release_notes.html">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../../pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.expression.html">pytools.expression</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.sphinx.html">pytools.sphinx</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../../pytools.viz.html">pytools.viz</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.ColorbarMatplotStyle.html">pytools.viz.ColorbarMatplotStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.ColoredStyle.html">pytools.viz.ColoredStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.Drawer.html">pytools.viz.Drawer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.DrawingStyle.html">pytools.viz.DrawingStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.MatplotStyle.html">pytools.viz.MatplotStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.TextStyle.html">pytools.viz.TextStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.color.html">pytools.viz.color</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.dendrogram.html">pytools.viz.dendrogram</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="../pytools.viz.distribution.html">pytools.viz.distribution</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.matrix.html">pytools.viz.matrix</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.util.html">pytools.viz.util</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pytools-viz-distribution-ecdfmatplotstyle">
+<h1>pytools.viz.distribution.ECDFMatplotStyle<a class="headerlink" href="#pytools-viz-distribution-ecdfmatplotstyle" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle">
+<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.distribution.</code><code class="sig-name descname">ECDFMatplotStyle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/distribution/_distribution.html#ECDFMatplotStyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws ECDF plots using <cite>matplotlib</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Bases</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a>, <a class="reference internal" href="base/pytools.viz.distribution.base.ECDFStyle.html#pytools.viz.distribution.base.ECDFStyle" title="pytools.viz.distribution.base.ECDFStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">ECDFStyle</span></code></a></p>
+</dd>
+<dt class="field-even">Metaclasses</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABCMeta" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a>]) – optional axes object to draw on; create a new figure if not specified</p></li>
+<li><p><strong>colors</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="../color/pytools.viz.color.MatplotColorScheme.html#pytools.viz.color.MatplotColorScheme" title="pytools.viz.color.MatplotColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotColorScheme</span></code></a>]) – the color scheme to be used by this drawing style</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Method summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.apply_color_scheme" title="pytools.viz.distribution.ECDFMatplotStyle.apply_color_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_color_scheme</span></code></a></p></td>
+<td><p>Apply this style’s color scheme to the given <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.dark" title="pytools.viz.distribution.ECDFMatplotStyle.dark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dark</span></code></a></p></td>
+<td><p>Create a dark variant of this drawing style class, using the default dark background color scheme <a class="reference internal" href="../color/pytools.viz.color.FacetDarkColorScheme.html#pytools.viz.color.FacetDarkColorScheme" title="pytools.viz.color.FacetDarkColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">FacetDarkColorScheme</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.finalize_drawing" title="pytools.viz.distribution.ECDFMatplotStyle.finalize_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_drawing</span></code></a></p></td>
+<td><p>Finalize the drawing.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.get_default_style_name" title="pytools.viz.distribution.ECDFMatplotStyle.get_default_style_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_style_name</span></code></a></p></td>
+<td><p>Get the name of the default style associated with this style class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.get_named_styles" title="pytools.viz.distribution.ECDFMatplotStyle.get_named_styles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_named_styles</span></code></a></p></td>
+<td><p>Get a mapping of names to default instances of this style class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.start_drawing" title="pytools.viz.distribution.ECDFMatplotStyle.start_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_drawing</span></code></a></p></td>
+<td><p>Set the title of the matplot chart to the given title, and set the foreground and background color according to the color scheme.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.text_dimensions" title="pytools.viz.distribution.ECDFMatplotStyle.text_dimensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_dimensions</span></code></a></p></td>
+<td><p>Calculate the horizontal and vertical dimensions of the given text in axis units.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attribute summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.ax" title="pytools.viz.distribution.ECDFMatplotStyle.ax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ax</span></code></a></p></td>
+<td><p>The matplotlib <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object on which to draw.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.colors" title="pytools.viz.distribution.ECDFMatplotStyle.colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">colors</span></code></a></p></td>
+<td><p>The color scheme used by this style.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.renderer" title="pytools.viz.distribution.ECDFMatplotStyle.renderer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">renderer</span></code></a></p></td>
+<td><p>The renderer used by this style’s <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object (see <a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.ax" title="pytools.viz.distribution.ECDFMatplotStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Definitions</p>
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.apply_color_scheme">
+<code class="sig-name descname">apply_color_scheme</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.apply_color_scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this style’s color scheme to the given <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a>.</p>
+<p>Style implementations can use this to apply the color scheme to sub-axes.
+Does not need to be applied to main axes, as this is already done in method
+<a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.start_drawing" title="pytools.viz.distribution.ECDFMatplotStyle.start_drawing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_drawing()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a>) – the axes to apply the color scheme to</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.dark">
+<em class="property">classmethod </em><code class="sig-name descname">dark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.dark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dark variant of this drawing style class, using the default dark
+background color scheme <a class="reference internal" href="../color/pytools.viz.color.FacetDarkColorScheme.html#pytools.viz.color.FacetDarkColorScheme" title="pytools.viz.color.FacetDarkColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">FacetDarkColorScheme</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>~T_Style_Class</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the dark drawing style class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.finalize_drawing">
+<code class="sig-name descname">finalize_drawing</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.finalize_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalize the drawing.</p>
+<p>Any additional drawer-specific arguments, obtained from
+method <a class="reference internal" href="../pytools.viz.Drawer.html#pytools.viz.Drawer._get_style_kwargs" title="pytools.viz.Drawer._get_style_kwargs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Drawer._get_style_kwargs()</span></code></a>, will be passed
+as keyword arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional additional drawer-specific arguments</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.get_default_style_name">
+<em class="property">classmethod </em><code class="sig-name descname">get_default_style_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.get_default_style_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the default style associated with this style class.</p>
+<p>The default style is obtained by instantiating this style class without
+parameters.</p>
+<p>Common examples for default style names are <cite>matplot</cite> and <cite>text</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the name of the default style</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.get_named_styles">
+<em class="property">classmethod </em><code class="sig-name descname">get_named_styles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.get_named_styles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a mapping of names to default instances of this style class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, ~T_Style_Class]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary mapping of names to default instances of this style class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.start_drawing">
+<code class="sig-name descname">start_drawing</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.start_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the title of the matplot chart to the given title, and set the foreground
+and background color according to the color scheme.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the chart title</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional drawer-specific arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.text_dimensions">
+<code class="sig-name descname">text_dimensions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.text_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the horizontal and vertical dimensions of the given text in axis
+units.</p>
+<p>Constructs a <a class="reference external" href="https://matplotlib.org/api/text_api.html#matplotlib.text.Text" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Text</span></code></a> artist then calculates it size
+relative to the axis <a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.ax" title="pytools.viz.distribution.ECDFMatplotStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a> managed by this style object.
+For non-linear axis scales, text size differs depending on placement,
+so the intended placement (in data coordinates) should be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – text to calculate the dimensions for</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – intended horizontal text placement (optional, defaults to left of
+view)</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – intended vertical text placement (optional, defaults to bottom of
+view)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional keyword arguments to use when constructing the
+<a class="reference external" href="https://matplotlib.org/api/text_api.html#matplotlib.text.Text" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Text</span></code></a> artist, e.g., rotation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Tuple" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple <cite>(width, height)</cite> in axis units</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.ax">
+<em class="property">property </em><code class="sig-name descname">ax</code><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.ax" title="Permalink to this definition">¶</a></dt>
+<dd><p>The matplotlib <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object on which to draw.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.colors">
+<em class="property">property </em><code class="sig-name descname">colors</code><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The color scheme used by this style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>~T_ColorScheme</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.distribution.ECDFMatplotStyle.renderer">
+<em class="property">property </em><code class="sig-name descname">renderer</code><a class="headerlink" href="#pytools.viz.distribution.ECDFMatplotStyle.renderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The renderer used by this style’s <a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object
+(see <a class="reference internal" href="#pytools.viz.distribution.ECDFMatplotStyle.ax" title="pytools.viz.distribution.ECDFMatplotStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/backend_bases_api.html#matplotlib.backend_bases.RendererBase" title="(in Matplotlib v3.4.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RendererBase</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="pytools.viz.distribution.ECDFDrawer.html" title="previous page">pytools.viz.distribution.ECDFDrawer</a>
+    <a class='right-next' id="next-link" href="pytools.viz.distribution.base.html" title="next page">pytools.viz.distribution.base</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2021, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
