@@ -468,6 +468,7 @@ stages:
                 echo "Current version: $version"
                 echo "Detecting pre-release ('rc' in version)"
                 prerelease=False
+                [[ $version == *dev* ]] && prerelease=True && echo "Development release identified"
                 [[ $version == *rc* ]] && prerelease=True && echo "Pre-release identified"
                 echo "##vso[task.setvariable variable=current_version]$version"
                 echo "##vso[task.setvariable variable=is_prerelease]$prerelease"
