@@ -162,7 +162,8 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
     Supports :meth:`.len` to determine the number of jobs in this queue.
     """
 
-    # lock preventing parallel execution of the same queue
+    #: The lock used by class :class:`.JobRunner` to prevent parallel executions of the
+    #: same queue
     lock: Lock
 
     def __init__(self) -> None:
