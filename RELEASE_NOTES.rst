@@ -7,6 +7,11 @@ Release Notes
 2.0.0
 ~~~~~
 
+- API: method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
+  objects instead of individual jobs as positional arguments
+- API: method :meth:`.JobRunner.run_queues` now expects a single iterable of
+  :class:`.JobQueue` objects instead of individual queues as positional arguments
+
 
 *pytools* 1.2
 -------------
