@@ -5,7 +5,7 @@ plain text.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from threading import Lock
+from multiprocessing import Lock
 from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
 
 from ..api import AllTracker, inheritdoc
