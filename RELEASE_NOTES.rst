@@ -13,6 +13,8 @@ Release Notes
   :class:`.JobQueue` objects instead of individual queues as positional arguments
 - API: rename method `collate` of class :class:`.JobQueue` to
   :meth:`.JobQueue.aggregate`
+- API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
+  method :meth:`.SimpleQueue.aggregate`
 
 
 *pytools* 1.2
