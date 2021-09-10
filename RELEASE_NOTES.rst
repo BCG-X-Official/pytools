@@ -7,6 +7,19 @@ Release Notes
 2.0.0
 ~~~~~
 
+- API: revised job/queue API in :mod:`pytools.parallelization`
+    - method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
+      objects instead of individual jobs as positional arguments
+    - method :meth:`.JobRunner.run_queues` now expects a single iterable of
+      :class:`.JobQueue` objects instead of individual queues as positional arguments
+    - method :meth:`.JobRunner.run_queues` returns a list of results instead of an
+      iterator
+    - methods :meth:`.JobRunner.run_queue` and :meth:`.JobRunner.run_queues` are now
+      thread-safe
+    - rename method `collate` of class :class:`.JobQueue` to :meth:`.JobQueue.aggregate`
+    - :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
+      method :meth:`.SimpleQueue.aggregate`
+
 
 *pytools* 1.2
 -------------
