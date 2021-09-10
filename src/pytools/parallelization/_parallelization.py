@@ -5,6 +5,7 @@ import itertools
 import logging
 from abc import ABCMeta, abstractmethod
 from functools import wraps
+from multiprocessing import Lock
 from typing import (
     Any,
     Callable,
@@ -161,6 +162,12 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
     Supports :meth:`.len` to determine the number of jobs in this queue.
     """
 
+    # lock preventing parallel execution of the same queue
+    lock: Lock
+
+    def __init__(self) -> None:
+        self.lock = Lock()
+
     @abstractmethod
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """
@@ -239,17 +246,20 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queue.on_run()
+        with queue.lock:
 
-        results = self.run_jobs(queue.jobs())
+            # notify the queue that we're about to run it
+            queue.on_run()
 
-        if len(results) != len(queue):
-            raise AssertionError(
-                f"Number of results ({len(results)}) does not match length of "
-                f"queue ({len(queue)}): check method {type(queue).__name__}.__len__()"
-            )
+            results = self.run_jobs(queue.jobs())
 
-        return queue.aggregate(job_results=results)
+            if len(results) != len(queue):
+                raise AssertionError(
+                    f"Number of results ({len(results)}) does not match length of "
+                    f"queue ({len(queue)}): check method {type(queue).__name__}.__len__"
+                )
+
+            return queue.aggregate(job_results=results)
 
     def run_queues(
         self, queues: Iterable[JobQueue[Any, T_Queue_Result]]
@@ -266,15 +276,24 @@ class JobRunner(ParallelizableMixin):
             queues, element_type=JobQueue, arg_name="queues"
         )
 
-        for queue in queues_sequence:
-            queue.on_run()
+        try:
+            for queue in queues_sequence:
+                queue.lock.acquire()
 
-        with self._parallel() as parallel:
-            results: List[T_Job_Result] = parallel(
-                joblib.delayed(lambda job: job.run())(job)
-                for queue in queues_sequence
-                for job in queue.jobs()
-            )
+            # notify the queues that we're about to run them
+            for queue in queues_sequence:
+                queue.on_run()
+
+            with self._parallel() as parallel:
+                results: List[T_Job_Result] = parallel(
+                    joblib.delayed(lambda job: job.run())(job)
+                    for queue in queues_sequence
+                    for job in queue.jobs()
+                )
+
+        finally:
+            for queue in queues_sequence:
+                queue.lock.release()
 
         queues_len = sum(len(queue) for queue in queues_sequence)
         if len(results) != queues_len:
