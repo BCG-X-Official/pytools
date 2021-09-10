@@ -11,7 +11,6 @@ from typing import (
     Callable,
     Generic,
     Iterable,
-    Iterator,
     List,
     Optional,
     Sequence,
@@ -264,7 +263,7 @@ class JobRunner(ParallelizableMixin):
 
     def run_queues(
         self, queues: Iterable[JobQueue[Any, T_Queue_Result]]
-    ) -> Iterator[T_Queue_Result]:
+    ) -> List[T_Queue_Result]:
         """
         Run all jobs in the given queues, in parallel.
 
@@ -273,41 +272,42 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queues_sequence: Sequence[JobQueue[T_Queue_Result]] = to_tuple(
+        queues: Sequence[JobQueue[T_Queue_Result]] = to_tuple(
             queues, element_type=JobQueue, arg_name="queues"
         )
 
         try:
-            for queue in queues_sequence:
+            for queue in queues:
                 queue.lock.acquire()
 
             # notify the queues that we're about to run them
-            for queue in queues_sequence:
+            for queue in queues:
                 queue.on_run()
 
             with self._parallel() as parallel:
                 results: List[T_Job_Result] = parallel(
                     joblib.delayed(lambda job: job.run())(job)
-                    for queue in queues_sequence
+                    for queue in queues
                     for job in queue.jobs()
                 )
 
         finally:
-            for queue in queues_sequence:
+            for queue in queues:
                 queue.lock.release()
 
-        queues_len = sum(len(queue) for queue in queues_sequence)
+        queues_len = sum(len(queue) for queue in queues)
         if len(results) != queues_len:
             raise AssertionError(
                 f"Number of results ({len(results)}) does not match length of "
                 f"queues ({queues_len}): check method __len__() of the queue class(es)"
             )
 
-        first_job = 0
-        for queue in queues_sequence:
-            last_job = first_job + len(queue)
-            yield queue.aggregate(results[first_job:last_job])
-            first_job = last_job
+        # split the results into a list for each queue
+        queue_ends = list(itertools.accumulate(len(queue) for queue in queues))
+        return [
+            queue.aggregate(results[first_job:last_job])
+            for queue, first_job, last_job in zip(queues, [0, *queue_ends], queue_ends)
+        ]
 
     def _parallel(self) -> joblib.Parallel:
         # Generate a :class:`joblib.Parallel` instance using the parallelization
