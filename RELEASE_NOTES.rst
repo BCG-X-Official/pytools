@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.2
 -------------
 
+1.2.3
+~~~~~
+
+This is a maintenance release to catch up with *pytools* 1.1.6.
+
+
 1.2.2
 ~~~~~
 
@@ -32,12 +38,19 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 *pytools* 1.1
 -------------
 
+1.1.6
+~~~~~
+
+- FIX: ensure correct weight labels when rendering dendograms as plain text using the
+  :class:`.DendrogramReportStyle`
+
+
 1.1.5
 ~~~~~
 
-- FIX: fixed a rare case where :meth:`~.Expression.eq_` returned `False` for two
-  equivalent expressions if one of them included an :class:`~.ExpressionAlias`
-- FIX: accept any type of numerical values as leaf weights of :class:`~.LinkageTree`
+- FIX: fixed a rare case where :meth:`.Expression.eq_` returned `False` for two
+  equivalent expressions if one of them included an :class:`.ExpressionAlias`
+- FIX: accept any type of numerical values as leaf weights of :class:`.LinkageTree`
 
 
 1.1.4
@@ -50,7 +63,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 ~~~~~
 
 - FIX: comparing two :class:`.InfixExpression` objects using method
-  :meth:`~.Expression.eq_` would erroneously yield ``True`` if both expressions
+  :meth:`.Expression.eq_` would erroneously yield ``True`` if both expressions
   had the same operator but a different number of operands, and the operands of the
   shorter expression were equal to the operands at the start of the longer expression
 
@@ -90,7 +103,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.0.6
 ~~~~~
 
-- FIX: back-port 1.1 bugfix for :meth:`~.Expression.eq_`
+- FIX: back-port 1.1 bugfix for :meth:`.Expression.eq_`
 
 
 1.0.5
