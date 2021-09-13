@@ -49,8 +49,10 @@ def test_resolve_generic_class_parameters():
 
     resolve_generic_class_parameters.process(app=None, obj=B, bound_method=False)
     resolve_generic_class_parameters.process(app=None, obj=B.f, bound_method=False)
-    assert B.f.__annotations__ == {"x": Type[U], "return": int}
+    assert B.f is A.f
+    assert A.f.__annotations__ == {"x": Type[U], "return": int}
 
     resolve_generic_class_parameters.process(app=None, obj=C, bound_method=False)
     resolve_generic_class_parameters.process(app=None, obj=C.f, bound_method=False)
-    assert C.f.__annotations__ == {"x": Type[str], "return": int}
+    assert C.f is A.f
+    assert A.f.__annotations__ == {"x": Type[str], "return": int}
