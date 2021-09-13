@@ -406,4 +406,3 @@ TSWLatexianTemp*
 #
 /tmp
 !/tmp/README.md
-!/src/pytools/build
