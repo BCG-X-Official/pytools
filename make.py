@@ -14,10 +14,12 @@ import sys
 import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
-from typing import Any, Dict, Iterator, Set, cast
-from urllib.request import pathname2url
+from typing import Any, Dict, Iterator, List, Set, cast
+from urllib import request
+from xml.etree import ElementTree
 
 import toml
+from packaging.version import Version
 
 CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -72,7 +74,9 @@ class Builder(metaclass=ABCMeta):
 
         # add the project roots path to the environment as a URI
 
-        os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(projects_root_path)}"
+        os.environ[
+            FACET_PATH_URI_ENV
+        ] = f"file://{request.pathname2url(projects_root_path)}"
 
         # determine the package version of the project
 
@@ -162,8 +166,62 @@ class Builder(metaclass=ABCMeta):
             TOML_DIST_NAME
         ]
 
+    def validate_release_version(self) -> None:
+        """
+        Validate that the given version id can be used for the next release
+        of the given package.
+        """
+        package: str = self.get_package_dist_name()
+        new_version: Version = Version(self.package_version)
+
+        print(f"Testing package version: {package} {new_version}")
+
+        releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
+
+        print(f"Getting existing releases from {releases_uri}")
+        with request.urlopen(releases_uri) as response:
+            assert response.getcode() == 200, "Error getting releases from PyPi"
+            releases_xml = response.read()
+
+        tree = ElementTree.fromstring(releases_xml)
+        releases_nodes = tree.findall(path=".//channel//item//title")
+
+        released_versions: List[Version] = sorted(
+            Version(r) for r in [r.text for r in releases_nodes]
+        )
+
+        print(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
+
+        if new_version in released_versions:
+            raise AssertionError(
+                f"{package} {new_version} has already been released on PyPi"
+            )
+
+        if new_version.micro == 0 and not new_version.is_prerelease:
+            # we have a major or minor release: need a release candidate
+            pre_releases = [
+                released_version
+                for released_version in released_versions
+                if (
+                    released_version.is_prerelease
+                    and released_version.release == new_version.release
+                )
+            ]
+
+            if not pre_releases:
+                raise AssertionError(
+                    f"Release of major or minor version {new_version} "
+                    f"requires at least one release candidate, e.g., "
+                    f"{new_version.release[0]}.{new_version.release[1]}.rc0"
+                )
+
+            print(
+                f"Pre-releases {pre_releases} exist; "
+                f"release of major/minor version {new_version} can go ahead"
+            )
+
     @abstractmethod
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         pass
 
     def expose_package_dependencies(self) -> None:
@@ -200,7 +258,7 @@ class Builder(metaclass=ABCMeta):
 
         def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
             return {
-                name: self.adapt_version_syntax(
+                name: self.adapt_version_requirement_syntax(
                     validate_pip_version_spec(
                         dependency_type=matrix_type, package=name, spec=version
                     )
@@ -269,6 +327,7 @@ class Builder(metaclass=ABCMeta):
 
     def run(self) -> None:
         self.print_build_info(stage="STARTING")
+        self.validate_release_version()
         self.clean()
         self.expose_package_dependencies()
         self.build()
@@ -276,15 +335,12 @@ class Builder(metaclass=ABCMeta):
 
 
 def validate_pip_version_spec(dependency_type: str, package: str, spec: str) -> str:
-    if re.fullmatch(
-        RE_VERSION,
-        spec,
-    ):
+    if re.fullmatch(RE_VERSION, spec):
         return spec
-
-    raise ValueError(
-        f"invalid version spec in {dependency_type} dependency {package}{spec}"
-    )
+    else:
+        raise ValueError(
+            f"invalid version spec in {dependency_type} dependency {package}{spec}"
+        )
 
 
 class CondaBuilder(Builder):
@@ -307,7 +363,7 @@ class CondaBuilder(Builder):
     def build_path_suffix(self) -> str:
         return CONDA_BUILD_PATH_SUFFIX
 
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         # CONDA expects = instead of ==
         return re.sub(r"==", "=", version)
 
@@ -353,7 +409,7 @@ class ToxBuilder(Builder):
     def build_path_suffix(self) -> str:
         return TOX_BUILD_PATH_SUFFIX
 
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         return version
 
     def clean(self) -> None:
@@ -430,20 +486,18 @@ def get_projects_root_path() -> str:
 
 
 def get_known_projects() -> Set[str]:
-    return {
-        dir_entry.name
-        for dir_entry in cast(
-            Iterator[os.DirEntry], os.scandir(get_projects_root_path())
-        )
-        if dir_entry.is_dir()
-    }
+    dir_entries: Iterator[os.DirEntry] = cast(
+        Iterator[os.DirEntry], os.scandir(get_projects_root_path())
+    )
+    return {dir_entry.name for dir_entry in dir_entries if dir_entry.is_dir()}
 
 
 def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    usage = f"""Facet Build script
+    print(
+        f"""Facet Build script
 ==================
 Build a distribution package for given project.
 
@@ -463,7 +517,7 @@ Example usage:
     ./make.py sklearndf tox max
 
 """
-    print(usage)
+    )
 
 
 def run_make() -> None:
