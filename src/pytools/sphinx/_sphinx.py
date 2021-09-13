@@ -959,8 +959,7 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
     @staticmethod
     def _get_defining_class(method: FunctionType) -> Optional[type]:
         # get the class that defined the callable
-
-        print(f"find class for method {method.__module__}.{method.__qualname__}")
+        log.debug(f"find class for method {method.__module__}.{method.__qualname__}")
 
         qualname_sep = method.__qualname__.rfind(".")
         if qualname_sep < 0:
@@ -974,7 +973,7 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         self, bindings: _TypeVarBindings, func: FunctionType
     ) -> None:
         defining_class = self._get_defining_class(func)
-        print(f"XX function {func} was defined in {defining_class}")
+        log.debug(f"function {func} was defined in {defining_class}")
 
         def _substitute(_tp: Union[Type, TypeVar]) -> type:
             if isinstance(_tp, TypeVar):
@@ -1003,38 +1002,34 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
     def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
         """[see superclass]"""
 
-        try:
-            if isinstance(obj, type):
+        if isinstance(obj, type):
+            # we are starting to process a new class, remember it so we can
+            # attribute unbound methods to it
+            self._update_current_class(obj)
+
+        elif isinstance(obj, FunctionType):
+            if obj.__qualname__ == "__init__":
                 # we are starting to process a new class, remember it so we can
                 # attribute unbound methods to it
-                self._update_current_class(obj)
-
-            elif isinstance(obj, FunctionType):
-                if obj.__qualname__ == "__init__":
-                    # we are starting to process a new class, remember it so we can
-                    # attribute unbound methods to it
-                    bindings = self._update_current_class(self._get_defining_class(obj))
-                else:
-                    bindings = self._current_class_bindings
-
-                # instance method definitions are unbound, so we need to remember
-                # the class we are currently in
-                self._resolve_signature(bindings=bindings, func=obj),
-
-            elif isinstance(obj, MethodType):
-                # class method definitions are bound, so we can infer the current class
-                cls = obj.__self__
-                assert isinstance(cls, type), "methods are class methods"
-                self._resolve_signature(
-                    bindings=self._update_current_class(cls), func=obj.__func__
-                )
+                bindings = self._update_current_class(self._get_defining_class(obj))
             else:
-                return
-            print(
-                f"XX updated signature: {getattr(obj, '__annotations__','<undefined>')}"
+                bindings = self._current_class_bindings
+
+            # instance method definitions are unbound, so we need to remember
+            # the class we are currently in
+            self._resolve_signature(bindings=bindings, func=obj),
+
+        elif isinstance(obj, MethodType):
+            # class method definitions are bound, so we can infer the current class
+            cls = obj.__self__
+            assert isinstance(cls, type), "methods are class methods"
+            self._resolve_signature(
+                bindings=self._update_current_class(cls), func=obj.__func__
             )
-        finally:
-            print()
+        else:
+            return
+
+        log.debug(f"updated signature: {getattr(obj, '__annotations__','<undefined>')}")
 
     def _update_current_class(self, cls: type) -> _TypeVarBindings:
         bindings = self._current_class_bindings
