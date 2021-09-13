@@ -172,9 +172,9 @@ class Builder(metaclass=ABCMeta):
         of the given package.
         """
         package: str = self.get_package_dist_name()
-        version: Version = Version(self.package_version)
+        new_version: Version = Version(self.package_version)
 
-        print(f"Testing package version: {package} {version}")
+        print(f"Testing package version: {package} {new_version}")
 
         releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
 
@@ -192,33 +192,36 @@ class Builder(metaclass=ABCMeta):
 
         print(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
 
-        if version in released_versions:
+        if new_version in released_versions:
             raise AssertionError(
-                f"{package} {version} has already been released on PyPi"
+                f"{package} {new_version} has already been released on PyPi"
             )
 
-        if version.micro == 0 and not version.is_prerelease:
+        if new_version.micro == 0 and not new_version.is_prerelease:
             # we have a major or minor release: need a release candidate
-            release_candidates = [
-                v
-                for v in released_versions
-                if v.is_prerelease and v.release == version.release
+            pre_releases = [
+                released_version
+                for released_version in released_versions
+                if (
+                    released_version.is_prerelease
+                    and released_version.release == new_version.release
+                )
             ]
 
-            if not release_candidates:
+            if not pre_releases:
                 raise AssertionError(
-                    f"Release of major or minor version {version} "
+                    f"Release of major or minor version {new_version} "
                     f"requires at least one release candidate, e.g., "
-                    f"{version.release[0]}.{version.release[1]}.rc0"
+                    f"{new_version.release[0]}.{new_version.release[1]}.rc0"
                 )
 
             print(
-                f"Release candidates {release_candidates} exist; "
-                f"release of major/minor version {version} approved"
+                f"Pre-releases {pre_releases} exist; "
+                f"release of major/minor version {new_version} can go ahead"
             )
 
     @abstractmethod
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         pass
 
     def expose_package_dependencies(self) -> None:
@@ -255,7 +258,7 @@ class Builder(metaclass=ABCMeta):
 
         def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
             return {
-                name: self.adapt_version_syntax(
+                name: self.adapt_version_requirement_syntax(
                     validate_pip_version_spec(
                         dependency_type=matrix_type, package=name, spec=version
                     )
@@ -360,7 +363,7 @@ class CondaBuilder(Builder):
     def build_path_suffix(self) -> str:
         return CONDA_BUILD_PATH_SUFFIX
 
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         # CONDA expects = instead of ==
         return re.sub(r"==", "=", version)
 
@@ -406,7 +409,7 @@ class ToxBuilder(Builder):
     def build_path_suffix(self) -> str:
         return TOX_BUILD_PATH_SUFFIX
 
-    def adapt_version_syntax(self, version: str) -> str:
+    def adapt_version_requirement_syntax(self, version: str) -> str:
         return version
 
     def clean(self) -> None:
