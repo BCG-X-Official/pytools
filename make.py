@@ -14,10 +14,12 @@ import sys
 import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
-from typing import Any, Dict, Iterator, Set, cast
-from urllib.request import pathname2url
+from typing import Any, Dict, Iterator, List, Set, cast
+from urllib import request
+from xml.etree import ElementTree
 
 import toml
+from packaging.version import Version
 
 CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -72,7 +74,9 @@ class Builder(metaclass=ABCMeta):
 
         # add the project roots path to the environment as a URI
 
-        os.environ[FACET_PATH_URI_ENV] = f"file://{pathname2url(projects_root_path)}"
+        os.environ[
+            FACET_PATH_URI_ENV
+        ] = f"file://{request.pathname2url(projects_root_path)}"
 
         # determine the package version of the project
 
@@ -161,6 +165,57 @@ class Builder(metaclass=ABCMeta):
         return self.get_pyproject_toml()[TOML_TOOL][TOML_FLIT][TOML_METADATA][
             TOML_DIST_NAME
         ]
+
+    def validate_release_version(self) -> None:
+        """
+        Validate that the given version id can be used for the next release
+        of the given package.
+        """
+        package: str = self.get_package_dist_name()
+        version: Version = Version(self.package_version)
+
+        print(f"Testing package version: {package} {version}")
+
+        releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
+
+        print(f"Getting existing releases from {releases_uri}")
+        with request.urlopen(releases_uri) as response:
+            assert response.getcode() == 200, "Error getting releases from PyPi"
+            releases_xml = response.read()
+
+        tree = ElementTree.fromstring(releases_xml)
+        releases_nodes = tree.findall(path=".//channel//item//title")
+
+        released_versions: List[Version] = sorted(
+            Version(r) for r in [r.text for r in releases_nodes]
+        )
+
+        print(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
+
+        if version in released_versions:
+            raise AssertionError(
+                f"{package} {version} has already been released on PyPi"
+            )
+
+        if version.micro == 0 and not version.is_prerelease:
+            # we have a major or minor release: need a release candidate
+            release_candidates = [
+                v
+                for v in released_versions
+                if v.is_prerelease and v.release == version.release
+            ]
+
+            if not release_candidates:
+                raise AssertionError(
+                    f"Release of major or minor version {version} "
+                    f"requires at least one release candidate, e.g., "
+                    f"{version.release[0]}.{version.release[1]}.rc0"
+                )
+
+            print(
+                f"Release candidates {release_candidates} exist; "
+                f"release of major/minor version {version} approved"
+            )
 
     @abstractmethod
     def adapt_version_syntax(self, version: str) -> str:
@@ -269,6 +324,7 @@ class Builder(metaclass=ABCMeta):
 
     def run(self) -> None:
         self.print_build_info(stage="STARTING")
+        self.validate_release_version()
         self.clean()
         self.expose_package_dependencies()
         self.build()
@@ -276,15 +332,12 @@ class Builder(metaclass=ABCMeta):
 
 
 def validate_pip_version_spec(dependency_type: str, package: str, spec: str) -> str:
-    if re.fullmatch(
-        RE_VERSION,
-        spec,
-    ):
+    if re.fullmatch(RE_VERSION, spec):
         return spec
-
-    raise ValueError(
-        f"invalid version spec in {dependency_type} dependency {package}{spec}"
-    )
+    else:
+        raise ValueError(
+            f"invalid version spec in {dependency_type} dependency {package}{spec}"
+        )
 
 
 class CondaBuilder(Builder):
@@ -430,20 +483,18 @@ def get_projects_root_path() -> str:
 
 
 def get_known_projects() -> Set[str]:
-    return {
-        dir_entry.name
-        for dir_entry in cast(
-            Iterator[os.DirEntry], os.scandir(get_projects_root_path())
-        )
-        if dir_entry.is_dir()
-    }
+    dir_entries: Iterator[os.DirEntry] = cast(
+        Iterator[os.DirEntry], os.scandir(get_projects_root_path())
+    )
+    return {dir_entry.name for dir_entry in dir_entries if dir_entry.is_dir()}
 
 
 def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    usage = f"""Facet Build script
+    print(
+        f"""Facet Build script
 ==================
 Build a distribution package for given project.
 
@@ -463,7 +514,7 @@ Example usage:
     ./make.py sklearndf tox max
 
 """
-    print(usage)
+    )
 
 
 def run_make() -> None:
