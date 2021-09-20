@@ -1,6 +1,5 @@
 """
-Base classes for dendrogram representations of linkage trees.
+Base classes for dendrogram representations.
 """
 
-from ._linkage import *
 from ._style import *

@@ -9,7 +9,8 @@ import numpy as np
 import pytest
 import scipy.cluster.hierarchy as hc
 
-from pytools.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle, LinkageTree
+from pytools.data import LinkageTree
+from pytools.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle
 
 log = logging.getLogger(__name__)
 

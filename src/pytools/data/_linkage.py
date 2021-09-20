@@ -11,8 +11,8 @@ from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from pytools.api import AllTracker
-from pytools.viz.dendrogram.base import LeafNode, LinkageNode, Node
+from ..api import AllTracker
+from .base import LeafNode, LinkageNode, Node
 
 #
 # Exported names

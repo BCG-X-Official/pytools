@@ -7,11 +7,12 @@ from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Type, Union
 
 import numpy as np
 
+from ...api import AllTracker, inheritdoc
+from ...data import LinkageTree
+from ...data.base import Node
 from .. import Drawer
-from ._linkage import LinkageTree
 from ._style import DendrogramMatplotStyle, DendrogramReportStyle
-from .base import DendrogramStyle, Node
-from pytools.api import AllTracker, inheritdoc
+from .base import DendrogramStyle
 
 log = logging.getLogger(__name__)
 
