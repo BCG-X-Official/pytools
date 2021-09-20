@@ -4,15 +4,15 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Optional, Tuple
+from typing import Any, Optional, Union
 
 import matplotlib.pyplot as plt
-from matplotlib import text as mt
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import Normalize
 from matplotlib.legend import Legend
+from matplotlib.text import Text
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["MatplotStyle", "ColorbarMatplotStyle"]
+__all__ = ["FittedText", "MatplotStyle", "ColorbarMatplotStyle"]
 
 
 #
@@ -86,53 +86,6 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         :return: the renderer
         """
         return get_renderer(self.ax.figure)
-
-    def text_dimensions(
-        self,
-        text: str,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
-        **kwargs: Any,
-    ) -> Tuple[float, float]:
-        """
-        Calculate the horizontal and vertical dimensions of the given text in data
-        units.
-
-        Constructs a :class:`~matplotlib.text.Text` artist then calculates it size
-        relative to the axis :attr:`.ax` managed by this style object.
-        For non-linear axis scales, text size differs depending on placement,
-        so the intended placement (in data coordinates) should be provided.
-
-        :param text: text to calculate the dimensions for
-        :param x: intended horizontal text placement (optional, defaults to center of
-            view)
-        :param y: intended vertical text placement (optional, defaults to center of
-            view)
-        :param kwargs: additional keyword arguments to use when constructing the
-            :class:`~matplotlib.text.Text` artist, e.g., rotation
-        :return: tuple `(width, height)` in data units
-        """
-
-        ax = self.ax
-
-        assert not (
-            ax.get_autoscalex_on() or ax.get_autoscaley_on()
-        ), "text_dimensions requires x and y autoscaling to be off"
-
-        if x is None:
-            x = sum(ax.get_xlim()) / 2
-        if y is None:
-            y = sum(ax.get_ylim()) / 2
-
-        (x0, y0), (x1, y1) = ax.transData.inverted().transform(
-            mt.Text(x, y, text, figure=ax.figure, **kwargs).get_window_extent(
-                self.get_renderer()
-            )
-        )
-
-        text_padding = 1.0 + 2 * self._TEXT_PADDING_RATIO
-
-        return abs(x1 - x0) * text_padding, abs(y1 - y0) * text_padding
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
@@ -309,6 +262,97 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         # set colorbar edge color
         cb.outline.set_edgecolor(fg_color)
+
+
+class FittedText(Text):
+    """
+    Handle storing and drawing of text in window or data coordinates;
+    only render text that does not exceed the given width and height in data
+    coordinates.
+    """
+
+    def __init__(
+        self,
+        *,
+        x: Union[int, float] = 0,
+        y: Union[int, float] = 0,
+        width: Union[int, float, None] = None,
+        height: Union[int, float, None] = None,
+        text: str = "",
+        **kwargs: Any,
+    ) -> None:
+        """
+        :param x: the `x` coordinate of the text
+        :param y: the `y` coordinate of the text
+        :param width: the maximum allowed width for this text, in data coordinates;
+            if ``None``, width is unrestricted
+        :param height: the maximum allowed height for this text, in data coordinates;
+            if ``None``, height is unrestricted
+        :param text: the text to be rendered
+        :param kwargs: additional keyword arguments of class
+            :class:`matplotlib.text.Text`
+        """
+        super().__init__(x=x, y=y, text=text, **kwargs)
+        self._width = width
+        self._height = height
+
+    def set_width(self, width: Union[int, float, None]) -> None:
+        """
+        Set the maximum allowed width for this text, in data coordinates.
+
+        :param width: the maximum allowed width; ``None`` if width is unrestricted
+        """
+        self.stale = width != self._width
+        self._width = width
+
+    def get_width(self) -> Union[int, float, None]:
+        """
+        Get the maximum allowed width for this text, in data coordinates.
+
+        :return: the maximum allowed width; ``None`` if width is unrestricted
+        """
+        return self._width
+
+    def set_height(self, height: Union[int, float, None]) -> None:
+        """
+        Set the maximum allowed height for this text, in data coordinates.
+
+        :param height: the maximum allowed height; ``None`` if height is unrestricted
+        """
+        self.stale = height != self._height
+        self._height = height
+
+    def get_height(self) -> Union[int, float, None]:
+        """
+        Get the maximum allowed height for this text, in data coordinates.
+
+        :return: the maximum allowed height; ``None`` if height is unrestricted
+        """
+        return self._height
+
+    def draw(self, renderer: RendererBase) -> None:
+        """
+        Draw the text if it is visible, and if it does not exceed the maximum
+        width and height.
+
+        See also :meth:`~matplotlib.artist.Artist.draw`.
+
+        :param renderer: the renderer used for drawing
+        """
+        width = self.get_width()
+        height = self.get_height()
+
+        if width is None and height is None:
+            super().draw(renderer)
+        else:
+            (x0, y0), (x1, y1) = self.axes.transData.inverted().transform(
+                self.get_window_extent(renderer)
+            )
+
+            if (width is None or abs(x1 - x0) <= width) and (
+                height is None or abs(y1 - y0) <= height
+            ):
+                super().draw(renderer)
 
 
 __tracker.validate()

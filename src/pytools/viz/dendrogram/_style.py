@@ -6,12 +6,12 @@ import logging
 from typing import Any, Iterable, Optional, Sequence, TextIO, Union
 
 import numpy as np
-from matplotlib.axes import Axes, math
+from matplotlib.axes import Axes
 from matplotlib.colors import LogNorm
 
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
-from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
+from .. import ColorbarMatplotStyle, FittedText, MatplotStyle, TextStyle
 from ..color import ColorScheme, text_contrast_color
 from ..util import PercentageFormatter
 from .base import DendrogramStyle
@@ -214,28 +214,10 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
     ) -> None:
         """[see superclass]"""
 
-        _, text_height = self.text_dimensions("0")
-
-        # only create tick locations where there is enough vertical space for the label
-        tick_locations = list(self.get_ytick_locations(weights=weights))
-
-        ticks, tick_labels = zip(
-            *(
-                (loc, name)
-                for lo, loc, hi, name in zip(
-                    [-math.inf, *tick_locations],
-                    tick_locations,
-                    [*tick_locations[1:], math.inf],
-                    names,
-                )
-                if (hi - lo) / 2 >= text_height
-            )
-        )
-
         # set the tick locations and labels
         y_axis = self.ax.yaxis
-        y_axis.set_ticks(ticks=ticks)
-        y_axis.set_ticklabels(ticklabels=tick_labels)
+        y_axis.set_ticks(ticks=list(self.get_ytick_locations(weights=weights)))
+        y_axis.set_ticklabels(ticklabels=names)
         # y_axis.set_tick_params(left=False)
 
     def get_ytick_locations(
@@ -283,25 +265,25 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
             else f"{round(weight_percent):.3g}%"
         )
 
-        x_text = x + w / 2
-        y_text = y + h / 2
-        text_width, text_height = self.text_dimensions(text=label, x=x_text, y=y_text)
-        if text_width <= w and text_height <= h:
-            t = self.ax.text(
-                x_text,
-                y_text,
-                label,
+        t = self.ax.add_artist(
+            FittedText(
+                x=x + w / 2,
+                y=y + h / 2,
+                width=w,
+                height=h,
+                text=label,
                 ha="center",
                 va="center",
                 color=text_contrast_color(fill_color),
             )
-            t.set_bbox(
-                dict(
-                    facecolor=fill_color,
-                    linewidth=0.0,
-                    pad=t.get_fontsize() * self._TEXT_PADDING_RATIO,
-                )
+        )
+        t.set_bbox(
+            dict(
+                facecolor=fill_color,
+                linewidth=0.0,
+                pad=t.get_fontsize() * self._TEXT_PADDING_RATIO,
             )
+        )
 
     def _draw_hline(
         self, x1: float, x2: float, y: float, weight: float, max_height: float
