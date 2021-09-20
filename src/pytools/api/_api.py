@@ -556,6 +556,7 @@ def validate_element_types(
     iterable: T_Iterable,
     *,
     expected_type: Union[Type, Tuple[Type, ...]],
+    optional: bool = False,
     name: Optional[str] = None,
 ) -> T_Iterable:
     """
@@ -563,6 +564,7 @@ def validate_element_types(
 
     :param iterable: an iterable
     :param expected_type: the type to check for
+    :param optional: if ``True``, accept ``None`` as valid elements (default: ``False``)
     :param name: optional name of the argument or callable with/to which the elements
         were passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
@@ -571,6 +573,8 @@ def validate_element_types(
         expected type
     """
     if expected_type is not object:
+        if optional:
+            expected_type = (*expected_type, type(None))
         for element in iterable:
             if not isinstance(element, expected_type):
                 if name:
