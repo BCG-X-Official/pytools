@@ -115,8 +115,12 @@ class DrawingStyle(metaclass=ABCMeta):
         method :meth:`Drawer._get_style_kwargs`, will be passed
         as keyword arguments.
 
+        Subclasses overriding this method should call ``super().start_drawing()``
+        before executing their own drawer-specific initializations.
+
         :param title: the title of the chart
-        :param kwargs: additional drawer-specific arguments
+        :param kwargs: additional drawer-specific arguments (should be empty)
+        :raise ValueError: additional keyword arguments were specified
         """
         if kwargs:
             raise ValueError(f"unknown arguments: {kwargs}")
@@ -130,7 +134,11 @@ class DrawingStyle(metaclass=ABCMeta):
         method :meth:`.Drawer._get_style_kwargs`, will be passed
         as keyword arguments.
 
-        :param kwargs: additional additional drawer-specific arguments
+        Subclasses overriding this method should call ``super().finalize_drawing()``
+        after executing their own drawer-specific finalization.
+
+        :param kwargs: additional drawer-specific arguments (should be empty)
+        :raise ValueError: additional keyword arguments were specified
         """
         if kwargs:
             raise ValueError(f"unknown arguments: {kwargs}")
