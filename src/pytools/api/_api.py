@@ -517,7 +517,7 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    expected_type: Type[T],
+    expected_type: Union[Type, Tuple[Type, ...]],
     optional: bool = False,
     name: Optional[str] = None,
 ) -> T:
@@ -555,7 +555,7 @@ def validate_type(
 def validate_element_types(
     iterable: T_Iterable,
     *,
-    expected_type: Union[Type, Tuple[Union[Type, None], ...], None],
+    expected_type: Union[Type, Tuple[Type, ...]],
     name: Optional[str] = None,
 ) -> T_Iterable:
     """
