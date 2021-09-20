@@ -542,6 +542,8 @@ def validate_type(
     if isinstance(value, expected_type):
         return value
     else:
+        if optional:
+            expected_type = (*expected_type, type(None))
         if name:
             message_head = f"{name} requires"
         else:
