@@ -489,8 +489,10 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         """
         try:
             super().finalize_drawing(**kwargs)
-            for row in reversed(range(self._n_labels + 1)):
-                self.out.write(f"{self._char_matrix[row, :]}\n")
+            print(
+                "\n".join(self._char_matrix.lines(reversed(range(self._n_labels + 1)))),
+                file=(self.out),
+            )
         finally:
             self._char_matrix = None
             self._n_labels = None
