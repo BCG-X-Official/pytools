@@ -7,6 +7,7 @@ from abc import ABCMeta
 from typing import Any, Optional, Union
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
@@ -215,9 +216,11 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def color_for_value(self, z: float) -> ColorScheme.RgbaColor:
+    def color_for_value(
+        self, z: Union[int, float, np.ndarray]
+    ) -> Union[ColorScheme.RgbaColor, np.ndarray]:
         """
-        Get the color associated with a given scalar, based on the color map and
+        Get the color associated with the given value(s), based on the color map and
         normalization defined for this style.
 
         :param z: the scalar to be color-encoded
@@ -257,10 +260,10 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         else:
             cb.minorticks_off()
 
-        # set colorbar tick color
+        # set the colorbar tick color
         cb.ax.yaxis.set_tick_params(colors=fg_color)
 
-        # set colorbar edge color
+        # set the colorbar edge color
         cb.outline.set_edgecolor(fg_color)
 
 
