@@ -488,7 +488,6 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         :param kwargs: additional drawer-specific arguments
         """
         try:
-            super().finalize_drawing(**kwargs)
             print(
                 "\n".join(self._char_matrix.lines(reversed(range(self._n_labels + 1)))),
                 file=(self.out),
@@ -496,6 +495,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         finally:
             self._char_matrix = None
             self._n_labels = None
+            super().finalize_drawing(**kwargs)
 
     def _x_pos(self, h: float, h_max: float) -> int:
         # calculate the horizontal position in the character grid,
