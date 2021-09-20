@@ -148,6 +148,11 @@ class Matrix(HasExpressionRepr):
                 return None
             else:
                 weights_arr = np.array(axis_weights)
+                if weights_arr.ndim != 1:
+                    raise ValueError(
+                        f"arg weights[{axis}] must be a 1d array, but has "
+                        f"shape {weights_arr.shape}"
+                    )
                 if weights_arr.shape != (data.shape[axis],):
                     raise ValueError(
                         f"arg weights[{axis}] must have same length as arg "
