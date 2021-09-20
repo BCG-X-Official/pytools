@@ -3,16 +3,30 @@ Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Type, Union
+from typing import (
+    Any,
+    Callable,
+    Collection,
+    Dict,
+    Iterable,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
-from matplotlib.axes import Axes, mticker
+from matplotlib.axes import Axes
 from matplotlib.axis import Axis
 from matplotlib.colors import Normalize
-from matplotlib.ticker import Formatter, FuncFormatter
+from matplotlib.patches import Rectangle
+from matplotlib.ticker import Formatter, FuncFormatter, NullLocator
 
-from .. import ColorbarMatplotStyle, Drawer, TextStyle
+from ...data import Matrix
+from .. import ColorbarMatplotStyle, Drawer, FittedText, TextStyle
 from ..color import ColorScheme, text_contrast_color
 from ..util import PercentageFormatter
 from .base import MatrixStyle
@@ -26,11 +40,18 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "MatrixMatplotStyle",
-    "PercentageMatrixMatplotStyle",
-    "MatrixReportStyle",
     "MatrixDrawer",
+    "MatrixMatplotStyle",
+    "MatrixReportStyle",
+    "PercentageMatrixMatplotStyle",
 ]
+
+
+#
+# Type variables
+#
+
+T = TypeVar("T")
 
 
 #
@@ -41,7 +62,7 @@ __tracker = AllTracker(globals())
 
 
 #
-# Classes
+# Style classes
 #
 
 
@@ -130,134 +151,162 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
     __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def draw_matrix(self, matrix: pd.DataFrame) -> None:
+    def draw_matrix(
+        self,
+        data: np.ndarray,
+        *,
+        names: Tuple[Optional[Sequence[Any]], Optional[Sequence[Any]]],
+        weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
+    ) -> None:
         """[see superclass]"""
         ax: Axes = self.ax
-        ax.margins(0)
 
-        # store values locally so we can label the matrix cells when finalizing the plot
-        data = matrix.values
-        ax.imshow(
-            data,
-            cmap=self.colors.colormap,
-            norm=self.colormap_normalize,
-            origin="upper",
-            interpolation="nearest",
-            aspect="equal",
+        # replace undefined weights with all ones
+        weights = tuple(
+            np.ones(n) if w is None else w for w, n in zip(weights, data.shape)
         )
 
-        # determine if a number of labels has been configured for this style
-        max_ticks = self.max_ticks
-        if max_ticks is None:
-            max_x_ticks = max_y_ticks = None
-        else:
-            max_x_ticks, max_y_ticks = max_ticks
+        # calculate the horizontal and vertical matrix cell bounds based on the
+        # cumulative sums of the axis weights; default all weights to 1 if not defined
+        column_bounds: np.ndarray
+        row_bounds: np.ndarray
 
-        # rotate x labels if they are categorical
+        row_bounds, column_bounds = (np.array([0, *w]).cumsum() for w in weights)
+
+        # calculate the colors based on the data
+        colors = self.color_for_value(data.ravel()).reshape((*data.shape, 4))
+
+        # draw the matrix cells
+        for c, (x0, x1) in enumerate(zip(column_bounds, column_bounds[1:])):
+            for r, (y0, y1) in enumerate(zip(row_bounds, row_bounds[1:])):
+                ax.add_artist(
+                    Rectangle((x0, y0), x1 - x0, y1 - y0, facecolor=colors[r, c])
+                )
+
+        # noinspection PyTypeChecker
+        ax.update_datalim([(0, 0), (column_bounds[-1], row_bounds[-1])])
+
+        # draw the tick marks and labels
+
+        x_tick_locations = (column_bounds[:-1] + column_bounds[1:]) / 2
+        y_tick_locations = (row_bounds[:-1] + row_bounds[1:]) / 2
+
+        # rotate c labels if they are categorical
         tick_params: Dict[bool, Dict[str, Any]] = {
             False: {},
             True: dict(rotation=45, ha="right"),
         }
 
-        def _set_ticks(index: pd.Index, max_bins: int, axis: Axis, rotate: bool):
-            # set the x and y ticks
+        def _set_ticks(
+            tick_locations: np.ndarray,
+            tick_labels: Sequence[Any],
+            axis: Axis,
+            rotate: bool,
+        ):
+            # set the ticks for the given axis
 
-            # determine number of bins
-            if max_bins is not None:
-                n_bins = max_bins
-            elif index.is_numeric():
-                n_bins = "auto"
+            if tick_labels is None:
+                axis.set_major_locator(NullLocator())
+
             else:
-                n_bins = len(index)
+                # Replace the tick locator with a fixed locator, preserving the tick
+                # locations determined by the MaxNLocator. This is needed for
+                # compatibility with the FixedFormatter that will be created when
+                # setting the tick labels
+                axis.set_ticks(tick_locations)
 
-            locator = mticker.MaxNLocator(
-                nbins=n_bins, steps=[1, 2, 5, 10], integer=True, prune="both"
-            )
-            axis.set_major_locator(locator)
+                # Set the tick labels; behind the scenes this will create a
+                # FixedFormatter.
+                axis.set_ticklabels(tick_labels, **tick_params[rotate])
 
-            tick_locations: np.ndarray = axis.get_ticklocs()
-            if len(index) > len(tick_locations):
-                # we can plot only selected tick labels: look up labels for the
-                # visible tick indices
-                labels = index[tick_locations.astype(int)]
-            else:
-                # we can plot all tick labels
-                labels = index.values
-
-            # Replace the tick locator with a fixed locator, preserving the tick
-            # locations determined by the MaxNLocator. This is needed for compatibility
-            # with the FixedFormatter that will be created when setting the tick labels
-            axis.set_ticks(axis.get_ticklocs())
-
-            # Set the tick labels; behind the scenes this will create a FixedFormatter.
-            axis.set_ticklabels(labels, **tick_params[rotate])
+        row_names, column_names = names
 
         _set_ticks(
-            index=matrix.columns,
-            max_bins=max_x_ticks,
+            tick_locations=x_tick_locations,
+            tick_labels=column_names,
             axis=ax.xaxis,
-            rotate=not matrix.columns.is_numeric(),
+            rotate=column_names and not is_numeric(column_names),
         )
         _set_ticks(
-            index=matrix.index, max_bins=max_y_ticks, axis=ax.yaxis, rotate=False
+            tick_locations=y_tick_locations,
+            tick_labels=row_names,
+            axis=ax.yaxis,
+            rotate=False,
         )
-
-        # get the matrix size
-        n_rows = data.shape[0]
-        n_columns = data.shape[1]
 
         # only draw labels if a cell formatter is defined, and minimal height/width
         # is available
-        ax.set_autoscale_on(False)
+        if self.cell_formatter is not None:
+            # draw the axis to ensure we'll get correct coordinates
+            # ax.draw(self.renderer)
 
-        if self.cell_formatter is not None and all(
-            size <= 1 for size in self.text_dimensions("0")
-        ):
             # get the cell formatter as a local field
             cell_formatter = self.cell_formatter
 
+            # ensure we have valid weight iterables
+            weights_rows, weights_columns = (
+                iter(lambda: 1, None) if w is None else w for w in weights
+            )
+
             # render the text for every box where the text fits
-            for y in range(n_rows):
-                for x in range(n_columns):
-                    x_text = x
-                    y_text = y
-                    cell_value = data[y, x]
+
+            for r, (y, height) in enumerate(zip(y_tick_locations, weights_rows)):
+                for c, (x, width) in enumerate(zip(x_tick_locations, weights_columns)):
+                    cell_value = data[r, c]
                     label = cell_formatter(cell_value)
-                    text_width, _ = self.text_dimensions(text=label, x=x_text, y=y_text)
-
-                    if text_width > 1:
-                        # show ellipsis in cells where the text does not fit
-                        label = "…"
-
-                    self.ax.text(
-                        x=x_text,
-                        y=y_text,
-                        s=label,
-                        ha="center",
-                        va="center",
-                        color=text_contrast_color(
-                            bg_color=self.color_for_value(z=cell_value)
-                        ),
+                    ax.add_artist(
+                        FittedText(
+                            x=x,
+                            y=y,
+                            width=width,
+                            height=height,
+                            text=label,
+                            ha="center",
+                            va="center",
+                            color=text_contrast_color(
+                                bg_color=self.color_for_value(z=cell_value)
+                            ),
+                        )
                     )
 
-        # hide spines
-        for _, spine in ax.spines.items():
-            spine.set_visible(False)
-
         # create a white grid using minor tick positions
-        ax.set_xticks(np.arange(n_columns + 1) - 0.5, minor=True)
-        ax.set_yticks(np.arange(n_rows + 1) - 0.5, minor=True)
+        ax.set_xticks(column_bounds, minor=True)
+        ax.set_yticks(row_bounds, minor=True)
         ax.grid(
             b=True,
             which="minor",
             color=self.colors.background,
             linestyle="-",
-            linewidth=2,
+            linewidth=0.5,
         )
         ax.tick_params(which="minor", bottom=False, left=False)
 
         # make sure we have no major grid, overriding any global settings
         ax.grid(b=False, which="major")
+
+    def finalize_drawing(
+        self,
+        *,
+        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
+        """[see superclass]"""
+
+        ax: Axes = self.ax
+
+        # remove margins
+        ax.margins(0)
+
+        # set axis labels
+        ax.set_ylabel(name_labels[0])
+        ax.set_xlabel(name_labels[1])
+
+        # hide spines
+        for _, spine in ax.spines.items():
+            spine.set_visible(False)
+
+        super().finalize_drawing(colorbar_label=weight_label, **kwargs)
 
 
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
@@ -318,9 +367,56 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
     Text report style for matrices.
     """
 
-    def draw_matrix(self, matrix: pd.DataFrame) -> None:
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        weight_label: Optional[str] = None,
+        **kwargs: Any,
+    ) -> None:
         """[see superclass]"""
-        matrix.to_string(buf=self.out, line_width=self.width)
+
+        super().start_drawing(title=title, **kwargs)
+
+        for i, dim_name in enumerate(("rows", "columns")):
+            if name_labels[i]:
+                print(f"{dim_name}: {name_labels[i]}", file=self.out)
+        if weight_label:
+            print(f"weights: {weight_label}", file=self.out)
+
+    def draw_matrix(
+        self,
+        data: np.ndarray,
+        *,
+        names: Tuple[Optional[Sequence[Any]], Optional[Sequence[Any]]],
+        weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
+    ) -> None:
+        """[see superclass]"""
+
+        def _axis_marks(
+            axis_names: Optional[Sequence[Any]], axis_weights: Optional[np.ndarray]
+        ) -> Optional[Iterable[str]]:
+            if axis_names is None:
+                if axis_weights is None:
+                    return None
+                else:
+                    axis_names = (f"#{i}" for i in range(len(axis_weights)))
+            elif axis_weights is None:
+                return axis_names
+
+            return (
+                f"{name} ({weight:g})" for name, weight in zip(axis_names, axis_weights)
+            )
+
+        row_labels, column_labels = (
+            _axis_marks(axis_names, axis_weights)
+            for axis_names, axis_weights in zip(names, weights)
+        )
+
+        pd.DataFrame(data, index=row_labels, columns=column_labels).to_string(
+            buf=self.out, line_width=self.width
+        )
 
 
 #
@@ -329,7 +425,7 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
+class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
     """
     Drawer for matrices of numerical values.
 
@@ -357,9 +453,30 @@ class MatrixDrawer(Drawer[pd.DataFrame, MatrixStyle]):
             MatrixReportStyle,
         ]
 
-    def _draw(self, data: pd.DataFrame) -> None:
+    def _get_style_kwargs(self, data: Matrix) -> Dict[str, Any]:
+        return dict(
+            name_labels=data.name_labels,
+            weight_label=data.weight_label,
+            **super()._get_style_kwargs(data=data),
+        )
+
+    def _draw(self, data: Matrix) -> None:
         # draw the matrix
-        self.style.draw_matrix(data)
+        self.style.draw_matrix(data.data, names=data.names, weights=data.weights)
 
 
 __tracker.validate()
+
+#
+# helper functions
+#
+
+
+def is_numeric(collection: Collection) -> bool:
+    """
+    Determine whether a given collection contains only numeric values
+
+    :param collection: the collection to check
+    :return: ``True`` if the collection contais only numeric values; ``False`` otherwise
+    """
+    return all(isinstance(name, (int, float)) for name in collection)
