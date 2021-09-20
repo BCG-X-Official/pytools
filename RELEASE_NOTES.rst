@@ -19,6 +19,8 @@ Release Notes
     - rename method `collate` of class :class:`.JobQueue` to :meth:`.JobQueue.aggregate`
     - :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
       method :meth:`.SimpleQueue.aggregate`
+- API: new function :meth:`.validate_release_version` checking if a new package version
+  may be released with a given version number
 
 
 *pytools* 1.2
