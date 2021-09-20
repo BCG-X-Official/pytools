@@ -230,9 +230,7 @@ class CollectionLiteral(BracketedExpression):
         from ..atomic import Epsilon
         from ..composite import BinaryOperation
 
-        elements: Tuple[Expression, ...] = tuple(
-            make_expression(element) for element in elements
-        )
+        elements: Tuple[Expression, ...] = tuple(map(make_expression, elements))
 
         subexpression: Expression
         if not elements:
