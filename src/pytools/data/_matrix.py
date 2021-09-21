@@ -171,7 +171,7 @@ class Matrix(HasExpressionRepr):
 
         self.name_labels = (
             validate_element_types(
-                name_labels, expected_type=str, name="arg name_labels"
+                name_labels, expected_type=str, optional=True, name="arg name_labels"
             )
             if name_labels
             else (None, None)
@@ -208,6 +208,64 @@ class Matrix(HasExpressionRepr):
             weight_label=weight_label,
         )
 
+    def resize(
+        self, rows: Union[int, float, None], columns: Union[int, float, None]
+    ) -> "Matrix":
+        r"""
+        Create a version of this matrix with fewer rows and/or columns, keeping the
+        rows and columns with the greatest weight, and prioritizing topmost rows and
+        leftmost columns in case multiple rows and columns have the same weight and
+        cannot all be included in the resulting, smaller matrix.
+
+        A target size can be stated separately for rows and columns:
+
+        - as a positive intger, indicating absolute target size (row or column count),
+          not exceeding the original size
+        - as a float, indicating target size as a ratio of the current size
+          where :math:`0 < \mathit{ratio} \le 1`
+        - as ``None``, preserving the original size
+
+        :param rows: the rows target size
+        :param columns: the columns target size
+        :return: a resized version of this matrix
+        """
+
+        if rows is None and columns is None:
+            return self
+
+        n_rows_current, n_columns_current = self.data.shape
+        weights_rows, weights_columns = self.weights
+        names_rows, names_columns = self.names
+
+        data = self.data
+
+        if rows:
+            data, weights_rows, names_rows = _resize_rows(
+                data=data,
+                weights=weights_rows,
+                names=names_rows,
+                current_size=n_rows_current,
+                target_size=_validate_resize_arg(rows, n_rows_current, "rows"),
+            )
+
+        if columns:
+            data_t, weights_columns, names_columns = _resize_rows(
+                data=data.T,
+                weights=weights_columns,
+                names=names_columns,
+                current_size=n_columns_current,
+                target_size=_validate_resize_arg(columns, n_columns_current, "columns"),
+            )
+            data = data_t.T
+
+        return Matrix(
+            data,
+            names=(names_rows, names_columns),
+            weights=(weights_rows, weights_columns),
+            name_labels=self.name_labels,
+            weight_label=self.weight_label,
+        )
+
     def to_expression(self) -> Expression:
         """[see superclass]"""
         return self.get_class_id()(
@@ -235,6 +293,102 @@ class Matrix(HasExpressionRepr):
             and self.name_labels == other.name_labels
             and self.weight_label == other.weight_label
         )
+
+
+def _validate_resize_arg(
+    size_new: Union[int, float, None], size_current: int, arg_name: str
+) -> Tuple[Optional[int], Optional[float]]:
+    if size_new is None:
+        return (None, None)
+
+    if isinstance(size_new, int):
+        if size_new > size_current:
+            raise ValueError(
+                f"arg {arg_name}={size_new} "
+                "must not be greater than the current number of rows"
+            )
+        result = (size_new, None)
+
+    elif isinstance(size_new, float):
+        if size_new > 1.0:
+            raise ValueError(f"arg {arg_name}={size_new} must not be greater than 1.0")
+        result = (None, size_new)
+
+    else:
+        raise TypeError(f"arg {arg_name}={size_new!r} must be a number")
+
+    if size_new <= 0:
+        raise ValueError(f"arg {arg_name}={size_new} must not be negative")
+
+    return result
+
+
+def _top_items_mask(
+    weights: Optional[np.ndarray],
+    current_size: int,
+    target_size: Tuple[Optional[int], Optional[float]],
+) -> np.ndarray:
+    target_n, target_ratio = target_size
+
+    if target_n:
+        if current_size == target_n:
+            return np.ones(current_size, dtype=bool)
+        elif weights is None:
+            mask = np.ones(current_size, dtype=bool)
+            mask[target_n:] = False
+            return mask
+
+    elif not target_ratio:
+        assert target_ratio, "one of target size or target ratio is defined"
+
+    mask = np.zeros(current_size, dtype=bool)
+    ix_weights_descending_stable = (current_size - 1) - weights[::-1].argsort(
+        kind="stable"
+    )[::-1]
+    if target_n:
+        # pick the top n items with the highest weight
+        mask[ix_weights_descending_stable[:target_n]] = True
+
+    else:
+        # in descending order of item weight, pick the minimum set of items whose
+        # total weight is equal to or greater than the target weight
+        #
+        # target weight is expressed as a ratio of total weight (0 < target_ratio <= 1)
+
+        weights_sorted_cumsum: np.ndarray = weights[
+            ix_weights_descending_stable
+        ].cumsum()
+        mask[
+            : weights_sorted_cumsum.searchsorted(
+                weights_sorted_cumsum[-1] * target_ratio
+            )
+            + 1
+        ] = True
+        mask[ix_weights_descending_stable] = mask.copy()
+
+    return mask
+
+
+def _resize_rows(
+    data: np.ndarray,
+    weights: Optional[np.ndarray],
+    names: Optional[Tuple[str, ...]],
+    current_size: int,
+    target_size: Tuple[Optional[int], Optional[float]],
+) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[Tuple[str, ...]]]:
+    mask = _top_items_mask(
+        weights=weights, current_size=current_size, target_size=target_size
+    )
+
+    return (
+        data[mask],
+        weights[mask],
+        (
+            tuple(name for name, is_included in zip(names, mask) if is_included)
+            if names
+            else None
+        ),
+    )
 
 
 __tracker.validate()
