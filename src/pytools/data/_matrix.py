@@ -218,5 +218,23 @@ class Matrix(HasExpressionRepr):
             weight_label=self.weight_label,
         )
 
+    def __eq__(self, other: "Matrix") -> bool:
+        if type(other) is not Matrix:
+            if isinstance(other, Matrix):
+                return other == self
+            else:
+                return False
+
+        return (
+            np.array_equal(self.data, other.data)
+            and all(
+                w is None and w is w_other or np.array_equal(w, w_other)
+                for w, w_other in zip(self.weights, other.weights)
+            )
+            and self.names == other.names
+            and self.name_labels == other.name_labels
+            and self.weight_label == other.weight_label
+        )
+
 
 __tracker.validate()
