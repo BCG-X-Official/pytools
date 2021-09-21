@@ -1,12 +1,8 @@
 """
 Basic test cases for the `pytools.api` module
 """
-# noinspection PyPackageRequirements
-import sys
 
 import pytest
-
-print(sys.path)
 
 from pytools.api import (
     deprecated,
