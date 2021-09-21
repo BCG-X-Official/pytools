@@ -576,7 +576,11 @@ def validate_element_types(
     """
     if expected_type is not object:
         if optional:
-            expected_type = (*expected_type, type(None))
+            expected_type = (
+                (*expected_type, type(None))
+                if isinstance(expected_type, tuple)
+                else (expected_type, type(None))
+            )
         for element in iterable:
             if not isinstance(element, expected_type):
                 if name:
