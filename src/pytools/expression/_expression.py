@@ -493,7 +493,7 @@ def make_expression(value: Any) -> Expression:
     - Python literals (strings, numbers) are converted to :class:`Lit` expressions
     - Python tuples, lists, sets, and dictionaries are converted to equivalent
       expressions, and all elements are converted to expressions recursively
-    - Numpy arraya are converted to ``array(…)`` expressions, and all elements
+    - Numpy arrays are converted to ``array(…)`` expressions, and all elements
       are converted to expressions recursively
     - Other objects implementing the ``__name__`` attribute are converted to an
       :class:`Id` expression with the same name
