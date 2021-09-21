@@ -472,7 +472,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         try:
             print(
                 "\n".join(self._char_matrix.lines(reversed(range(self._n_labels + 1)))),
-                file=(self.out),
+                file=self.out,
             )
         finally:
             self._char_matrix = None
