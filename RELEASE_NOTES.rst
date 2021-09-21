@@ -30,7 +30,13 @@ Release Notes
 1.2.3
 ~~~~~
 
-This is a maintenance release to catch up with *pytools* 1.1.6.
+This release enhances support for generating Sphinx documentation, and catches up with
+*pytools* 1.1.6.
+
+- API: add sphinx processor :class:`.ResolveGenericClassParameters`
+  to resolve generic type parameters in subclasses
+- API: add sphinx processor :class:`.AutodocProcessBases` to handle
+  `autodoc-process-bases` events (introduced in Sphinx 4.1)
 
 
 1.2.2
