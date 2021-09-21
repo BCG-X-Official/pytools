@@ -4,7 +4,7 @@ Base classes for matrix styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Sequence, Tuple
+from typing import Any, Optional, Tuple
 
 import numpy as np
 
@@ -62,7 +62,7 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         data: np.ndarray,
         *,
-        names: Tuple[Optional[Sequence[Any]], Optional[Sequence[Any]]],
+        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
         weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
     ) -> None:
         """

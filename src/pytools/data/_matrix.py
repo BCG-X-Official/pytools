@@ -8,13 +8,7 @@ from typing import Any, Iterable, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from pytools.api import (
-    AllTracker,
-    inheritdoc,
-    to_tuple,
-    validate_element_types,
-    validate_type,
-)
+from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
 from pytools.expression import Expression, HasExpressionRepr
 from pytools.expression.atomic import Id
 
@@ -58,7 +52,7 @@ class Matrix(HasExpressionRepr):
     data: np.ndarray
 
     #: the names of the rows and columns
-    names: Tuple[Optional[Tuple[str, ...]], Optional[Tuple[str, ...]]]
+    names: Tuple[Optional[np.ndarray], Optional[np.ndarray]]
 
     #: the weights of the rows and columns
     weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]]
@@ -73,7 +67,7 @@ class Matrix(HasExpressionRepr):
         self,
         data: np.ndarray,
         *,
-        names: Optional[Tuple[Optional[Iterable[str]], Optional[Iterable[str]]]] = None,
+        names: Optional[Tuple[Optional[Iterable[Any]], Optional[Iterable[Any]]]] = None,
         weights: Optional[
             Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
         ] = None,
@@ -99,7 +93,7 @@ class Matrix(HasExpressionRepr):
             )
         self.data = data
 
-        args: List[Optional[Tuple[Optional[Tuple[Any, Any]]], str, type]] = [
+        args: List[Tuple[Any, str]] = [
             (names, "names"),
             (weights, "weights"),
             (name_labels, "name_labels"),
@@ -119,54 +113,40 @@ class Matrix(HasExpressionRepr):
                     f"but got a {len(arg)}-tuple"
                 )
 
+        def _arg_to_array(
+            axis: int, axis_arg: Optional[Iterable[Number]], arg_name: str
+        ) -> Optional[np.ndarray]:
+            if axis_arg is None:
+                return None
+            else:
+                arr = np.array(axis_arg)
+                if arr.ndim != 1:
+                    raise ValueError(
+                        f"arg {arg_name}[{axis}] must be a 1d array, but has "
+                        f"shape {arr.shape}"
+                    )
+                if arr.shape != (data.shape[axis],):
+                    raise ValueError(
+                        f"arg {arg_name}[{axis}] must have same length as arg "
+                        f"data.shape[{axis}]={data.shape[axis]}, "
+                        f"but has length {len(arr)}"
+                    )
+                return arr
+
         if names is None:
             self.names = (None, None)
         else:
-
-            def _names_to_tuple(axis: int) -> Optional[Tuple[str, ...]]:
-                axis_names = names[axis]
-                if axis_names is None:
-                    return None
-                else:
-                    axis_names = to_tuple(
-                        axis_names, element_type=str, arg_name=f"names[{axis}]"
-                    )
-                    if len(axis_names) != data.shape[axis]:
-                        raise ValueError(
-                            f"arg names[{axis}] must have same length as arg "
-                            f"data.shape[{axis}]={data.shape[axis]}, "
-                            f"but has length {len(axis_names)}"
-                        )
-                    return axis_names
-
-            self.names = (_names_to_tuple(axis=0), _names_to_tuple(axis=1))
-
-        def _weights_to_array(
-            axis: int, axis_weights: Optional[Iterable[Number]]
-        ) -> Optional[np.ndarray]:
-            if axis_weights is None:
-                return None
-            else:
-                weights_arr = np.array(axis_weights)
-                if weights_arr.ndim != 1:
-                    raise ValueError(
-                        f"arg weights[{axis}] must be a 1d array, but has "
-                        f"shape {weights_arr.shape}"
-                    )
-                if weights_arr.shape != (data.shape[axis],):
-                    raise ValueError(
-                        f"arg weights[{axis}] must have same length as arg "
-                        f"data.shape[{axis}]={data.shape[axis]}, "
-                        f"but has length {len(weights_arr)}"
-                    )
-                return weights_arr
+            self.names = (
+                _arg_to_array(0, names[0], "names"),
+                _arg_to_array(1, names[1], "names"),
+            )
 
         if weights is None:
             self.weights = (None, None)
         else:
             self.weights = (
-                _weights_to_array(0, weights[0]),
-                _weights_to_array(1, weights[1]),
+                _arg_to_array(0, weights[0], "weights"),
+                _arg_to_array(1, weights[1], "weights"),
             )
 
         self.name_labels = (
@@ -281,7 +261,7 @@ class Matrix(HasExpressionRepr):
             isinstance(other, Matrix)
             and np.array_equal(self.data, other.data)
             and map(np.array_equal, zip(self.weights, other.weights))
-            and self.names == other.names
+            and map(np.array_equal, zip(self.names, other.names))
             and self.name_labels == other.name_labels
             and self.weight_label == other.weight_label
         )
@@ -364,7 +344,7 @@ def _top_items_mask(
 def _resize_rows(
     data: np.ndarray,
     weights: Optional[np.ndarray],
-    names: Optional[Tuple[str, ...]],
+    names: Optional[np.ndarray],
     current_size: int,
     target_size: Tuple[Optional[int], Optional[float]],
 ) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[Tuple[str, ...]]]:
@@ -374,12 +354,8 @@ def _resize_rows(
 
     return (
         data[mask],
-        weights[mask],
-        (
-            tuple(name for name, is_included in zip(names, mask) if is_included)
-            if names
-            else None
-        ),
+        None if weights is None else weights[mask],
+        None if names is None else names[mask],
     )
 
 

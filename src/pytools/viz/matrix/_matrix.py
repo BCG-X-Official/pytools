@@ -10,7 +10,6 @@ from typing import (
     Dict,
     Iterable,
     Optional,
-    Sequence,
     Tuple,
     Type,
     TypeVar,
@@ -155,7 +154,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         data: np.ndarray,
         *,
-        names: Tuple[Optional[Sequence[Any]], Optional[Sequence[Any]]],
+        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
         weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
     ) -> None:
         """[see superclass]"""
@@ -200,7 +199,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
         def _set_ticks(
             tick_locations: np.ndarray,
-            tick_labels: Sequence[Any],
+            tick_labels: np.ndarray,
             axis: Axis,
             rotate: bool,
         ):
@@ -226,7 +225,10 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             tick_locations=x_tick_locations,
             tick_labels=column_names,
             axis=ax.xaxis,
-            rotate=column_names and not is_numeric(column_names),
+            rotate=(
+                column_names is not None
+                and not np.issubdtype(column_names.dtype, np.number)
+            ),
         )
         _set_ticks(
             tick_locations=y_tick_locations,
@@ -390,14 +392,14 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         self,
         data: np.ndarray,
         *,
-        names: Tuple[Optional[Sequence[Any]], Optional[Sequence[Any]]],
+        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
         weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
     ) -> None:
         """[see superclass]"""
 
         def _axis_marks(
-            axis_names: Optional[Sequence[Any]], axis_weights: Optional[np.ndarray]
-        ) -> Optional[Iterable[str]]:
+            axis_names: Optional[np.ndarray], axis_weights: Optional[np.ndarray]
+        ) -> Optional[Iterable[Any]]:
             if axis_names is None:
                 if axis_weights is None:
                     return None

@@ -9,7 +9,7 @@ import pytest
 from pytools.data import Matrix
 
 
-def test_matrix_validatio() -> None:
+def test_matrix_validation() -> None:
     with pytest.raises(ValueError, match="got a 3d array"):
         Matrix(np.arange(20).reshape((4, 5, 1)))
 
@@ -23,10 +23,7 @@ def test_matrix_validatio() -> None:
 
     with pytest.raises(
         ValueError,
-        match=(
-            r"arg names\[0\] must have same length as arg data.shape\[0\]=4, "
-            "but has length 1"
-        ),
+        match=r"arg names\[0\] must be a 1d array, but has shape \(\)",
     ):
         Matrix(np.arange(20).reshape((4, 5)), names=("invalid", "invalid"))
 
