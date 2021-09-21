@@ -7,7 +7,7 @@ Release Notes
 1.1.6
 ~~~~~
 
-- FIX: ensure correct weight labels when rendering dendograms as plain text using the
+- FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
 - FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
 
