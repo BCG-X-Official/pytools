@@ -171,7 +171,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         column_bounds: np.ndarray
         row_bounds: np.ndarray
 
-        row_bounds, column_bounds = (np.array([0, *w]).cumsum() for w in weights)
+        row_bounds = -np.array([0, *weights[0]]).cumsum()
+        column_bounds = np.array([0, *weights[1]]).cumsum()
 
         # calculate the colors based on the data
         colors = self.color_for_value(data.ravel()).reshape((*data.shape, 4))
