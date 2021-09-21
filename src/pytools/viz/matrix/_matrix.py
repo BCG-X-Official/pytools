@@ -3,18 +3,7 @@ Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
-from typing import (
-    Any,
-    Callable,
-    Collection,
-    Dict,
-    Iterable,
-    Optional,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -469,17 +458,3 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
 
 
 __tracker.validate()
-
-#
-# helper functions
-#
-
-
-def is_numeric(collection: Collection) -> bool:
-    """
-    Determine whether a given collection contains only numeric values
-
-    :param collection: the collection to check
-    :return: ``True`` if the collection contais only numeric values; ``False`` otherwise
-    """
-    return all(isinstance(name, (int, float)) for name in collection)
