@@ -102,7 +102,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
         """
         id_ = vars(cls).get(HasExpressionRepr.__ATTR_CLASS_ID, None)
 
-        if not id_:
+        if id_ is None:
             from .atomic import Id
 
             id_ = Id(cls.__name__)
