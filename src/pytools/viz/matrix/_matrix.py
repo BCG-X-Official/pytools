@@ -150,7 +150,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax: Axes = self.ax
 
         # replace undefined weights with all ones
-        weights = tuple(
+        weights_rows, weights_columns = tuple(
             np.ones(n) if w is None else w for w, n in zip(weights, data.shape)
         )
 
@@ -159,8 +159,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         column_bounds: np.ndarray
         row_bounds: np.ndarray
 
-        row_bounds = -np.array([0, *weights[0]]).cumsum()
-        column_bounds = np.array([0, *weights[1]]).cumsum()
+        row_bounds = -np.array([0, *weights_rows]).cumsum()
+        column_bounds = np.array([0, *weights_columns]).cumsum()
 
         # calculate the colors based on the data
         colors = self.color_for_value(data.ravel()).reshape((*data.shape, 4))
@@ -234,11 +234,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
             # get the cell formatter as a local field
             cell_formatter = self.cell_formatter
-
-            # ensure we have valid weight iterables
-            weights_rows, weights_columns = (
-                iter(lambda: 1, None) if w is None else w for w in weights
-            )
 
             # render the text for every box where the text fits
 
