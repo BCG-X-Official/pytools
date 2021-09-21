@@ -3,7 +3,9 @@ Implementation of :mod:`pytools.expression` and subpackages.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Iterable, Optional, Tuple, TypeVar
+from typing import Any, Optional, Tuple, TypeVar
+
+import numpy as np
 
 from ..api import AllTracker, inheritdoc, to_list
 from .operator import BinaryOperator, UnaryOperator
@@ -491,8 +493,8 @@ def make_expression(value: Any) -> Expression:
     - Python literals (strings, numbers) are converted to :class:`Lit` expressions
     - Python tuples, lists, sets, and dictionaries are converted to equivalent
       expressions, and all elements are converted to expressions recursively
-    - Other iterables are converted to a :class:`Call` expression, with the
-      name of the iterable as the callee, and its elements as the arguments
+    - Numpy arrays are converted to ``array(…)`` expressions, and all elements
+      are converted to expressions recursively
     - Other objects implementing the ``__name__`` attribute are converted to an
       :class:`Id` expression with the same name
     - All other values are converted to a :class:`Lit` expression
@@ -523,6 +525,20 @@ def make_expression(value: Any) -> Expression:
         from .composite import DictLiteral
 
         return DictLiteral(*value.items())
+    elif isinstance(value, np.ndarray):
+        from .atomic import Id
+        from .composite import ListLiteral
+
+        def _ndarray_to_expression(array: np.ndarray) -> Expression:
+            if array.ndim == 0:
+                return array[()]
+            if array.ndim == 1:
+                return ListLiteral(*array)
+            else:
+                return ListLiteral(*map(_ndarray_to_expression, array))
+
+        return Id.array(_ndarray_to_expression(value))
+
     elif isinstance(value, slice):
         from .atomic import Epsilon
         from .composite import BinaryOperation
@@ -535,11 +551,6 @@ def make_expression(value: Any) -> Expression:
             return BinaryOperation(BinaryOperator.SLICE, *args)
         else:
             return BinaryOperation(BinaryOperator.SLICE, args[0], args[1])
-    elif isinstance(value, Iterable):
-        from .atomic import Id
-        from .composite import Call
-
-        return Call(Id(type(value)), *value)
     else:
         name: Optional[str] = getattr(value, "__name__", None)
         if name:

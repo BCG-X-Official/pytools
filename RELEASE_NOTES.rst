@@ -21,6 +21,7 @@ Release Notes
       method :meth:`.SimpleQueue.aggregate`
 - API: new function :meth:`.validate_release_version` checking if a new package version
   may be released with a given version number
+- API: improved conversion of *numpy* arrays by function :func:`.make_expression`
 
 
 *pytools* 1.2
