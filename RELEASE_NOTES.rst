@@ -21,6 +21,7 @@ Release Notes
       method :meth:`.SimpleQueue.aggregate`
 - API: new function :meth:`.validate_release_version` checking if a new package version
   may be released with a given version number
+- API: improved conversion of *numpy* arrays by function :func:`.make_expression`
 
 
 *pytools* 1.2
@@ -29,7 +30,13 @@ Release Notes
 1.2.3
 ~~~~~
 
-This is a maintenance release to catch up with *pytools* 1.1.6.
+This release enhances support for generating Sphinx documentation, and catches up with
+*pytools* 1.1.6.
+
+- API: add sphinx processor :class:`.ResolveGenericClassParameters`
+  to resolve generic type parameters in subclasses
+- API: add sphinx processor :class:`.AutodocProcessBases` to handle
+  `autodoc-process-bases` events (introduced in Sphinx 4.1)
 
 
 1.2.2
@@ -63,8 +70,9 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.1.6
 ~~~~~
 
-- FIX: ensure correct weight labels when rendering dendograms as plain text using the
+- FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
+- FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
 
 
 1.1.5
