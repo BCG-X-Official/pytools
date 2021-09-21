@@ -11,9 +11,9 @@ from matplotlib.colors import LogNorm
 
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
-from .. import ColorbarMatplotStyle, FittedText, MatplotStyle, TextStyle
+from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
 from ..color import ColorScheme, text_contrast_color
-from ..util import PercentageFormatter
+from ..util import FittedText, PercentageFormatter
 from .base import DendrogramStyle
 
 log = logging.getLogger(__name__)

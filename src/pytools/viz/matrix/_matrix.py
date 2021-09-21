@@ -25,9 +25,9 @@ from matplotlib.patches import Rectangle
 from matplotlib.ticker import Formatter, FuncFormatter, NullLocator
 
 from ...data import Matrix
-from .. import ColorbarMatplotStyle, Drawer, FittedText, TextStyle
+from .. import ColorbarMatplotStyle, Drawer, TextStyle
 from ..color import ColorScheme, text_contrast_color
-from ..util import PercentageFormatter
+from ..util import FittedText, PercentageFormatter
 from .base import MatrixStyle
 from pytools.api import AllTracker, inheritdoc
 
