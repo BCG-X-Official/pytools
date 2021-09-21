@@ -7,6 +7,33 @@ Release Notes
 2.0.0
 ~~~~~
 
+- API: additions and enhancements to visualizations in module :mod:`pytools.viz`, and
+  related classes in module :mod:`.pytools.data`
+
+    - *Dendrograms:* replaced the heatmap and line dendrogram styles with a single
+      :class:`.DendrogramMatplotStyle` which
+
+      - varies the thickness of the dendrogram's branches, based on the cumulative
+        weight of the leaf nodes
+      - supports adjustable padding between neighbouring branches; setting padding to
+        zero produces a chart that is close to the previous *heatmap* style
+
+    - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
+      :class:`.Matrix` is its input
+
+        - :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
+          objects, but :meth:`.Matrix.from_frame` can be used to convert data frames to
+          matrix objects
+        - class :class:`.Matrix` allows :class:`.MatrixDrawer` to render
+          flexible row and column widths, based on the :attr:`.Matrix.weights` property,
+          and supports axis labels for the row and column axes of matrices, and a label
+          for the weight scale
+        - method :meth:`.Matrix.resize` reduces the size of large matrices based on an
+          absolute target size, or a fraction of the total weight to be preserved.
+          This is useful for removing less important rows or columns from a matrix.
+
+    - moved class :class:`.LinkageTree` to module :mod:`pytools.viz`
+
 - API: revised job/queue API in :mod:`pytools.parallelization`
     - method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
       objects instead of individual jobs as positional arguments
