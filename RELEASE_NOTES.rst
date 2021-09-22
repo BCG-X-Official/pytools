@@ -10,6 +10,7 @@ Release Notes
 - FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
 - FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
+- VIZ: set colors of axis labels to the foreground color of the current color scheme
 
 
 1.1.5
