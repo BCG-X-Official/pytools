@@ -4,10 +4,11 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Optional, Union
+from typing import Any, Iterable, List, Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
@@ -16,7 +17,7 @@ from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
-from ..api import AllTracker, inheritdoc
+from ..api import AllTracker, inheritdoc, to_list
 from ._viz import ColoredStyle
 from .color import ColorScheme, MatplotColorScheme
 
@@ -51,18 +52,47 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     """
 
     _TEXT_PADDING_RATIO = 0.1
+    _DEFAULT_FONT_FAMILY = "font.monospace"
+    _DEFAULT_FONT = [
+        ".SF NS Mono",
+        "Lucida Console",
+        "Lucida Sans Typewriter",
+        "Menlo",
+        "Monaco",
+        "Bitstream Vera Sans Mono",
+        "Andale Mono",
+        "monospace",
+    ]
 
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
         colors: Optional[MatplotColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
     ) -> None:
         """
         :param ax: optional axes object to draw on; create a new figure if not specified
+        :param font_family: name of one or more fonts to use for all text, in descending
+            order of preference; if undefined, or if none of the given fonts is
+            available, defaults to a monospaced font
         """
         super().__init__(colors=colors)
         self._ax = ax
+
+        default_font_family: List[str] = (
+            MatplotStyle._DEFAULT_FONT + rcParams[MatplotStyle._DEFAULT_FONT_FAMILY]
+        )
+
+        if font_family is not None:
+            self._font_family = (
+                to_list(font_family, element_type=str, arg_name="font")
+                + default_font_family
+            )
+        else:
+            self._font_family = default_font_family
+
+        self._font_family_original = None
 
     __init__.__doc__ += ColoredStyle.__init__.__doc__
 
@@ -101,6 +131,9 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         super().start_drawing(title=title, **kwargs)
 
+        self._font_family_original = rcParams["font.family"]
+        rcParams["font.family"] = self._font_family
+
         ax = self.ax
 
         # set title plus title color
@@ -128,21 +161,25 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     def finalize_drawing(self, **kwargs: Any) -> None:
         """[see superclass]"""
 
-        super().finalize_drawing(**kwargs)
+        try:
+            # set legend color
+            legend: Legend = self.ax.get_legend()
 
-        # set legend color
-        legend: Legend = self.ax.get_legend()
+            if legend:
+                patch = legend.legendPatch
+                fg_color = self.colors.foreground
 
-        if legend:
-            patch = legend.legendPatch
-            fg_color = self.colors.foreground
+                patch.set_facecolor(self.colors.background)
+                patch.set_alpha(0.5)
+                patch.set_edgecolor(fg_color)
 
-            patch.set_facecolor(self.colors.background)
-            patch.set_alpha(0.5)
-            patch.set_edgecolor(fg_color)
+                for text in legend.get_texts():
+                    text.set_color(fg_color)
 
-            for text in legend.get_texts():
-                text.set_color(fg_color)
+            rcParams["font.family"] = self._font_family_original
+
+        finally:
+            super().finalize_drawing(**kwargs)
 
     def apply_color_scheme(self, ax: Axes) -> None:
         """
@@ -188,6 +225,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[MatplotColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Normalize = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
@@ -201,7 +239,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         :param colorbar_minor_formatter: minor tick formatter for the color bar
             (optional; requires that also a major formatter is specified)
         """
-        super().__init__(ax=ax, colors=colors)
+        super().__init__(ax=ax, colors=colors, font_family=font_family)
 
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize

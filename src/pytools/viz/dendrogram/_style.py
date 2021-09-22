@@ -57,6 +57,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[ColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
         min_weight: float = 0.01,
         padding: float = 0.1,
     ) -> None:
@@ -74,6 +75,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         super().__init__(
             ax=ax,
             colors=colors,
+            font_family=font_family,
             colormap_normalize=LogNorm(min_weight, 1),
             colorbar_major_formatter=percentage_formatter,
             colorbar_minor_formatter=percentage_formatter,

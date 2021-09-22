@@ -87,6 +87,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[ColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Optional[Normalize] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
@@ -122,6 +123,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         super().__init__(
             ax=ax,
             colors=colors,
+            font_family=font_family,
             colormap_normalize=(
                 colormap_normalize if colormap_normalize is not None else Normalize()
             ),
@@ -333,6 +335,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[ColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Optional[Normalize] = None,
         nan_substitute: float = None,
     ) -> None:
@@ -343,6 +346,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         super().__init__(
             ax=ax,
             colors=colors,
+            font_family=font_family,
             colormap_normalize=(
                 colormap_normalize
                 if colormap_normalize
