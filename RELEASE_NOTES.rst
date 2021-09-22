@@ -30,7 +30,9 @@ Release Notes
           for the weight scale
         - method :meth:`.Matrix.resize` reduces the size of large matrices based on an
           absolute target size, or a fraction of the total weight to be preserved.
-          This is useful for removing less important rows or columns from a matrix.
+          This is useful for removing less important rows or columns from a matrix
+        - new attribute :class:`.MatrixDrawer.nan_substitute` specifies the value to
+          look up in the colormap to determine the color of undefined matrix cells
 
     - moved class :class:`.LinkageTree` to module :mod:`pytools.viz`
 

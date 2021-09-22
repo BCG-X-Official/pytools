@@ -79,6 +79,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     #: no cells are annotated.
     cell_formatter: Optional[Formatter]
 
+    #: The value to look up in the colormap for undefined matrix cells.
+    nan_substitute: float
+
     def __init__(
         self,
         *,
@@ -88,6 +91,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
         cell_format: Union[str, Formatter, Callable[[Any], str], None] = None,
+        nan_substitute: float = None,
     ) -> None:
         """
         :param cell_format: format for annotating each matrix cell with
@@ -95,6 +99,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             cells if omitted);
             if no colorbar major formatter is specified, use the cell format also
             as the colorbar major formatter
+        :param nan_substitute: value to look up in the colormap for undefined matrix
+            cells (default: 0.0)
         """
         if cell_format is None:
             cell_formatter = None
@@ -124,6 +130,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         )
 
         self.cell_formatter = cell_formatter
+        self.nan_substitute = 0.0 if nan_substitute is None else nan_substitute
 
     __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
 
@@ -151,13 +158,38 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         column_bounds = np.array([0, *weights_columns]).cumsum()
 
         # calculate the colors based on the data
-        colors = self.color_for_value(data.ravel()).reshape((*data.shape, 4))
+        colors = self.color_for_value(
+            np.nan_to_num(data.ravel(), nan=self.nan_substitute)
+        ).reshape((*data.shape, 4))
+
+        # define hatch parameters
+        hatch_params: Dict[bool, Dict[str, Any]] = {
+            False: {},
+            True: dict(
+                hatch="////",
+                edgecolor=(
+                    *text_contrast_color(self.color_for_value(self.nan_substitute)[:3]),
+                    0.25,
+                ),
+            ),
+        }
 
         # draw the matrix cells
         for c, (x0, x1) in enumerate(zip(column_bounds, column_bounds[1:])):
-            for r, (y0, y1) in enumerate(zip(row_bounds, row_bounds[1:])):
-                ax.add_artist(
-                    Rectangle((x0, y0), x1 - x0, y1 - y0, facecolor=colors[r, c])
+            for r, (y1, y0) in enumerate(zip(row_bounds, row_bounds[1:])):
+                color: np.ndarray = colors[r, c]
+                ax.add_patch(
+                    Rectangle(
+                        (
+                            x0,
+                            y0,
+                        ),
+                        x1 - x0,
+                        y1 - y0,
+                        facecolor=color,
+                        linewidth=0,
+                        **hatch_params[np.isnan(data[r, c])],
+                    )
                 )
 
         # noinspection PyTypeChecker
@@ -302,8 +334,12 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         ax: Optional[Axes] = None,
         colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
+        nan_substitute: float = None,
     ) -> None:
-        """[see below]"""
+        """
+        :param nan_substitute: the value to look up in the colormap for undefined matrix
+            cells (default: 0.0)
+        """
         super().__init__(
             ax=ax,
             colors=colors,
@@ -312,6 +348,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
                 if colormap_normalize
                 else Normalize(vmin=0.0, vmax=1.0)
             ),
+            nan_substitute=nan_substitute,
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
             cell_format=lambda x: (
@@ -321,10 +358,13 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             ),
         )
 
-    __init__.__doc__ = "\n".join(
-        line
-        for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
-        if "_formatter:" not in line
+    __init__.__doc__ = (
+        "\n".join(
+            line
+            for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
+            if "_formatter:" not in line
+        )
+        + __init__.__doc__
     )
 
     @classmethod
