@@ -310,8 +310,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.margins(0)
 
         # set axis labels
-        ax.set_ylabel(name_labels[0])
-        ax.set_xlabel(name_labels[1])
+        ax.set_ylabel(name_labels[0], color=self.colors.foreground)
+        ax.set_xlabel(name_labels[1], color=self.colors.foreground)
 
         # hide spines
         for _, spine in ax.spines.items():

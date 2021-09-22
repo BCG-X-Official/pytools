@@ -151,9 +151,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         # configure the axes
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
         if distance_label:
-            ax.set_xlabel(distance_label)
+            ax.set_xlabel(distance_label, color=self.colors.foreground)
         if leaf_label:
-            ax.set_ylabel(leaf_label)
+            ax.set_ylabel(leaf_label, color=self.colors.foreground)
 
     def draw_link_leg(
         self,
