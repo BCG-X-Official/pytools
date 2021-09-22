@@ -49,32 +49,33 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
             return f"(> {multiple:.3g} * IQR)"
 
         ax = self.ax
+        colors = self.colors
         matplotlib_kwargs = {"marker": ".", "linestyle": "none"}
         ax.plot(
             ecdf.inliers.x,
             ecdf.inliers.y,
-            color=self.colors.status_ok,
+            color=colors.status_ok,
             label="inlier",
             **matplotlib_kwargs,
         )
         ax.plot(
             ecdf.outliers.x,
             ecdf.outliers.y,
-            color=self.colors.status_warning,
+            color=colors.status_warning,
             label=f"outlier {_iqr_annotation(multiple=iqr_multiple)}",
             **matplotlib_kwargs,
         )
         ax.plot(
             ecdf.far_outliers.x,
             ecdf.far_outliers.y,
-            color=self.colors.status_critical,
+            color=colors.status_critical,
             label=f"far outlier {_iqr_annotation(multiple=iqr_multiple_far)}",
             **matplotlib_kwargs,
         )
 
         # add axis labels and legend
-        self.ax.set_xlabel(x_label)
-        ax.set_ylabel("count")
+        ax.set_xlabel(x_label, color=colors.foreground)
+        ax.set_ylabel("count", color=colors.foreground)
         ax.legend()
 
 
