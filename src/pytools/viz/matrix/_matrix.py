@@ -87,12 +87,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colormap_normalize: Optional[Normalize] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        max_ticks: Optional[Tuple[int, int]] = None,
         cell_format: Union[str, Formatter, Callable[[Any], str], None] = None,
     ) -> None:
         """
-        :param max_ticks: the maximum number of ticks to put on the x and y axis;
-            ``None`` to determine the number of ticks automatically (default: ``None``)
         :param cell_format: format for annotating each matrix cell with
             its value if sufficient space is available (optional – do not annotate
             cells if omitted);
@@ -126,15 +123,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             colorbar_minor_formatter=colorbar_minor_formatter,
         )
 
-        if max_ticks is not None and not (
-            isinstance(max_ticks, Tuple)
-            and len(max_ticks) == 2
-            and all(isinstance(x, int) for x in max_ticks)
-        ):
-            raise ValueError(
-                f"arg max_ticks={max_ticks} must be None or a tuple of 2 integers"
-            )
-        self.max_ticks = max_ticks
         self.cell_formatter = cell_formatter
 
     __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
@@ -296,6 +284,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         super().finalize_drawing(colorbar_label=weight_label, **kwargs)
 
 
+@inheritdoc(match="""[see superclass]""")
 class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
     """
     A matrix plot where all values are percentages.
@@ -309,12 +298,8 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         ax: Optional[Axes] = None,
         colors: Optional[ColorScheme] = None,
         colormap_normalize: Optional[Normalize] = None,
-        max_ticks: Optional[Tuple[int, int]] = None,
     ) -> None:
-        """
-        :param max_ticks: the maximum number of ticks to put on the x and y axis;
-            ``None`` to determine the number of ticks automatically (default: ``None``)
-        """
+        """[see below]"""
         super().__init__(
             ax=ax,
             colors=colors,
@@ -323,7 +308,6 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
                 if colormap_normalize
                 else Normalize(vmin=0.0, vmax=1.0)
             ),
-            max_ticks=max_ticks,
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
             cell_format=lambda x: (
@@ -333,13 +317,10 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             ),
         )
 
-    __init__.__doc__ = (
-        "\n".join(
-            line
-            for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
-            if "_formatter:" not in line
-        )
-        + __init__.__doc__
+    __init__.__doc__ = "\n".join(
+        line
+        for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
+        if "_formatter:" not in line
     )
 
     @classmethod
