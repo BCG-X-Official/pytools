@@ -46,7 +46,7 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         **kwargs: Any,
     ) -> None:
         """
-        Add labels to the matrix plot, if defined.
+        Initialize the matrix plot.
 
         :param title: the title of the matrix
         :param name_labels: the labels for the row and column axes
@@ -54,7 +54,6 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         :param kwargs: additional drawer-specific arguments
         """
 
-        # ignore the labels
         super().start_drawing(title=title, **kwargs)
 
     @abstractmethod
@@ -81,14 +80,13 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         **kwargs: Any,
     ) -> None:
         """
-        Add labels to the matrix plot, if defined.
+        Finalize the matrix plot.
 
         :param name_labels: the labels for the row and column axes
         :param weight_label: the label for the `weight` axis
         :param kwargs: additional drawer-specific arguments
         """
 
-        # ignore the labels
         super().finalize_drawing(**kwargs)
 
 

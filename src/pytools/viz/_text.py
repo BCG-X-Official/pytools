@@ -82,9 +82,12 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
 
         :param kwargs: additional drawer-specific arguments
         """
-        print(file=self.out)
 
-        super().finalize_drawing(**kwargs)
+        try:
+            print(file=self.out)
+
+        finally:
+            super().finalize_drawing(**kwargs)
 
 
 __tracker.validate()

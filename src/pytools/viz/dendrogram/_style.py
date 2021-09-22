@@ -92,20 +92,20 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         self,
         *,
         title: str,
+        leaf_label: Optional[str] = None,
+        distance_label: Optional[str] = None,
+        weight_label: Optional[str] = None,
         max_distance: Optional[float] = None,
         n_leaves: Optional[int] = None,
         **kwargs: Any,
     ) -> None:
-        """
-        Prepare a new dendrogram for drawing, using the given title.
-
-        :param title: the title of the chart
-        :param max_distance: the height (= maximum possible distance) of the dendrogram
-        :param n_leaves: the number of leaves in the dendrogram
-        :param kwargs: additional drawer-specific arguments
-        """
+        """[see superclass]"""
         super().start_drawing(
-            title=title, max_distance=max_distance, n_leaves=n_leaves, **kwargs
+            title=title,
+            max_distance=max_distance,
+            n_leaves=n_leaves,
+            colorbar_label=weight_label,
+            **kwargs,
         )
 
         ax = self.ax
@@ -128,34 +128,13 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
             1.0 + (n_leaves - 0.5) * self.padding + margin_y,
         )
 
-    def finalize_drawing(
-        self,
-        *,
-        leaf_label: Optional[str] = None,
-        distance_label: Optional[str] = None,
-        weight_label: Optional[str] = None,
-        **kwargs: Any,
-    ) -> None:
-        """
-        Finalize the dendrogram, adding labels to the axes.
-
-        :param leaf_label: the label for the leaf axis
-        :param distance_label: the label for the distance axis
-        :param weight_label: the label for the weight scale
-        :param kwargs: additional drawer-specific arguments
-        """
-
-        super().finalize_drawing(colorbar_label=weight_label)
-
-        self.colorbar.ax.yaxis.set_ticks([0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00])
-
-        ax = self.ax
-        # configure the axes
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
         if distance_label:
             ax.set_xlabel(distance_label, color=self.colors.foreground)
         if leaf_label:
             ax.set_ylabel(leaf_label, color=self.colors.foreground)
+
+        self.colorbar.ax.yaxis.set_ticks([0.01, 0.02, 0.05, 0.10, 0.20, 0.50, 1.00])
 
     def draw_link_leg(
         self,

@@ -297,14 +297,22 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # make sure we have no major grid, overriding any global settings
         ax.grid(b=False, which="major")
 
-    def finalize_drawing(
+    def start_drawing(
         self,
         *,
+        title: str,
         name_labels: Tuple[Optional[str], Optional[str]] = None,
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
+        super().start_drawing(
+            title=title,
+            name_labels=name_labels,
+            weight_label=weight_label,
+            colorbar_label=weight_label,
+            **kwargs,
+        )
 
         ax: Axes = self.ax
 
@@ -318,8 +326,6 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # hide spines
         for _, spine in ax.spines.items():
             spine.set_visible(False)
-
-        super().finalize_drawing(colorbar_label=weight_label, **kwargs)
 
 
 @inheritdoc(match="""[see superclass]""")

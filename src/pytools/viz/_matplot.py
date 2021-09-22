@@ -268,17 +268,22 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         """
         return self.colors.colormap(self.colormap_normalize(z))
 
-    def finalize_drawing(
-        self, *, colorbar_label: Optional[str] = None, **kwargs: Any
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        colorbar_label: Optional[str] = None,
+        **kwargs: Any,
     ) -> None:
         """
         Add the color bar to the chart.
 
+        :param title: the chart title
         :param colorbar_label: the label for the color bar
         :param kwargs: additional arguments, to be passed on to the superclass
         """
 
-        super().finalize_drawing(**kwargs)
+        super().start_drawing(title=title, **kwargs)
 
         fg_color = self.colors.foreground
 
