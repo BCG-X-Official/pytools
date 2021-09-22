@@ -11,7 +11,7 @@ from matplotlib.axes import Axes
 from matplotlib.axis import Axis
 from matplotlib.colors import Normalize
 from matplotlib.patches import Rectangle
-from matplotlib.ticker import Formatter, FuncFormatter, NullLocator
+from matplotlib.ticker import FixedLocator, Formatter, FuncFormatter, NullLocator
 
 from ...data import Matrix
 from .. import ColorbarMatplotStyle, Drawer, TextStyle
@@ -184,7 +184,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                 # locations determined by the MaxNLocator. This is needed for
                 # compatibility with the FixedFormatter that will be created when
                 # setting the tick labels
-                axis.set_ticks(tick_locations)
+                axis.set_major_locator(FixedLocator(tick_locations))
 
                 # Set the tick labels; behind the scenes this will create a
                 # FixedFormatter.
@@ -249,8 +249,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                     )
 
         # create a white grid using minor tick positions
-        ax.set_xticks(column_bounds, minor=True)
-        ax.set_yticks(row_bounds, minor=True)
+        ax.xaxis.set_minor_locator(FixedLocator(column_bounds[1:-1]))
+        ax.yaxis.set_minor_locator(FixedLocator(row_bounds[1:-1]))
         ax.grid(
             b=True,
             which="minor",
