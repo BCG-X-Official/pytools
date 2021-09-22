@@ -250,7 +250,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             tick_params={},
         )
 
-        # only draw labels if a cell formatter is defined, and minimal height/width
+        # only draw cell labels if a cell formatter is defined, and minimal height/width
         # is available
         if self.cell_formatter is not None:
             # draw the axis to ensure we'll get correct coordinates
