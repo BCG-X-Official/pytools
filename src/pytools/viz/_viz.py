@@ -119,11 +119,9 @@ class DrawingStyle(metaclass=ABCMeta):
         before executing their own drawer-specific initializations.
 
         :param title: the title of the chart
-        :param kwargs: additional drawer-specific arguments (should be empty)
+        :param kwargs: additional drawer-specific arguments
         :raise ValueError: additional keyword arguments were specified
         """
-        if kwargs:
-            raise ValueError(f"unknown arguments: {kwargs}")
         self._status = DrawingStyle._STATUS_STARTED
 
     def finalize_drawing(self, **kwargs: Any) -> None:
@@ -137,11 +135,8 @@ class DrawingStyle(metaclass=ABCMeta):
         Subclasses overriding this method should call ``super().finalize_drawing()``
         after executing their own drawer-specific finalization.
 
-        :param kwargs: additional drawer-specific arguments (should be empty)
-        :raise ValueError: additional keyword arguments were specified
+        :param kwargs: additional drawer-specific arguments
         """
-        if kwargs:
-            raise ValueError(f"unknown arguments: {kwargs}")
         self._status = DrawingStyle._STATUS_FINALIZED
 
 
