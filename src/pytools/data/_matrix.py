@@ -144,9 +144,21 @@ class Matrix(HasExpressionRepr):
         if weights is None:
             self.weights = (None, None)
         else:
+
+            def _ensure_positive(
+                w: Optional[np.ndarray], axis: int
+            ) -> Optional[np.ndarray]:
+                if w is not None and (w < 0).any():
+                    raise ValueError(
+                        f"arg weights[{axis}] should be all positive, "
+                        "but contains negative weights"
+                    )
+                else:
+                    return w
+
             self.weights = (
-                _arg_to_array(0, weights[0], "weights"),
-                _arg_to_array(1, weights[1], "weights"),
+                _ensure_positive(_arg_to_array(0, weights[0], "weights"), axis=0),
+                _ensure_positive(_arg_to_array(1, weights[1], "weights"), axis=1),
             )
 
         self.name_labels = (

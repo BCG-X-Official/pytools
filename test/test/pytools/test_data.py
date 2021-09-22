@@ -44,8 +44,15 @@ def test_matrix_validation() -> None:
             r"but has length 2"
         ),
     ):
-        # noinspection PyTypeChecker
         Matrix(np.arange(20).reshape((4, 5)), weights=(None, [2, 4]))
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"arg weights\[1\] should be all positive, but contains negative weights"
+        ),
+    ):
+        Matrix(np.arange(20).reshape((4, 5)), weights=(None, [2, 4, -3, 2, 1]))
 
     with pytest.raises(
         ValueError,
