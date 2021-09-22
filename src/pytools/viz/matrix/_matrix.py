@@ -168,17 +168,11 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         x_tick_locations = (column_bounds[:-1] + column_bounds[1:]) / 2
         y_tick_locations = (row_bounds[:-1] + row_bounds[1:]) / 2
 
-        # rotate c labels if they are categorical
-        tick_params: Dict[bool, Dict[str, Any]] = {
-            False: {},
-            True: dict(rotation=45, ha="right"),
-        }
-
         def _set_ticks(
             tick_locations: np.ndarray,
             tick_labels: np.ndarray,
             axis: Axis,
-            rotate: bool,
+            tick_params: Dict[str, Any],
         ):
             # set the ticks for the given axis
 
@@ -194,24 +188,34 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
                 # Set the tick labels; behind the scenes this will create a
                 # FixedFormatter.
-                axis.set_ticklabels(tick_labels, **tick_params[rotate])
+                axis.set_ticklabels(tick_labels, **tick_params)
+
+        # add tick labels
 
         row_names, column_names = names
+
+        if (
+            column_names is not None
+            and not np.issubdtype(column_names.dtype, np.number)
+            and any(len(str(name)) > 1 for name in column_names)
+        ):
+            # rotate column labels if they are categorical and not all single-character
+            column_tick_params = dict(rotation=30, ha="right", rotation_mode="anchor")
+        else:
+            column_tick_params: Dict[str, Any] = {}
 
         _set_ticks(
             tick_locations=x_tick_locations,
             tick_labels=column_names,
             axis=ax.xaxis,
-            rotate=(
-                column_names is not None
-                and not np.issubdtype(column_names.dtype, np.number)
-            ),
+            tick_params=column_tick_params,
         )
+
         _set_ticks(
             tick_locations=y_tick_locations,
             tick_labels=row_names,
             axis=ax.yaxis,
-            rotate=False,
+            tick_params={},
         )
 
         # only draw labels if a cell formatter is defined, and minimal height/width
