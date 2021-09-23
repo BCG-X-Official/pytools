@@ -12,7 +12,9 @@ from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from ..api import AllTracker
+from ..api import AllTracker, inheritdoc
+from ..expression import Expression, HasExpressionRepr
+from ..expression.atomic import Id
 from .base import LeafNode, LinkageNode, Node
 
 #
@@ -34,7 +36,8 @@ __tracker = AllTracker(globals())
 #
 
 
-class LinkageTree:
+@inheritdoc(match="[see superclass]")
+class LinkageTree(HasExpressionRepr):
     """
     A traversable tree derived from a SciPy linkage matrix.
 
@@ -254,6 +257,24 @@ class LinkageTree:
 
     def __getitem__(self, item: int) -> Node:
         return self._nodes[item]
+
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+
+        def _expr(n: Node) -> Expression:
+            if n.is_leaf:
+                return n.to_expression()
+            else:
+                l, r = self.children(n)
+                return n.to_expression()[_expr(l), _expr(r)]
+
+        return Id(type(self))(
+            _expr(self.root),
+            max_distance=self.max_distance,
+            leaf_label=self.leaf_label,
+            weight_label=self.weight_label,
+            distance_label=self.distance_label,
+        )
 
 
 __tracker.validate()
