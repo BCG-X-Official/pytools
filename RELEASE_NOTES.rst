@@ -28,6 +28,8 @@ Release Notes
 
 - API: improved conversion of *numpy* arrays in function :func:`.make_expression`
 
+- API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
+
 
 *pytools* 1.2
 -------------
