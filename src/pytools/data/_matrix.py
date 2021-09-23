@@ -260,7 +260,7 @@ class Matrix(HasExpressionRepr):
 
     def to_expression(self) -> Expression:
         """[see superclass]"""
-        return self.get_class_id()(
+        return Id(type(self))(
             data=Id("…"),
             names=self.names,
             weights=self.weights,
