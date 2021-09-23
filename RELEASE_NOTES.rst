@@ -22,6 +22,8 @@ Release Notes
       - :class:`.DendrogramDrawer` no longer sorts leaf nodes inside as part of the
         drawing process; the sorting mechanism is now available via method
         :meth:`.LinkageTree.sort_by_weight`
+      - new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
+        a linkage tree
 
     - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
       :class:`.Matrix` is its input

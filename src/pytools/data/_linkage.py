@@ -8,7 +8,7 @@ Linkage Tree.
 """
 
 from copy import copy
-from typing import Any, Iterable, List, Optional, Sequence, Tuple
+from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
@@ -227,6 +227,27 @@ class LinkageTree:
         linkage_sorted = copy(self)
         linkage_sorted.scipy_linkage_matrix = linkage
         return linkage_sorted
+
+    def iter_nodes(self, inner: bool = True) -> Iterator[Node]:
+        """
+        Traverse this linkage tree depth-first and return all nodes.
+
+        :param inner: if ``True``, iterate inner nodes; if ``False``, iterate
+           leaf nodes only
+        :return: an iterator for all nodes
+        """
+
+        def _iter(n: Node) -> Iterator[Node]:
+            if n.is_leaf:
+                yield n
+            else:
+                if inner:
+                    yield n
+                l, r = self.children(n)
+                yield from _iter(l)
+                yield from _iter(r)
+
+        yield from _iter(self.root)
 
     def __len__(self) -> int:
         return len(self._nodes)
