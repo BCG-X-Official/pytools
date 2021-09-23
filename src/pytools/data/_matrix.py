@@ -49,7 +49,7 @@ class Matrix(HasExpressionRepr):
     """
 
     #: the values of the matrix cells, as a `rows x columns` array
-    data: np.ndarray
+    values: np.ndarray
 
     #: the names of the rows and columns
     names: Tuple[Optional[np.ndarray], Optional[np.ndarray]]
@@ -60,38 +60,38 @@ class Matrix(HasExpressionRepr):
     #: the labels for the row and column axes
     name_labels: Tuple[Optional[str], Optional[str]]
 
-    #: the label for the weight axis
-    weight_label: Optional[str]
+    #: the label for the value axis
+    value_label: Optional[str]
 
     def __init__(
         self,
-        data: np.ndarray,
+        values: np.ndarray,
         *,
         names: Optional[Tuple[Optional[Iterable[Any]], Optional[Iterable[Any]]]] = None,
         weights: Optional[
             Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
         ] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
-        weight_label: Optional[str] = None,
+        value_label: Optional[str] = None,
     ) -> None:
         """
-        :param data: the values of the matrix cells, as a `rows x columns` array
+        :param values: the values of the matrix cells, as a `rows x columns` array
         :param names: the names of the rows and columns
         :param weights: the weights of the rows and columns
         :param name_labels: the labels for the row and column axes
-        :param weight_label: the label for the weight axis
+        :param value_label: the label for the value axis
         """
-        if not isinstance(data, np.ndarray):
+        if not isinstance(values, np.ndarray):
             raise TypeError(
-                "arg data expected to be a numpy array, "
-                f"but got a {type(data).__name__}"
+                "arg values expected to be a numpy array, "
+                f"but got a {type(values).__name__}"
             )
-        if data.ndim != 2:
+        if values.ndim != 2:
             raise ValueError(
-                "arg data expected to be a 2d numpy array, "
-                f"but got a {data.ndim}d array"
+                "arg values expected to be a 2d numpy array, "
+                f"but got a {values.ndim}d array"
             )
-        self.data = data
+        self.values = values
 
         args: List[Tuple[Any, str]] = [
             (names, "names"),
@@ -114,7 +114,7 @@ class Matrix(HasExpressionRepr):
                 )
 
         def _arg_to_array(
-            axis: int, axis_arg: Optional[Iterable[Number]], arg_name: str
+            axis: int, axis_arg: Optional[Iterable[Number]], arg_name_: str
         ) -> Optional[np.ndarray]:
             if axis_arg is None:
                 return None
@@ -122,13 +122,13 @@ class Matrix(HasExpressionRepr):
                 arr = np.array(axis_arg)
                 if arr.ndim != 1:
                     raise ValueError(
-                        f"arg {arg_name}[{axis}] must be a 1d array, but has "
+                        f"arg {arg_name_}[{axis}] must be a 1d array, but has "
                         f"shape {arr.shape}"
                     )
-                if arr.shape != (data.shape[axis],):
+                if arr.shape != (values.shape[axis],):
                     raise ValueError(
-                        f"arg {arg_name}[{axis}] must have same length as arg "
-                        f"data.shape[{axis}]={data.shape[axis]}, "
+                        f"arg {arg_name_}[{axis}] must have same length as arg "
+                        f"values.shape[{axis}]={values.shape[axis]}, "
                         f"but has length {len(arr)}"
                     )
                 return arr
@@ -169,14 +169,14 @@ class Matrix(HasExpressionRepr):
             else (None, None)
         )
 
-        self.weight_label = validate_type(
-            weight_label, expected_type=str, optional=True, name="arg weight_label"
+        self.value_label = validate_type(
+            value_label, expected_type=str, optional=True, name="arg weight_label"
         )
 
     @classmethod
     def from_frame(
         cls,
-        data: pd.DataFrame,
+        frame: pd.DataFrame,
         *,
         weights: Optional[Tuple[Optional[Number], Optional[Number]]] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
@@ -186,15 +186,15 @@ class Matrix(HasExpressionRepr):
         Create a :class:`.Matrix` from a data frame, using the indices
         as the row and column names.
 
-        :param data: the data frame from which to create the matrix
+        :param frame: the data frame from which to create the matrix
         :param weights: the weights of the rows and columns
         :param name_labels: the labels for the row and column axes
         :param weight_label: the label for the weight axis
         :return:
         """
         return cls(
-            data.values,
-            names=(data.index, data.columns),
+            frame.values,
+            names=(frame.index, frame.columns),
             weights=weights,
             name_labels=name_labels,
             weight_label=weight_label,
@@ -211,7 +211,7 @@ class Matrix(HasExpressionRepr):
 
         A target size can be stated separately for rows and columns:
 
-        - as a positive intger, indicating absolute target size (row or column count),
+        - as a positive integer, indicating absolute target size (row or column count),
           not exceeding the original size
         - as a float, indicating target size as a ratio of the current size
           where :math:`0 < \mathit{ratio} \le 1`
@@ -225,15 +225,15 @@ class Matrix(HasExpressionRepr):
         if rows is None and columns is None:
             return self
 
-        n_rows_current, n_columns_current = self.data.shape
+        n_rows_current, n_columns_current = self.values.shape
         weights_rows, weights_columns = self.weights
         names_rows, names_columns = self.names
 
-        data = self.data
+        values = self.values
 
         if rows:
-            data, weights_rows, names_rows = _resize_rows(
-                data=data,
+            values, weights_rows, names_rows = _resize_rows(
+                values=values,
                 weights=weights_rows,
                 names=names_rows,
                 current_size=n_rows_current,
@@ -241,41 +241,41 @@ class Matrix(HasExpressionRepr):
             )
 
         if columns:
-            data_t, weights_columns, names_columns = _resize_rows(
-                data=data.T,
+            values_t, weights_columns, names_columns = _resize_rows(
+                values=values.T,
                 weights=weights_columns,
                 names=names_columns,
                 current_size=n_columns_current,
                 target_size=_validate_resize_arg(columns, n_columns_current, "columns"),
             )
-            data = data_t.T
+            values = values_t.T
 
         return Matrix(
-            data,
+            values,
             names=(names_rows, names_columns),
             weights=(weights_rows, weights_columns),
             name_labels=self.name_labels,
-            weight_label=self.weight_label,
+            value_label=self.value_label,
         )
 
     def to_expression(self) -> Expression:
         """[see superclass]"""
         return Id(type(self))(
-            data=Id("…"),
+            values=Id("…"),
             names=self.names,
             weights=self.weights,
             name_labels=self.name_labels,
-            weight_label=self.weight_label,
+            weight_label=self.value_label,
         )
 
     def __eq__(self, other: "Matrix") -> bool:
         return (
             isinstance(other, Matrix)
-            and np.array_equal(self.data, other.data)
+            and np.array_equal(self.values, other.values)
             and map(np.array_equal, zip(self.weights, other.weights))
             and map(np.array_equal, zip(self.names, other.names))
             and self.name_labels == other.name_labels
-            and self.weight_label == other.weight_label
+            and self.value_label == other.value_label
         )
 
 
@@ -354,7 +354,7 @@ def _top_items_mask(
 
 
 def _resize_rows(
-    data: np.ndarray,
+    values: np.ndarray,
     weights: Optional[np.ndarray],
     names: Optional[np.ndarray],
     current_size: int,
@@ -365,7 +365,7 @@ def _resize_rows(
     )
 
     return (
-        data[mask],
+        values[mask],
         None if weights is None else weights[mask],
         None if names is None else names[mask],
     )

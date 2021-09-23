@@ -40,7 +40,7 @@ def test_matrix_validation() -> None:
     with pytest.raises(
         ValueError,
         match=(
-            r"arg weights\[1\] must have same length as arg data.shape\[1\]=5, "
+            r"arg weights\[1\] must have same length as arg values.shape\[1\]=5, "
             r"but has length 2"
         ),
     ):
@@ -69,7 +69,7 @@ def test_matrix() -> None:
         names=(list("ABCD"), list("abcde")),
         weights=([2, 4, 2, 4], [1, 5, 4, 1, 5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(1, None) == Matrix(
@@ -77,7 +77,7 @@ def test_matrix() -> None:
         names=(["B"], list("abcde")),
         weights=([4], [1, 5, 4, 1, 5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(None, 1) == Matrix(
@@ -85,7 +85,7 @@ def test_matrix() -> None:
         names=(list("ABCD"), ["b"]),
         weights=([2, 4, 2, 4], [5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(1, 1) == Matrix(
@@ -93,7 +93,7 @@ def test_matrix() -> None:
         names=(["B"], ["b"]),
         weights=([4], [5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(3, 4) == Matrix(
@@ -101,15 +101,15 @@ def test_matrix() -> None:
         names=(list("ABD"), list("abce")),
         weights=([2, 4, 4], [1, 5, 4, 5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(0.8, 0.0001) == Matrix(
-        data=np.array([[1], [6], [16]]),
+        values=np.array([[1], [6], [16]]),
         names=(list("ABD"), ["b"]),
         weights=([2, 4, 4], [5]),
         name_labels=("row", "column"),
-        weight_label="weight",
+        value_label="weight",
     )
 
     assert m.resize(4, 5) == m

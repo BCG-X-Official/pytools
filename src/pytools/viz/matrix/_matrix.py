@@ -484,13 +484,13 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
     def _get_style_kwargs(self, data: Matrix) -> Dict[str, Any]:
         return dict(
             name_labels=data.name_labels,
-            weight_label=data.weight_label,
+            weight_label=data.value_label,
             **super()._get_style_kwargs(data=data),
         )
 
     def _draw(self, data: Matrix) -> None:
         # draw the matrix
-        self.style.draw_matrix(data.data, names=data.names, weights=data.weights)
+        self.style.draw_matrix(data.values, names=data.names, weights=data.weights)
 
 
 __tracker.validate()
