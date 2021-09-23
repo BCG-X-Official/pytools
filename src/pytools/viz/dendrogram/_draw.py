@@ -5,8 +5,6 @@ Drawing dendrograms.
 import logging
 from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Type, Union
 
-import numpy as np
-
 from ...api import AllTracker, inheritdoc
 from ...data import LinkageTree
 from ...data.base import Node
@@ -73,22 +71,6 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     def _draw(self, data: LinkageTree) -> None:
         # draw the linkage tree
 
-        mean_leaf_weight = np.zeros(len(data), float)
-
-        def _calculate_weights(n: Node) -> (float, int):
-            # calculate the weight of a node and number of leaves below
-            if n.is_leaf:
-                weight = n.weight
-                n_leaves = 1
-            else:
-                l, r = data.children(n)
-                lw, ln = _calculate_weights(l)
-                rw, rn = _calculate_weights(r)
-                weight = lw + rw
-                n_leaves = ln + rn
-            mean_leaf_weight[n.index] = weight / n_leaves
-            return weight, n_leaves
-
         def _draw_node(
             node: Node, node_idx: int, weight_cumulative: float, width: float
         ) -> _SubtreeInfo:
@@ -121,11 +103,6 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
 
             else:
                 child_left, child_right = data.children(node=node)
-                if (
-                    mean_leaf_weight[child_left.index]
-                    > mean_leaf_weight[child_right.index]
-                ):
-                    child_left, child_right = child_right, child_left
 
                 subtree_left_info = _draw_node(
                     node=child_left,
@@ -161,8 +138,6 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                 )
 
                 return parent_info
-
-        _calculate_weights(data.root)
 
         tree_info = _draw_node(
             node=data.root, node_idx=0, weight_cumulative=0.0, width=data.max_distance

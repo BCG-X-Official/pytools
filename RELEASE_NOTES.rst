@@ -10,13 +10,18 @@ Release Notes
 - API: additions and enhancements to visualizations in module :mod:`pytools.viz`, and
   related classes in module :mod:`.pytools.data`
 
-    - *Dendrograms:* replaced the heatmap and line dendrogram styles with a single
-      :class:`.DendrogramMatplotStyle` which
+    - *Dendrograms:* updates to the drawing semantics and appearance
 
-      - varies the thickness of the dendrogram's branches, based on the cumulative
-        weight of the leaf nodes
-      - supports adjustable padding between neighbouring branches; setting padding to
-        zero produces a chart that is close to the previous *heatmap* style
+      - replaced the heatmap and line dendrogram styles with a single, freshly designed
+        :class:`.DendrogramMatplotStyle` which
+          - varies the thickness of the dendrogram's branches, based on the cumulative
+            weight of the leaf nodes
+          - supports adjustable padding between neighbouring branches; setting padding
+            to zero produces a chart that is close to the previous *heatmap* style
+
+      - :class:`.DendrogramDrawer` no longer sorts leaf nodes inside as part of the
+        drawing process; the sorting mechanism is now available via method
+        :meth:`.LinkageTree.sort_by_weight`
 
     - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
       :class:`.Matrix` is its input

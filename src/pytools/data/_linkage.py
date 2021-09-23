@@ -7,6 +7,7 @@ Linkage Tree.
 :class:`LinkageTree`. Both these classes inherit from :class:`BaseNode`.
 """
 
+from copy import copy
 from typing import Any, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
@@ -189,6 +190,43 @@ class LinkageTree:
         The number of leave nodes in this linkage tree.
         """
         return len(self) - len(self.scipy_linkage_matrix)
+
+    def sort_by_weight(self) -> "LinkageTree":
+        """
+        Create a copy of this linkage trees, switching the left and right nodes of
+        branches such that the mean leaf weight or any left node is always greater
+        than the mean leaf weight in the right node.
+
+        :return: a copy of this linkage tree with sorting applied
+        """
+
+        linkage: np.ndarray = self.scipy_linkage_matrix.copy()
+
+        def _sort_node(n: Node) -> Tuple[float, int]:
+            # sort a linkage node and return its total weight and leaf count
+
+            if n.is_leaf:
+                return n.weight, 1
+
+            l, r = self.children(n)
+
+            weight_left, leaves_left = _sort_node(l)
+            weight_right, leaves_right = _sort_node(r)
+
+            if weight_left / leaves_left < weight_right / leaves_right:
+                # swap nodes if the right node has the higher weight
+                n_linkage = linkage[n.index - self.n_leaves]
+                n_linkage[
+                    [LinkageTree.__F_CHILD_RIGHT, LinkageTree.__F_CHILD_LEFT]
+                ] = n_linkage[[LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]]
+
+            return weight_left + weight_right, leaves_left + leaves_right
+
+        _sort_node(self.root)
+
+        linkage_sorted = copy(self)
+        linkage_sorted.scipy_linkage_matrix = linkage
+        return linkage_sorted
 
     def __len__(self) -> int:
         return len(self._nodes)
