@@ -138,7 +138,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param top: the height of the parent node
         :param first_leaf: the index of the first leaf in the left sub-tree
         :param n_leaves_left: the number of leaves in the left sub-tree
-        :param n_leaves_right: the number of leaves in the left sub-tree
+        :param n_leaves_right: the number of leaves in the right sub-tree
         :param weight: the weight of the parent node
         :param weight_cumulative: the cumulative weight of all nodes with a lower
             position index than the current one
