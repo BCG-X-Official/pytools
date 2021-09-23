@@ -1,7 +1,9 @@
 import logging
+import sys
 from typing import Dict, Generic, Type, TypeVar
 
-from pytools.sphinx import ResolveGenericClassParameters
+import pytest
+
 from pytools.viz import Drawer
 from pytools.viz.distribution import ECDFDrawer
 from pytools.viz.distribution.base import ECDFStyle
@@ -26,7 +28,12 @@ class C(B[str, T]):
     pass
 
 
-def test_resolve_generic_class_parameters():
+@pytest.mark.skipif(
+    condition=sys.version_info[:2] < (3, 7), reason="test not supported in Python 3.6"
+)
+def test_resolve_generic_class_parameters() -> None:
+    from pytools.sphinx import ResolveGenericClassParameters
+
     resolve_generic_class_parameters = ResolveGenericClassParameters()
 
     resolve_generic_class_parameters.process(app=None, obj=Drawer, bound_method=False)
