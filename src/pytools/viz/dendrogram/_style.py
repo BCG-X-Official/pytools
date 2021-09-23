@@ -12,7 +12,7 @@ from matplotlib.colors import LogNorm
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
 from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
-from ..color import ColorScheme, text_contrast_color
+from ..color import ColorScheme
 from ..util import FittedText, PercentageFormatter
 from .base import DendrogramStyle
 
@@ -255,7 +255,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
                 text=label,
                 ha="center",
                 va="center",
-                color=text_contrast_color(fill_color),
+                color=self.colors.contrast_color(fill_color),
             )
         )
         t.set_bbox(

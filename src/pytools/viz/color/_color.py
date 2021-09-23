@@ -3,7 +3,7 @@ Core implementation of :mod:`pytools.viz.colors`
 """
 
 import logging
-from typing import Set, Tuple, Union
+from typing import Set, Tuple, TypeVar, Union
 
 from matplotlib import cm
 from matplotlib.colors import Colormap, LinearSegmentedColormap, to_rgb
@@ -24,8 +24,14 @@ __all__ = [
     "MatplotColorScheme",
     "FacetLightColorScheme",
     "FacetDarkColorScheme",
-    "text_contrast_color",
 ]
+
+#
+# Type variables
+#
+
+# noinspection PyTypeChecker
+T_Color = TypeVar("T_Color", "ColorScheme.RgbColor", "ColorScheme.RgbaColor")
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -226,6 +232,41 @@ class ColorScheme(HasExpressionRepr):
             self._colors.get(ColorScheme._COLOR_STATUS_CRITICAL, None) or self.accent_3
         )
 
+    def contrast_color(self, fill_color: T_Color) -> T_Color:
+        """
+        Return the foreground color or background color of this color schema,
+        depending on which maximises contrast with the given fill color.
+
+        If the fill colour includes an alpha channel, this will be included unchanged
+        with the resulting contrast colour.
+
+        :param fill_color: RGB or RGBA encoded fill color to maximise contrast with
+        :return: the matching contrast color
+        """
+
+        if not 3 <= len(fill_color) <= 4:
+            raise ValueError(f"arg fill_color={fill_color!r} must be an RGB(A) color")
+
+        def _luminance(c: T_Color) -> float:
+            return sum(c[:3])
+
+        # find the color that maximises contrast
+        fill_luminance = _luminance(fill_color)
+        contrast_color: ColorScheme.RgbColor = (
+            self.foreground
+            if (
+                abs(_luminance(self.foreground) - fill_luminance)
+                > abs(_luminance(self.background) - fill_luminance)
+            )
+            else self.background
+        )
+
+        # preserve alpha channel of the fill color, if present
+        if len(fill_color) > 3:
+            return contrast_color + (fill_color[3],)
+        else:
+            return contrast_color
+
     def to_expression(self) -> Expression:
         """[see superclass]"""
         return Id(type(self))(**self._colors)
@@ -367,31 +408,6 @@ class FacetDarkColorScheme(
 
     def __init__(self) -> None:
         super().__init__(foreground=_RGB_WHITE, background=_RGB_BLACK)
-
-
-#
-# Functions
-#
-
-
-def text_contrast_color(
-    bg_color: Union[ColorScheme.RgbColor, ColorScheme.RgbaColor]
-) -> Union[ColorScheme.RgbColor, ColorScheme.RgbaColor]:
-    """
-    Get a text color that maximises contrast with the given background color.
-
-    Returns white for background luminance < 50%, and black otherwise.
-    If an alpha channel is provided as the 4th element of the background color,
-    it is included with the text color unchanged.
-
-    :param bg_color: RGB encoded background color
-    :return: the contrasting text color
-    """
-    fill_luminance = sum(bg_color[:3]) / 3
-    text_color = _RGB_WHITE if fill_luminance < 0.5 else _RGB_BLACK
-    if len(bg_color) > 3:
-        text_color = (*text_color[:3], bg_color[3])
-    return text_color
 
 
 # check consistency of __all__

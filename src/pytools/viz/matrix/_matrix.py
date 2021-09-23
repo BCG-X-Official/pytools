@@ -15,7 +15,7 @@ from matplotlib.ticker import FixedLocator, Formatter, FuncFormatter, NullLocato
 
 from ...data import Matrix
 from .. import ColorbarMatplotStyle, Drawer, TextStyle
-from ..color import ColorScheme, text_contrast_color
+from ..color import ColorScheme
 from ..util import FittedText, PercentageFormatter
 from .base import MatrixStyle
 from pytools.api import AllTracker, inheritdoc
@@ -145,6 +145,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     ) -> None:
         """[see superclass]"""
         ax: Axes = self.ax
+        colors = self.colors
 
         # replace undefined weights with all ones
         weights_rows, weights_columns = tuple(
@@ -160,7 +161,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         column_bounds = np.array([0, *weights_columns]).cumsum()
 
         # calculate the colors based on the data
-        colors = self.color_for_value(
+        cell_colors = self.color_for_value(
             np.nan_to_num(data.ravel(), nan=self.nan_substitute)
         ).reshape((*data.shape, 4))
 
@@ -170,7 +171,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             True: dict(
                 hatch="////",
                 edgecolor=(
-                    *text_contrast_color(self.color_for_value(self.nan_substitute)[:3]),
+                    *colors.contrast_color(
+                        self.color_for_value(self.nan_substitute)[:3]
+                    ),
                     0.25,
                 ),
             ),
@@ -179,7 +182,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # draw the matrix cells
         for c, (x0, x1) in enumerate(zip(column_bounds, column_bounds[1:])):
             for r, (y1, y0) in enumerate(zip(row_bounds, row_bounds[1:])):
-                color: np.ndarray = colors[r, c]
+                color: np.ndarray = cell_colors[r, c]
                 ax.add_patch(
                     Rectangle(
                         (
@@ -276,8 +279,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                             text=label,
                             ha="center",
                             va="center",
-                            color=text_contrast_color(
-                                bg_color=self.color_for_value(z=cell_value)
+                            color=colors.contrast_color(
+                                self.color_for_value(z=cell_value)
                             ),
                         )
                     )
@@ -288,7 +291,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.grid(
             b=True,
             which="minor",
-            color=self.colors.background,
+            color=colors.background,
             linestyle="-",
             linewidth=0.5,
         )
