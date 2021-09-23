@@ -24,6 +24,9 @@ Release Notes
         :meth:`.LinkageTree.sort_by_weight`
       - new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
         a linkage tree
+      - flipped dendrograms along the leaves axis: :class:`.DendrogramMatplotStyle`
+        and :class:`.DendrogramReportStyle` now render leaves in left-to-right order,
+        instead of the previous right-to-left order
 
     - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
       :class:`.Matrix` is its input

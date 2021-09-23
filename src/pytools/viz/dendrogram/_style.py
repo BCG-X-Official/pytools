@@ -124,8 +124,8 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
             margin_y = 0.01
 
         ax.set_ylim(
-            -0.5 * self.padding - margin_y,
-            1.0 + (n_leaves - 0.5) * self.padding + margin_y,
+            -(1.0 + (n_leaves - 0.5) * self.padding + margin_y),
+            0.5 * self.padding + margin_y,
         )
 
         ax.ticklabel_format(axis="x", scilimits=(-3, 3))
@@ -150,7 +150,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         padding = self.padding
         y = weight_cumulative + leaf * padding
         self._draw_hline(
-            x1=bottom, x2=top, y=y, weight=weight, max_height=weight + padding
+            x0=bottom, x1=top, y=-y - weight, weight=weight, max_height=weight + padding
         )
 
     def draw_link_connector(
@@ -171,9 +171,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         hi = lo + weight + (n_leaves_left + n_leaves_right - 1) * self.padding
 
         self._draw_hline(
-            x1=bottom,
-            x2=top,
-            y=(lo + hi - weight) / 2,
+            x0=bottom,
+            x1=top,
+            y=-(lo + hi + weight) / 2,
             weight=weight,
             max_height=hi - lo + self.padding,
         )
@@ -187,7 +187,10 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
                 + (first_leaf + n_leaves_left + (n_leaves_right - 1) / 2) * self.padding
             )
             self.ax.plot(
-                (bottom, bottom), (y_0, y_1), color=self.colors.foreground, linewidth=1
+                (bottom, bottom),
+                (-y_1, -y_0),
+                color=self.colors.foreground,
+                linewidth=1,
             )
 
     def draw_leaf_labels(
@@ -199,11 +202,8 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         y_axis = self.ax.yaxis
         y_axis.set_ticks(ticks=list(self.get_ytick_locations(weights=weights)))
         y_axis.set_ticklabels(ticklabels=names)
-        # y_axis.set_tick_params(left=False)
 
-    def get_ytick_locations(
-        self, *, weights: Sequence[float]
-    ) -> Iterable[Union[int, float]]:
+    def get_ytick_locations(self, *, weights: Sequence[float]) -> np.ndarray:
         """
         Get the tick locations for the y axis.
 
@@ -211,10 +211,11 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         :return: the tick locations for the y axis
         """
         weights_array = np.array(weights)
-        return (
-            weights_array.cumsum()
+        # noinspection PyTypeChecker
+        return -(
+            np.arange(len(weights)) * self.padding
+            + weights_array.cumsum()
             - weights_array / 2
-            + np.arange(len(weights)) * self.padding
         )
 
     def plot_weight_label(
@@ -267,16 +268,16 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         )
 
     def _draw_hline(
-        self, x1: float, x2: float, y: float, weight: float, max_height: float
+        self, x0: float, x1: float, y: float, weight: float, max_height: float
     ) -> None:
         fill_color = self.color_for_value(weight)
         self.ax.set_xlim()
         middle = y + weight / 2
         self.ax.barh(
             y=middle,
-            width=x2 - x1,
+            width=x1 - x0,
             height=weight,
-            left=x1,
+            left=x0,
             color=fill_color,
             edgecolor=self.colors.foreground,
             linewidth=1,
@@ -284,9 +285,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
 
         self.plot_weight_label(
             weight=weight,
-            x=x1,
+            x=x0,
             y=middle - max_height / 2,
-            w=x2 - x1,
+            w=x1 - x0,
             h=max_height,
             fill_color=fill_color,
         )
@@ -390,7 +391,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
 
         # draw the link leg in the character matrix
         matrix[
-            line_y + is_in_between_line,
+            line_y,
             self._x_pos(bottom, tree_height) : self._x_pos(top, tree_height),
         ] = (
             "_" if is_in_between_line else "-"
@@ -410,9 +411,6 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     ) -> None:
         """[see superclass]"""
 
-        y1 = first_leaf + n_leaves_left // 2
-        y2 = first_leaf + n_leaves_left + (n_leaves_right - 1) // 2
-
         self.draw_link_leg(
             bottom=bottom,
             top=top,
@@ -423,11 +421,14 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         )
 
         x = self._x_pos(bottom, tree_height)
+        y0 = first_leaf + n_leaves_left // 2
+        y1 = first_leaf + n_leaves_left + (n_leaves_right - 1) // 2
+
         matrix = self._char_matrix
-        if y2 - y1 > 1:
-            matrix[(y1 + 1) : y2, x] = "|"
+        if y1 - y0 > 1:
+            matrix[(y0 + 1) : y1, x] = "|"
+        matrix[y0, x] = "\\"
         matrix[y1, x] = "/"
-        matrix[y2, x] = "\\"
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
@@ -436,10 +437,8 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         :param title: the title of the chart
         :param kwargs: additional drawer-specific arguments
         """
-        super().start_drawing(
-            title=title,
-            **kwargs,
-        )
+        super().start_drawing(title=title, **kwargs)
+
         self._char_matrix = CharacterMatrix(
             n_rows=self.max_height, n_columns=self.width
         )
@@ -452,7 +451,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         """
         try:
             print(
-                "\n".join(self._char_matrix.lines(reversed(range(self._n_labels + 1)))),
+                "\n".join(self._char_matrix.lines(range(self._n_labels))),
                 file=self.out,
             )
         finally:

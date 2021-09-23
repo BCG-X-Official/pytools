@@ -59,7 +59,7 @@ def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
 
     with StringIO() as out:
         dd = DendrogramDrawer(style=DendrogramReportStyle(out=out))
-        dd.draw(data=linkage_tree, title="Test")
+        dd.draw(data=linkage_tree.sort_by_weight(), title="Test")
         report_str = str(out.getvalue())
         log.debug(f"\n{report_str}")
 

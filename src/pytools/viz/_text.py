@@ -74,7 +74,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
         """
         super().start_drawing(title=title, **kwargs)
 
-        print(f"{f' {title} ':=^{self.width}s}", file=self.out)
+        print(f"{f' {title} ':=^{self.width}s}\n", file=self.out)
 
     def finalize_drawing(self, **kwargs: Any) -> None:
         """
