@@ -319,6 +319,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
         ax: Axes = self.ax
 
+        # make this a square matrix
+        ax.set_aspect("equal")
+
         # remove margins
         ax.margins(0)
 

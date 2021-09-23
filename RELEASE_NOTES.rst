@@ -28,6 +28,8 @@ Release Notes
           flexible row and column widths, based on the :attr:`.Matrix.weights` property,
           and supports axis labels for the row and column axes of matrices, and a label
           for the weight scale
+        - :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
+          column axes, so that equal row and column widths represent equal weights
         - method :meth:`.Matrix.resize` reduces the size of large matrices based on an
           absolute target size, or a fraction of the total weight to be preserved.
           This is useful for removing less important rows or columns from a matrix
