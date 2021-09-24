@@ -4,7 +4,7 @@
    :no-imported-members:
 
    {% if "." not in fullname %}
-   .. include:: ../api_landing.rst
+   .. include:: ../_templates/api_landing.rst
    {% endif %}
 
    {% block classes %}
