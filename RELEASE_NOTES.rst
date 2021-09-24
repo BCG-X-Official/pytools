@@ -27,6 +27,9 @@ Release Notes
       - flipped dendrograms along the leaves axis: :class:`.DendrogramMatplotStyle`
         and :class:`.DendrogramReportStyle` now render leaves in left-to-right order,
         instead of the previous right-to-left order
+      - :class:`DendrogramReportStyle` now reduces the label section of the
+        dendrogram to the length of the longest label; renamed the `label_width`
+        property to `max_label_width`
 
     - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
       :class:`.Matrix` is its input

@@ -43,7 +43,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
         max_distance: Optional[float] = None,
-        n_leaves: Optional[int] = None,
+        leaf_names: Optional[Sequence[str]] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -54,7 +54,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
         :param max_distance: the height (= maximum possible distance) of the dendrogram
-        :param n_leaves: the number of leaves in the dendrogram
+        :param leaf_names: the names of the dendrogram leaf nodes
         :param kwargs: additional drawer-specific arguments
         """
         super().start_drawing(title=title, **kwargs)
@@ -66,7 +66,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
         max_distance: Optional[float] = None,
-        n_leaves: Optional[int] = None,
+        leaf_names: Optional[Sequence[str]] = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -76,7 +76,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param distance_label: the label for the distance axis
         :param weight_label: the label for the weight scale
         :param max_distance: the height (= maximum possible distance) of the dendrogram
-        :param n_leaves: the number of leaves in the dendrogram
+        :param leaf_names: the names of the dendrogram leaf nodes
         :param kwargs: additional drawer-specific arguments
         """
         super().finalize_drawing(**kwargs)

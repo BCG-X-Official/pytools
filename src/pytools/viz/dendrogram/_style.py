@@ -96,17 +96,11 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         distance_label: Optional[str] = None,
         weight_label: Optional[str] = None,
         max_distance: Optional[float] = None,
-        n_leaves: Optional[int] = None,
+        leaf_names: Optional[Sequence[str]] = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
-        super().start_drawing(
-            title=title,
-            max_distance=max_distance,
-            n_leaves=n_leaves,
-            colorbar_label=weight_label,
-            **kwargs,
-        )
+        super().start_drawing(title=title, **kwargs)
 
         ax = self.ax
 
@@ -124,7 +118,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
             margin_y = 0.01
 
         ax.set_ylim(
-            -(1.0 + (n_leaves - 0.5) * self.padding + margin_y),
+            -(1.0 + (len(leaf_names) - 0.5) * self.padding + margin_y),
             0.5 * self.padding + margin_y,
         )
 
@@ -300,27 +294,30 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     """
 
     #: The default width of labels.
-    DEFAULT_LABEL_WIDTH = 20
+    DEFAULT_MAX_LABEL_WIDTH = 20
 
     #: The number of characters that will be allocated for the label column,
     #: including the weight.
-    label_width: int
+    max_label_width: int
 
     #: Maximum number of text lines to output including the title;
     #: additional lines of the dendrogram will be clipped (optional).
     max_height: int
 
+    #: the width of the weight column
+    _WEIGHT_COLUMN_WIDTH = 5
+
     def __init__(
         self,
         out: TextIO = None,
         width: int = 80,
-        label_width: Optional[int] = None,
+        max_label_width: Optional[int] = None,
         max_height: int = 100,
     ) -> None:
         """
-        :param label_width: the number of characters that will be allocated for the
-            label column, including the weight (optional; defaults to
-            %DEFAULT_LABEL_WIDTH% characters or half of arg `width`,
+        :param max_label_width: the maximum number of characters that will be allocated
+            for the label column, including the weight (optional; defaults to
+            %DEFAULT_MAX_LABEL_WIDTH% characters or half of arg ``width``,
             whichever is smaller)
         :param max_height: maximum number of text lines to output including the title;
             additional lines of the dendrogram will be clipped (default: 100)
@@ -331,23 +328,23 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
                 f"arg max_height={max_height} expected to be a positive integer"
                 f" {max_height}"
             )
-        if label_width is not None and label_width > width // 2:
+        if max_label_width is not None and max_label_width > width // 2:
             raise ValueError(
-                f"arg label_width={label_width} must be half or less of arg "
+                f"arg max_label_width={max_label_width} must be half or less of arg "
                 f"width={width}"
             )
         self.max_height = max_height
-        self.label_width = (
-            min(DendrogramReportStyle.DEFAULT_LABEL_WIDTH, width // 2)
-            if label_width is None
-            else label_width
+        self.max_label_width = self._label_width = (
+            min(DendrogramReportStyle.DEFAULT_MAX_LABEL_WIDTH, width // 2)
+            if max_label_width is None
+            else max_label_width
         )
-        self._dendrogram_right = width - self.label_width
+        self._dendrogram_right = width - self.max_label_width
         self._char_matrix = None
         self._n_labels = None
 
     __init__.__doc__ = TextStyle.__init__.__doc__ + __init__.__doc__.replace(
-        "%DEFAULT_LABEL_WIDTH%", str(DEFAULT_LABEL_WIDTH)
+        "%DEFAULT_MAX_LABEL_WIDTH%", str(DEFAULT_MAX_LABEL_WIDTH)
     )
 
     def draw_leaf_labels(
@@ -362,7 +359,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
             matrix[n_labels, :] = f"{'clipped':~^{self.width}s}\n"
         self._n_labels = n_labels
         name_width = self.__weight_column
-        label_width = self.label_width
+        label_width = self._label_width
         for row, name, weight in zip(range(n_labels), names, weights):
             matrix[row, :name_width] = name + " "
             matrix[row, name_width:label_width] = f"{weight * 100:3.0f}%"
@@ -430,15 +427,23 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         matrix[y0, x] = "\\"
         matrix[y1, x] = "/"
 
-    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
+    def start_drawing(
+        self, *, title: str, leaf_names: Optional[Sequence[str]] = None, **kwargs: Any
+    ) -> None:
         """
         Prepare a new dendrogram for drawing, using the given title.
 
         :param title: the title of the chart
+        :param leaf_names: the names of the dendrogram leaf nodes
         :param kwargs: additional drawer-specific arguments
         """
         super().start_drawing(title=title, **kwargs)
 
+        self._label_width = min(
+            self.max_label_width,
+            max(map(len, leaf_names)) + DendrogramReportStyle._WEIGHT_COLUMN_WIDTH,
+        )
+        self._dendrogram_right = self.width - self._label_width
         self._char_matrix = CharacterMatrix(
             n_rows=self.max_height, n_columns=self.width
         )
@@ -462,11 +467,11 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     def _x_pos(self, h: float, h_max: float) -> int:
         # calculate the horizontal position in the character grid,
         # ensuring that h=h_max still yields a position inside the grid (factor 0.99999)
-        return self.label_width + int(self._dendrogram_right * h / h_max * 0.99999)
+        return self._label_width + int(self._dendrogram_right * h / h_max * 0.99999)
 
     @property
     def __weight_column(self) -> int:
-        return self.label_width - 5
+        return self._label_width - DendrogramReportStyle._WEIGHT_COLUMN_WIDTH
 
 
 __tracker.validate()

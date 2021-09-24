@@ -64,7 +64,7 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
             distance_label=data.distance_label,
             weight_label=data.weight_label,
             max_distance=data.max_distance,
-            n_leaves=data.n_leaves,
+            leaf_names=tuple(leaf.name for leaf in data.iter_nodes(inner=False)),
             **super()._get_style_kwargs(data=data),
         )
 
