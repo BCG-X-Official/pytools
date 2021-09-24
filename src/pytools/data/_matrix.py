@@ -180,7 +180,7 @@ class Matrix(HasExpressionRepr):
         *,
         weights: Optional[Tuple[Optional[Number], Optional[Number]]] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
-        weight_label: Optional[str] = None,
+        value_label: Optional[str] = None,
     ):
         """
         Create a :class:`.Matrix` from a data frame, using the indices
@@ -189,7 +189,7 @@ class Matrix(HasExpressionRepr):
         :param frame: the data frame from which to create the matrix
         :param weights: the weights of the rows and columns
         :param name_labels: the labels for the row and column axes
-        :param weight_label: the label for the weight axis
+        :param value_label: the label for the weight axis
         :return:
         """
         return cls(
@@ -197,7 +197,7 @@ class Matrix(HasExpressionRepr):
             names=(frame.index, frame.columns),
             weights=weights,
             name_labels=name_labels,
-            weight_label=weight_label,
+            value_label=value_label,
         )
 
     def resize(

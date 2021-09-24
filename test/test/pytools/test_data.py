@@ -4,6 +4,7 @@ Basic test cases for the `pytools.data` module
 
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from pytools.data import Matrix
@@ -62,7 +63,19 @@ def test_matrix_validation() -> None:
         Matrix(np.arange(20).reshape((4, 5)), name_labels=(1, 2, 3))
 
 
-def test_matrix() -> None:
+def test_matrix_from_frame() -> None:
+    values = np.arange(20).reshape((4, 5))
+    rows = list("ABCD")
+    columns = list("abcde")
+
+    matrix_from_frame = Matrix.from_frame(
+        pd.DataFrame(values, index=rows, columns=columns)
+    )
+    matrix_expected = Matrix(values, names=(rows, columns))
+    assert matrix_from_frame == matrix_expected
+
+
+def test_matrix_resize() -> None:
 
     m: Matrix = Matrix(
         np.arange(20).reshape((4, 5)),

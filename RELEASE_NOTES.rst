@@ -67,7 +67,8 @@ Release Notes
     - :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
       method :meth:`.SimpleQueue.aggregate`
 
-- API: improved conversion of *numpy* arrays in function :func:`.make_expression`
+- API: improved conversion of *numpy* arrays to :class:`.Expression` objects in
+  function :func:`.make_expression`
 
 
 *pytools* 1.2
