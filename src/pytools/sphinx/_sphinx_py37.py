@@ -201,7 +201,8 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
 
             # instance method definitions are unbound, so we need to remember
             # the class we are currently in
-            self._resolve_signature(bindings=bindings, func=obj),
+            if bindings is not None:
+                self._resolve_signature(bindings=bindings, func=obj),
 
         elif isinstance(obj, MethodType):
             # class method definitions are bound, so we can infer the current class
