@@ -10,7 +10,7 @@ Release Notes
 - API: additions and enhancements to visualizations in module :mod:`pytools.viz`, and
   related classes in module :mod:`.pytools.data`
 
-    - *Dendrograms:* updates to the drawing semantics and appearance
+    - *Dendrograms:* major design overhaul
 
       - replaced the heatmap and line dendrogram styles with a single, freshly designed
         :class:`.DendrogramMatplotStyle` which
@@ -22,34 +22,31 @@ Release Notes
       - :class:`.DendrogramDrawer` no longer sorts leaf nodes inside as part of the
         drawing process; the sorting mechanism is now available via method
         :meth:`.LinkageTree.sort_by_weight`
-      - new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
-        a linkage tree
       - flipped dendrograms along the leaves axis: :class:`.DendrogramMatplotStyle`
         and :class:`.DendrogramReportStyle` now render leaves in left-to-right order,
         instead of the previous right-to-left order
       - :class:`DendrogramReportStyle` now reduces the label section of the
         dendrogram to the length of the longest label; renamed the `label_width`
         property to `max_label_width`
+      - moved class :class:`.LinkageTree` to module :mod:`pytools.viz`
+      - new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
+        a linkage tree
 
-    - *Matrices:* class :class:`.MatrixDrawer` now expects instances of new class
-      :class:`.Matrix` is its input
+    - *Matrices:* major design overhaul
 
-        - :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
-          objects, but :meth:`.Matrix.from_frame` can be used to convert data frames to
-          matrix objects
-        - class :class:`.Matrix` allows :class:`.MatrixDrawer` to render
-          flexible row and column widths, based on the :attr:`.Matrix.weights` property,
-          and supports axis labels for the row and column axes of matrices, and a label
-          for the weight scale
-        - :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
-          column axes, so that equal row and column widths represent equal weights
-        - method :meth:`.Matrix.resize` reduces the size of large matrices based on an
-          absolute target size, or a fraction of the total weight to be preserved.
-          This is useful for removing less important rows or columns from a matrix
+        - class :class:`.MatrixDrawer` now expects instances of new class
+          :class:`.Matrix` as its input
+          - class :class:`.Matrix` allows :class:`.MatrixDrawer` to render
+            flexible row and column widths, based on the :attr:`.Matrix.weights`
+            property, and supports axis labels for the row, column, and weight axes
+          - :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
+            objects, but :meth:`.Matrix.from_frame` can be used to convert data frames
+            to matrix objects
         - new attribute :class:`.MatrixDrawer.nan_substitute` specifies the value to
           look up in the colormap to determine the color of undefined matrix cells
+        - :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
+          column axes, so that equal row and column widths represent equal weights
 
-    - moved class :class:`.LinkageTree` to module :mod:`pytools.viz`
 
 - API: revised job/queue API in module :mod:`pytools.parallelization`
 
