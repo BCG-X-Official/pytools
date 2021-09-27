@@ -52,6 +52,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
     and renders a color bar as a legend.
     """
 
+    #: vertical padding to apply between lines (in weight units)
+    padding: float
+
     def __init__(
         self,
         *,
@@ -65,8 +68,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         :param min_weight: the minimum weight on the logarithmic feature importance
             color scale; must be greater than `0` and smaller than `1`
             (default: `0.01`, i.e., 1%)
-        :param padding: vertical padding to apply between lines, as a multiple of
-            100% feature weight
+        :param padding: vertical padding to apply between lines (in weight units)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
