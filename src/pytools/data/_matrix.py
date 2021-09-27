@@ -215,10 +215,11 @@ class Matrix(HasExpressionRepr):
         self, rows: Union[int, float, None], columns: Union[int, float, None]
     ) -> "Matrix":
         r"""
-        Create a version of this matrix with fewer rows and/or columns, keeping the
-        rows and columns with the greatest weight, and prioritizing topmost rows and
-        leftmost columns in case multiple rows and columns have the same weight and
-        cannot all be included in the resulting, smaller matrix.
+        Create a version of this matrix with fewer rows and/or columns.
+
+        Keeps the rows and columns with the greatest weight, and prioritizing topmost
+        rows and leftmost columns in case multiple rows and columns have the same weight
+        and cannot all be included in the resulting, smaller matrix.
 
         A target size can be stated separately for rows and columns:
 
