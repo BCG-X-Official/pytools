@@ -481,11 +481,12 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
             MatrixReportStyle,
         ]
 
-    def _get_style_kwargs(self, data: Matrix) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: Matrix) -> Dict[str, Any]:
+        """[see superclass]"""
         return dict(
             name_labels=data.name_labels,
             weight_label=data.value_label,
-            **super()._get_style_kwargs(data=data),
+            **super().get_style_kwargs(data=data),
         )
 
     def _draw(self, data: Matrix) -> None:
