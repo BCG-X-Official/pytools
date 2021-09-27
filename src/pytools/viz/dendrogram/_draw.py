@@ -59,12 +59,13 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
             DendrogramReportStyle,
         ]
 
-    def _get_style_kwargs(self, data: LinkageTree) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: LinkageTree) -> Dict[str, Any]:
+        """[see superclass]"""
         return dict(
             leaf_label=data.leaf_label,
             distance_label=data.distance_label,
             weight_label=data.weight_label,
-            **super()._get_style_kwargs(data=data),
+            **super().get_style_kwargs(data=data),
         )
 
     def _draw(self, data: LinkageTree) -> None:
