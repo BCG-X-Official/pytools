@@ -62,6 +62,24 @@ def test_matrix_validation() -> None:
         # noinspection PyTypeChecker
         Matrix(np.arange(20).reshape((4, 5)), name_labels=(1, 2, 3))
 
+    with pytest.raises(
+        TypeError,
+        match=(
+            "^arg value_label requires an instance of str or NoneType but got a float$"
+        ),
+    ):
+        # noinspection PyTypeChecker
+        Matrix(np.arange(20).reshape((4, 5)), value_label=1.0)
+
+    with pytest.raises(
+        TypeError,
+        match=(
+            "^arg weight_label requires an instance of str or NoneType but got an int$"
+        ),
+    ):
+        # noinspection PyTypeChecker
+        Matrix(np.arange(20).reshape((4, 5)), weight_label=1)
+
 
 def test_matrix_from_frame() -> None:
     values = np.arange(20).reshape((4, 5))
@@ -81,48 +99,54 @@ def test_matrix_resize() -> None:
         np.arange(20).reshape((4, 5)),
         names=(list("ABCD"), list("abcde")),
         weights=([2, 4, 2, 4], [1, 5, 4, 1, 5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(1, None) == Matrix(
         np.array([[5, 6, 7, 8, 9]]),
         names=(["B"], list("abcde")),
         weights=([4], [1, 5, 4, 1, 5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(None, 1) == Matrix(
         np.array([[1], [6], [11], [16]]),
         names=(list("ABCD"), ["b"]),
         weights=([2, 4, 2, 4], [5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(1, 1) == Matrix(
         np.array([[6]]),
         names=(["B"], ["b"]),
         weights=([4], [5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(3, 4) == Matrix(
         np.array([[0, 1, 2, 4], [5, 6, 7, 9], [15, 16, 17, 19]]),
         names=(list("ABD"), list("abce")),
         weights=([2, 4, 4], [1, 5, 4, 5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(0.8, 0.0001) == Matrix(
         values=np.array([[1], [6], [16]]),
         names=(list("ABD"), ["b"]),
         weights=([2, 4, 4], [5]),
+        value_label="value",
         name_labels=("row", "column"),
-        value_label="weight",
+        weight_label="weight",
     )
 
     assert m.resize(4, 5) == m

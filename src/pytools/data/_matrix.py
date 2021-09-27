@@ -3,6 +3,7 @@ Data type for matrices.
 """
 
 import logging
+from copy import copy
 from typing import Any, Iterable, List, Optional, Tuple, Union
 
 import numpy as np
@@ -63,6 +64,9 @@ class Matrix(HasExpressionRepr):
     #: the label for the value axis
     value_label: Optional[str]
 
+    #: the label for the weight axis
+    weight_label: Optional[str]
+
     def __init__(
         self,
         values: np.ndarray,
@@ -71,15 +75,17 @@ class Matrix(HasExpressionRepr):
         weights: Optional[
             Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
         ] = None,
-        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
         value_label: Optional[str] = None,
+        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
+        weight_label: Optional[str] = None,
     ) -> None:
         """
         :param values: the values of the matrix cells, as a `rows x columns` array
         :param names: the names of the rows and columns
         :param weights: the weights of the rows and columns
-        :param name_labels: the labels for the row and column axes
         :param value_label: the label for the value axis
+        :param name_labels: the labels for the row and column axes
+        :param weight_label: the label for the weight axis
         """
         if not isinstance(values, np.ndarray):
             raise TypeError(
@@ -170,7 +176,11 @@ class Matrix(HasExpressionRepr):
         )
 
         self.value_label = validate_type(
-            value_label, expected_type=str, optional=True, name="arg weight_label"
+            value_label, expected_type=str, optional=True, name="arg value_label"
+        )
+
+        self.weight_label = validate_type(
+            weight_label, expected_type=str, optional=True, name="arg weight_label"
         )
 
     @classmethod
@@ -262,13 +272,12 @@ class Matrix(HasExpressionRepr):
             )
             values = values_t.T
 
-        return Matrix(
-            values,
-            names=(names_rows, names_columns),
-            weights=(weights_rows, weights_columns),
-            name_labels=self.name_labels,
-            value_label=self.value_label,
-        )
+        resized = copy(self)
+        resized.values = values
+        resized.names = (names_rows, names_columns)
+        resized.weights = (weights_rows, weights_columns)
+
+        return resized
 
     def to_expression(self) -> Expression:
         """[see superclass]"""
