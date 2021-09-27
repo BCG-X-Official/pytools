@@ -200,6 +200,17 @@ class Matrix(HasExpressionRepr):
             value_label=value_label,
         )
 
+    def to_frame(self) -> pd.DataFrame:
+        """
+        Create a data frame from this matrix, using the row and column names as the
+        row and column indices.
+
+        The resulting data frame does not include weight and label data.
+
+        :return: the data frame created from this matrix
+        """
+        return pd.DataFrame(self.values, index=self.names[0], columns=self.names[1])
+
     def resize(
         self, rows: Union[int, float, None], columns: Union[int, float, None]
     ) -> "Matrix":
