@@ -28,6 +28,9 @@ Release Notes
 
 - API: improved conversion of *numpy* arrays in function :func:`.make_expression`
 
+- API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
+  private method ``_get_style_kwargs()``
+
 - API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
 
 
