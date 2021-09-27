@@ -112,7 +112,7 @@ class DrawingStyle(metaclass=ABCMeta):
         Prepare a new chart for drawing, using the given title.
 
         Any additional drawer-specific arguments, obtained from
-        method :meth:`Drawer._get_style_kwargs`, will be passed
+        method :meth:`Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
 
         :param title: the title of the chart
@@ -127,7 +127,7 @@ class DrawingStyle(metaclass=ABCMeta):
         Finalize the drawing.
 
         Any additional drawer-specific arguments, obtained from
-        method :meth:`.Drawer._get_style_kwargs`, will be passed
+        method :meth:`.Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
 
         :param kwargs: additional additional drawer-specific arguments
@@ -286,7 +286,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         # styles might hold some drawing context, so make sure we are thread safe
         # noinspection PyProtectedMember
         with style._lock:
-            style_attributes = self._get_style_kwargs(data)
+            style_attributes = self.get_style_kwargs(data)
 
             # noinspection PyProtectedMember
             style._status = style._STATUS_NOT_STARTED
@@ -306,13 +306,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                     "DrawingStyle.finalize_drawing() not called from overloaded method"
                 )
 
-    def _get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
         style's :meth:`~DrawingStyle.start_drawing` and
         :meth:`~DrawingStyle.finalize_drawing` methods.
 
-        :meta public:
         :param data: the data to be rendered
         :returns: the style attributes for the given data object
         """
