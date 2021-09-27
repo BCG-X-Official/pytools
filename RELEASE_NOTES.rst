@@ -15,6 +15,8 @@ This release enhances support for generating Sphinx documentation, and catches u
   ``self`` and ``cls`` special method arguments
 - API: add sphinx processor :class:`.AutodocProcessBases` to handle
   `autodoc-process-bases` events (introduced in Sphinx 4.1)
+- API: function :func:`.validate_type` now accepts multiple alternative types to
+  validate values against, in line with how :func:`isinstance` tests for multiple types
 
 
 1.2.2
