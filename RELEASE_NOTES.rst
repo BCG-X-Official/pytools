@@ -4,71 +4,72 @@ Release Notes
 *pytools* 2.0
 -------------
 
+*pytools* 2 brings enhanced visualizations, and API improvements.
+
 2.0.0
 ~~~~~
 
-- API: additions and enhancements to visualizations in module :mod:`pytools.viz`, and
-  related classes in module :mod:`.pytools.data`
+``pytools.data``
+^^^^^^^^^^^^^^^^
+- API: new class :class:`.Matrix` allows :class:`.MatrixDrawer` to render flexible row
+  and column widths, based on the :attr:`.Matrix.weights` property, and supports axis
+  labels for the row, column, and weight axes
+- API: moved class :class:`.LinkageTree` to module :mod:`pytools.data`
 
-    - *Dendrograms:* major design overhaul
-
-      - replaced the heatmap and line dendrogram styles with a single, freshly designed
-        :class:`.DendrogramMatplotStyle` which
-          - varies the thickness of the dendrogram's branches, based on the cumulative
-            weight of the leaf nodes
-          - supports adjustable padding between neighbouring branches; setting padding
-            to zero produces a chart that is close to the previous *heatmap* style
-
-      - :class:`.DendrogramDrawer` no longer sorts leaf nodes inside as part of the
-        drawing process; the sorting mechanism is now available via method
-        :meth:`.LinkageTree.sort_by_weight`
-      - flipped dendrograms along the leaves axis: :class:`.DendrogramMatplotStyle`
-        and :class:`.DendrogramReportStyle` now render leaves in left-to-right order,
-        instead of the previous right-to-left order
-      - :class:`DendrogramReportStyle` now reduces the label section of the
-        dendrogram to the length of the longest label; renamed the `label_width`
-        property to `max_label_width`
-      - moved class :class:`.LinkageTree` to module :mod:`pytools.viz`
-      - new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
-        a linkage tree
-
-    - *Matrices:* major design overhaul
-
-        - class :class:`.MatrixDrawer` now expects instances of new class
-          :class:`.Matrix` as its input
-          - class :class:`.Matrix` allows :class:`.MatrixDrawer` to render
-            flexible row and column widths, based on the :attr:`.Matrix.weights`
-            property, and supports axis labels for the row, column, and weight axes
-          - :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
-            objects, but :meth:`.Matrix.from_frame` can be used to convert data frames
-            to matrix objects
-        - new attribute :class:`.MatrixDrawer.nan_substitute` specifies the value to
-          look up in the colormap to determine the color of undefined matrix cells
-        - :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
-          column axes, so that equal row and column widths represent equal weights
-
-
-- API: revised job/queue API in module :mod:`pytools.parallelization`
-
-    - method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
-      objects instead of individual jobs as positional arguments
-
-    - method :meth:`.JobRunner.run_queues` now expects a single iterable of
-      :class:`.JobQueue` objects instead of individual queues as positional arguments
-
-    - method :meth:`.JobRunner.run_queues` returns a list of results instead of an
-      iterator
-
-    - methods :meth:`.JobRunner.run_queue` and :meth:`.JobRunner.run_queues` are now
-      thread-safe
-
-    - rename method `collate` of class :class:`.JobQueue` to :meth:`.JobQueue.aggregate`
-
-    - :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
-      method :meth:`.SimpleQueue.aggregate`
-
-- API: improved conversion of *numpy* arrays to :class:`.Expression` objects in
+``pytools.expression``
+^^^^^^^^^^^^^^^^^^^^^^
+- API: improved conversion of :mod:`numpy` arrays to :class:`.Expression` objects in
   function :func:`.make_expression`
+
+``pytools.parallelization``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- API: method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
+  objects instead of individual jobs as positional arguments
+- API: method :meth:`.JobRunner.run_queues` now expects a single iterable of
+  :class:`.JobQueue` objects instead of individual queues as positional arguments, and
+  returns a :class:`list` of results instead of an iterator
+- API: methods :meth:`.JobRunner.run_queue` and :meth:`.JobRunner.run_queues` are now
+  thread-safe
+- API: renamed method ``collate`` of class :class:`.JobQueue` to
+  :meth:`.JobQueue.aggregate`
+- API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
+  method :meth:`.SimpleQueue.aggregate`
+
+``pytools.viz``
+^^^^^^^^^^^^^^^
+Additions and enhancements to dendrogram and matrix visualizations.
+
+- **Dendrograms:** major design overhaul
+
+  - API: replaced the heatmap and line dendrogram styles with a single, freshly designed
+    :class:`.DendrogramMatplotStyle` offering a tighter layout and using the thickness
+    of the dendrogram's branches to indicate the cumulative weight of the leaf nodes
+  - API: :attr:`.DendrogramMatplotStyle.padding` determines the adjustable padding
+    between neighbouring branches; setting padding to zero produces a chart similar
+    to the previous *heatmap* style
+  - API: :class:`.DendrogramDrawer` no longer sorts leaf nodes as part of the drawing
+    process; the sorting mechanism is now available via method
+    :meth:`.LinkageTree.sort_by_weight`
+  - VIZ: :class:`.DendrogramMatplotStyle` and :class:`.DendrogramReportStyle` now render
+    leaves in left-to-right order, instead of the previous right-to-left order
+  - API: the :class:`.DendrogramReportStyle` now reduces the label section of the
+    dendrogram to the length of the longest label; renamed the ``label_width``
+    property to :attr:`~.DendrogramReportStyle.max_label_width`
+  - API: moved class :class:`.LinkageTree` to module :mod:`pytools.data`
+  - API: new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
+    the linkage tree
+
+- **Matrices:** major design overhaul
+
+  - API: class :class:`.MatrixDrawer` now expects instances of new class
+    :class:`.Matrix` as its input
+  - API: :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
+    objects, but :meth:`.Matrix.from_frame` can be used to convert data frames
+    to matrix objects
+  - API: new attribute :attr:`.MatrixMatplotStyle.nan_substitute` specifies the value to
+    look up in the colormap to determine the color of undefined matrix cells
+  - VIZ: :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
+    column axes, so that equal row and column widths represent equal weights
 
 
 *pytools* 1.2
