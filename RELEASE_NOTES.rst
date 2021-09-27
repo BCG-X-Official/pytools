@@ -71,6 +71,11 @@ Additions and enhancements to dendrogram and matrix visualizations.
   - VIZ: :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
     column axes, so that equal row and column widths represent equal weights
 
+- API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
+  private method ``_get_style_kwargs()``
+
+- API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
+
 
 *pytools* 1.2
 -------------
@@ -85,6 +90,8 @@ This release enhances support for generating Sphinx documentation, and catches u
   to resolve generic type parameters in subclasses
 - API: add sphinx processor :class:`.AutodocProcessBases` to handle
   `autodoc-process-bases` events (introduced in Sphinx 4.1)
+- API: function :func:`.validate_type` now accepts multiple alternative types to
+  validate values against, in line with how :func:`isinstance` tests for multiple types
 
 
 1.2.2

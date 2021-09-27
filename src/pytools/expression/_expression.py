@@ -97,21 +97,6 @@ class HasExpressionRepr(metaclass=ABCMeta):
         """
         pass
 
-    @classmethod
-    def get_class_id(cls) -> "Expression":
-        """
-        Get an :class:`.Id` instance named after this class.
-        """
-        id_ = vars(cls).get(HasExpressionRepr.__ATTR_CLASS_ID, None)
-
-        if id_ is None:
-            from .atomic import Id
-
-            id_ = Id(cls.__name__)
-            setattr(cls, HasExpressionRepr.__ATTR_CLASS_ID, id_)
-
-        return id_
-
     def __repr__(self) -> str:
         # get the expression representing this object, and use the default formatter
         # to get a textual representation of the expression

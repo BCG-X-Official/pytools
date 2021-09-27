@@ -12,6 +12,7 @@ from pytools.api import (
     to_set,
     to_tuple,
     validate_element_types,
+    validate_type,
 )
 
 
@@ -94,3 +95,40 @@ def test_collection_conversions() -> None:
     validate_element_types([1, 2, 3], expected_type=int)
     with pytest.raises(TypeError, match=r"^xyz "):
         validate_element_types(iter([1, 2, 3]), expected_type=str, name="xyz")
+
+
+def test_type_validation() -> None:
+    validate_type(3, expected_type=int)
+    validate_type(3, expected_type=int, optional=True)
+    validate_type(None, expected_type=int, optional=True)
+
+    validate_type(3, expected_type=(int, float))
+    validate_type(3.0, expected_type=(int, float))
+    validate_type(3.0, expected_type=(int, float), optional=True)
+    validate_type(None, expected_type=(int, float), optional=True)
+
+    with pytest.raises(
+        TypeError, match="^expected an instance of float but got an int$"
+    ):
+        validate_type(3, expected_type=float)
+
+    with pytest.raises(
+        TypeError, match="^value requires an instance of float but got an int$"
+    ):
+        validate_type(3, expected_type=float, name="value")
+
+    with pytest.raises(
+        TypeError, match="^value requires an instance of float but got an int$"
+    ):
+        validate_type(3, expected_type=float, name="value")
+
+    with pytest.raises(
+        TypeError, match="^value requires an instance of int or float but got a str$"
+    ):
+        validate_type("3", expected_type=(int, float), name="value")
+
+    with pytest.raises(
+        TypeError,
+        match="^value requires an instance of int or float or NoneType but got a str$",
+    ):
+        validate_type("3", expected_type=(int, float), optional=True, name="value")
