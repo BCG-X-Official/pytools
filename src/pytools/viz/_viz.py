@@ -149,6 +149,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     def __init__(self, *, colors: Optional[T_ColorScheme] = None) -> None:
         """
         :param colors: the color scheme to be used by this drawing style
+            (default: :class:`.FacetLightColorScheme`)
         """
         super().__init__()
         self._colors = colors or FacetLightColorScheme()
