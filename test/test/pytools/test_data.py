@@ -6,6 +6,7 @@ Basic test cases for the `pytools.data` module
 import numpy as np
 import pandas as pd
 import pytest
+from pandas.testing import assert_frame_equal
 
 from pytools.data import Matrix
 
@@ -86,11 +87,12 @@ def test_matrix_from_frame() -> None:
     rows = list("ABCD")
     columns = list("abcde")
 
-    matrix_from_frame = Matrix.from_frame(
-        pd.DataFrame(values, index=rows, columns=columns)
-    )
+    frame = pd.DataFrame(values, index=rows, columns=columns)
+    matrix_from_frame = Matrix.from_frame(frame)
     matrix_expected = Matrix(values, names=(rows, columns))
     assert matrix_from_frame == matrix_expected
+
+    assert_frame_equal(matrix_from_frame.to_frame(), frame)
 
 
 def test_matrix_resize() -> None:
