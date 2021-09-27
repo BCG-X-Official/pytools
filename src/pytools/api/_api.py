@@ -516,7 +516,7 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    expected_type: Type[T],
+    expected_type: Union[Type[T], Tuple[Type, ...]],
     optional: bool = False,
     name: Optional[str] = None,
 ) -> None:
@@ -524,12 +524,13 @@ def validate_type(
     Validate that a value implements the expected type.
 
     :param value: an arbitrary object
-    :param expected_type: the type to check for
+    :param expected_type: expected type of the values, or a tuple of alternative types
+        of which the value must match at least one
     :param optional: if ``True``, accept ``None`` as a valid value (default: ``False``)
     :param name: optional name of the argument or callable with/to which the value
         was passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
-    :raise TypeException: the value did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
     if expected_type is object:
         return
@@ -542,9 +543,21 @@ def validate_type(
             message_head = f"{name} requires"
         else:
             message_head = "expected"
+
+        if not isinstance(expected_type, tuple):
+            expected_type = (expected_type,)
+        if optional:
+            expected_type = (*expected_type, type(None))
+        expected_type_str = " or ".join(t.__name__ for t in expected_type)
+
+        observed_type = type(value).__name__
+
+        # noinspection SpellCheckingInspection
+        det = "an" if observed_type[0] in "aeiou" else "a"
+
         raise TypeError(
-            f"{message_head} instance of {expected_type.__name__} "
-            f"but got a {type(value).__name__}"
+            f"{message_head} an instance of {expected_type_str} "
+            f"but got {det} {observed_type}"
         )
 
 
