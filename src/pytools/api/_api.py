@@ -353,7 +353,7 @@ def is_list_like(obj: Any) -> bool:
 def to_tuple(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
@@ -365,12 +365,12 @@ def to_tuple(
       element
 
     :param values: one or more elements to return as a tuple
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -385,7 +385,7 @@ def to_tuple(
 def to_list(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> List[T]:
     """
@@ -397,12 +397,12 @@ def to_list(
       element
 
     :param values: one or more elements to return as a list
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a list
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -417,7 +417,7 @@ def to_list(
 def to_set(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
     """
@@ -429,12 +429,12 @@ def to_set(
       element
 
     :param values: one or more elements to return as a set
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a set
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -449,7 +449,7 @@ def to_set(
 def to_collection(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Collection[T]:
     """
@@ -461,12 +461,12 @@ def to_collection(
       element
 
     :param values: one or more elements to return as a collection
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a collection
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
     return _to_collection(
         values=values,
@@ -482,8 +482,8 @@ def _to_collection(
     *,
     collection_type: Optional[Type[Collection]],
     new_collection_type: Type[T_Collection],
-    element_type: Union[Type[T], Tuple[Type, ...], None],
-    arg_name: Optional[str] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]],
+    arg_name: Optional[str],
 ) -> T_Collection:
 
     elements: T_Collection
