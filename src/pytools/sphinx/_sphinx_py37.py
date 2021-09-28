@@ -4,7 +4,7 @@ Implementation of sphinx module.
 import logging
 from inspect import getattr_static
 from types import FunctionType, MethodType
-from typing import Any, Dict, Optional, Type, TypeVar, Union, get_type_hints
+from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union, get_type_hints
 
 import typing_inspect
 
@@ -147,6 +147,87 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         self.original_signatures = {}
         self._current_class_bindings = None
 
+    def _resolve_signature(
+        self, bindings: _TypeVarBindings, func: FunctionType
+    ) -> None:
+        # get the class in which the method has been defined
+        defining_class = self._get_defining_class(func)
+        if defining_class is None:
+            # no or unknown defining class: nothing to resolve in the signature
+            return
+        log.debug(f"function {func} was defined in {defining_class}")
+
+        # get the original signature and convert it to a list of (name, type) tuples
+        signature_original_items = list(self._get_original_signature(func).items())
+
+        def _get_self_or_cls_type_substitution() -> Tuple[
+            Optional[TypeVar], Optional[Type]
+        ]:
+
+            if signature_original_items:
+
+                method_type = self._get_method_type(defining_class, func)
+
+                if method_type is METHOD_TYPE_DYNAMIC:
+                    # special case: we substitute type vars bound to the class
+                    # when assigned to the 'self' or 'cls' parameters of methods
+                    _, arg_0_type = signature_original_items[0]
+                    if typing_inspect.is_typevar(arg_0_type):
+                        return arg_0_type, bindings.current_class
+
+                elif method_type is METHOD_TYPE_CLASS:
+                    # special case: we substitute type vars bound to the class
+                    # when assigned to the 'self' or 'cls' parameters of methods
+                    _, arg_0_type = signature_original_items[0]
+                    if (
+                        typing_inspect.is_generic_type(arg_0_type)
+                        and typing_inspect.get_origin(arg_0_type) is type
+                    ):
+                        arg_0_type_args = typing_inspect.get_args(arg_0_type)
+                        if len(arg_0_type_args) == 1 and typing_inspect.is_typevar(
+                            arg_0_type_args[0]
+                        ):
+                            return arg_0_type_args[0], bindings.current_class
+
+            return None, None
+
+        arg_0_type_var: Optional[TypeVar]
+        arg_0_substitute: Optional[Type]
+
+        arg_0_type_var, arg_0_substitute = _get_self_or_cls_type_substitution()
+
+        def _substitute_type_vars_in_type_expression(
+            type_expression: Union[Type, TypeVar]
+        ) -> type:
+            # recursively substitute type vars with their resolutions
+            if isinstance(type_expression, TypeVar):
+                if type_expression == arg_0_type_var:
+                    # special case: substitute a type variable introduced by the
+                    # initial self/cls argument of a dynamic or class method
+                    return arg_0_substitute
+                else:
+                    # resolve type variables defined by Generic[] in the
+                    # class hierarchy
+                    return bindings.resolve_parameter(defining_class, type_expression)
+            else:
+                # dynamically resolve type variables inside nested type expressions
+                args = typing_inspect.get_args(type_expression)
+                if args:
+                    # noinspection PyUnresolvedReferences
+                    return type_expression.copy_with(
+                        tuple(map(_substitute_type_vars_in_type_expression, args))
+                    )
+                else:
+                    return type_expression
+
+        # get the actual signature object that we will modify
+        signature = func.__annotations__
+        if not signature:
+            return
+
+        for name, tp in signature_original_items:
+            signature[name] = _substitute_type_vars_in_type_expression(tp)
+
     @staticmethod
     def _get_defining_class(method: FunctionType) -> Optional[type]:
         # get the class that defined the callable
@@ -168,17 +249,26 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
             )
             return None
 
-    def _resolve_signature(
-        self, bindings: _TypeVarBindings, func: FunctionType
-    ) -> None:
-        defining_class = self._get_defining_class(func)
+    @staticmethod
+    def _get_method_type(defining_class: type, func: FunctionType) -> int:
+        # do we have a static or class method?
+        try:
+            raw_func = getattr_static(defining_class, func.__name__)
+            if isinstance(raw_func, staticmethod):
+                return METHOD_TYPE_STATIC
+            elif isinstance(raw_func, classmethod):
+                return METHOD_TYPE_CLASS
+        except AttributeError:
+            # this should not happen, but we try to handle this gracefully
+            log.warning(
+                f"failed to look up method {func.__name__!r} "
+                f"in class {defining_class.__name__}"
+            )
+        return METHOD_TYPE_DYNAMIC
 
-        if defining_class is None:
-            # no or unknown defining class: nothing to resolve in the signature
-            return
-
-        log.debug(f"function {func} was defined in {defining_class}")
-
+    def _get_original_signature(
+        self, func: FunctionType
+    ) -> Dict[str, Union[type, TypeVar]]:
         # get the original signature as defined in the code
         signature_original: Dict[str, Union[type, TypeVar]]
         try:
@@ -186,83 +276,7 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         except KeyError:
             signature_original = get_type_hints(func)
             self.original_signatures[func] = signature_original
-
-        # do we have a static or class method?
-        method_type = METHOD_TYPE_DYNAMIC
-        try:
-            raw_func = getattr_static(defining_class, func.__name__)
-            if isinstance(raw_func, staticmethod):
-                method_type = METHOD_TYPE_STATIC
-            elif isinstance(raw_func, classmethod):
-                method_type = METHOD_TYPE_CLASS
-        except AttributeError:
-            # this should not happen, but we try to handle this gracefully
-            log.warning(
-                f"failed to look up method {func.__name__!r} "
-                f"in class {defining_class.__name__}"
-            )
-
-        # get the actual signature object that we will modify
-        signature = func.__annotations__
-        if signature:
-
-            # get the original signature and convert it to a list of (name, type) tuples
-            signature_original_items = list(signature_original.items())
-
-            if not signature_original_items:
-                arg_0_type_var: Optional[Type] = None
-                arg_0_substitute: Optional[Type] = None
-
-            elif method_type is METHOD_TYPE_DYNAMIC:
-                # special case: we substitute type vars bound to the class
-                # when assigned to the 'self' or 'cls' parameters of methods
-                _, arg_0_type_var = signature_original_items[0]
-                if typing_inspect.is_typevar(arg_0_type_var):
-                    arg_0_substitute = bindings.current_class
-                else:
-                    arg_0_type_var = None
-
-            elif method_type is METHOD_TYPE_CLASS:
-                # special case: we substitute type vars bound to the class
-                # when assigned to the 'self' or 'cls' parameters of methods
-                _, arg_0_type = signature_original_items[0]
-                if (
-                    typing_inspect.is_generic_type(arg_0_type)
-                    and typing_inspect.get_origin(arg_0_type) is type
-                ):
-                    arg_0_type_args = typing_inspect.get_args(arg_0_type)
-                    if len(arg_0_type_args) == 1 and typing_inspect.is_typevar(
-                        arg_0_type_args[0]
-                    ):
-                        arg_0_type_var = arg_0_type_args[0]
-                        arg_0_substitute = bindings.current_class
-                    else:
-                        arg_0_type_var = None
-                else:
-                    arg_0_type_var = None
-
-            def _substitute(_tp: Union[Type, TypeVar]) -> type:
-                # recursively substitute type vars with their resolutions
-                if isinstance(_tp, TypeVar):
-                    if _tp == arg_0_type_var:
-                        # special case: substitute a type variable introduced by the
-                        # initial self/cls argument of a dynamic or class method
-                        return arg_0_substitute
-                    else:
-                        # resolve type variables defined by Generic[] in the
-                        # class hierarchy
-                        return bindings.resolve_parameter(defining_class, _tp)
-                else:
-                    # dynamically resolve type variables inside nested type expressions
-                    args = typing_inspect.get_args(_tp)
-                    if args:
-                        # noinspection PyUnresolvedReferences
-                        return _tp.copy_with(tuple(map(_substitute, args)))
-                    else:
-                        return _tp
-
-            for name, tp in signature_original_items:
-                signature[name] = _substitute(tp)
+        return signature_original
 
     def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
         """[see superclass]"""
