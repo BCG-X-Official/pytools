@@ -11,6 +11,7 @@ Release Notes
 
 ``pytools.data``
 ^^^^^^^^^^^^^^^^
+
 - API: new class :class:`.Matrix` allows :class:`.MatrixDrawer` to render flexible row
   and column widths, based on the :attr:`.Matrix.weights` property, and supports axis
   labels for the row, column, and weight axes
@@ -18,11 +19,14 @@ Release Notes
 
 ``pytools.expression``
 ^^^^^^^^^^^^^^^^^^^^^^
+
 - API: improved conversion of :mod:`numpy` arrays to :class:`.Expression` objects in
   function :func:`.make_expression`
+- API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
 
 ``pytools.parallelization``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 - API: method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
   objects instead of individual jobs as positional arguments
 - API: method :meth:`.JobRunner.run_queues` now expects a single iterable of
@@ -37,6 +41,7 @@ Release Notes
 
 ``pytools.viz``
 ^^^^^^^^^^^^^^^
+
 Additions and enhancements to dendrogram and matrix visualizations.
 
 - **Dendrograms:** major design overhaul
@@ -73,8 +78,6 @@ Additions and enhancements to dendrogram and matrix visualizations.
 
 - API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
   private method ``_get_style_kwargs()``
-
-- API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
 
 
 *pytools* 1.2
