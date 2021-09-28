@@ -206,24 +206,38 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         signature = func.__annotations__
         if signature:
 
-            # get the signature and convert it to a list of (name, type) tuples
+            # get the original signature and convert it to a list of (name, type) tuples
             signature_original_items = list(signature_original.items())
 
-            arg_0_type_var: Optional[Type] = None
-            arg_0_substitute: Optional[Type] = None
+            if not signature_original_items:
+                arg_0_type_var: Optional[Type] = None
+                arg_0_substitute: Optional[Type] = None
 
-            if (
-                method_type is METHOD_TYPE_CLASS or method_type is METHOD_TYPE_DYNAMIC
-            ) and signature_original_items:
+            elif method_type is METHOD_TYPE_DYNAMIC:
                 # special case: we substitute type vars bound to the class
                 # when assigned to the 'self' or 'cls' parameters of methods
                 _, arg_0_type_var = signature_original_items[0]
                 if typing_inspect.is_typevar(arg_0_type_var):
-                    arg_0_substitute = (
-                        defining_class
-                        if method_type is METHOD_TYPE_DYNAMIC
-                        else Type[defining_class]
-                    )
+                    arg_0_substitute = bindings.current_class
+                else:
+                    arg_0_type_var = None
+
+            elif method_type is METHOD_TYPE_CLASS:
+                # special case: we substitute type vars bound to the class
+                # when assigned to the 'self' or 'cls' parameters of methods
+                _, arg_0_type = signature_original_items[0]
+                if (
+                    typing_inspect.is_generic_type(arg_0_type)
+                    and typing_inspect.get_origin(arg_0_type) is type
+                ):
+                    arg_0_type_args = typing_inspect.get_args(arg_0_type)
+                    if len(arg_0_type_args) == 1 and typing_inspect.is_typevar(
+                        arg_0_type_args[0]
+                    ):
+                        arg_0_type_var = arg_0_type_args[0]
+                        arg_0_substitute = bindings.current_class
+                    else:
+                        arg_0_type_var = None
                 else:
                     arg_0_type_var = None
 
