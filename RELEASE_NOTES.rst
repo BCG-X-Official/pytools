@@ -16,7 +16,7 @@ Release Notes
 1.1.5
 ~~~~~
 
-- FIX: fixed a rare case where :meth:`.Expression.eq_` returned `False` for two
+- FIX: fixed a rare case where :meth:`.Expression.eq_` returned ``False`` for two
   equivalent expressions if one of them included an :class:`.ExpressionAlias`
 - FIX: accept any type of numerical values as leaf weights of :class:`.LinkageTree`
 
@@ -24,7 +24,7 @@ Release Notes
 1.1.4
 ~~~~~
 
-- BUILD: allow `joblib` 1.0.* in joblib package requirements
+- BUILD: add support for :mod:`joblib` 1.0.*
 
 
 1.1.3
