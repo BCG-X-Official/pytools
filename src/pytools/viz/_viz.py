@@ -187,9 +187,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": cast(ColoredStyle, style).dark()
+                f"{name}_dark": style.dark()
                 for name, style in named_styles.items()
-                if isinstance(style, type)
+                if isinstance(style, ColoredStyle)
             },
         }
 
