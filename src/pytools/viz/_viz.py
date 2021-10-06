@@ -95,9 +95,7 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @classmethod
-    def get_named_styles(
-        cls: Type[T_Style],
-    ) -> Dict[str, Union[Type[T_Style], Callable[..., T_Style]]]:
+    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Callable[..., T_Style]]:
         """
         Get a mapping of names to default instances of this style class.
 
@@ -167,7 +165,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or FacetLightColorScheme()
 
     @classmethod
-    def dark(cls: Type[T_Style]) -> Type[T_Style]:
+    def dark(cls: Type[T_Style]) -> Callable[..., T_Style]:
         """
         Create a dark variant of this drawing style class, using the default dark
         background color scheme :class:`.FacetDarkColorScheme`.
@@ -195,7 +193,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     @classmethod
     def get_named_styles(
         cls: Type[T_Style],
-    ) -> Dict[str, Union[Type[T_Style], Callable[..., T_Style]]]:
+    ) -> Dict[str, Callable[..., T_Style]]:
         """[see superclass]"""
         named_styles = super().get_named_styles()
         return {
@@ -246,7 +244,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
         """
 
-        def _get_style_factory(_style_name) -> Type[T_Style]:
+        def _get_style_factory(_style_name) -> Callable[..., T_Style]:
             # get the named style from the style dict
             try:
                 return self.get_named_styles()[_style_name]
@@ -268,7 +266,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     __init__.__doc__ = __init__.__doc__.replace("%DEFAULT%", DEFAULT_STYLE)
 
     @classmethod
-    def get_named_styles(cls) -> Dict[str, Type[T_Style]]:
+    def get_named_styles(cls) -> Dict[str, Callable[..., T_Style]]:
         """
         Get a mapping of names to style factories for all named styles recognized by
         this drawer's initializer.
