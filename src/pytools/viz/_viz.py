@@ -203,7 +203,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
             **{
                 f"{name}_dark": style.dark()
                 for name, style in named_styles.items()
-                if isinstance(style, ColoredStyle)
+                if issubclass(style, ColoredStyle)
             },
         }
 
