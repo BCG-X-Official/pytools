@@ -237,7 +237,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             and any(len(str(name)) > 1 for name in column_names)
         ):
             # rotate column labels if they are categorical and not all single-character
-            column_tick_params = dict(rotation=30, ha="right", rotation_mode="anchor")
+            column_tick_params = dict(rotation=45, ha="right", rotation_mode="anchor")
         else:
             column_tick_params: Dict[str, Any] = {}
 
