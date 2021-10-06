@@ -6,7 +6,18 @@ plain text.
 import logging
 from abc import ABCMeta, abstractmethod
 from multiprocessing import Lock
-from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from ..api import AllTracker, inheritdoc
 from .color import ColorScheme, FacetDarkColorScheme, FacetLightColorScheme
@@ -84,7 +95,9 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @classmethod
-    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Type[T_Style]]:
+    def get_named_styles(
+        cls: Type[T_Style],
+    ) -> Dict[str, Union[Type[T_Style], Callable[..., T_Style]]]:
         """
         Get a mapping of names to default instances of this style class.
 
@@ -180,7 +193,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return dark_style_class
 
     @classmethod
-    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Type[T_Style]]:
+    def get_named_styles(
+        cls: Type[T_Style],
+    ) -> Dict[str, Union[Type[T_Style], Callable[..., T_Style]]]:
         """[see superclass]"""
         named_styles = super().get_named_styles()
         return {
