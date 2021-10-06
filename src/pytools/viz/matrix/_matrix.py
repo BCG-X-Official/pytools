@@ -368,9 +368,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             colorbar_major_formatter=PercentageFormatter(),
             colorbar_minor_formatter=None,
             cell_format=lambda x: (
-                f"{np.round(x * 100, 1):.2g}"
-                if abs(x) < 0.1
-                else f"{np.round(x * 100):.0f}"
+                f"{x * 100:.1f}" if abs(x) < 0.0995 else f"{x * 100:.0f}"
             ),
         )
 
