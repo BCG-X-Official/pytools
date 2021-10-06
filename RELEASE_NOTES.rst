@@ -4,7 +4,7 @@ Release Notes
 *pytools* 2.0
 -------------
 
-*pytools* 2 brings enhanced visualizations, and API improvements.
+*pytools* 2 brings enhanced visualizations and API improvements.
 
 2.0.0
 ~~~~~
