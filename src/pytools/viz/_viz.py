@@ -26,7 +26,6 @@ __all__ = ["DrawingStyle", "ColoredStyle", "Drawer"]
 T = TypeVar("T")
 T_Model = TypeVar("T_Model")
 T_Style = TypeVar("T_Style", bound="DrawingStyle")
-T_Style_Class = TypeVar("T_Style_Class", bound=Type["DrawingStyle"])
 T_ColorScheme = TypeVar("T_ColorScheme", bound=ColorScheme)
 
 
@@ -85,7 +84,7 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @classmethod
-    def get_named_styles(cls: T_Style_Class) -> Dict[str, T_Style_Class]:
+    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Type[T_Style]]:
         """
         Get a mapping of names to default instances of this style class.
 
@@ -155,7 +154,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or FacetLightColorScheme()
 
     @classmethod
-    def dark(cls: T_Style_Class) -> T_Style_Class:
+    def dark(cls: Type[T_Style]) -> Type[T_Style]:
         """
         Create a dark variant of this drawing style class, using the default dark
         background color scheme :class:`.FacetDarkColorScheme`.
@@ -175,13 +174,13 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
                 super().__init__(colors=FacetDarkColorScheme())
 
         dark_style_class = cast(
-            T_Style_Class, type(f"Dark{cls.__name__}", (cls, DarkStyle), {})
+            Type[T_Style], type(f"Dark{cls.__name__}", (cls, DarkStyle), {})
         )
         dark_style_class.__module__ = cls.__module__
         return dark_style_class
 
     @classmethod
-    def get_named_styles(cls: T_Style_Class) -> Dict[str, T_Style_Class]:
+    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Type[T_Style]]:
         """[see superclass]"""
         named_styles = super().get_named_styles()
         return {
