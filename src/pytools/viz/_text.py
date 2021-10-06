@@ -67,7 +67,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
-        Write the title to :attr:`.out`.
+        Write the title to :attr:`out`.
 
         :param title: the title of the drawing
         :param kwargs: additional drawer-specific arguments
