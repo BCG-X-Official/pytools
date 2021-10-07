@@ -165,30 +165,16 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or FacetLightColorScheme()
 
     @classmethod
-    def dark(cls: Type[T_Style]) -> Callable[..., T_Style]:
+    def dark(cls: Type[T_Style], *args, **kwargs) -> T_Style:
         """
         Create a dark variant of this drawing style class, using the default dark
         background color scheme :class:`.FacetDarkColorScheme`.
 
-        :return: the dark drawing style class
+        :return: the dark drawing style
         """
-
-        class DarkStyle(ColoredStyle, metaclass=ABCMeta):
-            """
-            The dark variant of a :class:`.ColoredStyle`, using the
-            :class:`.FacetDarkColorScheme`.
-            """
-
-            def __init__(self, *, colors: Optional[ColorScheme] = None) -> None:
-                if colors:
-                    raise ValueError("arg colors of dark style must be None")
-                super().__init__(colors=FacetDarkColorScheme())
-
-        dark_style_class = cast(
-            Type[T_Style], type(f"Dark{cls.__name__}", (cls, DarkStyle), {})
-        )
-        dark_style_class.__module__ = cls.__module__
-        return dark_style_class
+        if "colors" in kwargs:
+            raise TypeError("arg colors cannot be specified for dark styles")
+        return cls(*args, colors=FacetDarkColorScheme(), **kwargs)
 
     @classmethod
     def get_named_styles(
@@ -199,9 +185,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": style.dark()
+                f"{name}_dark": cast(ColoredStyle, style).dark
                 for name, style in named_styles.items()
-                if issubclass(style, ColoredStyle)
+                if isinstance(style, type)
             },
         }
 
