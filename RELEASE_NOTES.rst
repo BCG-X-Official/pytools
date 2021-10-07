@@ -90,7 +90,8 @@ This release enhances support for generating Sphinx documentation, and catches u
 *pytools* 1.1.6.
 
 - API: add sphinx processor :class:`.ResolveGenericClassParameters`
-  to resolve generic type parameters in subclasses
+  to substitute generic type parameters introduced by base classes or via the
+  ``self`` and ``cls`` special method arguments
 - API: add sphinx processor :class:`.AutodocProcessBases` to handle
   `autodoc-process-bases` events (introduced in Sphinx 4.1)
 - API: function :func:`.validate_type` now accepts multiple alternative types to
@@ -128,11 +129,13 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.1.6
 ~~~~~
 
+- VIZ: set colors of axis labels to the foreground color of the current color scheme
 - FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
 - FIX: calling method ``get_class_id`` of class :class:`.Id` could cause a
   :class:`.TypeError`
-- VIZ: set colors of axis labels to the foreground color of the current color scheme
+- FIX: :class:`.Replace3rdPartyDoc` sphinx callback now substitutes 3rd-party docstrings
+  also for :class:`.property` definitions
 
 
 1.1.5
