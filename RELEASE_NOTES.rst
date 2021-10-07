@@ -40,8 +40,8 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
   :func:`.to_collection`, and :func:`.validate_element_types` now accept multiple
   alternative types to validate elements against, in line with how :func:`isinstance`
   tests for multiple types
-- BUILD: add support for `matplotlib >= 3.4`, `scipy >= 1.6`,
-  and `typing-inspect == 0.7`
+- BUILD: add support for :mod:`matplotlib` ~= 3.0, :mod:`scipy` ~= 1.6,
+  and `typing-inspect <https://github.com/ilevkivskyi/typing_inspect>`__ ~= 0.7
 
 
 *pytools* 1.1
@@ -59,7 +59,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.1.5
 ~~~~~
 
-- FIX: fixed a rare case where :meth:`.Expression.eq_` returned `False` for two
+- FIX: fixed a rare case where :meth:`.Expression.eq_` returned ``False`` for two
   equivalent expressions if one of them included an :class:`.ExpressionAlias`
 - FIX: accept any type of numerical values as leaf weights of :class:`.LinkageTree`
 
@@ -67,7 +67,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.1.4
 ~~~~~
 
-- BUILD: allow `joblib` 1.0.* in joblib package requirements
+- BUILD: add support for :mod:`joblib` 1.0.*
 
 
 1.1.3
@@ -126,7 +126,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.0.4
 ~~~~~
 
-- FIX: do not substitute `~=` by `~==` when adapting version syntax for tox
+- FIX: do not substitute ``~=`` by ``~==`` when adapting version syntax for tox
 
 
 1.0.3
@@ -135,13 +135,13 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
 minor fixes.
 
-- BUILD: add the `bcg_gamma` conda channel when building
+- BUILD: add the ``bcg_gamma`` conda channel when building
 - BUILD: Enforce pre-release for minor and major releases
 - DOC: add pre-commit hook instructions to contribution guide
-- BUILD: update flake8 to v3.9.0
+- BUILD: update *flake8* to 3.9.0
 - BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
   of package versions)
-- FIX: version syntax adaptation with mixed `=` and `>=`
+- FIX: version syntax adaptation with mixed ``=`` and ``>=``
 
 
 1.0.2
@@ -155,7 +155,7 @@ minor fixes.
   :class:`~matplotlib.axes.Axes` object
 - FIX: preserve correct instance for subclasses of singleton classes
 - FIX: add a few missing type hints
-- BUILD: add support for numpy 1.20
+- BUILD: add support for :mod:`numpy` 1.20
 - BUILD: updates and changes to the CI/CD pipeline
 
 
