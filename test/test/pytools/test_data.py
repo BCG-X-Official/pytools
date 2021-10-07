@@ -106,7 +106,9 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(1, None) == Matrix(
+    assert m.resize(None) == m
+
+    assert m.resize((1, None)) == Matrix(
         np.array([[5, 6, 7, 8, 9]]),
         names=(["B"], list("abcde")),
         weights=([4], [1, 5, 4, 1, 5]),
@@ -115,7 +117,7 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(None, 1) == Matrix(
+    assert m.resize((None, 1)) == Matrix(
         np.array([[1], [6], [11], [16]]),
         names=(list("ABCD"), ["b"]),
         weights=([2, 4, 2, 4], [5]),
@@ -124,7 +126,7 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(1, 1) == Matrix(
+    assert m.resize((1, 1)) == Matrix(
         np.array([[6]]),
         names=(["B"], ["b"]),
         weights=([4], [5]),
@@ -133,7 +135,16 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(3, 4) == Matrix(
+    assert m.resize(1) == Matrix(
+        np.array([[6]]),
+        names=(["B"], ["b"]),
+        weights=([4], [5]),
+        value_label="value",
+        name_labels=("row", "column"),
+        weight_label="weight",
+    )
+
+    assert m.resize((3, 4)) == Matrix(
         np.array([[0, 1, 2, 4], [5, 6, 7, 9], [15, 16, 17, 19]]),
         names=(list("ABD"), list("abce")),
         weights=([2, 4, 4], [1, 5, 4, 5]),
@@ -142,7 +153,7 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(0.8, 0.0001) == Matrix(
+    assert m.resize((0.8, 0.0001)) == Matrix(
         values=np.array([[1], [6], [16]]),
         names=(list("ABD"), ["b"]),
         weights=([2, 4, 4], [5]),
@@ -151,26 +162,50 @@ def test_matrix_resize() -> None:
         weight_label="weight",
     )
 
-    assert m.resize(4, 5) == m
+    assert m.resize((4, 5)) == m
 
-    assert m.resize(3, 3) != m
-
-    with pytest.raises(
-        ValueError,
-        match="arg rows=5 must not be greater than the current number of rows",
-    ):
-        m.resize(5, 5)
+    assert m.resize((3, 3)) != m
 
     with pytest.raises(
         ValueError,
-        match="arg columns=6 must not be greater than the current number of rows",
+        match=r"arg size=\(1, 2, 3\) must be a number or a pair of numbers",
     ):
-        m.resize(4, 6)
-
-    with pytest.raises(ValueError, match="arg rows=-4 must not be negative"):
-        m.resize(-4, 5)
+        # noinspection PyTypeChecker
+        m.resize((1, 2, 3))
 
     with pytest.raises(
-        ValueError, match="arg columns=1.5 must not be greater than 1.0"
+        ValueError,
+        match=r"arg size=\(1, '5'\) must be a number or a pair of numbers",
     ):
-        m.resize(None, 1.5)
+        # noinspection PyTypeChecker
+        m.resize((1, "5"))
+
+    with pytest.raises(
+        ValueError,
+        match=r"arg size='5' must be a number or a pair of numbers",
+    ):
+        # noinspection PyTypeChecker
+        m.resize("5")
+
+    with pytest.raises(
+        ValueError,
+        match="row size must not be greater than the current number of rows, but is 5",
+    ):
+        m.resize(5)
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "column size must not be greater than the current number of rows, "
+            "but is 6"
+        ),
+    ):
+        m.resize((4, 6))
+
+    with pytest.raises(ValueError, match="row size must not be negative, but is -4"):
+        m.resize((-4, 5))
+
+    with pytest.raises(
+        ValueError, match="column size must not be greater than 1.0, but is 1.5"
+    ):
+        m.resize((None, 1.5))

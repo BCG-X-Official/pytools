@@ -222,7 +222,10 @@ class Matrix(HasExpressionRepr):
         return pd.DataFrame(self.values, index=self.names[0], columns=self.names[1])
 
     def resize(
-        self, rows: Union[int, float, None], columns: Union[int, float, None]
+        self,
+        size: Union[
+            int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
+        ],
     ) -> "Matrix":
         r"""
         Create a version of this matrix with fewer rows and/or columns.
@@ -231,7 +234,7 @@ class Matrix(HasExpressionRepr):
         rows and leftmost columns in case multiple rows and columns have the same weight
         and cannot all be included in the resulting, smaller matrix.
 
-        A target size can be stated separately for rows and columns:
+        A target size can be stated jointly or separately for rows and columns:
 
         - as a positive integer, indicating absolute target size (row or column count),
           not exceeding the original size
@@ -239,13 +242,20 @@ class Matrix(HasExpressionRepr):
           where :math:`0 < \mathit{ratio} \le 1`
         - as ``None``, preserving the original size
 
-        :param rows: the rows target size
-        :param columns: the columns target size
+        :param size: the row and column target size as a scalar, or individual row and
+            column target sizes as a tuple (passing ``None`` to keep the current size)
         :return: a resized version of this matrix
         """
 
-        if rows is None and columns is None:
+        if size is None:
             return self
+
+        if isinstance(size, tuple) and len(size) == 2 and all(map(np.isreal, size)):
+            rows, columns = size
+        elif np.isscalar(size) and np.isreal(size):
+            rows = columns = size
+        else:
+            raise ValueError(f"arg size={size!r} must be a number or a pair of numbers")
 
         n_rows_current, n_columns_current = self.values.shape
         weights_rows, weights_columns = self.weights
@@ -259,7 +269,7 @@ class Matrix(HasExpressionRepr):
                 weights=weights_rows,
                 names=names_rows,
                 current_size=n_rows_current,
-                target_size=_validate_resize_arg(rows, n_rows_current, "rows"),
+                target_size=_validate_resize_arg(rows, n_rows_current, "row"),
             )
 
         if columns:
@@ -268,7 +278,7 @@ class Matrix(HasExpressionRepr):
                 weights=weights_columns,
                 names=names_columns,
                 current_size=n_columns_current,
-                target_size=_validate_resize_arg(columns, n_columns_current, "columns"),
+                target_size=_validate_resize_arg(columns, n_columns_current, "column"),
             )
             values = values_t.T
 
@@ -301,29 +311,31 @@ class Matrix(HasExpressionRepr):
 
 
 def _validate_resize_arg(
-    size_new: Union[int, float, None], size_current: int, arg_name: str
+    size_new: Union[int, float, None], size_current: int, axis_name: str
 ) -> Tuple[Optional[int], Optional[float]]:
+    def _message(error: str) -> str:
+        return f"{axis_name} size {error}, but is {size_new!r}"
+
     if size_new is None:
         return (None, None)
 
     if isinstance(size_new, int):
         if size_new > size_current:
             raise ValueError(
-                f"arg {arg_name}={size_new} "
-                "must not be greater than the current number of rows"
+                _message("must not be greater than the current number of rows")
             )
         result = (size_new, None)
 
     elif isinstance(size_new, float):
         if size_new > 1.0:
-            raise ValueError(f"arg {arg_name}={size_new} must not be greater than 1.0")
+            raise ValueError(_message("must not be greater than 1.0"))
         result = (None, size_new)
 
     else:
-        raise TypeError(f"arg {arg_name}={size_new!r} must be a number")
+        raise TypeError(_message("must be an int or float"))
 
     if size_new <= 0:
-        raise ValueError(f"arg {arg_name}={size_new} must not be negative")
+        raise ValueError(_message("must not be negative"))
 
     return result
 
