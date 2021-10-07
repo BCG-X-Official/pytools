@@ -765,6 +765,7 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
         "function": "func",
         "method": "meth",
         "attribute": "attr",
+        "property": "attr",
     }
 
     def process(
@@ -781,11 +782,22 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
         if what == "attribute":
             # we cannot determine docstrings for attributes, as the object represents
             # the value of the attribute, and not the attribute itself
-            return
+            mod_obj_attr = name.rsplit(".", 2)
+            if len(mod_obj_attr) == 3:
+                mod_name, obj_name, attr_name = mod_obj_attr
+                mod = importlib.import_module(mod_name)
+                obj = getattr(mod, obj_name)
+            else:
+                log.debug(f"could not determine module for {name}")
+                return
+
+        if what == "property":
+            obj = cast(property, obj).fget
 
         try:
             obj_module = obj.__module__
         except AttributeError:
+            log.debug(f"could not determine module for {name}")
             return
 
         name_root_package = self.__root_package(name)
