@@ -50,10 +50,12 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.1.6
 ~~~~~
 
+- VIZ: set colors of axis labels to the foreground color of the current color scheme
 - FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
 - FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
-- VIZ: set colors of axis labels to the foreground color of the current color scheme
+- FIX: :class:`.Replace3rdPartyDoc` sphinx callback now substitutes 3rd-party docstrings
+  also for :class:`.property` definitions
 
 
 1.1.5
