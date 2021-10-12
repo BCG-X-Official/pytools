@@ -302,8 +302,8 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     def get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
-        style's :meth:`~DrawingStyle.start_drawing` and
-        :meth:`~DrawingStyle.finalize_drawing` methods.
+        style's :meth:`~.DrawingStyle.start_drawing` and
+        :meth:`~.DrawingStyle.finalize_drawing` methods.
 
         :param data: the data to be rendered
         :returns: the style attributes for the given data object
