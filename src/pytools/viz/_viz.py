@@ -16,11 +16,10 @@ from typing import (
     Type,
     TypeVar,
     Union,
-    cast,
 )
 
 from ..api import AllTracker, inheritdoc
-from .color import ColorScheme, FacetDarkColorScheme, FacetLightColorScheme
+from .color import ColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -159,22 +158,14 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     def __init__(self, *, colors: Optional[T_ColorScheme] = None) -> None:
         """
         :param colors: the color scheme to be used by this drawing style
-            (default: :class:`.FacetLightColorScheme`)
+            (default: :class:`.%%COLORS_DEFAULT%%`)
         """
         super().__init__()
-        self._colors = colors or FacetLightColorScheme()
+        self._colors = colors or ColorScheme.DEFAULT
 
-    @classmethod
-    def dark(cls: Type[T_Style], *args, **kwargs) -> T_Style:
-        """
-        Create a dark variant of this drawing style class, using the default dark
-        background color scheme :class:`.FacetDarkColorScheme`.
-
-        :return: the dark drawing style
-        """
-        if "colors" in kwargs:
-            raise TypeError("arg colors cannot be specified for dark styles")
-        return cls(*args, colors=FacetDarkColorScheme(), **kwargs)
+    __init__.__doc__ = __init__.__doc__.replace(
+        "%%COLORS_DEFAULT%%", type(ColorScheme.DEFAULT).__name__
+    )
 
     @classmethod
     def get_named_styles(
@@ -185,7 +176,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": cast(ColoredStyle, style).dark
+                f"{name}_dark": lambda: style(colors=ColorScheme.DEFAULT_DARK)
                 for name, style in named_styles.items()
                 if isinstance(style, type)
             },

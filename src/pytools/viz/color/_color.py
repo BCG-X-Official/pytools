@@ -106,6 +106,15 @@ class ColorScheme(HasExpressionRepr):
     allowing code to refer to colors by usage rather than specific RGB values.
     """
 
+    #: The default color scheme.
+    DEFAULT: "ColorScheme"
+
+    #: The default light color scheme.
+    DEFAULT_LIGHT: "FacetLightColorScheme"
+
+    #: The default dark color scheme.
+    DEFAULT_DARK: "FacetDarkColorScheme"
+
     def __init__(
         self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
     ) -> None:
@@ -397,6 +406,11 @@ class FacetDarkColorScheme(
     def __init__(self) -> None:
         super().__init__(foreground=_RGB_WHITE, background=_RGB_BLACK)
 
+
+# set the default color schemes
+ColorScheme.DEFAULT_LIGHT = FacetLightColorScheme()
+ColorScheme.DEFAULT_DARK = FacetDarkColorScheme()
+ColorScheme.DEFAULT = ColorScheme.DEFAULT_LIGHT
 
 # check consistency of __all__
 
