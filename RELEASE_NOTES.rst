@@ -78,6 +78,8 @@ Additions and enhancements to dendrogram and matrix visualizations.
 
 - API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
   private method ``_get_style_kwargs()``
+- API: implement :class:`.RgbColor` and :class:`.RgbaColor` as classes instead of
+  type aliases
 
 
 *pytools* 1.2

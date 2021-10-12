@@ -1,13 +1,15 @@
 """
-Core implementation of :mod:`pytools.viz.colors`
+Core implementation of :mod:`pytools.viz.color`
 """
+from __future__ import annotations
 
 import logging
-from typing import Set, Tuple, TypeVar, Union
+from typing import Set, TypeVar, Union
 
 from matplotlib import cm
-from matplotlib.colors import Colormap, LinearSegmentedColormap, to_rgb
+from matplotlib.colors import Colormap, LinearSegmentedColormap
 
+from ._rgb import RgbaColor, RgbColor
 from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
 from pytools.expression import Expression, HasExpressionRepr
 from pytools.expression.atomic import Id
@@ -31,7 +33,7 @@ __all__ = [
 #
 
 # noinspection PyTypeChecker
-T_Color = TypeVar("T_Color", "ColorScheme.RgbColor", "ColorScheme.RgbaColor")
+T_Color = TypeVar("T_Color", RgbColor, RgbaColor)
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -45,40 +47,40 @@ __tracker = AllTracker(globals())
 #
 
 #: Black.
-_RGB_BLACK: "ColorScheme.RgbColor" = to_rgb("black")
+_RGB_BLACK = RgbColor("black")
 
 #: White.
-_RGB_WHITE: "ColorScheme.RgbColor" = to_rgb("white")
+_RGB_WHITE = RgbColor("white")
 
 #: FACET light grey.
-_RGB_LIGHT_GREY: "ColorScheme.RgbColor" = to_rgb("#c8c8c8")
+_RGB_LIGHT_GREY = RgbColor("#c8c8c8")
 
 #: FACET grey.
-_RGB_GREY: "ColorScheme.RgbColor" = to_rgb("#9a9a9a")
+_RGB_GREY = RgbColor("#9a9a9a")
 
 #: FACET dark grey.
-_RGB_DARK_GREY: "ColorScheme.RgbColor" = to_rgb("#3d3a40")
+_RGB_DARK_GREY = RgbColor("#3d3a40")
 
 #: FACET dark blue.
-_RGB_DARK_BLUE: "ColorScheme.RgbColor" = to_rgb("#295e7e")
+_RGB_DARK_BLUE = RgbColor("#295e7e")
 
 #: FACET blue.
-_RGB_LIGHT_BLUE: "ColorScheme.RgbColor" = to_rgb("#30c1d7")
+_RGB_LIGHT_BLUE = RgbColor("#30c1d7")
 
 #: FACET green.
-_RGB_LIGHT_GREEN: "ColorScheme.RgbColor" = to_rgb("#43fda2")
+_RGB_LIGHT_GREEN = RgbColor("#43fda2")
 
 #: FACET status green.
-_RGB_GREEN: "ColorScheme.RgbColor" = to_rgb("#3ead92")
+_RGB_GREEN = RgbColor("#3ead92")
 
 #: FACET status amber.
-_RGB_AMBER: "ColorScheme.RgbColor" = to_rgb("#a8b21c")
+_RGB_AMBER = RgbColor("#a8b21c")
 
 #: FACET status red.
-_RGB_RED: "ColorScheme.RgbColor" = to_rgb("#e61c57")
+_RGB_RED = RgbColor("#e61c57")
 
 #: FACET dark red.
-_RGB_DARK_RED: "ColorScheme.RgbColor" = to_rgb("#c41310")
+_RGB_DARK_RED = RgbColor("#c41310")
 
 #: Standard colormap for FACET.
 _COLORMAP_FACET = LinearSegmentedColormap.from_list(
@@ -103,12 +105,6 @@ class ColorScheme(HasExpressionRepr):
     A color scheme mapping semantic color designations to RGB colors,
     allowing code to refer to colors by usage rather than specific RGB values.
     """
-
-    #: RGB color type for use in color schemas and colored drawing styles.
-    RgbColor = Tuple[float, float, float]
-
-    #: RGB + Alpha color type for use in color schemas and colored drawing styles.
-    RgbaColor = Tuple[float, float, float, float]
 
     def __init__(
         self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
@@ -252,7 +248,7 @@ class ColorScheme(HasExpressionRepr):
 
         # find the color that maximises contrast
         fill_luminance = _luminance(fill_color)
-        contrast_color: ColorScheme.RgbColor = (
+        contrast_color: RgbColor = (
             self.foreground
             if (
                 abs(_luminance(self.foreground) - fill_luminance)
@@ -312,8 +308,6 @@ class MatplotColorScheme(ColorScheme):
     A color scheme for use with `matplotlib`, based on *semantic* color designations
     and a default color bar, preventing code from referring to colors.
 
-    Supports `matplot` standard colors codified as strings.
-
     For an overview of matplotlib's named color maps, see
     `here <https://matplotlib.org/tutorials/colors/colormaps.html>`_.
     """
@@ -322,19 +316,16 @@ class MatplotColorScheme(ColorScheme):
 
     def __init__(
         self,
-        foreground: Union[ColorScheme.RgbColor, str],
-        background: Union[ColorScheme.RgbColor, str],
+        foreground: RgbColor,
+        background: RgbColor,
         colormap: Union[Colormap, str],
-        **colors: Union[ColorScheme.RgbColor, str],
+        **colors: RgbColor,
     ) -> None:
         """
-        :param colormap: the colormap for this style
+        :param colormap: the colormap for this style (see `Colormap reference
+            <https://matplotlib.org/stable/gallery/color/colormap_reference.html>`__)
         """
-        super().__init__(
-            foreground=to_rgb(foreground),
-            background=to_rgb(background),
-            **{key: to_rgb(color) for key, color in colors.items()},
-        )
+        super().__init__(foreground=foreground, background=background, **colors)
 
         if isinstance(colormap, Colormap):
             self._colormap = colormap
@@ -343,11 +334,10 @@ class MatplotColorScheme(ColorScheme):
         else:
             raise ValueError("arg colormap must be a Colormap or a string")
 
-    __init__.__doc__ = (
-        "\n".join(ColorScheme.__init__.__doc__.split("\n")[:-2])
-        + __init__.__doc__
-        + ColorScheme.__init__.__doc__.split("\n")[-2]
-    )
+    __doc_lines = ColorScheme.__init__.__doc__.split("\n")
+    __doc_lines.insert(-2, __init__.__doc__[1:])
+    __init__.__doc__ = "\n".join(__doc_lines)
+    del __doc_lines
 
     @property
     def colormap(self) -> Colormap:
@@ -363,9 +353,7 @@ class MatplotColorScheme(ColorScheme):
 
 @inheritdoc(match="[see superclass]")
 class _FacetColorScheme(MatplotColorScheme):
-    def __init__(
-        self, foreground: ColorScheme.RgbColor, background: ColorScheme.RgbColor
-    ) -> None:
+    def __init__(self, foreground: RgbColor, background: RgbColor) -> None:
         super().__init__(
             foreground=foreground,
             background=background,

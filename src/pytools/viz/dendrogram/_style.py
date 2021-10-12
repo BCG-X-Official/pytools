@@ -12,7 +12,7 @@ from matplotlib.colors import LogNorm
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
 from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
-from ..color import ColorScheme
+from ..color import ColorScheme, RgbaColor
 from ..util import FittedText, PercentageFormatter
 from .base import DendrogramStyle
 
@@ -222,7 +222,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         y: float,
         w: float,
         h: float,
-        fill_color: ColorScheme.RgbaColor,
+        fill_color: RgbaColor,
     ) -> None:
         """
         Plot a weight label for a link leg.

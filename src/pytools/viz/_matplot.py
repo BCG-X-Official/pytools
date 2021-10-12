@@ -19,7 +19,7 @@ from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker, inheritdoc, to_list
 from ._viz import ColoredStyle
-from .color import ColorScheme, MatplotColorScheme
+from .color import MatplotColorScheme, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -259,15 +259,20 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     def color_for_value(
         self, z: Union[int, float, np.ndarray]
-    ) -> Union[ColorScheme.RgbaColor, np.ndarray]:
+    ) -> Union[RgbaColor, np.ndarray]:
         """
-        Get the color associated with the given value(s), based on the color map and
+        Get the color(s) associated with the given value(s), based on the color map and
         normalization defined for this style.
 
         :param z: the scalar to be color-encoded
-        :return: the resulting color as a RGBA tuple
+        :return: the resulting color for a single value as an RGBA tuple,
+            or an array of shape `(n, 4)` if called with `n` values
         """
-        return self.colors.colormap(self.colormap_normalize(z))
+        colors = self.colors.colormap(self.colormap_normalize(z))
+        if isinstance(colors, np.ndarray):
+            return colors
+        else:
+            return RgbaColor(*colors)
 
     def start_drawing(
         self,
