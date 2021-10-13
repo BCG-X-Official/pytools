@@ -40,7 +40,7 @@ class C(B[str, T]):
     condition=sys.version_info[:2] < (3, 7), reason="test not supported in Python 3.6"
 )
 def test_resolve_generic_class_parameters() -> None:
-    from pytools.sphinx import ResolveGenericClassParameters
+    from pytools.sphinx.util import ResolveGenericClassParameters
 
     resolve_generic_class_parameters = ResolveGenericClassParameters()
 

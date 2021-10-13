@@ -8,8 +8,8 @@ from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union, get_type_hi
 
 import typing_inspect
 
-from ._sphinx import AutodocBeforeProcessSignature
-from pytools.api import AllTracker, get_generic_bases, inheritdoc
+from ...api import AllTracker, get_generic_bases, inheritdoc
+from .. import AutodocBeforeProcessSignature
 
 log = logging.getLogger(__name__)
 
@@ -319,8 +319,7 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
 
 
 #
-# helper functions
+# validate __all__
 #
-
 
 __tracker.validate()

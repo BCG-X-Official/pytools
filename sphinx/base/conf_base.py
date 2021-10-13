@@ -20,8 +20,6 @@ from typing import Any, Dict, Iterable, Optional
 
 from sphinx.application import Sphinx
 
-from pytools.sphinx import Replace3rdPartyDoc, ResolveGenericClassParameters
-
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
@@ -74,6 +72,7 @@ _log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
+# noinspection PyShadowingBuiltins
 copyright = "2021, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
@@ -205,10 +204,13 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
-    from pytools.sphinx import (
+    from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
         CollapseModulePathsInSignature,
+        CollapseModulePathsInXRef,
+        Replace3rdPartyDoc,
+        ResolveGenericClassParameters,
         SkipIndirectImports,
     )
 
@@ -229,6 +231,10 @@ def setup(app: Sphinx) -> None:
     Replace3rdPartyDoc().connect(app=app)
 
     ResolveGenericClassParameters().connect(app=app)
+
+    CollapseModulePathsInXRef(
+        collapsible_submodules=intersphinx_collapsible_submodules
+    ).connect(app)
 
     _add_custom_css_and_js(app=app)
 
