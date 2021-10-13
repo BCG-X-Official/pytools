@@ -210,7 +210,7 @@ def setup(app: Sphinx) -> None:
         CollapseModulePathsInSignature,
         CollapseModulePathsInXRef,
         Replace3rdPartyDoc,
-        ResolveGenericClassParameters,
+        ResolveTypeVariables,
         SkipIndirectImports,
     )
 
@@ -230,7 +230,7 @@ def setup(app: Sphinx) -> None:
 
     Replace3rdPartyDoc().connect(app=app)
 
-    ResolveGenericClassParameters().connect(app=app)
+    ResolveTypeVariables().connect(app=app)
 
     CollapseModulePathsInXRef(
         collapsible_submodules=intersphinx_collapsible_submodules

@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["ResolveGenericClassParameters"]
+__all__ = ["ResolveTypeVariables"]
 
 
 #: Mock type declaration: Sphinx application object
@@ -120,7 +120,7 @@ class _TypeVarBindings:
 
 
 @inheritdoc(match="""[see superclass]""")
-class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
+class ResolveTypeVariables(AutodocBeforeProcessSignature):
     """
     Resolve type variables that can be inferred through generic class parameters or
     ``self``/``cls`` special arguments.
