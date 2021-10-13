@@ -839,7 +839,9 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             obj = cast(property, obj).fget
 
         try:
-            obj_module = obj.__module__
+            # if the object has an __objclass__ attribute, use that to determine the
+            # module
+            obj_module = getattr(obj, "__objclass__", obj).__module__
         except AttributeError:
             log.debug(f"could not determine module for {name}")
             return
@@ -851,10 +853,14 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             # replace 3rd party docstring with cross-reference
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
-            public_module = public_module_prefix(obj_module) if obj_module else ""
+
+            if not obj_module or obj_module == "builtins":
+                full_name = obj.__qualname__
+            else:
+                full_name = f"{public_module_prefix(obj_module)}.{obj.__qualname__}"
 
             del lines[:]
-            lines.append(f"See :{directive}:`{public_module}.{obj.__qualname__}`")
+            lines.append(f"See :{directive}:`{full_name}`")
 
     @staticmethod
     def __root_package(name: str) -> str:
