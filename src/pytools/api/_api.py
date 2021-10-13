@@ -16,7 +16,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Mapping,
     Optional,
     Set,
     Tuple,
@@ -797,7 +796,7 @@ def subsdoc(*, pattern: str, replacement: str) -> Callable[[T], T]:
 
 
 def update_forward_references(
-    obj: Union[type, FunctionType], *, globals_: Mapping[str, Any]
+    obj: Union[type, FunctionType], *, globals_: Dict[str, Any]
 ) -> None:
     """
     Replace all forward references with their referenced classes.
@@ -808,7 +807,7 @@ def update_forward_references(
 
     def _parse_cls_with_generic_arguments(cls: str) -> type:
         def _parse(cls_tokens: Deque[str]) -> type:
-            real_cls = globals_[cls_tokens.popleft()]
+            real_cls = eval(cls_tokens.popleft(), globals_)
             if cls_tokens and cls_tokens[0] not in ",]":
                 real_args: List[type] = list()
                 sep = cls_tokens.popleft()
@@ -825,7 +824,7 @@ def update_forward_references(
                         raise TypeError(
                             f"invalid separator for generic type arguments: {sep}"
                         )
-                return real_cls.__class_getitem__(tuple(real_args))
+                return real_cls.__getitem__(tuple(real_args))
             else:
                 return real_cls
 
