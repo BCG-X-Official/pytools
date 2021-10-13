@@ -842,12 +842,16 @@ def update_forward_references(
                 visited.add(_obj)
                 for member in vars(_obj).values():
                     _update(member)
+                _update_annotations(getattr(_obj, "__annotations__", None))
+
         elif isinstance(_obj, FunctionType):
-            annotations = _obj.__annotations__
-            if annotations:
-                for arg, cls in annotations.items():
-                    if isinstance(cls, str):
-                        annotations[arg] = _parse_cls_with_generic_arguments(cls)
+            _update_annotations(_obj.__annotations__)
+
+    def _update_annotations(annotations: Optional[Dict[str, Any]]):
+        if annotations:
+            for arg, cls in annotations.items():
+                if isinstance(cls, str):
+                    annotations[arg] = _parse_cls_with_generic_arguments(cls)
 
     _update(obj)
 
