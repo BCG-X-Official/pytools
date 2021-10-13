@@ -143,10 +143,10 @@ class AllTracker:
         except KeyError:
             raise ValueError("arg globals_ does not define module name in __name__")
 
-        if public_module:
-            self.public_module = public_module
-        else:
-            self.public_module = public_module_prefix(module)
+        if not public_module:
+            public_module = public_module_prefix(module)
+
+        self.public_module = globals_["__publicmodule__"] = public_module
 
         self.update_forward_references = update_forward_references
         self.allow_global_constants = allow_global_constants
