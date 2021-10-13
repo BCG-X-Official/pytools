@@ -52,6 +52,7 @@ __all__ = [
     "CollapseModulePaths",
     "CollapseModulePathsInDocstring",
     "CollapseModulePathsInSignature",
+    "ObjectDescriptionTransform",
     "Replace3rdPartyDoc",
     "SkipIndirectImports",
     "SphinxCallback",
@@ -113,6 +114,54 @@ class SphinxCallback(metaclass=ABCMeta):
             return app.connect(event=self.event, callback=self)
         else:
             return app.connect(event=self.event, callback=self, priority=priority)
+
+
+# noinspection SpellCheckingInspection
+class ObjectDescriptionTransform(SphinxCallback, metaclass=ABCMeta):
+    """
+    Callback for low-level processing of objects in the document tree being built by
+    Sphinx.
+    """
+
+    @property
+    def event(self) -> str:
+        """
+        ``"object-description-transform"``
+        """
+        return "object-description-transform"
+
+    @abstractmethod
+    def process(
+        self,
+        app: Sphinx,
+        domain: str,
+        objtype: str,
+        contentnode: Any,
+    ) -> None:
+        """
+        Process content of objects after their object description directive has run.
+
+        :param app: the Sphinx application object
+        :param domain: domain of the object description
+        :param objtype: type of the object description
+        :param contentnode: content for the object; can be modified in-place
+        """
+        pass
+
+    def __call__(
+        self,
+        app: Sphinx,
+        domain: str,
+        objtype: str,
+        contentnode: Any,
+    ) -> None:
+        try:
+            self.process(
+                app=app, domain=domain, objtype=objtype, contentnode=contentnode
+            )
+        except Exception as e:
+            log.error(repr(e))
+            raise
 
 
 class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
