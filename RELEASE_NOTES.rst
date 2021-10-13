@@ -31,7 +31,14 @@ Release Notes
 - API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
   private method ``_get_style_kwargs()``
 
-- API: remove method `get_class_id` from class :class:`.HasExpressionRepr`
+- API: removed method `get_class_id` from class :class:`.HasExpressionRepr`
+
+- API: new Sphinx callback :class:`.ObjectDescriptionTransform`
+
+- API: renamed class ``ResolveGenericClassParameters`` to
+  :class:`.ResolveTypeVariables` and updated to resolve type variables also in
+  attribute signatures
+
 
 
 *pytools* 1.2
