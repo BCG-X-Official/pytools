@@ -122,7 +122,8 @@ class _TypeVarBindings:
 @inheritdoc(match="""[see superclass]""")
 class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
     """
-    Resolve type variables that can be inferred through generic class parameters.
+    Resolve type variables that can be inferred through generic class parameters or
+    ``self``/``cls`` special arguments.
 
     For example, the Sphinx documentation for the inherited method ``B.f`` in the
     following example will be rendered with the signature ``(int) -> int``:
@@ -229,6 +230,35 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         for name, tp in signature_original_items:
             signature[name] = _substitute_type_vars_in_type_expression(tp)
 
+    def _resolve_attribute_signatures(self, cls: Type) -> None:
+        bindings: _TypeVarBindings = self._current_class_bindings
+
+        def _substitute_type_vars_in_type_expression(
+            type_expression: Union[Type, TypeVar]
+        ) -> type:
+            # recursively substitute type vars with their resolutions
+            if isinstance(type_expression, TypeVar):
+                # resolve type variables defined by Generic[] in the
+                # class hierarchy
+                return bindings.resolve_parameter(cls, type_expression)
+            else:
+                # dynamically resolve type variables inside nested type expressions
+                args = typing_inspect.get_args(type_expression)
+                if args:
+                    # noinspection PyUnresolvedReferences
+                    return type_expression.copy_with(
+                        tuple(map(_substitute_type_vars_in_type_expression, args))
+                    )
+                else:
+                    return type_expression
+
+        annotations = getattr(cls, "__annotations__", None)
+        if annotations:
+            cls.__annotations__ = {
+                attr: _substitute_type_vars_in_type_expression(annotation)
+                for attr, annotation in annotations.items()
+            }
+
     @staticmethod
     def _get_defining_class(method: FunctionType) -> Optional[type]:
         # get the class that defined the callable
@@ -321,6 +351,10 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
 
             # create a TypeVar bindings object for this class
             bindings = self._current_class_bindings = _TypeVarBindings(cls)
+
+            # and resolve type variables in type annotations for class attributes
+            self._resolve_attribute_signatures(cls=cls)
+
         return bindings
 
 
