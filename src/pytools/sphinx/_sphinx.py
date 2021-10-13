@@ -166,7 +166,7 @@ class ObjectDescriptionTransform(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc processor for docstrings.
+    An *autodoc* processor for docstrings.
     """
 
     @property
@@ -222,7 +222,7 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc processor invoked before processing signatures.
+    An *autodoc* processor invoked before processing signatures.
     """
 
     @property
@@ -255,7 +255,7 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc processor for processing signatures.
+    An *autodoc* processor for processing signatures.
     """
 
     @property
@@ -275,7 +275,7 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
         options: object,
         signature: Optional[str],
         return_annotation: Optional[str],
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
         """
         Process an event.
 
@@ -324,7 +324,7 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc-skip-member processor.
+    An *autodoc-skip-member* processor.
     """
 
     @property
@@ -386,7 +386,7 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
 
 class AutodocProcessBases(SphinxCallback, metaclass=ABCMeta):
     """
-    An autodoc-process-bases processor.
+    An *autodoc-process-bases* processor.
     """
 
     @property
@@ -806,7 +806,7 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
         options: object,
         signature: Optional[str],
         return_annotation: Optional[str],
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
         """[see superclass]"""
         if signature or return_annotation:
             return (
@@ -877,14 +877,13 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             # the value of the attribute, and not the attribute itself
             mod_obj_attr = name.rsplit(".", 2)
             if len(mod_obj_attr) == 3:
-                mod_name, obj_name, attr_name = mod_obj_attr
-                mod = importlib.import_module(mod_name)
-                obj = getattr(mod, obj_name)
+                mod_name, obj_name, _ = mod_obj_attr
+                obj = getattr(importlib.import_module(mod_name), obj_name)
             else:
                 log.debug(f"could not determine module for {name}")
                 return
 
-        if what == "property":
+        elif what == "property":
             obj = cast(property, obj).fget
 
         try:
