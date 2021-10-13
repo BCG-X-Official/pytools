@@ -1,6 +1,7 @@
 """
 Implementation of sphinx module.
 """
+import importlib
 import logging
 from inspect import getattr_static
 from types import FunctionType, MethodType
@@ -147,7 +148,7 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
         self.original_signatures = {}
         self._current_class_bindings = None
 
-    def _resolve_signature(
+    def _resolve_function_signature(
         self, bindings: _TypeVarBindings, func: FunctionType
     ) -> None:
         # get the class in which the method has been defined
@@ -231,20 +232,27 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
     @staticmethod
     def _get_defining_class(method: FunctionType) -> Optional[type]:
         # get the class that defined the callable
-        log.debug(f"find class for method {method.__module__}.{method.__qualname__}")
 
-        container_sep = method.__qualname__.rfind(".")
-        if container_sep < 0:
-            return None
+        if "." not in method.__qualname__:
+            # this is a function, not a method
+            return
 
-        method_container = method.__qualname__[:container_sep]
+        method_container: str
+        if method.__qualname__.endswith(f".{method.__name__}"):
+            method_container = method.__qualname__[: -len(method.__name__) - 1]
+        else:
+            method_container = method.__qualname__[: method.__qualname__.rfind(".")]
+
         try:
-            return eval(method_container, method.__globals__)
+            return eval(
+                method_container, importlib.import_module(method.__module__).__dict__
+            )
         except NameError:
             # we could not find the container of the given method in the method's global
-            # namespace: ignore it
+            # namespace - this is likely an inherited method where the parent class
+            #
             log.warning(
-                f"failed to look up container {method_container!r} "
+                f"failed to find container {method.__module__}.{method_container!r} "
                 f"of method {method.__name__!r}"
             )
             return None
@@ -287,33 +295,31 @@ class ResolveGenericClassParameters(AutodocBeforeProcessSignature):
             self._update_current_class(obj)
 
         elif isinstance(obj, FunctionType):
-            if obj.__qualname__ == "__init__":
-                # we are starting to process a new class, remember it so we can
-                # attribute unbound methods to it
-                bindings = self._update_current_class(self._get_defining_class(obj))
-            else:
-                bindings = self._current_class_bindings
+            bindings = self._update_current_class(self._get_defining_class(obj))
 
             # instance method definitions are unbound, so we need to remember
             # the class we are currently in
             if bindings is not None:
-                self._resolve_signature(bindings=bindings, func=obj),
+                self._resolve_function_signature(bindings=bindings, func=obj),
 
         elif isinstance(obj, MethodType):
             # class method definitions are bound, so we can infer the current class
             cls = obj.__self__
             assert isinstance(cls, type), "methods are class methods"
-            self._resolve_signature(
+            self._resolve_function_signature(
                 bindings=self._update_current_class(cls), func=obj.__func__
             )
-        else:
-            return
 
-        log.debug(f"updated signature: {getattr(obj, '__annotations__','<undefined>')}")
+    def _update_current_class(self, cls: Optional[type]) -> Optional[_TypeVarBindings]:
+        if cls is None:
+            return None
 
-    def _update_current_class(self, cls: type) -> _TypeVarBindings:
         bindings = self._current_class_bindings
-        if bindings is None or cls is not bindings.current_class:
+        assert isinstance(cls, type), f"{cls} is a class"
+        if bindings is None or not issubclass(bindings.current_class, cls):
+            # we're visiting the class for the first time
+
+            # create a TypeVar bindings object for this class
             bindings = self._current_class_bindings = _TypeVarBindings(cls)
         return bindings
 
