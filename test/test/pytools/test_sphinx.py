@@ -1,6 +1,6 @@
 import logging
 import sys
-from typing import Dict, Generic, Optional, Type, TypeVar
+from typing import Callable, Dict, Generic, Optional, Type, TypeVar
 
 import pytest
 
@@ -55,7 +55,7 @@ def test_resolve_generic_class_parameters() -> None:
     )
     # noinspection PyUnresolvedReferences
     assert ECDFDrawer.get_named_styles.__annotations__ == {
-        "return": Dict[str, Type[ECDFStyle]]
+        "return": Dict[str, Callable[..., ECDFStyle]]
     }
 
     resolve_generic_class_parameters.process(app=None, obj=A, bound_method=False)
