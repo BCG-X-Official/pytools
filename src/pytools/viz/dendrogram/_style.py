@@ -52,7 +52,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
     and renders a color bar as a legend.
     """
 
-    #: vertical padding to apply between lines (in weight units)
+    #: vertical padding to apply between branches (in weight units)
     padding: float
 
     def __init__(
@@ -66,9 +66,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
     ) -> None:
         """
         :param min_weight: the minimum weight on the logarithmic feature importance
-            color scale; must be greater than `0` and smaller than `1`
+            color scale; must be greater than `0` and less than `1`
             (default: `0.01`, i.e., 1%)
-        :param padding: vertical padding to apply between lines (in weight units)
+        :param padding: vertical padding to apply between branches (in weight units)
         """
         if min_weight >= 1.0 or min_weight <= 0.0:
             raise ValueError("arg min_weight must be > 0.0 and < 1.0")
@@ -196,10 +196,10 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
 
         # set the tick locations and labels
         y_axis = self.ax.yaxis
-        y_axis.set_ticks(ticks=list(self.get_ytick_locations(weights=weights)))
+        y_axis.set_ticks(ticks=list(self._get_ytick_locations(weights=weights)))
         y_axis.set_ticklabels(ticklabels=names)
 
-    def get_ytick_locations(self, *, weights: Sequence[float]) -> np.ndarray:
+    def _get_ytick_locations(self, *, weights: Sequence[float]) -> np.ndarray:
         """
         Get the tick locations for the y axis.
 
@@ -214,7 +214,32 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
             - weights_array / 2
         )
 
-    def plot_weight_label(
+    def _draw_hline(
+        self, x0: float, x1: float, y: float, weight: float, max_height: float
+    ) -> None:
+        fill_color = self.color_for_value(weight)
+        self.ax.set_xlim()
+        middle = y + weight / 2
+        self.ax.barh(
+            y=middle,
+            width=x1 - x0,
+            height=weight,
+            left=x0,
+            color=fill_color,
+            edgecolor=self.colors.foreground,
+            linewidth=1,
+        )
+
+        self._plot_weight_label(
+            weight=weight,
+            x=x0,
+            y=middle - max_height / 2,
+            w=x1 - x0,
+            h=max_height,
+            fill_color=fill_color,
+        )
+
+    def _plot_weight_label(
         self,
         *,
         weight: float,
@@ -261,31 +286,6 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
                 linewidth=0.0,
                 pad=t.get_fontsize() * self._TEXT_PADDING_RATIO,
             )
-        )
-
-    def _draw_hline(
-        self, x0: float, x1: float, y: float, weight: float, max_height: float
-    ) -> None:
-        fill_color = self.color_for_value(weight)
-        self.ax.set_xlim()
-        middle = y + weight / 2
-        self.ax.barh(
-            y=middle,
-            width=x1 - x0,
-            height=weight,
-            left=x0,
-            color=fill_color,
-            edgecolor=self.colors.foreground,
-            linewidth=1,
-        )
-
-        self.plot_weight_label(
-            weight=weight,
-            x=x0,
-            y=middle - max_height / 2,
-            w=x1 - x0,
-            h=max_height,
-            fill_color=fill_color,
         )
 
 

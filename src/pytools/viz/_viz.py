@@ -125,7 +125,7 @@ class DrawingStyle(metaclass=ABCMeta):
         as keyword arguments.
 
         Subclasses overriding this method should call ``super().start_drawing()``
-        before executing their own drawer-specific initializations.
+        *before* executing their own drawer-specific initializations.
 
         :param title: the title of the chart
         :param kwargs: additional drawer-specific arguments
@@ -142,7 +142,7 @@ class DrawingStyle(metaclass=ABCMeta):
         as keyword arguments.
 
         Subclasses overriding this method should call ``super().finalize_drawing()``
-        after executing their own drawer-specific finalization.
+        *after* executing their own drawer-specific finalization.
 
         :param kwargs: additional drawer-specific arguments
         """
@@ -164,7 +164,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or ColorScheme.DEFAULT
 
     __init__.__doc__ = __init__.__doc__.replace(
-        "%%COLORS_DEFAULT%%", type(ColorScheme.DEFAULT).__name__
+        "%%COLORS_DEFAULT%%", repr(ColorScheme.DEFAULT)
     )
 
     @classmethod

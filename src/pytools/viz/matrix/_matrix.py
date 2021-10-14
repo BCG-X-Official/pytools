@@ -91,7 +91,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colormap_normalize: Optional[Normalize] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        cell_format: Union[str, Formatter, Callable[[Any], str], None] = None,
+        cell_format: Union[str, Formatter, Callable[..., str], None] = None,
+        # todo: change to Callable[[Any], str] once sphinx "unhashable type" bug is
+        #       fixed
         nan_substitute: float = None,
     ) -> None:
         """

@@ -67,7 +67,7 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         """
         Draw the matrix.
 
-        :param data: the values of the matrix cells, as a `rows x columns` array
+        :param data: the values of the matrix cells, as a 2d array
         :param names: the names of the rows and columns
         :param weights: the weights of the rows and columns
         """

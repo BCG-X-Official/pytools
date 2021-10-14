@@ -4,7 +4,8 @@ Data type for matrices.
 
 import logging
 from copy import copy
-from typing import Any, Iterable, List, Optional, Tuple, Union
+from numbers import Number
+from typing import Any, Iterable, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
 import pandas as pd
@@ -17,18 +18,17 @@ log = logging.getLogger(__name__)
 
 
 #
-# Type aliases
-#
-
-
-Number = Union[int, float, np.number]
-
-
-#
 # exported names
 #
 
 __all__ = ["Matrix"]
+
+
+#
+# Type Variables
+#
+
+T_Matrix = TypeVar("T_Matrix", bound="Matrix")
 
 
 #
@@ -49,7 +49,7 @@ class Matrix(HasExpressionRepr):
     A 2d matrix with optional names and weights for rows and columns.
     """
 
-    #: the values of the matrix cells, as a `rows x columns` array
+    #: the values of the matrix cells, as a 2d array
     values: np.ndarray
 
     #: the names of the rows and columns
@@ -80,11 +80,13 @@ class Matrix(HasExpressionRepr):
         weight_label: Optional[str] = None,
     ) -> None:
         """
-        :param values: the values of the matrix cells, as a `rows x columns` array
-        :param names: the names of the rows and columns
-        :param weights: the weights of the rows and columns
+        :param values: the values of the matrix cells, as a 2d array
+        :param names: the names of the rows and columns as a pair of iterables
+            (each of which may me ``None`` if not specified)
+        :param weights: the weights of the rows and columns as a pair of iterables
+            (each of which may me ``None`` if not specified)
         :param value_label: the label for the value axis
-        :param name_labels: the labels for the row and column axes
+        :param name_labels: the labels for the row and column axes as a pair of strings
         :param weight_label: the label for the weight axis
         """
         if not isinstance(values, np.ndarray):
@@ -185,13 +187,15 @@ class Matrix(HasExpressionRepr):
 
     @classmethod
     def from_frame(
-        cls,
+        cls: Type[T_Matrix],
         frame: pd.DataFrame,
         *,
-        weights: Optional[Tuple[Optional[Number], Optional[Number]]] = None,
+        weights: Optional[
+            Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
+        ] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
         value_label: Optional[str] = None,
-    ):
+    ) -> T_Matrix:
         """
         Create a :class:`.Matrix` from a data frame, using the indices
         as the row and column names.
@@ -230,7 +234,7 @@ class Matrix(HasExpressionRepr):
         r"""
         Create a version of this matrix with fewer rows and/or columns.
 
-        Keeps the rows and columns with the greatest weight, and prioritizing topmost
+        Keeps the rows and columns with the greatest weight, and prioritizes the topmost
         rows and leftmost columns in case multiple rows and columns have the same weight
         and cannot all be included in the resulting, smaller matrix.
 

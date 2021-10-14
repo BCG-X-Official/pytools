@@ -73,10 +73,10 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     ) -> None:
         """
         :param ax: optional axes object to draw on; create a new figure if not specified
-        %col%
+        %%COLORS%%
         :param font_family: name of one or more fonts to use for all text, in descending
-            order of preference; if undefined, or if none of the given fonts is
-            available, defaults to a monospaced font
+            order of preference; defaults to a monospaced font if undefined, or if none
+            of the given fonts is available
         """
         super().__init__(colors=colors)
         self._ax = ax
@@ -95,7 +95,9 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         self._font_family_original = None
 
-    __init__.__doc__ = __init__.__doc__.replace("%col%", ColoredStyle.__init__.__doc__)
+    __init__.__doc__ = __init__.__doc__.replace(
+        "%%COLORS%%", ColoredStyle.__init__.__doc__
+    )
 
     @classmethod
     def get_default_style_name(cls) -> str:
