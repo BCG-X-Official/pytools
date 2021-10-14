@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Type, Union
 
 from ...api import AllTracker, inheritdoc
 from ...data import LinkageTree
-from ...data.base import Node
+from ...data.linkage import Node
 from .. import Drawer
 from ._style import DendrogramMatplotStyle, DendrogramReportStyle
 from .base import DendrogramStyle

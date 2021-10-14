@@ -15,7 +15,7 @@ import numpy as np
 from ..api import AllTracker, inheritdoc
 from ..expression import Expression, HasExpressionRepr
 from ..expression.atomic import Id
-from .base import LeafNode, LinkageNode, Node
+from .linkage import LeafNode, LinkageNode, Node
 
 #
 # Exported names
