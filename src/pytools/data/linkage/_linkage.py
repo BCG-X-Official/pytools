@@ -7,6 +7,8 @@ from abc import ABCMeta, abstractmethod
 from typing import Optional
 
 from pytools.api import AllTracker, inheritdoc
+from pytools.expression import Expression, HasExpressionRepr
+from pytools.expression.atomic import Id
 
 log = logging.getLogger(__name__)
 
@@ -29,7 +31,7 @@ __tracker = AllTracker(globals())
 #
 
 
-class Node(metaclass=ABCMeta):
+class Node(HasExpressionRepr, metaclass=ABCMeta):
     """
     Base class for nodes of a :class:`.LinkageTree`.
     """
@@ -82,11 +84,8 @@ class Node(metaclass=ABCMeta):
     def _type_error(self, property_name: str) -> TypeError:
         return TypeError(f"{property_name} is not defined for a {type(self).__name__}")
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}_{self._index}"
 
-
-@inheritdoc(match="[see superclass]")
+@inheritdoc(match="""[see superclass]""")
 class LinkageNode(Node):
     """
     An inner node in a :class:`.LinkageTree`.
@@ -125,11 +124,12 @@ class LinkageNode(Node):
         """``False``"""
         return False
 
-    def __repr__(self) -> str:
-        return f"{super().__repr__()}[dist={self.children_distance * 100:.0f}%]"
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        return Id(type(self))(self.index, children_distance=self.children_distance)
 
 
-@inheritdoc(match="[see superclass]")
+@inheritdoc(match="""[see superclass]""")
 class LeafNode(Node):
     """
     A leaf in a :class:`.LinkageTree`.
@@ -168,8 +168,9 @@ class LeafNode(Node):
         """``True``"""
         return True
 
-    def __repr__(self) -> str:
-        return f"{super().__repr__()}[name={self.name}, weight={self.weight}]"
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+        return Id(type(self))(self.index, name=self.name, weight=self.weight)
 
 
 __tracker.validate()

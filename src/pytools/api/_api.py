@@ -56,6 +56,7 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Iterable = TypeVar("T_Iterable", bound=Iterable)
 T_Type = TypeVar("T_Type", bound=type)
 
 
@@ -518,7 +519,7 @@ def validate_type(
     expected_type: Union[Type[T], Tuple[Type, ...]],
     optional: bool = False,
     name: Optional[str] = None,
-) -> None:
+) -> T:
     """
     Validate that a value implements the expected type.
 
@@ -529,15 +530,18 @@ def validate_type(
     :param name: optional name of the argument or callable with/to which the value
         was passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
+    :return: the value passed as arg `value`
     :raise TypeError: one or more values did not match the expected type(s)
     """
     if expected_type is object:
-        return
+        return value
 
     if optional and value is None:
-        return
+        return None
 
-    if not isinstance(value, expected_type):
+    if isinstance(value, expected_type):
+        return value
+    else:
         if name:
             message_head = f"{name} requires"
         else:
@@ -561,35 +565,51 @@ def validate_type(
 
 
 def validate_element_types(
-    iterable: Iterable[T],
+    iterable: T_Iterable,
     *,
-    expected_type: Union[Type[T], Tuple[Type, ...], None],
+    expected_type: Union[Type, Tuple[Type, ...]],
+    optional: bool = False,
     name: Optional[str] = None,
-) -> None:
+) -> T_Iterable:
     """
     Validate that all elements in the given iterable implement the expected type.
 
     :param iterable: an iterable
     :param expected_type: the type to check for
+    :param optional: if ``True``, accept ``None`` as valid elements (default: ``False``)
     :param name: optional name of the argument or callable with/to which the elements
         were passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
+    :return: the iterable passed as arg `iterable`
     :raise TypeException: one or more elements of the iterable did not match the
         expected type
     """
-    if expected_type == object:
-        return
-
-    for element in iterable:
-        if not isinstance(element, expected_type):
-            if name:
-                message_head = f"{name} requires"
-            else:
-                message_head = "expected"
-            raise TypeError(
-                f"{message_head} instances of {expected_type.__name__} "
-                f"but got a {type(element).__name__}"
+    if expected_type is not object:
+        if optional:
+            expected_type = (
+                (*expected_type, type(None))
+                if isinstance(expected_type, tuple)
+                else (expected_type, type(None))
             )
+        for element in iterable:
+            if not isinstance(element, expected_type):
+                if name:
+                    message_head = f"{name} requires"
+                else:
+                    message_head = "expected"
+
+                if isinstance(expected_type, type):
+                    expected_type_str = expected_type.__name__
+                else:
+                    expected_type_str = (
+                        f"one of {{{', '.join(t.__name__ for t in expected_type)}}}"
+                    )
+                raise TypeError(
+                    f"{message_head} instances of {expected_type_str} "
+                    f"but got a {type(element).__name__}"
+                )
+
+    return iterable
 
 
 def get_generic_bases(class_: type) -> Tuple[type, ...]:

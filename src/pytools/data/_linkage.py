@@ -7,12 +7,15 @@ Linkage Tree.
 :class:`LinkageTree`. Both these classes inherit from :class:`BaseNode`.
 """
 
-from typing import Any, Iterable, List, Optional, Sequence, Tuple
+from copy import copy
+from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
 
-from pytools.api import AllTracker
-from pytools.viz.dendrogram.base import LeafNode, LinkageNode, Node
+from ..api import AllTracker, inheritdoc
+from ..expression import Expression, HasExpressionRepr
+from ..expression.atomic import Id
+from .linkage import LeafNode, LinkageNode, Node
 
 #
 # Exported names
@@ -33,7 +36,8 @@ __tracker = AllTracker(globals())
 #
 
 
-class LinkageTree:
+@inheritdoc(match="[see superclass]")
+class LinkageTree(HasExpressionRepr):
     """
     A traversable tree derived from a SciPy linkage matrix.
 
@@ -190,11 +194,87 @@ class LinkageTree:
         """
         return len(self) - len(self.scipy_linkage_matrix)
 
+    def sort_by_weight(self) -> "LinkageTree":
+        """
+        Create a copy of this linkage trees, switching the left and right nodes of
+        branches such that the mean leaf weight or any left node is always greater
+        than the mean leaf weight in the right node.
+
+        :return: a copy of this linkage tree with sorting applied
+        """
+
+        linkage: np.ndarray = self.scipy_linkage_matrix.copy()
+
+        def _sort_node(n: Node) -> Tuple[float, int]:
+            # sort a linkage node and return its total weight and leaf count
+
+            if n.is_leaf:
+                return n.weight, 1
+
+            l, r = self.children(n)
+
+            weight_left, leaves_left = _sort_node(l)
+            weight_right, leaves_right = _sort_node(r)
+
+            if weight_left / leaves_left < weight_right / leaves_right:
+                # swap nodes if the right node has the higher weight
+                n_linkage = linkage[n.index - self.n_leaves]
+                n_linkage[
+                    [LinkageTree.__F_CHILD_RIGHT, LinkageTree.__F_CHILD_LEFT]
+                ] = n_linkage[[LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]]
+
+            return weight_left + weight_right, leaves_left + leaves_right
+
+        _sort_node(self.root)
+
+        linkage_sorted = copy(self)
+        linkage_sorted.scipy_linkage_matrix = linkage
+        return linkage_sorted
+
+    def iter_nodes(self, inner: bool = True) -> Iterator[Node]:
+        """
+        Traverse this linkage tree depth-first and return all nodes.
+
+        :param inner: if ``True``, iterate inner nodes; if ``False``, iterate
+           leaf nodes only
+        :return: an iterator for all nodes
+        """
+
+        def _iter(n: Node) -> Iterator[Node]:
+            if n.is_leaf:
+                yield n
+            else:
+                if inner:
+                    yield n
+                l, r = self.children(n)
+                yield from _iter(l)
+                yield from _iter(r)
+
+        yield from _iter(self.root)
+
     def __len__(self) -> int:
         return len(self._nodes)
 
     def __getitem__(self, item: int) -> Node:
         return self._nodes[item]
+
+    def to_expression(self) -> Expression:
+        """[see superclass]"""
+
+        def _expr(n: Node) -> Expression:
+            if n.is_leaf:
+                return n.to_expression()
+            else:
+                l, r = self.children(n)
+                return n.to_expression()[_expr(l), _expr(r)]
+
+        return Id(type(self))(
+            _expr(self.root),
+            max_distance=self.max_distance,
+            leaf_label=self.leaf_label,
+            weight_label=self.weight_label,
+            distance_label=self.distance_label,
+        )
 
 
 __tracker.validate()

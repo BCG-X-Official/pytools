@@ -4,41 +4,96 @@ Release Notes
 *pytools* 2.0
 -------------
 
+*pytools* 2 brings enhanced visualizations and API improvements.
+
 2.0.0
 ~~~~~
 
-- API: revised job/queue API in module :mod:`pytools.parallelization`
+``pytools.data``
+^^^^^^^^^^^^^^^^
 
-    - method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
-      objects instead of individual jobs as positional arguments
+- API: new class :class:`.Matrix` allows :class:`.MatrixDrawer` to render flexible row
+  and column widths, based on the :attr:`.Matrix.weights` property, and supports axis
+  labels for the row, column, and weight axes
+- API: moved class :class:`.LinkageTree` to module :mod:`pytools.data`
 
-    - method :meth:`.JobRunner.run_queues` now expects a single iterable of
-      :class:`.JobQueue` objects instead of individual queues as positional arguments
+``pytools.expression``
+^^^^^^^^^^^^^^^^^^^^^^
 
-    - method :meth:`.JobRunner.run_queues` returns a list of results instead of an
-      iterator
+- API: improved conversion of :mod:`numpy` arrays to :class:`.Expression` objects in
+  function :func:`.make_expression`
+- API: remove method ``get_class_id`` from class :class:`.HasExpressionRepr`
 
-    - methods :meth:`.JobRunner.run_queue` and :meth:`.JobRunner.run_queues` are now
-      thread-safe
+``pytools.parallelization``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    - rename method `collate` of class :class:`.JobQueue` to :meth:`.JobQueue.aggregate`
+- API: method :meth:`.JobRunner.run_jobs` now expects a single iterable of :class:`.Job`
+  objects instead of individual jobs as positional arguments
+- API: method :meth:`.JobRunner.run_queues` now expects a single iterable of
+  :class:`.JobQueue` objects instead of individual queues as positional arguments, and
+  returns a :class:`list` of results instead of an iterator
+- API: methods :meth:`.JobRunner.run_queue` and :meth:`.JobRunner.run_queues` are now
+  thread-safe
+- API: renamed method ``collate`` of class :class:`.JobQueue` to
+  :meth:`.JobQueue.aggregate`
+- API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
+  method :meth:`.SimpleQueue.aggregate`
 
-    - :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
-      method :meth:`.SimpleQueue.aggregate`
+``pytools.sphinx``
+^^^^^^^^^^^^^^^^^^
 
-- API: improved conversion of *numpy* arrays in function :func:`.make_expression`
+- API: new Sphinx callback class :class:`.ObjectDescriptionTransform`
+
+- API: renamed callback class ``ResolveGenericClassParameters`` to
+  :class:`.ResolveTypeVariables` and updated to resolve type variables also in
+  attribute signatures
+
+``pytools.viz``
+^^^^^^^^^^^^^^^
+
+Additions and enhancements to dendrogram and matrix visualizations.
+
+- **Dendrograms:** major design overhaul
+
+  - API: replaced the heatmap and line dendrogram styles with a single, freshly designed
+    :class:`.DendrogramMatplotStyle` offering a tighter layout and using the thickness
+    of the dendrogram's branches to indicate the cumulative weight of the leaf nodes
+  - API: :attr:`.DendrogramMatplotStyle.padding` determines the adjustable padding
+    between neighbouring branches; setting padding to zero produces a chart similar
+    to the previous *heatmap* style
+  - API: :class:`.DendrogramDrawer` no longer sorts leaf nodes as part of the drawing
+    process; the sorting mechanism is now available via method
+    :meth:`.LinkageTree.sort_by_weight`
+  - VIZ: :class:`.DendrogramMatplotStyle` and :class:`.DendrogramReportStyle` now render
+    leaves in left-to-right order, instead of the previous right-to-left order
+  - API: the :class:`.DendrogramReportStyle` now reduces the label section of the
+    dendrogram to the length of the longest label; renamed the ``label_width``
+    property to :attr:`~.DendrogramReportStyle.max_label_width`
+  - API: moved class :class:`.LinkageTree` to module :mod:`pytools.data`
+  - API: new method :meth:`.LinkageTree.iter_nodes` for depth-first traversal of
+    the linkage tree
+
+- **Matrices:** major design overhaul
+
+  - API: class :class:`.MatrixDrawer` now expects instances of new class
+    :class:`.Matrix` as its input
+  - API: :class:`.MatrixDrawer` no longer accepts :class:`~pandas.DataFrame`
+    objects, but :meth:`.Matrix.from_frame` can be used to convert data frames
+    to matrix objects
+  - API: new attribute :attr:`.MatrixMatplotStyle.nan_substitute` specifies the value to
+    look up in the colormap to determine the color of undefined matrix cells
+  - VIZ: :class:`.MatrixMatplotStyle` enforces a 1:1 aspect ratio for the row and
+    column axes, so that equal row and column widths represent equal weights
 
 - API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
   private method ``_get_style_kwargs()``
 
-- API: removed method `get_class_id` from class :class:`.HasExpressionRepr`
+- API: implement :class:`.RgbColor` and :class:`.RgbaColor` as classes instead of
+  type aliases
 
-- API: new Sphinx callback :class:`.ObjectDescriptionTransform`
-
-- API: renamed class ``ResolveGenericClassParameters`` to
-  :class:`.ResolveTypeVariables` and updated to resolve type variables also in
-  attribute signatures
-
+- API: removed method ``dark()`` from class :class:`.ColoredStyle` and instead introduce
+  constants :attr:`.ColorScheme.DEFAULT`, :attr:`.ColorScheme.DEFAULT_LIGHT`, and
+  :attr:`.ColorScheme.DEFAULT_DARK`
 
 
 *pytools* 1.2
@@ -93,7 +148,8 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 - VIZ: set colors of axis labels to the foreground color of the current color scheme
 - FIX: ensure correct weight labels when rendering dendrograms as plain text using the
   :class:`.DendrogramReportStyle`
-- FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
+- FIX: calling method ``get_class_id`` of class :class:`.Id` could cause a
+  :class:`.TypeError`
 - FIX: :class:`.Replace3rdPartyDoc` sphinx callback now substitutes 3rd-party docstrings
   also for :class:`.property` definitions
 

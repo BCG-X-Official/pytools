@@ -4,10 +4,11 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Optional, Tuple
+from typing import Any, Iterable, List, Optional, Union
 
 import matplotlib.pyplot as plt
-from matplotlib import text as mt
+import numpy as np
+from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
@@ -16,9 +17,9 @@ from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from matplotlib.tight_layout import get_renderer
 
-from ..api import AllTracker, inheritdoc
+from ..api import AllTracker, inheritdoc, to_list
 from ._viz import ColoredStyle
-from .color import ColorScheme, MatplotColorScheme
+from .color import MatplotColorScheme, RgbaColor
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +27,10 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["MatplotStyle", "ColorbarMatplotStyle"]
+__all__ = [
+    "MatplotStyle",
+    "ColorbarMatplotStyle",
+]
 
 
 #
@@ -47,20 +51,53 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     Base class of drawing styles using `matplotlib`.
     """
 
+    _TEXT_PADDING_RATIO = 0.1
+    _DEFAULT_FONT_FAMILY = "font.monospace"
+    _DEFAULT_FONT = [
+        ".SF NS Mono",
+        "Lucida Console",
+        "Lucida Sans Typewriter",
+        "Menlo",
+        "Monaco",
+        "Bitstream Vera Sans Mono",
+        "Andale Mono",
+        "monospace",
+    ]
+
     def __init__(
         self,
         *,
         ax: Optional[Axes] = None,
         colors: Optional[MatplotColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
     ) -> None:
         """
         :param ax: optional axes object to draw on; create a new figure if not specified
+        %%COLORS%%
+        :param font_family: name of one or more fonts to use for all text, in descending
+            order of preference; defaults to a monospaced font if undefined, or if none
+            of the given fonts is available
         """
         super().__init__(colors=colors)
         self._ax = ax
-        self._renderer: Optional[RendererBase] = None
 
-    __init__.__doc__ += ColoredStyle.__init__.__doc__
+        default_font_family: List[str] = (
+            MatplotStyle._DEFAULT_FONT + rcParams[MatplotStyle._DEFAULT_FONT_FAMILY]
+        )
+
+        if font_family is not None:
+            self._font_family = (
+                to_list(font_family, element_type=str, arg_name="font")
+                + default_font_family
+            )
+        else:
+            self._font_family = default_font_family
+
+        self._font_family_original = None
+
+    __init__.__doc__ = __init__.__doc__.replace(
+        "%%COLORS%%", ColoredStyle.__init__.__doc__
+    )
 
     @classmethod
     def get_default_style_name(cls) -> str:
@@ -77,61 +114,14 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
             self._ax = ax = plt.gca()
         return ax
 
-    @property
-    def renderer(self) -> RendererBase:
+    def get_renderer(self) -> RendererBase:
         """
-        The renderer used by this style's :class:`~matplotlib.axes.Axes` object
+        Get the renderer used by this style's :class:`~matplotlib.axes.Axes` object
         (see :attr:`.ax`).
+
+        :return: the renderer
         """
-        renderer = self._renderer
-        if renderer is None:
-            self._renderer = renderer = get_renderer(self.ax.figure)
-        return renderer
-
-    def text_dimensions(
-        self,
-        text: str,
-        x: Optional[float] = None,
-        y: Optional[float] = None,
-        **kwargs: Any,
-    ) -> Tuple[float, float]:
-        """
-        Calculate the horizontal and vertical dimensions of the given text in axis
-        units.
-
-        Constructs a :class:`~matplotlib.text.Text` artist then calculates it size
-        relative to the axis :attr:`.ax` managed by this style object.
-        For non-linear axis scales, text size differs depending on placement,
-        so the intended placement (in data coordinates) should be provided.
-
-        :param text: text to calculate the dimensions for
-        :param x: intended horizontal text placement (optional, defaults to left of
-            view)
-        :param y: intended vertical text placement (optional, defaults to bottom of
-            view)
-        :param kwargs: additional keyword arguments to use when constructing the
-            :class:`~matplotlib.text.Text` artist, e.g., rotation
-        :return: tuple `(width, height)` in axis units
-        """
-
-        ax = self.ax
-
-        if x is None or y is None:
-            x0, y0, _, _ = ax.dataLim.bounds
-            if x is None:
-                x = x0
-            if y is None:
-                y = y0
-
-        fig = ax.figure
-
-        extent = mt.Text(x, y, text, figure=fig, **kwargs).get_window_extent(
-            self.renderer
-        )
-
-        (x0, y0), (x1, y1) = ax.transData.inverted().transform(extent)
-
-        return abs(x1 - x0), abs(y1 - y0)
+        return get_renderer(self.ax.figure)
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
@@ -143,6 +133,9 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         """
 
         super().start_drawing(title=title, **kwargs)
+
+        self._font_family_original = rcParams["font.family"]
+        rcParams["font.family"] = self._font_family
 
         ax = self.ax
 
@@ -164,27 +157,32 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
                 )
         except AttributeError:
             pass
+
         ax.figure.set_facecolor(bg_color)
         ax.figure.__pytools_viz_background = bg_color
 
     def finalize_drawing(self, **kwargs: Any) -> None:
         """[see superclass]"""
 
-        super().finalize_drawing(**kwargs)
+        try:
+            # set legend color
+            legend: Legend = self.ax.get_legend()
 
-        # set legend color
-        legend: Legend = self.ax.get_legend()
+            if legend:
+                patch = legend.legendPatch
+                fg_color = self.colors.foreground
 
-        if legend:
-            patch = legend.legendPatch
-            fg_color = self.colors.foreground
+                patch.set_facecolor(self.colors.background)
+                patch.set_alpha(0.5)
+                patch.set_edgecolor(fg_color)
 
-            patch.set_facecolor(self.colors.background)
-            patch.set_alpha(0.5)
-            patch.set_edgecolor(fg_color)
+                for text in legend.get_texts():
+                    text.set_color(fg_color)
 
-            for text in legend.get_texts():
-                text.set_color(fg_color)
+            rcParams["font.family"] = self._font_family_original
+
+        finally:
+            super().finalize_drawing(**kwargs)
 
     def apply_color_scheme(self, ax: Axes) -> None:
         """
@@ -230,6 +228,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         *,
         ax: Optional[Axes] = None,
         colors: Optional[MatplotColorScheme] = None,
+        font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Normalize = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
@@ -243,7 +242,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         :param colorbar_minor_formatter: minor tick formatter for the color bar
             (optional; requires that also a major formatter is specified)
         """
-        super().__init__(ax=ax, colors=colors)
+        super().__init__(ax=ax, colors=colors, font_family=font_family)
 
         self.colormap_normalize = (
             Normalize() if colormap_normalize is None else colormap_normalize
@@ -260,27 +259,39 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
 
-    def color_for_value(self, z: float) -> ColorScheme.RgbaColor:
+    def color_for_value(
+        self, z: Union[int, float, np.ndarray]
+    ) -> Union[RgbaColor, np.ndarray]:
         """
-        Get the color associated with a given scalar, based on the color map and
+        Get the color(s) associated with the given value(s), based on the color map and
         normalization defined for this style.
 
         :param z: the scalar to be color-encoded
-        :return: the resulting color as a RGBA tuple
+        :return: the resulting color for a single value as an RGBA tuple,
+            or an array of shape `(n, 4)` if called with `n` values
         """
-        return self.colors.colormap(self.colormap_normalize(z))
+        colors = self.colors.colormap(self.colormap_normalize(z))
+        if isinstance(colors, np.ndarray):
+            return colors
+        else:
+            return RgbaColor(*colors)
 
-    def finalize_drawing(
-        self, *, colorbar_label: Optional[str] = None, **kwargs: Any
+    def start_drawing(
+        self,
+        *,
+        title: str,
+        colorbar_label: Optional[str] = None,
+        **kwargs: Any,
     ) -> None:
         """
         Add the color bar to the chart.
 
+        :param title: the chart title
         :param colorbar_label: the label for the color bar
         :param kwargs: additional arguments, to be passed on to the superclass
         """
 
-        super().finalize_drawing(**kwargs)
+        super().start_drawing(title=title, **kwargs)
 
         fg_color = self.colors.foreground
 
@@ -297,11 +308,14 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         if self.colorbar_minor_formatter is not None:
             cax.yaxis.set_minor_formatter(self.colorbar_minor_formatter)
+            cb.minorticks_on()
+        else:
+            cb.minorticks_off()
 
-        # set colorbar tick color
+        # set the colorbar tick color
         cb.ax.yaxis.set_tick_params(colors=fg_color)
 
-        # set colorbar edge color
+        # set the colorbar edge color
         cb.outline.set_edgecolor(fg_color)
 
         # set the colorbar label
