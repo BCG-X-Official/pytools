@@ -644,7 +644,7 @@ def deprecated(
 
     Usage:
 
-    .. codeblock: python
+    .. code-block:: python
 
         @deprecated(message=\
 "function f is deprecated and will be removed in the next minor release")

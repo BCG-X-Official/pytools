@@ -128,7 +128,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
     For example, the Sphinx documentation for the inherited method ``B.f`` in the
     following example will be rendered with the signature ``(int) -> int``:
 
-    .. codeblock: python
+    .. code-block:: python
 
         T = TypeVar("T")
 
