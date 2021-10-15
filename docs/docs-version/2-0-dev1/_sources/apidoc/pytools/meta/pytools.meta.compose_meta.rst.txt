@@ -1,0 +1,6 @@
+pytools.meta.compose\_meta
+==========================
+
+.. currentmodule:: pytools.meta
+
+.. autofunction:: compose_meta

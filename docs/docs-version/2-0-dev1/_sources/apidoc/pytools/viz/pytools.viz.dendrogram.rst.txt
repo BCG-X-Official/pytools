@@ -1,0 +1,50 @@
+pytools.viz.dendrogram
+======================
+
+.. automodule:: pytools.viz.dendrogram
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: dendrogram
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      DendrogramDrawer
+      DendrogramMatplotStyle
+      DendrogramReportStyle
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+
+==========
+Submodules
+==========
+.. autosummary::
+   :toctree: dendrogram
+   :template: custom-module-template.rst
+   :recursive:
+
+   pytools.viz.dendrogram.base
+

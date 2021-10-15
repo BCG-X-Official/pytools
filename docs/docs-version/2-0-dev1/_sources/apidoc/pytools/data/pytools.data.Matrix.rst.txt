@@ -1,0 +1,41 @@
+pytools.data.Matrix
+===================
+
+.. currentmodule:: pytools.data
+
+.. autoclass:: Matrix
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Matrix.from_frame
+      ~Matrix.resize
+      ~Matrix.to_expression
+      ~Matrix.to_frame
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Matrix.values
+      ~Matrix.names
+      ~Matrix.weights
+      ~Matrix.name_labels
+      ~Matrix.value_label
+      ~Matrix.weight_label
+   
+   
+
+   .. rubric:: Definitions
