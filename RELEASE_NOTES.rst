@@ -39,6 +39,15 @@ Release Notes
 - API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
   method :meth:`.SimpleQueue.aggregate`
 
+``pytools.sphinx``
+^^^^^^^^^^^^^^^^^^
+
+- API: new Sphinx callback class :class:`.ObjectDescriptionTransform`
+
+- API: renamed callback class ``ResolveGenericClassParameters`` to
+  :class:`.ResolveTypeVariables` and updated to resolve type variables also in
+  attribute signatures
+
 ``pytools.viz``
 ^^^^^^^^^^^^^^^
 
@@ -78,9 +87,11 @@ Additions and enhancements to dendrogram and matrix visualizations.
 
 - API: new public method :meth:`.Drawer.get_style_kwargs`, replacing the previously
   private method ``_get_style_kwargs()``
+
 - API: implement :class:`.RgbColor` and :class:`.RgbaColor` as classes instead of
   type aliases
-- API: remove method ``dark()`` from class :class:`.ColoredStyle` and instead introduce
+
+- API: removed method ``dark()`` from class :class:`.ColoredStyle` and instead introduce
   constants :attr:`.ColorScheme.DEFAULT`, :attr:`.ColorScheme.DEFAULT_LIGHT`, and
   :attr:`.ColorScheme.DEFAULT_DARK`
 

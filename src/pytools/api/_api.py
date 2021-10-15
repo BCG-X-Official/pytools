@@ -144,10 +144,10 @@ class AllTracker:
         except KeyError:
             raise ValueError("arg globals_ does not define module name in __name__")
 
-        if public_module:
-            self.public_module = public_module
-        else:
-            self.public_module = public_module_prefix(module)
+        if not public_module:
+            public_module = public_module_prefix(module)
+
+        self.public_module = globals_["__publicmodule__"] = public_module
 
         self.update_forward_references = update_forward_references
         self.allow_global_constants = allow_global_constants
@@ -644,7 +644,7 @@ def deprecated(
 
     Usage:
 
-    .. codeblock: python
+    .. code-block:: python
 
         @deprecated(message=\
 "function f is deprecated and will be removed in the next minor release")
@@ -862,12 +862,16 @@ def update_forward_references(
                 visited.add(_obj)
                 for member in vars(_obj).values():
                     _update(member)
+                _update_annotations(getattr(_obj, "__annotations__", None))
+
         elif isinstance(_obj, FunctionType):
-            annotations = _obj.__annotations__
-            if annotations:
-                for arg, cls in annotations.items():
-                    if isinstance(cls, str):
-                        annotations[arg] = _parse_cls_with_generic_arguments(cls)
+            _update_annotations(_obj.__annotations__)
+
+    def _update_annotations(annotations: Optional[Dict[str, Any]]):
+        if annotations:
+            for arg, cls in annotations.items():
+                if isinstance(cls, str):
+                    annotations[arg] = _parse_cls_with_generic_arguments(cls)
 
     _update(obj)
 

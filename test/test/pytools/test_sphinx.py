@@ -40,17 +40,15 @@ class C(B[str, T]):
     condition=sys.version_info[:2] < (3, 7), reason="test not supported in Python 3.6"
 )
 def test_resolve_generic_class_parameters() -> None:
-    from pytools.sphinx import ResolveGenericClassParameters
+    from pytools.sphinx.util import ResolveTypeVariables
 
-    resolve_generic_class_parameters = ResolveGenericClassParameters()
+    resolve_type_variables = ResolveTypeVariables()
 
-    resolve_generic_class_parameters.process(app=None, obj=Drawer, bound_method=False)
+    resolve_type_variables.process(app=None, obj=Drawer, bound_method=False)
 
-    resolve_generic_class_parameters.process(
-        app=None, obj=ECDFDrawer, bound_method=False
-    )
+    resolve_type_variables.process(app=None, obj=ECDFDrawer, bound_method=False)
 
-    resolve_generic_class_parameters.process(
+    resolve_type_variables.process(
         app=None, obj=ECDFDrawer.get_named_styles, bound_method=True
     )
     # noinspection PyUnresolvedReferences
@@ -58,27 +56,27 @@ def test_resolve_generic_class_parameters() -> None:
         "return": Dict[str, Callable[..., ECDFStyle]]
     }
 
-    resolve_generic_class_parameters.process(app=None, obj=A, bound_method=False)
-    resolve_generic_class_parameters.process(app=None, obj=A.f, bound_method=False)
+    resolve_type_variables.process(app=None, obj=A, bound_method=False)
+    resolve_type_variables.process(app=None, obj=A.f, bound_method=False)
     assert A.f.__annotations__ == {"self": A, "x": Type[T], "return": U}
-    resolve_generic_class_parameters.process(app=None, obj=A.g, bound_method=False)
+    resolve_type_variables.process(app=None, obj=A.g, bound_method=False)
     assert A.g.__annotations__ == {"self": A, "return": Optional[A]}
 
-    resolve_generic_class_parameters.process(app=None, obj=A.h, bound_method=False)
+    resolve_type_variables.process(app=None, obj=A.h, bound_method=False)
     assert A.h.__annotations__ == {"cls": Type[A], "return": A}
 
-    resolve_generic_class_parameters.process(app=None, obj=B, bound_method=False)
-    resolve_generic_class_parameters.process(app=None, obj=B.f, bound_method=False)
+    resolve_type_variables.process(app=None, obj=B, bound_method=False)
+    resolve_type_variables.process(app=None, obj=B.f, bound_method=False)
     assert B.f is A.f
     assert A.f.__annotations__ == {"self": B, "x": Type[U], "return": int}
-    resolve_generic_class_parameters.process(app=None, obj=B.g, bound_method=False)
+    resolve_type_variables.process(app=None, obj=B.g, bound_method=False)
     assert B.g is A.g
     assert A.g.__annotations__ == {"self": B, "return": Optional[B]}
-    resolve_generic_class_parameters.process(app=None, obj=B.h, bound_method=False)
+    resolve_type_variables.process(app=None, obj=B.h, bound_method=False)
     assert B.h is not A.h
     assert B.h.__annotations__ == {"cls": Type[B], "return": B}
 
-    resolve_generic_class_parameters.process(app=None, obj=C, bound_method=False)
-    resolve_generic_class_parameters.process(app=None, obj=C.f, bound_method=False)
+    resolve_type_variables.process(app=None, obj=C, bound_method=False)
+    resolve_type_variables.process(app=None, obj=C.f, bound_method=False)
     assert C.f is A.f
     assert A.f.__annotations__ == {"self": C, "x": Type[str], "return": int}
