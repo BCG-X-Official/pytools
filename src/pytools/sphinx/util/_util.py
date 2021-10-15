@@ -12,6 +12,7 @@ from typing import (
     Dict,
     Generator,
     Generic,
+    Iterable,
     List,
     Mapping,
     Optional,
@@ -23,9 +24,6 @@ from typing import (
 )
 
 import typing_inspect
-from sphinx.addnodes import pending_xref
-from sphinx.application import Sphinx
-from sphinx.util import docutils
 
 from ...api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
 from .. import (
@@ -43,6 +41,18 @@ except ImportError:
     # in Python 3.6, ForwardRef is called _ForwardRef
     # noinspection PyProtectedMember,PyUnresolvedReferences
     from typing import _ForwardRef as ForwardRef
+
+
+try:
+    # import sphinx classes if available ...
+    from docutils.nodes import Text
+    from sphinx.application import Sphinx
+    from sphinx.util.docutils import Node
+except ImportError:
+    # ... otherwise mock them up
+    Sphinx = Any
+    Node = Any
+    Text = Any
 
 log = logging.getLogger(__name__)
 
@@ -472,23 +482,27 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
 
     # noinspection SpellCheckingInspection
     def process(
-        self, app: Sphinx, domain: str, objtype: str, contentnode: docutils.Node
+        self, app: Sphinx, domain: str, objtype: str, contentnode: Node
     ) -> None:
         """[see superclass]"""
         if domain == "py" and objtype == "class":
             self._process_children(contentnode)
 
-    def _process_children(self, parent_node: docutils.Node):
+    def _process_children(self, parent_node: Node):
         self._process_child(parent_node)
-        if isinstance(parent_node, docutils.Element):
-            for child_node in parent_node.children:
-                self._process_children(child_node)
+        try:
+            children: Iterable[Node] = parent_node.children
+        except AttributeError:
+            # parent node is not an Element instance
+            return
+        for child_node in children:
+            self._process_children(child_node)
 
-    def _process_child(self, content_node: docutils.Node):
-        if isinstance(content_node, pending_xref) and tuple(
-            type(c) for c in content_node.children
-        ) == (docutils.nodes.Text,):
-            text_node: docutils.nodes.Text = content_node.children[0]
+    def _process_child(self, content_node: Node):
+        if type(content_node).__name__ == "pending_xref" and tuple(
+            type(c).__name__ for c in content_node.children
+        ) == ("Text",):
+            text_node: Text = content_node.children[0]
             text = text_node.astext()
             text_collapsed: str = self.collapse_module_paths(text)
             if text_collapsed != text:
@@ -497,7 +511,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
                 )
                 content_node.replace(
                     old=text_node,
-                    new=docutils.nodes.Text(
+                    new=type(text_node)(
                         data=text_collapsed, rawsource=text_node.rawsource
                     ),
                 )
