@@ -16,7 +16,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Mapping,
     Optional,
     Set,
     Tuple,
@@ -57,6 +56,7 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", bound=Collection)
 T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Iterable = TypeVar("T_Iterable", bound=Iterable)
 T_Type = TypeVar("T_Type", bound=type)
 
 
@@ -144,10 +144,10 @@ class AllTracker:
         except KeyError:
             raise ValueError("arg globals_ does not define module name in __name__")
 
-        if public_module:
-            self.public_module = public_module
-        else:
-            self.public_module = public_module_prefix(module)
+        if not public_module:
+            public_module = public_module_prefix(module)
+
+        self.public_module = globals_["__publicmodule__"] = public_module
 
         self.update_forward_references = update_forward_references
         self.allow_global_constants = allow_global_constants
@@ -353,7 +353,7 @@ def is_list_like(obj: Any) -> bool:
 def to_tuple(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
@@ -365,12 +365,12 @@ def to_tuple(
       element
 
     :param values: one or more elements to return as a tuple
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -385,7 +385,7 @@ def to_tuple(
 def to_list(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> List[T]:
     """
@@ -397,12 +397,12 @@ def to_list(
       element
 
     :param values: one or more elements to return as a list
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a list
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -417,7 +417,7 @@ def to_list(
 def to_set(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
     """
@@ -429,12 +429,12 @@ def to_set(
       element
 
     :param values: one or more elements to return as a set
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a set
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
 
     return _to_collection(
@@ -449,7 +449,7 @@ def to_set(
 def to_collection(
     values: Union[Iterable[T], T],
     *,
-    element_type: Union[Type[T], Tuple[Type, ...], None] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
     arg_name: Optional[str] = None,
 ) -> Collection[T]:
     """
@@ -461,12 +461,12 @@ def to_collection(
       element
 
     :param values: one or more elements to return as a collection
-    :param element_type: expected type of the values; raise a :class:`TypeError` if one
-        or more values do not implement this type
+    :param element_type: expected type of the values, or a tuple of alternative types
+        of which each value must match at least one
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a collection
-    :raise TypeError: one or more values did not match the expected type
+    :raise TypeError: one or more values did not match the expected type(s)
     """
     return _to_collection(
         values=values,
@@ -482,8 +482,8 @@ def _to_collection(
     *,
     collection_type: Optional[Type[Collection]],
     new_collection_type: Type[T_Collection],
-    element_type: Union[Type[T], Tuple[Type, ...], None],
-    arg_name: Optional[str] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type, ...]]],
+    arg_name: Optional[str],
 ) -> T_Collection:
 
     elements: T_Collection
@@ -516,68 +516,100 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    expected_type: Type[T],
+    expected_type: Union[Type[T], Tuple[Type, ...]],
     optional: bool = False,
     name: Optional[str] = None,
-) -> None:
+) -> T:
     """
     Validate that a value implements the expected type.
 
     :param value: an arbitrary object
-    :param expected_type: the type to check for
+    :param expected_type: expected type of the values, or a tuple of alternative types
+        of which the value must match at least one
     :param optional: if ``True``, accept ``None`` as a valid value (default: ``False``)
     :param name: optional name of the argument or callable with/to which the value
         was passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
-    :raise TypeException: the value did not match the expected type
+    :return: the value passed as arg `value`
+    :raise TypeError: one or more values did not match the expected type(s)
     """
     if expected_type is object:
-        return
+        return value
 
     if optional and value is None:
-        return
+        return None
 
-    if not isinstance(value, expected_type):
+    if isinstance(value, expected_type):
+        return value
+    else:
         if name:
             message_head = f"{name} requires"
         else:
             message_head = "expected"
+
+        if not isinstance(expected_type, tuple):
+            expected_type = (expected_type,)
+        if optional:
+            expected_type = (*expected_type, type(None))
+        expected_type_str = " or ".join(t.__name__ for t in expected_type)
+
+        observed_type = type(value).__name__
+
+        # noinspection SpellCheckingInspection
+        det = "an" if observed_type[0] in "aeiou" else "a"
+
         raise TypeError(
-            f"{message_head} instance of {expected_type.__name__} "
-            f"but got a {type(value).__name__}"
+            f"{message_head} an instance of {expected_type_str} "
+            f"but got {det} {observed_type}"
         )
 
 
 def validate_element_types(
-    iterable: Iterable[T],
+    iterable: T_Iterable,
     *,
-    expected_type: Union[Type[T], Tuple[Type, ...], None],
+    expected_type: Union[Type, Tuple[Type, ...]],
+    optional: bool = False,
     name: Optional[str] = None,
-) -> None:
+) -> T_Iterable:
     """
     Validate that all elements in the given iterable implement the expected type.
 
     :param iterable: an iterable
     :param expected_type: the type to check for
+    :param optional: if ``True``, accept ``None`` as valid elements (default: ``False``)
     :param name: optional name of the argument or callable with/to which the elements
         were passed; use ``"arg …"`` for arguments, or the name of a callable if
         verifying positional arguments
+    :return: the iterable passed as arg `iterable`
     :raise TypeException: one or more elements of the iterable did not match the
         expected type
     """
-    if expected_type == object:
-        return
-
-    for element in iterable:
-        if not isinstance(element, expected_type):
-            if name:
-                message_head = f"{name} requires"
-            else:
-                message_head = "expected"
-            raise TypeError(
-                f"{message_head} instances of {expected_type.__name__} "
-                f"but got a {type(element).__name__}"
+    if expected_type is not object:
+        if optional:
+            expected_type = (
+                (*expected_type, type(None))
+                if isinstance(expected_type, tuple)
+                else (expected_type, type(None))
             )
+        for element in iterable:
+            if not isinstance(element, expected_type):
+                if name:
+                    message_head = f"{name} requires"
+                else:
+                    message_head = "expected"
+
+                if isinstance(expected_type, type):
+                    expected_type_str = expected_type.__name__
+                else:
+                    expected_type_str = (
+                        f"one of {{{', '.join(t.__name__ for t in expected_type)}}}"
+                    )
+                raise TypeError(
+                    f"{message_head} instances of {expected_type_str} "
+                    f"but got a {type(element).__name__}"
+                )
+
+    return iterable
 
 
 def get_generic_bases(class_: type) -> Tuple[type, ...]:
@@ -612,7 +644,7 @@ def deprecated(
 
     Usage:
 
-    .. codeblock: python
+    .. code-block:: python
 
         @deprecated(message=\
 "function f is deprecated and will be removed in the next minor release")
@@ -784,7 +816,7 @@ def subsdoc(*, pattern: str, replacement: str) -> Callable[[T], T]:
 
 
 def update_forward_references(
-    obj: Union[type, FunctionType], *, globals_: Mapping[str, Any]
+    obj: Union[type, FunctionType], *, globals_: Dict[str, Any]
 ) -> None:
     """
     Replace all forward references with their referenced classes.
@@ -795,7 +827,7 @@ def update_forward_references(
 
     def _parse_cls_with_generic_arguments(cls: str) -> type:
         def _parse(cls_tokens: Deque[str]) -> type:
-            real_cls = globals_[cls_tokens.popleft()]
+            real_cls = eval(cls_tokens.popleft(), globals_)
             if cls_tokens and cls_tokens[0] not in ",]":
                 real_args: List[type] = list()
                 sep = cls_tokens.popleft()
@@ -812,7 +844,7 @@ def update_forward_references(
                         raise TypeError(
                             f"invalid separator for generic type arguments: {sep}"
                         )
-                return real_cls.__class_getitem__(tuple(real_args))
+                return real_cls.__getitem__(tuple(real_args))
             else:
                 return real_cls
 
@@ -830,12 +862,16 @@ def update_forward_references(
                 visited.add(_obj)
                 for member in vars(_obj).values():
                     _update(member)
+                _update_annotations(getattr(_obj, "__annotations__", None))
+
         elif isinstance(_obj, FunctionType):
-            annotations = _obj.__annotations__
-            if annotations:
-                for arg, cls in annotations.items():
-                    if isinstance(cls, str):
-                        annotations[arg] = _parse_cls_with_generic_arguments(cls)
+            _update_annotations(_obj.__annotations__)
+
+    def _update_annotations(annotations: Optional[Dict[str, Any]]):
+        if annotations:
+            for arg, cls in annotations.items():
+                if isinstance(cls, str):
+                    annotations[arg] = _parse_cls_with_generic_arguments(cls)
 
     _update(obj)
 

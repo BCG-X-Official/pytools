@@ -6,10 +6,20 @@ plain text.
 import logging
 from abc import ABCMeta, abstractmethod
 from multiprocessing import Lock
-from typing import Any, Dict, Generic, Iterable, Optional, Type, TypeVar, Union, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    Iterable,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from ..api import AllTracker, inheritdoc
-from .color import ColorScheme, FacetDarkColorScheme, FacetLightColorScheme
+from .color import ColorScheme
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +36,6 @@ __all__ = ["DrawingStyle", "ColoredStyle", "Drawer"]
 T = TypeVar("T")
 T_Model = TypeVar("T_Model")
 T_Style = TypeVar("T_Style", bound="DrawingStyle")
-T_Style_Class = TypeVar("T_Style_Class", bound=Type["DrawingStyle"])
 T_ColorScheme = TypeVar("T_ColorScheme", bound=ColorScheme)
 
 
@@ -85,7 +94,7 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @classmethod
-    def get_named_styles(cls: T_Style_Class) -> Dict[str, T_Style_Class]:
+    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Callable[..., T_Style]]:
         """
         Get a mapping of names to default instances of this style class.
 
@@ -112,14 +121,16 @@ class DrawingStyle(metaclass=ABCMeta):
         Prepare a new chart for drawing, using the given title.
 
         Any additional drawer-specific arguments, obtained from
-        method :meth:`Drawer._get_style_kwargs`, will be passed
+        method :meth:`Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
+
+        Subclasses overriding this method should call ``super().start_drawing()``
+        *before* executing their own drawer-specific initializations.
 
         :param title: the title of the chart
         :param kwargs: additional drawer-specific arguments
+        :raise ValueError: additional keyword arguments were specified
         """
-        if kwargs:
-            raise ValueError(f"unknown arguments: {kwargs}")
         self._status = DrawingStyle._STATUS_STARTED
 
     def finalize_drawing(self, **kwargs: Any) -> None:
@@ -127,13 +138,14 @@ class DrawingStyle(metaclass=ABCMeta):
         Finalize the drawing.
 
         Any additional drawer-specific arguments, obtained from
-        method :meth:`.Drawer._get_style_kwargs`, will be passed
+        method :meth:`.Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
 
-        :param kwargs: additional additional drawer-specific arguments
+        Subclasses overriding this method should call ``super().finalize_drawing()``
+        *after* executing their own drawer-specific finalization.
+
+        :param kwargs: additional drawer-specific arguments
         """
-        if kwargs:
-            raise ValueError(f"unknown arguments: {kwargs}")
         self._status = DrawingStyle._STATUS_FINALIZED
 
 
@@ -146,44 +158,25 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     def __init__(self, *, colors: Optional[T_ColorScheme] = None) -> None:
         """
         :param colors: the color scheme to be used by this drawing style
+            (default: :class:`.%%COLORS_DEFAULT%%`)
         """
         super().__init__()
-        self._colors = colors or FacetLightColorScheme()
+        self._colors = colors or ColorScheme.DEFAULT
+
+    __init__.__doc__ = __init__.__doc__.replace(
+        "%%COLORS_DEFAULT%%", repr(ColorScheme.DEFAULT)
+    )
 
     @classmethod
-    def dark(cls: T_Style_Class) -> T_Style_Class:
-        """
-        Create a dark variant of this drawing style class, using the default dark
-        background color scheme :class:`.FacetDarkColorScheme`.
-
-        :return: the dark drawing style class
-        """
-
-        class DarkStyle(ColoredStyle, metaclass=ABCMeta):
-            """
-            The dark variant of a :class:`.ColoredStyle`, using the
-            :class:`.FacetDarkColorScheme`.
-            """
-
-            def __init__(self, *, colors: Optional[ColorScheme] = None) -> None:
-                if colors:
-                    raise ValueError("arg colors of dark style must be None")
-                super().__init__(colors=FacetDarkColorScheme())
-
-        dark_style_class = cast(
-            T_Style_Class, type(f"Dark{cls.__name__}", (cls, DarkStyle), {})
-        )
-        dark_style_class.__module__ = cls.__module__
-        return dark_style_class
-
-    @classmethod
-    def get_named_styles(cls: T_Style_Class) -> Dict[str, T_Style_Class]:
+    def get_named_styles(
+        cls: Type[T_Style],
+    ) -> Dict[str, Callable[..., T_Style]]:
         """[see superclass]"""
         named_styles = super().get_named_styles()
         return {
             **named_styles,
             **{
-                f"{name}_dark": cast(ColoredStyle, style).dark()
+                f"{name}_dark": lambda: style(colors=ColorScheme.DEFAULT_DARK)
                 for name, style in named_styles.items()
                 if isinstance(style, type)
             },
@@ -228,7 +221,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
         """
 
-        def _get_style_factory(_style_name) -> Type[T_Style]:
+        def _get_style_factory(_style_name) -> Callable[..., T_Style]:
             # get the named style from the style dict
             try:
                 return self.get_named_styles()[_style_name]
@@ -250,7 +243,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     __init__.__doc__ = __init__.__doc__.replace("%DEFAULT%", DEFAULT_STYLE)
 
     @classmethod
-    def get_named_styles(cls) -> Dict[str, Type[T_Style]]:
+    def get_named_styles(cls) -> Dict[str, Callable[..., T_Style]]:
         """
         Get a mapping of names to style factories for all named styles recognized by
         this drawer's initializer.
@@ -286,7 +279,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         # styles might hold some drawing context, so make sure we are thread safe
         # noinspection PyProtectedMember
         with style._lock:
-            style_attributes = self._get_style_kwargs(data)
+            style_attributes = self.get_style_kwargs(data)
 
             # noinspection PyProtectedMember
             style._status = style._STATUS_NOT_STARTED
@@ -306,13 +299,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                     "DrawingStyle.finalize_drawing() not called from overloaded method"
                 )
 
-    def _get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
-        style's :meth:`~DrawingStyle.start_drawing` and
-        :meth:`~DrawingStyle.finalize_drawing` methods.
+        style's :meth:`~.DrawingStyle.start_drawing` and
+        :meth:`~.DrawingStyle.finalize_drawing` methods.
 
-        :meta public:
         :param data: the data to be rendered
         :returns: the style attributes for the given data object
         """

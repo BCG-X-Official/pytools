@@ -67,14 +67,27 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
-        Write the title to :attr:`.out`.
+        Write the title to :attr:`out`.
 
         :param title: the title of the drawing
         :param kwargs: additional drawer-specific arguments
         """
         super().start_drawing(title=title, **kwargs)
 
-        print(f"{f' {title} ':*^{self.width}s}", file=self.out)
+        print(f"{f' {title} ':=^{self.width}s}\n", file=self.out)
+
+    def finalize_drawing(self, **kwargs: Any) -> None:
+        """
+        Add a blank line to the end of the text output.
+
+        :param kwargs: additional drawer-specific arguments
+        """
+
+        try:
+            print(file=self.out)
+
+        finally:
+            super().finalize_drawing(**kwargs)
 
 
 __tracker.validate()

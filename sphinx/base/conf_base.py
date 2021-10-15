@@ -20,8 +20,6 @@ from typing import Any, Dict, Iterable, Optional
 
 from sphinx.application import Sphinx
 
-from pytools.sphinx import Replace3rdPartyDoc
-
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
@@ -74,6 +72,7 @@ _log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
+# noinspection PyShadowingBuiltins
 copyright = "2021, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
@@ -168,6 +167,11 @@ imgmath_use_preview = True
 #
 html_theme = "pydata_sphinx_theme"
 
+html_theme_options = {
+    "navigation_depth": 4,
+}
+
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -205,10 +209,13 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
-    from pytools.sphinx import (
+    from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
         CollapseModulePathsInSignature,
+        CollapseModulePathsInXRef,
+        Replace3rdPartyDoc,
+        ResolveTypeVariables,
         SkipIndirectImports,
     )
 
@@ -227,6 +234,12 @@ def setup(app: Sphinx) -> None:
     SkipIndirectImports().connect(app=app)
 
     Replace3rdPartyDoc().connect(app=app)
+
+    ResolveTypeVariables().connect(app=app)
+
+    CollapseModulePathsInXRef(
+        collapsible_submodules=intersphinx_collapsible_submodules
+    ).connect(app)
 
     _add_custom_css_and_js(app=app)
 

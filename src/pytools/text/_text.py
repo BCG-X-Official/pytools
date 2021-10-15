@@ -85,13 +85,19 @@ class CharacterMatrix:
         """
         return self._n_columns
 
-    def lines(self) -> Iterable[str]:
+    def lines(self, subset: Optional[Iterable[int]] = None) -> Iterable[str]:
         """
-        Get this character matrix as strings representing the matrix rows.
+        Get this character matrix as strings representing the matrix rows, stripping
+        trailing whitespace.
 
-        :return: the rows in this matrix as strings
+        :param subset: indices of rows to return
+        :return: the matrix rows as strings
         """
-        return ("".join(line) for line in self._matrix)
+        matrix = self._matrix
+        return (
+            "".join(matrix[line]).rstrip()
+            for line in (range(len(matrix)) if subset is None else subset)
+        )
 
     @staticmethod
     def __key_as_slices(key: _TextCoordinates) -> Tuple[slice, slice]:
