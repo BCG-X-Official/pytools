@@ -236,7 +236,7 @@ class JobRunner(ParallelizableMixin):
         :return: the results of all jobs
         """
         with self._parallel() as parallel:
-            return parallel(joblib.delayed(lambda job: job.run())(job) for job in jobs)
+            return parallel((job.run, (), {}) for job in jobs)
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
