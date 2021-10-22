@@ -179,7 +179,8 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
 
     def on_run(self) -> None:
         """
-        Called by :meth:`.JobRunner.run` when starting to run the jobs in this queue.
+        Called by :meth:`.JobRunner.run_queue` when starting to run the jobs in this
+        queue.
 
         Does nothing by default; overload as required to initialize the queue before
         each run.
