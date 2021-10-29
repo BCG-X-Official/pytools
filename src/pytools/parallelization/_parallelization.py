@@ -287,9 +287,7 @@ class JobRunner(ParallelizableMixin):
 
             with self._parallel() as parallel:
                 results: List[T_Job_Result] = parallel(
-                    joblib.delayed(lambda job: job.run())(job)
-                    for queue in queues
-                    for job in queue.jobs()
+                    (job.run, (), {}) for queue in queues for job in queue.jobs()
                 )
 
         finally:
