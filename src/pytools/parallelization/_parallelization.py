@@ -179,7 +179,8 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
 
     def on_run(self) -> None:
         """
-        Called by :meth:`.JobRunner.run` when starting to run the jobs in this queue.
+        Called by :meth:`.JobRunner.run_queue` when starting to run the jobs in this
+        queue.
 
         Does nothing by default; overload as required to initialize the queue before
         each run.
@@ -235,7 +236,7 @@ class JobRunner(ParallelizableMixin):
         :return: the results of all jobs
         """
         with self._parallel() as parallel:
-            return parallel(joblib.delayed(lambda job: job.run())(job) for job in jobs)
+            return parallel((job.run, (), {}) for job in jobs)
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
@@ -286,9 +287,7 @@ class JobRunner(ParallelizableMixin):
 
             with self._parallel() as parallel:
                 results: List[T_Job_Result] = parallel(
-                    joblib.delayed(lambda job: job.run())(job)
-                    for queue in queues
-                    for job in queue.jobs()
+                    (job.run, (), {}) for queue in queues for job in queue.jobs()
                 )
 
         finally:
