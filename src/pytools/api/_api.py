@@ -351,9 +351,10 @@ def is_list_like(obj: Any) -> bool:
 
 
 def to_tuple(
-    values: Union[Iterable[T], T],
+    values: Union[Iterable[T], T, None],
     *,
     element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
@@ -367,6 +368,8 @@ def to_tuple(
     :param values: one or more elements to return as a tuple
     :param element_type: expected type of the values, or a tuple of alternative types
         of which each value must match at least one
+    :param optional: if ``True``, return an empty tuple when ``None`` is passed as
+        arg ``values``; otherwise, raise a :class:`.TypeError`
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
@@ -378,14 +381,16 @@ def to_tuple(
         collection_type=tuple,
         new_collection_type=tuple,
         element_type=element_type,
+        optional=optional,
         arg_name=arg_name,
     )
 
 
 def to_list(
-    values: Union[Iterable[T], T],
+    values: Union[Iterable[T], T, None],
     *,
     element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> List[T]:
     """
@@ -399,6 +404,8 @@ def to_list(
     :param values: one or more elements to return as a list
     :param element_type: expected type of the values, or a tuple of alternative types
         of which each value must match at least one
+    :param optional: if ``True``, return an empty tuple when ``None`` is passed as
+        arg ``values``; otherwise, raise a :class:`.TypeError`
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a list
@@ -410,14 +417,16 @@ def to_list(
         collection_type=list,
         new_collection_type=list,
         element_type=element_type,
+        optional=optional,
         arg_name=arg_name,
     )
 
 
 def to_set(
-    values: Union[Iterable[T], T],
+    values: Union[Iterable[T], T, None],
     *,
     element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
     """
@@ -431,6 +440,8 @@ def to_set(
     :param values: one or more elements to return as a set
     :param element_type: expected type of the values, or a tuple of alternative types
         of which each value must match at least one
+    :param optional: if ``True``, return an empty set when ``None`` is passed as
+        arg ``values``; otherwise, raise a :class:`.TypeError`
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a set
@@ -442,14 +453,16 @@ def to_set(
         collection_type=set,
         new_collection_type=set,
         element_type=element_type,
+        optional=optional,
         arg_name=arg_name,
     )
 
 
 def to_collection(
-    values: Union[Iterable[T], T],
+    values: Union[Iterable[T], T, None],
     *,
     element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Collection[T]:
     """
@@ -463,6 +476,8 @@ def to_collection(
     :param values: one or more elements to return as a collection
     :param element_type: expected type of the values, or a tuple of alternative types
         of which each value must match at least one
+    :param optional: if ``True``, return an empty tuple when ``None`` is passed as
+        arg ``values``; otherwise, raise a :class:`.TypeError`
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a collection
@@ -473,22 +488,26 @@ def to_collection(
         collection_type=None,
         new_collection_type=tuple,
         element_type=element_type,
+        optional=optional,
         arg_name=arg_name,
     )
 
 
 def _to_collection(
-    values: Union[T, Iterable[T]],
+    values: Union[Iterable[T], T, None],
     *,
     collection_type: Optional[Type[Collection]],
     new_collection_type: Type[T_Collection],
     element_type: Optional[Union[Type[T], Tuple[Type, ...]]],
+    optional: bool,
     arg_name: Optional[str],
 ) -> T_Collection:
 
     elements: T_Collection
 
-    if (
+    if optional and values is None:
+        return new_collection_type()
+    elif (
         isinstance(values, Iterable)
         and not isinstance(values, str)
         and not isinstance(values, bytes)
