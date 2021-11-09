@@ -782,8 +782,8 @@ def subsdoc(
 
     :param pattern: a regular expression for the pattern to match
     :param replacement: the replacement for substrings matching the pattern
-    :param using: inherit the docstring from the given object and apply the
-        substitution to that docstring
+    :param using: get the docstring from the given object as the basis for the
+        substitution
     :return: the parameterized decorator
     """
 
