@@ -353,7 +353,7 @@ def is_list_like(obj: Any) -> bool:
 def to_tuple(
     values: Union[Iterable[T], T, None],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
@@ -389,7 +389,7 @@ def to_tuple(
 def to_list(
     values: Union[Iterable[T], T, None],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> List[T]:
@@ -425,7 +425,7 @@ def to_list(
 def to_set(
     values: Union[Iterable[T], T, None],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
@@ -461,7 +461,7 @@ def to_set(
 def to_collection(
     values: Union[Iterable[T], T, None],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type, ...]]] = None,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Collection[T]:
@@ -498,7 +498,7 @@ def _to_collection(
     *,
     collection_type: Optional[Type[Collection]],
     new_collection_type: Type[T_Collection],
-    element_type: Optional[Union[Type[T], Tuple[Type, ...]]],
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool,
     arg_name: Optional[str],
 ) -> T_Collection:
@@ -535,7 +535,7 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    expected_type: Union[Type[T], Tuple[Type, ...]],
+    expected_type: Union[Type[T], Tuple[Type[T], ...]],
     optional: bool = False,
     name: Optional[str] = None,
 ) -> T:
@@ -586,7 +586,7 @@ def validate_type(
 def validate_element_types(
     iterable: T_Iterable,
     *,
-    expected_type: Union[Type, Tuple[Type, ...]],
+    expected_type: Union[type, Tuple[type, ...]],
     optional: bool = False,
     name: Optional[str] = None,
 ) -> T_Iterable:
