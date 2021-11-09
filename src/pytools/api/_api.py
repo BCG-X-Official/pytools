@@ -603,6 +603,13 @@ def validate_element_types(
     :raise TypeException: one or more elements of the iterable did not match the
         expected type
     """
+    if isinstance(iterable, (str, bytes)):
+        raise TypeError(
+            f"{name} must not be a string or bytes instance"
+            if name
+            else "expected an iterable other than a string or bytes instance"
+        )
+
     if expected_type is not object:
         if optional:
             expected_type = (

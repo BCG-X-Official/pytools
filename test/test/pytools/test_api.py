@@ -112,6 +112,16 @@ def test_collection_conversions() -> None:
     with pytest.raises(TypeError, match=r"^xyz "):
         validate_element_types(iter([1, 2, 3]), expected_type=str, name="xyz")
 
+    with pytest.raises(
+        TypeError, match=r"^xyz must not be a string or bytes instance$"
+    ):
+        validate_element_types("abc", expected_type=str, name="xyz")
+
+    with pytest.raises(
+        TypeError, match=r"^expected an iterable other than a string or bytes instance$"
+    ):
+        validate_element_types("abc", expected_type=str)
+
 
 def test_type_validation() -> None:
     validate_type(3, expected_type=int)
