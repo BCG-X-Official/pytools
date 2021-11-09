@@ -24,6 +24,7 @@ import pandas as pd
 import typing_inspect
 
 from ._alltracker import AllTracker
+from ._decorators import subsdoc
 
 log = logging.getLogger(__name__)
 
@@ -107,7 +108,7 @@ def to_tuple(
     Return the given values as a tuple.
 
     - if arg `values` is a tuple, return arg `values` unchanged
-    - if arg `values` is an iterable other than a tuple, return a list of its elements
+    - if arg `values` is an iterable other than a tuple, return a tuple of its elements
     - if arg `values` is not an iterable, return a tuple with the value as its only
       element
 
@@ -115,7 +116,8 @@ def to_tuple(
     :param element_type: expected type of the values, or a tuple of alternative types
         of which each value must match at least one
     :param optional: if ``True``, return an empty tuple when ``None`` is passed as
-        arg ``values``; otherwise, raise a :class:`.TypeError`
+        arg ``values``; otherwise, return a tuple with ``None`` as its only element
+        unless this conflicts with arg ``element_type``
     :param arg_name: name of the argument as which the values were passed to a function
         or method; used when composing the :class:`TypeError` message
     :return: the values as a tuple
@@ -132,6 +134,7 @@ def to_tuple(
     )
 
 
+@subsdoc(pattern="tuple", replacement="list", using=to_tuple)
 def to_list(
     values: Union[Iterable[T], T, None],
     *,
@@ -139,24 +142,7 @@ def to_list(
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> List[T]:
-    """
-    Return the given values as a list.
-
-    - if arg `values` is a list, return arg `values` unchanged
-    - if arg `values` is an iterable other than a list, return a list of its elements
-    - if arg `values` is not an iterable, return a list with the value as its only
-      element
-
-    :param values: one or more elements to return as a list
-    :param element_type: expected type of the values, or a tuple of alternative types
-        of which each value must match at least one
-    :param optional: if ``True``, return an empty tuple when ``None`` is passed as
-        arg ``values``; otherwise, raise a :class:`.TypeError`
-    :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the :class:`TypeError` message
-    :return: the values as a list
-    :raise TypeError: one or more values did not match the expected type(s)
-    """
+    """[will be substituted]"""
 
     return _to_collection(
         values=values,
@@ -168,6 +154,7 @@ def to_list(
     )
 
 
+@subsdoc(pattern="tuple", replacement="set", using=to_tuple)
 def to_set(
     values: Union[Iterable[T], T, None],
     *,
@@ -175,24 +162,7 @@ def to_set(
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Set[T]:
-    """
-    Return the given values as a set.
-
-    - if arg `values` is a set, return arg `values` unchanged
-    - if arg `values` is an iterable other than a set, return a set of its elements
-    - if arg `values` is not an iterable, return a set with the value as its only
-      element
-
-    :param values: one or more elements to return as a set
-    :param element_type: expected type of the values, or a tuple of alternative types
-        of which each value must match at least one
-    :param optional: if ``True``, return an empty set when ``None`` is passed as
-        arg ``values``; otherwise, raise a :class:`.TypeError`
-    :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the :class:`TypeError` message
-    :return: the values as a set
-    :raise TypeError: one or more values did not match the expected type(s)
-    """
+    """[will be substituted]"""
 
     return _to_collection(
         values=values,
@@ -204,6 +174,13 @@ def to_set(
     )
 
 
+@subsdoc(pattern="iterable other than a collection", replacement="iterable")
+@subsdoc(pattern="return (a|an empty) collection", replacement=r"return \1 tuple")
+@subsdoc(
+    pattern=r"(given values as a collection)",
+    replacement=r"\1, i.e., an iterable container",
+)
+@subsdoc(pattern="tuple", replacement="collection", using=to_tuple)
 def to_collection(
     values: Union[Iterable[T], T, None],
     *,
@@ -211,24 +188,7 @@ def to_collection(
     optional: bool = False,
     arg_name: Optional[str] = None,
 ) -> Collection[T]:
-    """
-    Return the given values as a collection, i.e., an iterable container.
-
-    - if arg `values` is a collection, return arg `values` unchanged
-    - if arg `values` is an iterator, return a tuple with its elements
-    - if arg `values` is not an iterable, return a tuple with the value as its only
-      element
-
-    :param values: one or more elements to return as a collection
-    :param element_type: expected type of the values, or a tuple of alternative types
-        of which each value must match at least one
-    :param optional: if ``True``, return an empty tuple when ``None`` is passed as
-        arg ``values``; otherwise, raise a :class:`.TypeError`
-    :param arg_name: name of the argument as which the values were passed to a function
-        or method; used when composing the :class:`TypeError` message
-    :return: the values as a collection
-    :raise TypeError: one or more values did not match the expected type(s)
-    """
+    """[will be substituted]"""
     return _to_collection(
         values=values,
         collection_type=None,
