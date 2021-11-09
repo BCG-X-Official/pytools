@@ -12,7 +12,7 @@ Release Notes
 ``pytools.api``
 ^^^^^^^^^^^^^^^
 
-- API: decorator @:func:`.subsdoc` has a new optional argument ``using``, indicating
+- API: decorator :func:`.subsdoc` has a new optional argument ``using``, indicating
   an object whose docstring will be used as the basis for creating the substituted
   docstring of the decorated object
 
