@@ -46,6 +46,12 @@ def test_subsdoc() -> None:
 
     assert _A._f.__doc__ == "A5C aac A3C"
 
+    @subsdoc(pattern="A5C", replacement="Foo", using=_A._f)
+    def _g() -> None:
+        pass
+
+    assert _g.__doc__ == "Foo aac A3C"
+
 
 def test_collection_conversions() -> None:
     assert to_set(1) == {1}
