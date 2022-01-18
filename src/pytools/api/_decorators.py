@@ -6,6 +6,8 @@ import logging
 import re
 from typing import Any, Callable, Optional, TypeVar
 
+from pytools.api._alltracker import AllTracker
+
 log = logging.getLogger(__name__)
 
 __all__ = ["inheritdoc", "subsdoc"]
@@ -21,6 +23,7 @@ T_Type = TypeVar("T_Type", bound=type)
 #
 # The AllTracker, used to check that __all__ includes all publicly defined symbols
 #
+__tracker = AllTracker(globals())
 
 
 def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
@@ -120,6 +123,9 @@ def subsdoc(
     if not (isinstance(replacement, str)):
         raise ValueError("arg replacement must be a string")
     return _decorate
+
+
+__tracker.validate()
 
 
 def _get_docstring(obj: Any) -> str:
