@@ -9,6 +9,15 @@ Release Notes
 2.0.0
 ~~~~~
 
+``pytools.api``
+^^^^^^^^^^^^^^^
+
+- API: collection validation/conversion functions :func:`.to_set`, :func:`.to_tuple`,
+  :func:`.to_list`, and :func:`.to_collection` have a new argument ``optional``
+- API: decorator :func:`.subsdoc` has a new optional argument ``using``, indicating
+  an object whose docstring will be used as the basis for creating the substituted
+  docstring of the decorated object
+
 ``pytools.data``
 ^^^^^^^^^^^^^^^^
 

@@ -46,6 +46,12 @@ def test_subsdoc() -> None:
 
     assert _A._f.__doc__ == "A5C aac A3C"
 
+    @subsdoc(pattern="A5C", replacement="Foo", using=_A._f)
+    def _g() -> None:
+        pass
+
+    assert _g.__doc__ == "Foo aac A3C"
+
 
 def test_collection_conversions() -> None:
     assert to_set(1) == {1}
@@ -74,6 +80,16 @@ def test_collection_conversions() -> None:
     assert to_collection(t) is t
     assert to_collection(d) is d
 
+    assert to_set(None, optional=True) == set()
+    assert to_list(None, optional=True) == []
+    assert to_tuple(None, optional=True) == ()
+    assert to_collection(None, optional=True) == ()
+
+    assert to_set(None) == {None}
+    assert to_list(None) == [None]
+    assert to_tuple(None) == (None,)
+    assert to_collection(None) == (None,)
+
     with pytest.raises(TypeError):
         to_set(1, element_type=str)
     with pytest.raises(TypeError):
@@ -95,6 +111,16 @@ def test_collection_conversions() -> None:
     validate_element_types([1, 2, 3], expected_type=int)
     with pytest.raises(TypeError, match=r"^xyz "):
         validate_element_types(iter([1, 2, 3]), expected_type=str, name="xyz")
+
+    with pytest.raises(
+        TypeError, match=r"^xyz must not be a string or bytes instance$"
+    ):
+        validate_element_types("abc", expected_type=str, name="xyz")
+
+    with pytest.raises(
+        TypeError, match=r"^expected an iterable other than a string or bytes instance$"
+    ):
+        validate_element_types("abc", expected_type=str)
 
 
 def test_type_validation() -> None:
