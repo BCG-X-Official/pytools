@@ -154,16 +154,20 @@ class FittedText(Text):
             ):
                 super().draw(renderer)
 
+    def set(self, **kwargs: Any) -> None:
+        """
+        Set multiple properties.
+
+        :param kwargs: the properties to set
+        """
+
+        if "width" in kwargs:
+            self.set_width(kwargs.pop("width"))
+        if "height" in kwargs:
+            self.set_height(kwargs.pop("height"))
+        super().set(**kwargs)
+
 
 # check consistency of __all__
 
-assert "set" not in vars(
-    FittedText
-), f"'set' not expected in vars(FittedText): {list(vars(FittedText).keys())}"
-
 __tracker.validate()
-
-assert "set" not in vars(FittedText), (
-    f"'set' not expected in vars(FittedText) after AllTracker validation: "
-    f"{list(vars(FittedText).keys())}"
-)
