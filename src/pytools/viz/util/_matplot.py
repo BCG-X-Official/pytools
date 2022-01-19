@@ -154,6 +154,19 @@ class FittedText(Text):
             ):
                 super().draw(renderer)
 
+    def set(self, **kwargs: Any) -> None:
+        """
+        Set multiple properties.
+
+        :param kwargs: the properties to set
+        """
+
+        if "width" in kwargs:
+            self.set_width(kwargs.pop("width"))
+        if "height" in kwargs:
+            self.set_height(kwargs.pop("height"))
+        super().set(**kwargs)
+
 
 # check consistency of __all__
 
