@@ -1,0 +1,37 @@
+pytools.viz.color.RgbaColor
+===========================
+
+.. currentmodule:: pytools.viz.color
+
+.. autoclass:: RgbaColor
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~RgbaColor.count
+      ~RgbaColor.index
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~RgbaColor.alpha
+      ~RgbaColor.b
+      ~RgbaColor.g
+      ~RgbaColor.r
+   
+   
+
+   .. rubric:: Definitions

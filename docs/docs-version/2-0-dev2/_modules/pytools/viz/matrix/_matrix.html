@@ -1,0 +1,692 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.viz.matrix._matrix &#8212; pytools  documentation</title>
+    
+    <link href="../../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/gamma.css" />
+    
+    <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/gamma.js"></script>
+    <script src="../../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../../index.html">
+  <img src="../../../../_static/gamma_pytools_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../getting_started/getting_started.html">
+  Getting started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../apidoc/pytools.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../contribution_guide.html">
+  Development Guidelines
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../faqs.html">
+  FAQ
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../../release_notes.html">
+  Release Notes
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for pytools.viz.matrix._matrix</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Core implementation of :mod:`pytools.viz.matrix`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib.axis</span> <span class="kn">import</span> <span class="n">Axis</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Normalize</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">FixedLocator</span><span class="p">,</span> <span class="n">Formatter</span><span class="p">,</span> <span class="n">FuncFormatter</span><span class="p">,</span> <span class="n">NullLocator</span>
+
+<span class="kn">from</span> <span class="nn">...data</span> <span class="kn">import</span> <span class="n">Matrix</span>
+<span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="n">ColorbarMatplotStyle</span><span class="p">,</span> <span class="n">Drawer</span><span class="p">,</span> <span class="n">TextStyle</span>
+<span class="kn">from</span> <span class="nn">..color</span> <span class="kn">import</span> <span class="n">ColorScheme</span>
+<span class="kn">from</span> <span class="nn">..util</span> <span class="kn">import</span> <span class="n">FittedText</span><span class="p">,</span> <span class="n">PercentageFormatter</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">MatrixStyle</span>
+<span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># exported names</span>
+<span class="c1">#</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;MatrixDrawer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MatrixMatplotStyle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MatrixReportStyle&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PercentageMatrixMatplotStyle&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Type variables</span>
+<span class="c1">#</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Ensure all symbols introduced below are included in __all__</span>
+<span class="c1">#</span>
+
+<span class="n">__tracker</span> <span class="o">=</span> <span class="n">AllTracker</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Style classes</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="MatrixMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixMatplotStyle.html#pytools.viz.matrix.MatrixMatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MatrixMatplotStyle</span><span class="p">(</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="n">ColorbarMatplotStyle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Matplot style for matrices.</span>
+
+<span class="sd">    Numerical values of matrix cells are rendered as colors from a color map,</span>
+<span class="sd">    with a color bar attached as a legend.</span>
+
+<span class="sd">    Matrix cells will be annotated with their values if a *cell format* is specified.</span>
+<span class="sd">    Cell formats can be defined in different ways:</span>
+
+<span class="sd">    - a new-style Python format string, e.g., ``{:.3g}``</span>
+<span class="sd">    - a function accepting the value to be formatted as its only positional argument,</span>
+<span class="sd">      e.g., ``lambda x: f&quot;{x * 100:.3g}%&quot;``</span>
+<span class="sd">    - a :class:`~matplotlib.ticker.Formatter` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The maximum number of ticks to put on the x and y axis;</span>
+    <span class="c1">#: ``None`` to determine the number of ticks automatically.</span>
+    <span class="n">max_ticks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+
+    <span class="c1">#: Formatter for annotating each matrix cell with its value; if ``None``,</span>
+    <span class="c1">#: no cells are annotated.</span>
+    <span class="n">cell_formatter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Formatter</span><span class="p">]</span>
+
+    <span class="c1">#: The value to look up in the colormap for undefined matrix cells.</span>
+    <span class="n">nan_substitute</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ColorScheme</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">font_family</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap_normalize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Normalize</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colorbar_major_formatter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Formatter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colorbar_minor_formatter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Formatter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">cell_format</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Formatter</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="c1"># todo: change to Callable[[Any], str] once sphinx &quot;unhashable type&quot; bug is</span>
+        <span class="c1">#       fixed</span>
+        <span class="n">nan_substitute</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param cell_format: format for annotating each matrix cell with</span>
+<span class="sd">            its value if sufficient space is available (optional – do not annotate</span>
+<span class="sd">            cells if omitted);</span>
+<span class="sd">            if no colorbar major formatter is specified, use the cell format also</span>
+<span class="sd">            as the colorbar major formatter</span>
+<span class="sd">        :param nan_substitute: value to look up in the colormap for undefined matrix</span>
+<span class="sd">            cells (default: 0.0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cell_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cell_formatter</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">cell_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_format</span><span class="p">,</span> <span class="n">Formatter</span><span class="p">):</span>
+            <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">cell_format</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">cell_format</span><span class="p">):</span>
+            <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">cell_format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;arg cell_format must be a format string, a Formatter, or a callable, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;but a </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">cell_format</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> was passed&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">colorbar_major_formatter</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">colorbar_major_formatter</span> <span class="o">=</span> <span class="n">cell_formatter</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span>
+            <span class="n">font_family</span><span class="o">=</span><span class="n">font_family</span><span class="p">,</span>
+            <span class="n">colormap_normalize</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">colormap_normalize</span> <span class="k">if</span> <span class="n">colormap_normalize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Normalize</span><span class="p">()</span>
+            <span class="p">),</span>
+            <span class="n">colorbar_major_formatter</span><span class="o">=</span><span class="n">colorbar_major_formatter</span><span class="p">,</span>
+            <span class="n">colorbar_minor_formatter</span><span class="o">=</span><span class="n">colorbar_minor_formatter</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">cell_formatter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nan_substitute</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">nan_substitute</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nan_substitute</span>
+
+    <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">ColorbarMatplotStyle</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+</span> <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span>
+
+<div class="viewcode-block" id="MatrixMatplotStyle.draw_matrix"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixMatplotStyle.html#pytools.viz.matrix.MatrixMatplotStyle.draw_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">draw_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span>
+
+        <span class="c1"># replace undefined weights with all ones</span>
+        <span class="n">weights_rows</span><span class="p">,</span> <span class="n">weights_columns</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">w</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">w</span> <span class="k">for</span> <span class="n">w</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># calculate the horizontal and vertical matrix cell bounds based on the</span>
+        <span class="c1"># cumulative sums of the axis weights; default all weights to 1 if not defined</span>
+        <span class="n">column_bounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+        <span class="n">row_bounds</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+        <span class="n">row_bounds</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">weights_rows</span><span class="p">])</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="n">column_bounds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="o">*</span><span class="n">weights_columns</span><span class="p">])</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+
+        <span class="c1"># calculate the colors based on the data</span>
+        <span class="n">cell_colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_for_value</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">nan</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">nan_substitute</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">*</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+        <span class="c1"># define hatch parameters</span>
+        <span class="n">hatch_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="kc">False</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="kc">True</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+                <span class="n">hatch</span><span class="o">=</span><span class="s2">&quot;////&quot;</span><span class="p">,</span>
+                <span class="n">edgecolor</span><span class="o">=</span><span class="p">(</span>
+                    <span class="o">*</span><span class="n">colors</span><span class="o">.</span><span class="n">contrast_color</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">color_for_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nan_substitute</span><span class="p">)[:</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="p">),</span>
+                    <span class="mf">0.25</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="c1"># draw the matrix cells</span>
+        <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">x1</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">column_bounds</span><span class="p">,</span> <span class="n">column_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:])):</span>
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">row_bounds</span><span class="p">,</span> <span class="n">row_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:])):</span>
+                <span class="n">color</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">cell_colors</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span>
+                    <span class="n">Rectangle</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="n">x0</span><span class="p">,</span>
+                            <span class="n">y0</span><span class="p">,</span>
+                        <span class="p">),</span>
+                        <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">,</span>
+                        <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span><span class="p">,</span>
+                        <span class="n">facecolor</span><span class="o">=</span><span class="n">color</span><span class="p">,</span>
+                        <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="o">**</span><span class="n">hatch_params</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">])],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="c1"># noinspection PyTypeChecker</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">update_datalim</span><span class="p">([(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">column_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">row_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])])</span>
+
+        <span class="c1"># draw the tick marks and labels</span>
+
+        <span class="n">x_tick_locations</span> <span class="o">=</span> <span class="p">(</span><span class="n">column_bounds</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">column_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">y_tick_locations</span> <span class="o">=</span> <span class="p">(</span><span class="n">row_bounds</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">row_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="k">def</span> <span class="nf">_set_ticks</span><span class="p">(</span>
+            <span class="n">tick_locations</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">tick_labels</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+            <span class="n">axis</span><span class="p">:</span> <span class="n">Axis</span><span class="p">,</span>
+            <span class="n">tick_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="p">):</span>
+            <span class="c1"># set the ticks for the given axis</span>
+
+            <span class="k">if</span> <span class="n">tick_labels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">NullLocator</span><span class="p">())</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Replace the tick locator with a fixed locator, preserving the tick</span>
+                <span class="c1"># locations determined by the MaxNLocator. This is needed for</span>
+                <span class="c1"># compatibility with the FixedFormatter that will be created when</span>
+                <span class="c1"># setting the tick labels</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">FixedLocator</span><span class="p">(</span><span class="n">tick_locations</span><span class="p">))</span>
+
+                <span class="c1"># Set the tick labels; behind the scenes this will create a</span>
+                <span class="c1"># FixedFormatter.</span>
+                <span class="n">axis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">(</span><span class="n">tick_labels</span><span class="p">,</span> <span class="o">**</span><span class="n">tick_params</span><span class="p">)</span>
+
+        <span class="c1"># add tick labels</span>
+
+        <span class="n">row_names</span><span class="p">,</span> <span class="n">column_names</span> <span class="o">=</span> <span class="n">names</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">column_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">column_names</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">column_names</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="c1"># rotate column labels if they are categorical and not all single-character</span>
+            <span class="n">column_tick_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">rotation_mode</span><span class="o">=</span><span class="s2">&quot;anchor&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">column_tick_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">_set_ticks</span><span class="p">(</span>
+            <span class="n">tick_locations</span><span class="o">=</span><span class="n">x_tick_locations</span><span class="p">,</span>
+            <span class="n">tick_labels</span><span class="o">=</span><span class="n">column_names</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="p">,</span>
+            <span class="n">tick_params</span><span class="o">=</span><span class="n">column_tick_params</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">_set_ticks</span><span class="p">(</span>
+            <span class="n">tick_locations</span><span class="o">=</span><span class="n">y_tick_locations</span><span class="p">,</span>
+            <span class="n">tick_labels</span><span class="o">=</span><span class="n">row_names</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="p">,</span>
+            <span class="n">tick_params</span><span class="o">=</span><span class="p">{},</span>
+        <span class="p">)</span>
+
+        <span class="c1"># only draw cell labels if a cell formatter is defined, and minimal height/width</span>
+        <span class="c1"># is available</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_formatter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># draw the axis to ensure we&#39;ll get correct coordinates</span>
+            <span class="c1"># ax.draw(self.renderer)</span>
+
+            <span class="c1"># get the cell formatter as a local field</span>
+            <span class="n">cell_formatter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell_formatter</span>
+
+            <span class="c1"># render the text for every box where the text fits</span>
+
+            <span class="k">for</span> <span class="n">r</span><span class="p">,</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">y_tick_locations</span><span class="p">,</span> <span class="n">weights_rows</span><span class="p">)):</span>
+                <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">x_tick_locations</span><span class="p">,</span> <span class="n">weights_columns</span><span class="p">)):</span>
+                    <span class="n">cell_value</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span>
+                    <span class="n">label</span> <span class="o">=</span> <span class="n">cell_formatter</span><span class="p">(</span><span class="n">cell_value</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">add_artist</span><span class="p">(</span>
+                        <span class="n">FittedText</span><span class="p">(</span>
+                            <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+                            <span class="n">width</span><span class="o">=</span><span class="n">width</span><span class="p">,</span>
+                            <span class="n">height</span><span class="o">=</span><span class="n">height</span><span class="p">,</span>
+                            <span class="n">text</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                            <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                            <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">contrast_color</span><span class="p">(</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">color_for_value</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">cell_value</span><span class="p">)</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="c1"># create a white grid using minor tick positions</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">FixedLocator</span><span class="p">(</span><span class="n">column_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_minor_locator</span><span class="p">(</span><span class="n">FixedLocator</span><span class="p">(</span><span class="n">row_bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span>
+            <span class="n">b</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="o">.</span><span class="n">background</span><span class="p">,</span>
+            <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;-&quot;</span><span class="p">,</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">which</span><span class="o">=</span><span class="s2">&quot;minor&quot;</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">left</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># make sure we have no major grid, overriding any global settings</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;major&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MatrixMatplotStyle.start_drawing"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixMatplotStyle.html#pytools.viz.matrix.MatrixMatplotStyle.start_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">start_drawing</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name_labels</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">name_labels</span><span class="o">=</span><span class="n">name_labels</span><span class="p">,</span>
+            <span class="n">weight_label</span><span class="o">=</span><span class="n">weight_label</span><span class="p">,</span>
+            <span class="n">colorbar_label</span><span class="o">=</span><span class="n">weight_label</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
+
+        <span class="c1"># make this a square matrix</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+
+        <span class="c1"># remove margins</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">margins</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># set axis labels</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">name_labels</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">foreground</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">name_labels</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">foreground</span><span class="p">)</span>
+
+        <span class="c1"># hide spines</span>
+        <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">spine</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">spine</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PercentageMatrixMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.PercentageMatrixMatplotStyle.html#pytools.viz.matrix.PercentageMatrixMatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">PercentageMatrixMatplotStyle</span><span class="p">(</span><span class="n">MatrixMatplotStyle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A matrix plot where all values are percentages.</span>
+
+<span class="sd">    Annotates matrix cells with percentage values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ColorScheme</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">font_family</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">colormap_normalize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Normalize</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">nan_substitute</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param nan_substitute: the value to look up in the colormap for undefined matrix</span>
+<span class="sd">            cells (default: 0.0)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+            <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span>
+            <span class="n">font_family</span><span class="o">=</span><span class="n">font_family</span><span class="p">,</span>
+            <span class="n">colormap_normalize</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">colormap_normalize</span>
+                <span class="k">if</span> <span class="n">colormap_normalize</span>
+                <span class="k">else</span> <span class="n">Normalize</span><span class="p">(</span><span class="n">vmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">nan_substitute</span><span class="o">=</span><span class="n">nan_substitute</span><span class="p">,</span>
+            <span class="n">colorbar_major_formatter</span><span class="o">=</span><span class="n">PercentageFormatter</span><span class="p">(),</span>
+            <span class="n">colorbar_minor_formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">cell_format</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0995</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">line</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">ColorbarMatplotStyle</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;_formatter:&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">line</span>
+        <span class="p">)</span>
+        <span class="o">+</span> <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="PercentageMatrixMatplotStyle.get_default_style_name"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.PercentageMatrixMatplotStyle.html#pytools.viz.matrix.PercentageMatrixMatplotStyle.get_default_style_name">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_style_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_default_style_name</span><span class="p">()</span><span class="si">}</span><span class="s2">%&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="MatrixReportStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixReportStyle.html#pytools.viz.matrix.MatrixReportStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MatrixReportStyle</span><span class="p">(</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="n">TextStyle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Text report style for matrices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MatrixReportStyle.start_drawing"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixReportStyle.html#pytools.viz.matrix.MatrixReportStyle.start_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">start_drawing</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name_labels</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dim_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="s2">&quot;rows&quot;</span><span class="p">,</span> <span class="s2">&quot;columns&quot;</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">name_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dim_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name_labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weight_label</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weights: </span><span class="si">{</span><span class="n">weight_label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MatrixReportStyle.draw_matrix"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixReportStyle.html#pytools.viz.matrix.MatrixReportStyle.draw_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">draw_matrix</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span>
+        <span class="n">weights</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_axis_marks</span><span class="p">(</span>
+            <span class="n">axis_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">axis_weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+            <span class="k">if</span> <span class="n">axis_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">axis_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">axis_names</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axis_weights</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="n">axis_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">axis_names</span>
+
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">weight</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axis_names</span><span class="p">,</span> <span class="n">axis_weights</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">row_labels</span><span class="p">,</span> <span class="n">column_labels</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_axis_marks</span><span class="p">(</span><span class="n">axis_names</span><span class="p">,</span> <span class="n">axis_weights</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">axis_names</span><span class="p">,</span> <span class="n">axis_weights</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">row_labels</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">column_labels</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span>
+            <span class="n">buf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">,</span> <span class="n">line_width</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="p">)</span></div></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># Drawer classes</span>
+<span class="c1">#</span>
+
+
+<div class="viewcode-block" id="MatrixDrawer"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">MatrixDrawer</span><span class="p">(</span><span class="n">Drawer</span><span class="p">[</span><span class="n">Matrix</span><span class="p">,</span> <span class="n">MatrixStyle</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drawer for matrices of numerical values.</span>
+
+<span class="sd">    Supports the following pre-defined styles:</span>
+
+<span class="sd">    - ``&quot;matplot&quot;``: `matplotlib` plot of the matrix using a</span>
+<span class="sd">      :class:`.MatrixMatplotStyle`</span>
+<span class="sd">    - ``&quot;matplot%&quot;``: `matplotlib` plot of matrix with annotations formatted as</span>
+<span class="sd">      percentages, using a :class:`.PercentageMatrixMatplotStyle`</span>
+<span class="sd">    - ``&quot;text&quot;``: text representation of the matrix, using a :class:`.MatrixReportStyle`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param style: the style to be used for drawing (default: ``&quot;matplot&quot;``)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MatrixDrawer.get_style_classes"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer.get_style_classes">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_style_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">MatrixStyle</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">MatrixMatplotStyle</span><span class="p">,</span>
+            <span class="n">PercentageMatrixMatplotStyle</span><span class="p">,</span>
+            <span class="n">MatrixReportStyle</span><span class="p">,</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="MatrixDrawer.get_style_kwargs"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer.get_style_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_style_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Matrix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="n">name_labels</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name_labels</span><span class="p">,</span>
+            <span class="n">weight_label</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">value_label</span><span class="p">,</span>
+            <span class="o">**</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_style_kwargs</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="MatrixDrawer._draw"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer._draw">[docs]</a>    <span class="k">def</span> <span class="nf">_draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Matrix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># draw the matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">draw_matrix</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">names</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">names</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span></div></div>
+
+
+<span class="n">__tracker</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, Boston Consulting Group (BCG).<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
