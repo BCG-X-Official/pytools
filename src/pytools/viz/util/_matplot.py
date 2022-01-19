@@ -157,4 +157,8 @@ class FittedText(Text):
 
 # check consistency of __all__
 
+assert "set" not in vars(FittedText)
+
 __tracker.validate()
+
+assert "set" not in vars(FittedText)
