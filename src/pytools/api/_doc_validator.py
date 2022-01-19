@@ -6,7 +6,6 @@ import importlib
 import logging
 import os
 import re
-import sys
 from glob import glob
 from types import FunctionType, ModuleType
 from typing import (
@@ -51,7 +50,6 @@ __all__ = ["DocValidator"]
 T_NamedElementDefinition = TypeVar(
     "T_NamedElementDefinition", bound=NamedElementDefinition
 )
-
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -242,9 +240,15 @@ class DocValidator:
             )
 
     def _log_validation_errors(self) -> None:
-        for full_name, errors in self.validation_errors.items():
-            for error in errors:
-                print(f"{full_name}: {error}", file=sys.stderr)
+        if self.validation_errors:
+            log.error(
+                "\n"
+                + "\n".join(
+                    f"{full_name}: {error}"
+                    for full_name, errors in self.validation_errors.items()
+                    for error in errors
+                )
+            )
 
     def _load_modules(self) -> List[ModuleType]:
         # list paths to all python files
