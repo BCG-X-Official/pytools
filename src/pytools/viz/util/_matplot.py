@@ -157,8 +157,13 @@ class FittedText(Text):
 
 # check consistency of __all__
 
-assert "set" not in vars(FittedText)
+assert "set" not in vars(
+    FittedText
+), f"'set' not expected in vars(FittedText): {list(vars(FittedText).keys())}"
 
 __tracker.validate()
 
-assert "set" not in vars(FittedText)
+assert "set" not in vars(FittedText), (
+    f"'set' not expected in vars(FittedText) after AllTracker validation: "
+    f"{list(vars(FittedText).keys())}"
+)
