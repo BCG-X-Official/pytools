@@ -11,7 +11,7 @@ build:
 
 requirements:
   host:
-    - pip    >=20
+    - pip    =21.2.*
     - python {{ environ.get('FACET_V_PYTHON') }}
     - numpy  {{ environ.get('FACET_V_NUMPY') }}
     - flit   =3
