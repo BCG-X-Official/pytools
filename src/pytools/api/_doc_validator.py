@@ -230,6 +230,10 @@ class DocValidator:
 
         # inspect classes recursively
         for cls in classes:
+            log.debug(
+                f"Inspecting elements of {cls.full_name}: "
+                f"{list(vars(cls.element).keys())}"
+            )
             self._validate_members(
                 members=[
                     attribute
