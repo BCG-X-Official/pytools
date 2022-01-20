@@ -22,7 +22,8 @@ from typing import (
     Union,
 )
 
-from ._api import AllTracker, to_tuple
+from ._alltracker import AllTracker
+from ._api import to_tuple
 from .doc import (
     APIDefinition,
     DocTest,
