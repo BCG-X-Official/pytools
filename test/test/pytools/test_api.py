@@ -5,6 +5,7 @@ Basic test cases for the `pytools.api` module
 import pytest
 
 from pytools.api import (
+    AllTracker,
     deprecated,
     subsdoc,
     to_collection,
@@ -14,6 +15,18 @@ from pytools.api import (
     validate_element_types,
     validate_type,
 )
+
+
+class A:
+    pass
+
+
+class B:
+    pass
+
+
+class _C:
+    pass
 
 
 def test_deprecated() -> None:
@@ -158,3 +171,36 @@ def test_type_validation() -> None:
         match="^value requires an instance of int or float or NoneType but got a str$",
     ):
         validate_type("3", expected_type=(int, float), optional=True, name="value")
+
+
+def test_all_tracker() -> None:
+    mock_globals = {"__all__": ["A", "B"], "__name__": "test.pytools.test_api"}
+
+    tracker = AllTracker(mock_globals)
+
+    mock_globals.update({"A": A, "B": B, "_C": _C})
+
+    tracker.validate()
+
+    assert tracker.get_tracked() == mock_globals["__all__"]
+    assert tracker.is_tracked("A", A)
+    assert not tracker.is_tracked("_C", _C)
+
+
+def test_all_tracker_with_options() -> None:
+    mock_globals = {
+        "__all__": ["A", "B", "const"],
+        "__name__": "test.pytools.test_api_other",
+    }
+
+    tracker = AllTracker(
+        mock_globals, allow_global_constants=True, allow_imported_definitions=True
+    )
+
+    mock_globals.update({"A": A, "B": B, "_C": _C, "const": 1})
+
+    tracker.validate()
+
+    assert tracker.get_tracked() == mock_globals["__all__"]
+    assert tracker.is_tracked("const", 1)
+    assert not tracker.is_tracked("_C", _C)
