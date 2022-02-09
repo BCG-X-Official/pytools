@@ -125,12 +125,6 @@ class BinaryOperator(Operator):
         return False
 
 
-# Create a placeholder type so Sphinx will generate correct type hints
-# for class attributes
-# noinspection PyTypeHints,PyTypeChecker
-_UnaryOperator = TypeVar("UnaryOperator", bound="UnaryOperator")
-
-
 class UnaryOperator(Operator):
     """
     A unary operator.
@@ -142,11 +136,11 @@ class UnaryOperator(Operator):
     #: Inherited from :attr:`.Operator.MAX_PRECEDENCE`.
     MAX_PRECEDENCE: int
 
-    POS: _UnaryOperator  #: The ``+`` prefix operator.
-    NEG: _UnaryOperator  #: The ``-`` prefix operator.
-    INVERT: _UnaryOperator  #: The ``~`` prefix operator.
-    NOT: _UnaryOperator  #: The ``not`` prefix operator.
-    LAMBDA: _UnaryOperator  #: The ``lambda`` prefix operator.
+    POS: "UnaryOperator"  #: The ``+`` prefix operator.
+    NEG: "UnaryOperator"  #: The ``-`` prefix operator.
+    INVERT: "UnaryOperator"  #: The ``~`` prefix operator.
+    NOT: "UnaryOperator"  #: The ``not`` prefix operator.
+    LAMBDA: "UnaryOperator"  #: The ``lambda`` prefix operator.
 
     @property
     def is_unary(self) -> bool:

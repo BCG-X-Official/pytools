@@ -205,10 +205,9 @@ class DocValidator:
             )
 
             if self.exclude_from_parameter_validation:
+                _pattern = self.exclude_from_parameter_validation  # https://github.com/python/mypy/issues/4297
                 return filter(
-                    lambda definition: not self.exclude_from_parameter_validation.match(
-                        definition.full_name
-                    ),
+                    lambda definition: not _pattern.match(definition.full_name),
                     definitions,
                 )
             else:
