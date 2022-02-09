@@ -34,7 +34,7 @@ __all__ = [
 # Type variables
 #
 
-T = TypeVar("T")
+T = TypeVar("T", type, FunctionType)
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -317,6 +317,7 @@ class HasWellFormedDocstring(DocTest):
                 continue
 
             line_elements = re.match(r"(\s*)(:(?:param|returns?|raises?))?", line)
+            assert line_elements is not None, "regex found matches"
             text_indent = line_elements.regs[1][1]
 
             is_param_line = text_indent < line_elements.regs[2][1]

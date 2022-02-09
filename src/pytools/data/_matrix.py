@@ -256,7 +256,7 @@ class Matrix(HasExpressionRepr):
 
         if isinstance(size, tuple) and len(size) == 2 and all(map(np.isreal, size)):
             rows, columns = size
-        elif np.isscalar(size) and np.isreal(size):
+        elif isinstance(size, (int, float)):
             rows = columns = size
         else:
             raise ValueError(f"arg size={size!r} must be a number or a pair of numbers")
@@ -303,15 +303,19 @@ class Matrix(HasExpressionRepr):
             weight_label=self.value_label,
         )
 
-    def __eq__(self, other: "Matrix") -> bool:
-        return (
-            isinstance(other, Matrix)
-            and np.array_equal(self.values, other.values)
-            and map(np.array_equal, zip(self.weights, other.weights))
-            and map(np.array_equal, zip(self.names, other.names))
-            and self.name_labels == other.name_labels
-            and self.value_label == other.value_label
-        )
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Matrix):
+            raise TypeError
+        else:
+            return (
+                np.array_equal(self.values, other.values)
+                and all(
+                    map(lambda x: np.array_equal(*x), zip(self.weights, other.weights))
+                )
+                and all(map(lambda x: np.array_equal(*x), zip(self.names, other.names)))
+                and self.name_labels == other.name_labels
+                and self.value_label == other.value_label
+            )
 
 
 def _validate_resize_arg(
@@ -320,8 +324,10 @@ def _validate_resize_arg(
     def _message(error: str) -> str:
         return f"{axis_name} size {error}, but is {size_new!r}"
 
+    result: Tuple[Optional[int], Optional[float]] = (None, None)
+
     if size_new is None:
-        return (None, None)
+        return result
 
     if isinstance(size_new, int):
         if size_new > size_current:
@@ -362,6 +368,7 @@ def _top_items_mask(
     elif not target_ratio:
         assert target_ratio, "one of target size or target ratio is defined"
 
+    assert weights is not None, "weights are defined"
     mask = np.zeros(current_size, dtype=bool)
     ix_weights_descending_stable = (current_size - 1) - weights[::-1].argsort(
         kind="stable"

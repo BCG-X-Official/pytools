@@ -4,20 +4,13 @@ Core implementation of decorators in :mod:`pytools.api`.
 
 import logging
 import re
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Optional
 
 from pytools.api._alltracker import AllTracker
 
 log = logging.getLogger(__name__)
 
 __all__ = ["inheritdoc", "subsdoc"]
-
-#
-# Type variables
-#
-
-T = TypeVar("T")
-T_Type = TypeVar("T_Type", bound=type)
 
 
 #
@@ -26,7 +19,7 @@ T_Type = TypeVar("T_Type", bound=type)
 __tracker = AllTracker(globals())
 
 
-def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
+def inheritdoc(*, match: str) -> Callable[[type], type]:
     """
     Decorator to inherit docstrings of overridden methods.
 
@@ -90,7 +83,7 @@ def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
 
 def subsdoc(
     *, pattern: str, replacement: str, using: Optional[Any] = None
-) -> Callable[[T], T]:
+) -> Callable[[object], object]:
     """
     Decorator that matches a given pattern in the decorated object's docstring, and
     substitutes it with the given replacement string (see :func:`re.sub`)
@@ -102,7 +95,7 @@ def subsdoc(
     :return: the parameterized decorator
     """
 
-    def _decorate(_obj: T) -> T:
+    def _decorate(_obj: object) -> object:
         origin = _obj if using is None else using
         docstring_original = _get_docstring(origin)
         if not isinstance(docstring_original, str):
@@ -137,7 +130,7 @@ def _get_docstring(obj: Any) -> str:
         return obj.__doc__
 
 
-def _set_docstring(obj: Any, docstring: str) -> None:
+def _set_docstring(obj: Any, docstring: Optional[str]) -> None:
     # set the docstring of the given object
 
     try:

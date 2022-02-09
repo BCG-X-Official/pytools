@@ -156,8 +156,8 @@ class ColorScheme(HasExpressionRepr):
         Defaults to the halfway point between the foreground and background color
         if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_FILL_1, None) or tuple(
-            (f + b) / 2 for f, b in zip(self.foreground, self.background)
+        return self._colors.get(ColorScheme._COLOR_FILL_1) or RgbColor(
+            *((f + b) / 2 for f, b in zip(self.foreground, self.background))
         )
 
     @property
@@ -167,7 +167,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the primary fill color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_FILL_2, None) or self.fill_1
+        return self._colors.get(ColorScheme._COLOR_FILL_2) or self.fill_1
 
     @property
     def fill_3(self) -> RgbColor:
@@ -176,7 +176,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the primary fill color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_FILL_3, None) or self.fill_1
+        return self._colors.get(ColorScheme._COLOR_FILL_3) or self.fill_1
 
     @property
     def accent_1(self) -> RgbColor:
@@ -185,7 +185,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the foreground color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_ACCENT_1, None) or self.foreground
+        return self._colors.get(ColorScheme._COLOR_ACCENT_1) or self.foreground
 
     @property
     def accent_2(self) -> RgbColor:
@@ -194,7 +194,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the primary accent color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_ACCENT_2, None) or self.accent_1
+        return self._colors.get(ColorScheme._COLOR_ACCENT_2) or self.accent_1
 
     @property
     def accent_3(self) -> RgbColor:
@@ -203,7 +203,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the secondary accent color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_ACCENT_3, None) or self.accent_2
+        return self._colors.get(ColorScheme._COLOR_ACCENT_3) or self.accent_2
 
     @property
     def status_ok(self) -> RgbColor:
@@ -212,7 +212,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the primary accent color if not defined explicitly.
         """
-        return self._colors.get(ColorScheme._COLOR_STATUS_OK, None) or self.accent_1
+        return self._colors.get(ColorScheme._COLOR_STATUS_OK) or self.accent_1
 
     @property
     def status_warning(self) -> RgbColor:
@@ -221,9 +221,7 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the secondary accent color if not defined explicitly.
         """
-        return (
-            self._colors.get(ColorScheme._COLOR_STATUS_WARNING, None) or self.accent_2
-        )
+        return self._colors.get(ColorScheme._COLOR_STATUS_WARNING) or self.accent_2
 
     @property
     def status_critical(self) -> RgbColor:
@@ -232,11 +230,11 @@ class ColorScheme(HasExpressionRepr):
 
         Defaults to the tertiary accent color if not defined explicitly.
         """
-        return (
-            self._colors.get(ColorScheme._COLOR_STATUS_CRITICAL, None) or self.accent_3
-        )
+        return self._colors.get(ColorScheme._COLOR_STATUS_CRITICAL) or self.accent_3
 
-    def contrast_color(self, fill_color: T_Color) -> T_Color:
+    def contrast_color(
+        self, fill_color: Union[RgbColor, RgbaColor]
+    ) -> Union[RgbColor, RgbaColor]:
         """
         Return the foreground color or background color of this color schema,
         depending on which maximises contrast with the given fill color.
@@ -251,7 +249,7 @@ class ColorScheme(HasExpressionRepr):
         if not 3 <= len(fill_color) <= 4:
             raise ValueError(f"arg fill_color={fill_color!r} must be an RGB(A) color")
 
-        def _luminance(c: T_Color) -> float:
+        def _luminance(c: Union[RgbColor, RgbaColor]) -> float:
             return sum(c[:3])
 
         # find the color that maximises contrast
@@ -267,7 +265,7 @@ class ColorScheme(HasExpressionRepr):
 
         # preserve alpha channel of the fill color, if present
         if len(fill_color) > 3:
-            return contrast_color + (fill_color[3],)
+            return RgbaColor(*(contrast_color + (fill_color[3],)))
         else:
             return contrast_color
 
@@ -297,14 +295,14 @@ ColorScheme._SUPPORTED_COLORS = {
     and (
         k
         not in {
-            ColorScheme.foreground.fget.__name__,
-            ColorScheme.background.fget.__name__,
+            ColorScheme._COLOR_FOREGROUND,
+            ColorScheme._COLOR_BACKGROUND,
         }
     )
 }
 
 # noinspection PyProtectedMember
-ColorScheme.__init__.__doc__ = ColorScheme.__init__.__doc__.replace(
+ColorScheme.__init__.__doc__ = ColorScheme.__init__.__doc__.replace(  # type: ignore
     "%COLORS%",
     ", ".join(sorted(map(lambda code: f"``{code}``", ColorScheme._SUPPORTED_COLORS))),
 )
@@ -342,7 +340,7 @@ class MatplotColorScheme(ColorScheme):
         else:
             raise ValueError("arg colormap must be a Colormap or a string")
 
-    __doc_lines = ColorScheme.__init__.__doc__.split("\n")
+    __doc_lines = ColorScheme.__init__.__doc__.split("\n")  # type: ignore
     __doc_lines.insert(-2, __init__.__doc__[1:])
     __init__.__doc__ = "\n".join(__doc_lines)
     del __doc_lines

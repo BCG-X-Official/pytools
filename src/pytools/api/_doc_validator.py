@@ -82,19 +82,19 @@ class DocValidator:
 
     #: names of modules for which parameter documentation and type hints should not be
     #: validated
-    exclude_from_parameter_validation: Pattern
+    exclude_from_parameter_validation: Optional[Pattern]
 
     #: after validation, lists all errors per definition
     validation_errors: Dict[str, List[str]]
 
     #: tests to run on each definition during validation
-    validation_tests: Tuple[DocTest]
+    validation_tests: Tuple[DocTest, ...]
 
     #: default value for parameter ``validate_protected``
     DEFAULT_VALIDATE_PROTECTED = ("__init__",)
 
     #: default doc tests to run
-    DEFAULT_DOC_TESTS: Tuple[DocTest] = (
+    DEFAULT_DOC_TESTS: Tuple[DocTest, DocTest, DocTest, DocTest] = (
         HasDocstring(),
         HasMatchingParameterDoc(),
         HasWellFormedDocstring(),
@@ -138,12 +138,12 @@ class DocValidator:
 
         self.validation_errors = {}
         self.validation_tests = (
-            tuple(*self.DEFAULT_DOC_TESTS, *additional_tests)
+            (*self.DEFAULT_DOC_TESTS, *additional_tests)
             if additional_tests
             else self.DEFAULT_DOC_TESTS
         )
 
-    __init__.__doc__ = __init__.__doc__.replace(
+    __init__.__doc__ = __init__.__doc__.replace(  # type: ignore
         "%VALIDATE_PROTECTED%", repr(DEFAULT_VALIDATE_PROTECTED)
     )
 

@@ -17,6 +17,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 import numpy as np
@@ -220,7 +221,7 @@ def _to_collection(
     ):
         if isinstance(values, collection_type or Collection):
             # no change needed, values already is the collection we need
-            elements = values
+            elements = cast(T_Collection, values)
         elif element_type and isinstance(values, element_type):
             # create a single-element collection
             elements = new_collection_type((values,))

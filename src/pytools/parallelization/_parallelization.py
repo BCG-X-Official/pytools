@@ -6,6 +6,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from functools import wraps
 from multiprocessing import Lock
+from multiprocessing.synchronize import Lock as LockType
 from typing import (
     Any,
     Callable,
@@ -163,7 +164,7 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
 
     #: The lock used by class :class:`.JobRunner` to prevent parallel executions of the
     #: same queue
-    lock: Lock
+    lock: LockType
 
     def __init__(self) -> None:
         self.lock = Lock()
@@ -220,7 +221,6 @@ class JobRunner(ParallelizableMixin):
             for the job runner
         :return: the new job runner
         """
-        cls: Type[T_JobRunner]
         return cls(
             n_jobs=parallelizable.n_jobs,
             shared_memory=parallelizable.shared_memory,
@@ -263,7 +263,7 @@ class JobRunner(ParallelizableMixin):
             return queue.aggregate(job_results=results)
 
     def run_queues(
-        self, queues: Iterable[JobQueue[Any, T_Queue_Result]]
+        self, queues: Iterable[JobQueue[T_Job_Result, T_Queue_Result]]
     ) -> List[T_Queue_Result]:
         """
         Run all jobs in the given queues, in parallel.
@@ -273,8 +273,10 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queues: Sequence[JobQueue[T_Queue_Result]] = to_tuple(
-            queues, element_type=JobQueue, arg_name="queues"
+        queues: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
+            queues,
+            element_type=JobQueue[T_Job_Result, T_Queue_Result],
+            arg_name="queues",
         )
 
         try:
@@ -325,14 +327,14 @@ class SimpleQueue(
     """
 
     #: The jobs run by this queue.
-    _jobs: Tuple[T_Job_Result, ...]
+    _jobs: Tuple[Job[T_Job_Result], ...]
 
     def __init__(self, jobs: Iterable[Job[T_Job_Result]]) -> None:
         """
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(jobs, element_type=Job, arg_name="jobs")
+        self._jobs = to_tuple(jobs, element_type=Job[T_Job_Result], arg_name="jobs")
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """[see superclass]"""
