@@ -40,7 +40,7 @@ try:
 except ImportError:
     # in Python 3.6, ForwardRef is called _ForwardRef
     # noinspection PyProtectedMember,PyUnresolvedReferences
-    from typing import _ForwardRef as ForwardRef
+    from typing import _ForwardRef as ForwardRef  # type: ignore
 
 
 try:
@@ -282,7 +282,7 @@ class AddInheritance(AutodocProcessDocstring):
 
             # get the base classes; try generic bases first then fall back to regular
             # bases
-            base_classes: Tuple[type] = (
+            base_classes: Tuple[type, ...] = (
                 get_generic_bases(_subclass) or _subclass.__bases__
             )
 

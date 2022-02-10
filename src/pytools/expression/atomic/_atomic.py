@@ -53,7 +53,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
         :param value: the literal value represented by this expression
         """
         super().__init__()
-        self._value = value
+        self._value: T_Literal = value
 
     @property
     def value_(self) -> T_Literal:
@@ -68,7 +68,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 class _IdentifierMeta(type):
 
-    _identifiers: Dict[str, "Id"] = WeakValueDictionary()
+    _identifiers: Dict[str, "Id"] = WeakValueDictionary()  # type: ignore
 
     def __getattr__(self, name: str) -> "Id":
         if name.startswith("_") or name.endswith("_") or name == "Id":
@@ -86,7 +86,7 @@ class _IdentifierMeta(type):
 @inheritdoc(match="[see superclass]")
 class Id(
     AtomicExpression[str],
-    metaclass=compose_meta(_IdentifierMeta, type(AtomicExpression)),
+    metaclass=compose_meta(_IdentifierMeta, type(AtomicExpression)),  # type: ignore
 ):
     """
     An identifier.
@@ -132,7 +132,7 @@ class Id(
 @inheritdoc(match="[see superclass]")
 class Epsilon(
     AtomicExpression[None],
-    metaclass=compose_meta(SingletonMeta, type(AtomicExpression)),
+    metaclass=compose_meta(SingletonMeta, type(AtomicExpression)),  # type: ignore
 ):
     """
     A singleton class representing the empty expression.
