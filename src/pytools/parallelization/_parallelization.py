@@ -275,7 +275,7 @@ class JobRunner(ParallelizableMixin):
 
         queues: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
             queues,
-            element_type=JobQueue[T_Job_Result, T_Queue_Result],
+            element_type=JobQueue,
             arg_name="queues",
         )
 
@@ -334,7 +334,7 @@ class SimpleQueue(
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(jobs, element_type=Job[T_Job_Result], arg_name="jobs")
+        self._jobs = to_tuple(jobs, element_type=Job, arg_name="jobs")
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """[see superclass]"""

@@ -143,7 +143,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         self.iqr_multiple_far = iqr_multiple_far
         self.hide_far_outliers = hide_far_outliers
 
-    __init__.__doc__ = Drawer.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = Drawer.__init__.__doc__ + __init__.__doc__  # type: ignore
 
     def draw(self, data: Sequence[float], *, title: Optional[str] = None) -> None:
         """
