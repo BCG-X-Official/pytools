@@ -136,7 +136,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self.cell_formatter = cell_formatter
         self.nan_substitute = 0.0 if nan_substitute is None else nan_substitute
 
-    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__  # type: ignore
 
     def draw_matrix(
         self,
@@ -232,6 +232,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # add tick labels
 
         row_names, column_names = names
+        column_tick_params: Dict[str, Any]
 
         if (
             column_names is not None
@@ -241,8 +242,11 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             # rotate column labels if they are categorical and not all single-character
             column_tick_params = dict(rotation=45, ha="right", rotation_mode="anchor")
         else:
-            column_tick_params: Dict[str, Any] = {}
+            column_tick_params = {}
 
+        assert (
+            column_names is not None and row_names is not None
+        ), "'names' tuple elements are not none"
         _set_ticks(
             tick_locations=x_tick_locations,
             tick_labels=column_names,
@@ -328,8 +332,12 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.margins(0)
 
         # set axis labels
-        ax.set_ylabel(name_labels[0], color=self.colors.foreground)
-        ax.set_xlabel(name_labels[1], color=self.colors.foreground)
+        ylabel_name, xlabel_name = name_labels
+        assert (
+            ylabel_name is not None and xlabel_name is not None
+        ), "label names are provided"
+        ax.set_ylabel(ylabel_name, color=self.colors.foreground)
+        ax.set_xlabel(xlabel_name, color=self.colors.foreground)
 
         # hide spines
         for _, spine in ax.spines.items():
