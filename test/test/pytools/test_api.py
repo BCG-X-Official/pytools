@@ -17,18 +17,6 @@ from pytools.api import (
 )
 
 
-class A:
-    pass
-
-
-class B:
-    pass
-
-
-class _C:
-    pass
-
-
 def test_deprecated() -> None:
     @deprecated
     def _f() -> None:
@@ -174,33 +162,113 @@ def test_type_validation() -> None:
 
 
 def test_all_tracker() -> None:
-    mock_globals = {"__all__": ["A", "B"], "__name__": "test.pytools.test_api"}
+    class A:
+        pass
 
+    class B:
+        pass
+
+    class _C:
+        pass
+
+    # test with defaults, no constant declaration
+
+    mock_globals = dict(
+        __all__=["A", "B"],
+        __name__="test.pytools.test_api",
+    )
     tracker = AllTracker(mock_globals)
 
-    mock_globals.update({"A": A, "B": B, "_C": _C})
-
-    tracker.validate()
-
-    assert tracker.get_tracked() == mock_globals["__all__"]
-    assert tracker.is_tracked("A", A)
-    assert not tracker.is_tracked("_C", _C)
-
-
-def test_all_tracker_with_options() -> None:
-    mock_globals = {
-        "__all__": ["A", "B", "const"],
-        "__name__": "test.pytools.test_api_other",
-    }
-
-    tracker = AllTracker(
-        mock_globals, allow_global_constants=True, allow_imported_definitions=True
+    mock_globals.update(
+        dict(
+            A=A,
+            B=B,
+            _C=_C,
+        )
     )
-
-    mock_globals.update({"A": A, "B": B, "_C": _C, "const": 1})
-
     tracker.validate()
 
-    assert tracker.get_tracked() == mock_globals["__all__"]
-    assert tracker.is_tracked("const", 1)
+    assert tracker.get_tracked() == ["A", "B"]
+    assert tracker.is_tracked("A", A)
+    assert tracker.is_tracked("B", B)
     assert not tracker.is_tracked("_C", _C)
+
+    # test with defaults, with constant declaration
+
+    mock_globals = dict(
+        __all__=["A", "B", "CONST"],
+        __name__="test.pytools.test_api",
+    )
+    tracker = AllTracker(mock_globals)
+
+    mock_globals.update(
+        dict(
+            A=A,
+            B=B,
+            _C=_C,
+            CONST=1,
+        )
+    )
+    with pytest.raises(
+        AssertionError, match="^exporting a global constant is not permitted: 1$"
+    ):
+        tracker.validate()
+
+    # test with constant declarations allowed
+
+    mock_globals = dict(
+        __all__=["A", "B", "CONST"],
+        __name__="test.pytools.test_api",
+    )
+    tracker = AllTracker(mock_globals, allow_global_constants=True)
+
+    mock_globals.update(
+        dict(
+            A=A,
+            B=B,
+            _C=_C,
+            CONST=1,
+        )
+    )
+    tracker.validate()
+
+    # test with defaults, with foreign import
+
+    mock_globals = dict(
+        __all__=["A", "B"],
+        __name__="test.pytools.test_api_other",
+    )
+    tracker = AllTracker(mock_globals)
+
+    mock_globals.update(
+        dict(
+            A=A,
+            B=B,
+            _C=_C,
+        )
+    )
+    with pytest.raises(
+        AssertionError,
+        match=(
+            r"A is exported by module test\.pytools\.test_api_other but defined in "
+            r"module test\.pytools\.test_api$"
+        ),
+    ):
+        tracker.validate()
+
+    # test with foreign imports allowed
+
+    mock_globals = dict(
+        __all__=["A", "B"],
+        __name__="test.pytools.test_api_other",
+    )
+    tracker = AllTracker(mock_globals)
+
+    mock_globals.update(
+        dict(
+            A=A,
+            B=B,
+            _C=_C,
+        )
+    )
+    tracker.validate()
