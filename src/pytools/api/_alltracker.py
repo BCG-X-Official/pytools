@@ -184,7 +184,7 @@ class AllTracker:
                     )
 
             if forbid_imported_definitions and obj_module and obj_module != module:
-                raise AttributeError(
+                raise AssertionError(
                     f"{_qualname(obj)} is exported by module {module} "
                     f"but defined in module {obj_module}"
                 )
