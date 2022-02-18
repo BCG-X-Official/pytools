@@ -262,7 +262,7 @@ def test_all_tracker() -> None:
         __all__=["A", "B"],
         __name__="test.pytools.test_api_other",
     )
-    tracker = AllTracker(mock_globals)
+    tracker = AllTracker(mock_globals, allow_imported_definitions=True)
 
     mock_globals.update(
         dict(
