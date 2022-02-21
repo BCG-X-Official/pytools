@@ -289,7 +289,6 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
             cax,
             cmap=self.colors.colormap,
             norm=self.colormap_normalize,
-            label=colorbar_label or "",
             orientation="vertical",
         )
 
@@ -304,6 +303,9 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         # set colorbar edge color
         cb.outline.set_edgecolor(fg_color)
+
+        # set the colorbar label
+        cb.set_label(colorbar_label or "", color=fg_color)
 
 
 __tracker.validate()
