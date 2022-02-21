@@ -1,0 +1,45 @@
+pytools.expression.composite.base.DictEntry
+===========================================
+
+.. currentmodule:: pytools.expression.composite.base
+
+.. autoclass:: DictEntry
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DictEntry.and_
+      ~DictEntry.eq_
+      ~DictEntry.get_class_id
+      ~DictEntry.hash_
+      ~DictEntry.not_
+      ~DictEntry.or_
+      ~DictEntry.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~DictEntry.body_
+      ~DictEntry.key_
+      ~DictEntry.precedence_
+      ~DictEntry.prefix_
+      ~DictEntry.separator_
+      ~DictEntry.subexpressions_
+      ~DictEntry.value_
+   
+   
+
+   .. rubric:: Definitions

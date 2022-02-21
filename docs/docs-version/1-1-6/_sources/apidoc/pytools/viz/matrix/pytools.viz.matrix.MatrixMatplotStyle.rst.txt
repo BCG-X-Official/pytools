@@ -1,0 +1,43 @@
+pytools.viz.matrix.MatrixMatplotStyle
+=====================================
+
+.. currentmodule:: pytools.viz.matrix
+
+.. autoclass:: MatrixMatplotStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~MatrixMatplotStyle.apply_color_scheme
+      ~MatrixMatplotStyle.color_for_value
+      ~MatrixMatplotStyle.dark
+      ~MatrixMatplotStyle.draw_matrix
+      ~MatrixMatplotStyle.finalize_drawing
+      ~MatrixMatplotStyle.get_default_style_name
+      ~MatrixMatplotStyle.get_named_styles
+      ~MatrixMatplotStyle.start_drawing
+      ~MatrixMatplotStyle.text_dimensions
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~MatrixMatplotStyle.ax
+      ~MatrixMatplotStyle.colors
+      ~MatrixMatplotStyle.renderer
+   
+   
+
+   .. rubric:: Definitions

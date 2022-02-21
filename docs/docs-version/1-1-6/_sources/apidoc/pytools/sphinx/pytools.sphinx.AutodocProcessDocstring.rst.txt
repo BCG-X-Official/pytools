@@ -1,0 +1,34 @@
+pytools.sphinx.AutodocProcessDocstring
+======================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: AutodocProcessDocstring
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AutodocProcessDocstring.connect
+      ~AutodocProcessDocstring.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AutodocProcessDocstring.event
+   
+   
+
+   .. rubric:: Definitions
