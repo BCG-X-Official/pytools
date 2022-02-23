@@ -4,6 +4,21 @@ Release Notes
 *pytools* 1.2
 -------------
 
+1.2.3
+~~~~~
+
+This release enhances support for generating Sphinx documentation, and catches up with
+*pytools* 1.1.7.
+
+- API: add sphinx processor :class:`.ResolveGenericClassParameters`
+  to substitute generic type parameters introduced by base classes or via the
+  ``self`` and ``cls`` special method arguments
+- API: add sphinx processor :class:`.AutodocProcessBases` to handle
+  `autodoc-process-bases` events (introduced in Sphinx 4.1)
+- API: function :func:`.validate_type` now accepts multiple alternative types to
+  validate values against, in line with how :func:`isinstance` tests for multiple types
+
+
 1.2.2
 ~~~~~
 
@@ -25,32 +40,51 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
   :func:`.to_collection`, and :func:`.validate_element_types` now accept multiple
   alternative types to validate elements against, in line with how :func:`isinstance`
   tests for multiple types
-- BUILD: add support for `matplotlib >= 3.4`, `scipy >= 1.6`,
-  and `typing-inspect == 0.7`
+- BUILD: add support for :mod:`matplotlib` ~= 3.0, :mod:`scipy` ~= 1.6,
+  and `typing-inspect <https://github.com/ilevkivskyi/typing_inspect>`__ ~= 0.7
 
 
 *pytools* 1.1
 -------------
 
+1.1.7
+~~~~~
+
+- BUILD: update the ``make.py`` build script to removes its reliance on importing the
+  actual module just to obtain the build version; instead, ``make.py`` now scans the
+  top-level ``__init__.py`` file for a ``__version__`` declaration.
+
+
+1.1.6
+~~~~~
+
+- VIZ: set colors of axis labels to the foreground color of the current color scheme
+- FIX: ensure correct weight labels when rendering dendrograms as plain text using the
+  :class:`.DendrogramReportStyle`
+- FIX: calling method :meth:`.Id.get_class_id` could cause a :class:`.TypeError`
+- FIX: :class:`.Replace3rdPartyDoc` sphinx callback now substitutes 3rd-party docstrings
+  also for :class:`.property` definitions
+
+
 1.1.5
 ~~~~~
 
-- FIX: fixed a rare case where :meth:`~.Expression.eq_` returned `False` for two
-  equivalent expressions if one of them included an :class:`~.ExpressionAlias`
-- FIX: accept any type of numerical values as leaf weights of :class:`~.LinkageTree`
+- FIX: fixed a rare case where :meth:`.Expression.eq_` returned ``False`` for two
+  equivalent expressions if one of them included an :class:`.ExpressionAlias`
+- FIX: accept any type of numerical values as leaf weights of :class:`.LinkageTree`
 
 
 1.1.4
 ~~~~~
 
-- BUILD: allow `joblib` 1.0.* in joblib package requirements
+- BUILD: add support for :mod:`joblib` 1.0.*
 
 
 1.1.3
 ~~~~~
 
 - FIX: comparing two :class:`.InfixExpression` objects using method
-  :meth:`~.Expression.eq_` would erroneously yield ``True`` if both expressions
+  :meth:`.Expression.eq_` would erroneously yield ``True`` if both expressions
   had the same operator but a different number of operands, and the operands of the
   shorter expression were equal to the operands at the start of the longer expression
 
@@ -90,7 +124,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.0.6
 ~~~~~
 
-- FIX: back-port 1.1 bugfix for :meth:`~.Expression.eq_`
+- FIX: back-port 1.1 bugfix for :meth:`.Expression.eq_`
 
 
 1.0.5
@@ -102,7 +136,7 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 1.0.4
 ~~~~~
 
-- FIX: do not substitute `~=` by `~==` when adapting version syntax for tox
+- FIX: do not substitute ``~=`` by ``~==`` when adapting version syntax for tox
 
 
 1.0.3
@@ -111,13 +145,13 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 This is a maintenance release focusing on enhancements to the CI/CD pipeline, along with
 minor fixes.
 
-- BUILD: add the `bcg_gamma` conda channel when building
+- BUILD: add the ``bcg_gamma`` conda channel when building
 - BUILD: Enforce pre-release for minor and major releases
 - DOC: add pre-commit hook instructions to contribution guide
-- BUILD: update flake8 to v3.9.0
+- BUILD: update *flake8* to 3.9.0
 - BUILD: apply make_base.py changes from 1.1.x also on develop (adds more robust parsing
   of package versions)
-- FIX: version syntax adaptation with mixed `=` and `>=`
+- FIX: version syntax adaptation with mixed ``=`` and ``>=``
 
 
 1.0.2
@@ -131,7 +165,7 @@ minor fixes.
   :class:`~matplotlib.axes.Axes` object
 - FIX: preserve correct instance for subclasses of singleton classes
 - FIX: add a few missing type hints
-- BUILD: add support for numpy 1.20
+- BUILD: add support for :mod:`numpy` 1.20
 - BUILD: updates and changes to the CI/CD pipeline
 
 

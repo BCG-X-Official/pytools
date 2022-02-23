@@ -20,7 +20,7 @@ from typing import Any, Dict, Iterable, Optional
 
 from sphinx.application import Sphinx
 
-from pytools.sphinx import Replace3rdPartyDoc
+from pytools.sphinx import Replace3rdPartyDoc, ResolveGenericClassParameters
 
 logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
@@ -227,6 +227,8 @@ def setup(app: Sphinx) -> None:
     SkipIndirectImports().connect(app=app)
 
     Replace3rdPartyDoc().connect(app=app)
+
+    ResolveGenericClassParameters().connect(app=app)
 
     _add_custom_css_and_js(app=app)
 

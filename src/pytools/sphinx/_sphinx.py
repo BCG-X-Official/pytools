@@ -43,17 +43,18 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = [
-    "SphinxCallback",
-    "AutodocProcessDocstring",
+    "AddInheritance",
     "AutodocBeforeProcessSignature",
+    "AutodocProcessBases",
+    "AutodocProcessDocstring",
     "AutodocProcessSignature",
     "AutodocSkipMember",
-    "AddInheritance",
     "CollapseModulePaths",
     "CollapseModulePathsInDocstring",
     "CollapseModulePathsInSignature",
-    "SkipIndirectImports",
     "Replace3rdPartyDoc",
+    "SkipIndirectImports",
+    "SphinxCallback",
 ]
 
 #
@@ -166,7 +167,7 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
                 app=app, what=what, name=name, obj=obj, options=options, lines=lines
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
             raise
 
 
@@ -183,13 +184,13 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         return "autodoc-before-process-signature"
 
     @abstractmethod
-    def process(self, app: Sphinx, obj: object, bound_method: bool) -> None:
+    def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
         """
         Process an event.
 
         :param app: the Sphinx application object
         :param obj: the object itself
-        :param bound_method: a boolean indicates an object is bound method or not
+        :param bound_method: indicates an object is bound method or not
         """
         pass
 
@@ -199,7 +200,8 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
         try:
             return self.process(app=app, obj=obj, bound_method=bound_method)
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
+            raise
 
 
 class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
@@ -267,7 +269,8 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
                 return_annotation=return_annotation,
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
+            raise
 
 
 class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
@@ -328,7 +331,48 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
                 app=app, what=what, name=name, obj=obj, skip=skip, options=options
             )
         except Exception as e:
-            log.error(e)
+            log.error(repr(e))
+            raise
+
+
+class AutodocProcessBases(SphinxCallback, metaclass=ABCMeta):
+    """
+    An autodoc-process-bases processor.
+    """
+
+    @property
+    def event(self) -> str:
+        """
+        ``autodoc-process-bases``
+        """
+        return "autodoc-process-bases"
+
+    @abstractmethod
+    def process(
+        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+    ) -> None:
+        """
+        Decide whether a member should be included in the documentation.
+
+        :param app: the Sphinx application object
+        :param name: the fully qualified name of the object
+        :param obj: the object itself
+        :param options: the options given to the directive: an object with attributes
+            ``inherited_members``, ``undoc_members``, ``show_inheritance`` and
+            ``noindex`` that are ``True`` if the flag option of same name was given to
+            the auto directive
+        :param bases: list of classes that the event handler can modify in place to
+            change what Sphinx puts into the output
+        """
+        pass
+
+    def __call__(
+        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+    ) -> None:
+        try:
+            self.process(app=app, name=name, obj=obj, options=options, bases=bases)
+        except Exception as e:
+            log.error(repr(e))
             raise
 
 
@@ -765,6 +809,7 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
         "function": "func",
         "method": "meth",
         "attribute": "attr",
+        "property": "attr",
     }
 
     def process(
@@ -781,11 +826,22 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
         if what == "attribute":
             # we cannot determine docstrings for attributes, as the object represents
             # the value of the attribute, and not the attribute itself
-            return
+            mod_obj_attr = name.rsplit(".", 2)
+            if len(mod_obj_attr) == 3:
+                mod_name, obj_name, attr_name = mod_obj_attr
+                mod = importlib.import_module(mod_name)
+                obj = getattr(mod, obj_name)
+            else:
+                log.debug(f"could not determine module for {name}")
+                return
+
+        if what == "property":
+            obj = cast(property, obj).fget
 
         try:
             obj_module = obj.__module__
         except AttributeError:
+            log.debug(f"could not determine module for {name}")
             return
 
         name_root_package = self.__root_package(name)
@@ -804,6 +860,11 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
     def __root_package(name: str) -> str:
         root_package_match = Replace3rdPartyDoc.__RE_ROOT_PACKAGE.match(name)
         return root_package_match[0] if root_package_match else ""
+
+
+#
+# helper functions
+#
 
 
 __tracker.validate()
