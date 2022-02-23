@@ -49,7 +49,7 @@ TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 PKG_PYTHON = "python"
 
-RE_VERSION_DECLARATION = re.compile(r"__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
+RE_VERSION_DECLARATION = re.compile(r"\b__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 RE_VERSION = re.compile(
     r"(?:\s*(?:[<>]=?|[!~=]=)\s*\d+(?:\.\d+)*(?:a\d*|b\d*|rc\d*|\.\*)?\s*,?)+(?<!,)"
 )
