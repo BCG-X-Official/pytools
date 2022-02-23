@@ -16,13 +16,13 @@ requirements:
     - numpy  {{ environ.get('FACET_V_NUMPY') }}
     - flit   =3
   run:
-    - joblib         {{ environ.get('FACET_V_JOBLIB') }}
-    - matplotlib     {{ environ.get('FACET_V_MATPLOTLIB') }}
-    - numpy          {{ environ.get('FACET_V_NUMPY') }}
-    - pandas         {{ environ.get('FACET_V_PANDAS') }}
-    - python         {{ environ.get('FACET_V_PYTHON') }}
-    - scipy          {{ environ.get('FACET_V_SCIPY') }}
-    - typing_inspect {{ environ.get('FACET_V_TYPING_INSPECT') }}
+    - joblib          {{ environ.get('FACET_V_JOBLIB') }}
+    - matplotlib-base {{ environ.get('FACET_V_MATPLOTLIB') }}
+    - numpy           {{ environ.get('FACET_V_NUMPY') }}
+    - pandas          {{ environ.get('FACET_V_PANDAS') }}
+    - python          {{ environ.get('FACET_V_PYTHON') }}
+    - scipy           {{ environ.get('FACET_V_SCIPY') }}
+    - typing_inspect  {{ environ.get('FACET_V_TYPING_INSPECT') }}
 test:
   imports:
     - pytools
