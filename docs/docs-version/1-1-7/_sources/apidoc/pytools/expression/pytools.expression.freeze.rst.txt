@@ -1,0 +1,6 @@
+pytools.expression.freeze
+=========================
+
+.. currentmodule:: pytools.expression
+
+.. autofunction:: freeze

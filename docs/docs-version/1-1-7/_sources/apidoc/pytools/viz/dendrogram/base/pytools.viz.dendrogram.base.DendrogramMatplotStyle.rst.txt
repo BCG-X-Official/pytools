@@ -1,0 +1,45 @@
+pytools.viz.dendrogram.base.DendrogramMatplotStyle
+==================================================
+
+.. currentmodule:: pytools.viz.dendrogram.base
+
+.. autoclass:: DendrogramMatplotStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DendrogramMatplotStyle.apply_color_scheme
+      ~DendrogramMatplotStyle.color_for_value
+      ~DendrogramMatplotStyle.dark
+      ~DendrogramMatplotStyle.draw_leaf_names
+      ~DendrogramMatplotStyle.draw_link_connector
+      ~DendrogramMatplotStyle.draw_link_leg
+      ~DendrogramMatplotStyle.finalize_drawing
+      ~DendrogramMatplotStyle.get_default_style_name
+      ~DendrogramMatplotStyle.get_named_styles
+      ~DendrogramMatplotStyle.start_drawing
+      ~DendrogramMatplotStyle.text_dimensions
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~DendrogramMatplotStyle.ax
+      ~DendrogramMatplotStyle.colors
+      ~DendrogramMatplotStyle.renderer
+   
+   
+
+   .. rubric:: Definitions

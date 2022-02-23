@@ -1,0 +1,41 @@
+pytools.expression.base.InfixExpression
+=======================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: InfixExpression
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~InfixExpression.and_
+      ~InfixExpression.eq_
+      ~InfixExpression.get_class_id
+      ~InfixExpression.hash_
+      ~InfixExpression.not_
+      ~InfixExpression.or_
+      ~InfixExpression.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~InfixExpression.infix_
+      ~InfixExpression.precedence_
+      ~InfixExpression.subexpressions_
+   
+   
+
+   .. rubric:: Definitions
