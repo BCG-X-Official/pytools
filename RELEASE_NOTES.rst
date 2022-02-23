@@ -8,7 +8,7 @@ Release Notes
 ~~~~~
 
 This release enhances support for generating Sphinx documentation, and catches up with
-*pytools* 1.1.6.
+*pytools* 1.1.7.
 
 - API: add sphinx processor :class:`.ResolveGenericClassParameters`
   to substitute generic type parameters introduced by base classes or via the
