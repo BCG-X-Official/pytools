@@ -1,0 +1,36 @@
+pytools.api.doc.ModuleDefinition
+================================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: ModuleDefinition
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ModuleDefinition.list_documented_parameters
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ModuleDefinition.docstring
+      ~ModuleDefinition.full_name
+      ~ModuleDefinition.name
+      ~ModuleDefinition.public_module
+   
+   
+
+   .. rubric:: Definitions
