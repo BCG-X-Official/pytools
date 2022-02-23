@@ -47,6 +47,14 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 *pytools* 1.1
 -------------
 
+1.1.7
+~~~~~
+
+- BUILD: update the ``make.py`` build script to removes its reliance on importing the
+  actual module just to obtain the build version; instead, ``make.py`` now scans the
+  top-level ``__init__.py`` file for a ``__version__`` declaration.
+
+
 1.1.6
 ~~~~~
 
