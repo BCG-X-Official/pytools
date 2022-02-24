@@ -1,6 +1,7 @@
 """
 Data type for matrices.
 """
+from __future__ import annotations
 
 import logging
 from copy import copy
@@ -230,7 +231,7 @@ class Matrix(HasExpressionRepr):
         size: Union[
             int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
         ],
-    ) -> "Matrix":
+    ) -> Matrix:
         r"""
         Create a version of this matrix with fewer rows and/or columns.
 

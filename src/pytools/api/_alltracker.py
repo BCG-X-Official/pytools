@@ -306,13 +306,14 @@ def update_forward_references(
 
     def _parse_cls_with_generic_arguments(cls: str) -> type:
         def _parse(cls_tokens: Deque[str]) -> type:
+            print(f"parsing {cls_tokens}")
             real_cls = eval(cls_tokens.popleft(), globals_)
             if cls_tokens and cls_tokens[0] not in ",]":
                 real_args: List[type] = list()
                 sep = cls_tokens.popleft()
                 if sep != "[":
                     raise TypeError(
-                        f"invalid separator for generic type arguments: {sep}"
+                        f"invalid separator for generic type arguments: {sep!r}"
                     )
                 while True:
                     real_args.append(_parse(cls_tokens))
@@ -321,16 +322,30 @@ def update_forward_references(
                         break
                     elif sep != ",":
                         raise TypeError(
-                            f"invalid separator for generic type arguments: {sep}"
+                            f"invalid separator for generic type arguments: {sep!r}"
                         )
-                return real_cls.__getitem__(tuple(real_args))
+
+                try:
+                    return real_cls.__class_getitem__(tuple(real_args))
+                except AttributeError:
+                    return real_cls.__getitem__(
+                        tuple(real_args) if len(real_args) > 1 else real_args[0]
+                    )
             else:
                 return real_cls
 
         try:
-            return _parse(deque(map(str.strip, re.split(r"([,\[\]])", cls))))
+            return _parse(
+                deque(
+                    token
+                    for token in map(str.strip, re.split(r"([,\[\]])", cls))
+                    if token
+                )
+            )
         except TypeError as e:
-            raise TypeError(f"invalid type syntax in forward reference: {cls}") from e
+            raise TypeError(
+                f"invalid type syntax in forward reference: {cls} {e}"
+            ) from e
 
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()

@@ -10,6 +10,7 @@ from typing import (
     Any,
     Callable,
     Dict,
+    ForwardRef,
     Generator,
     Generic,
     Iterable,
@@ -32,16 +33,6 @@ from .. import (
     AutodocSkipMember,
     ObjectDescriptionTransform,
 )
-
-try:
-    # ForwardRef was introduced in Python 3.7, so be prepared for an ImportError
-    # noinspection PyUnresolvedReferences
-    from typing import ForwardRef
-except ImportError:
-    # in Python 3.6, ForwardRef is called _ForwardRef
-    # noinspection PyProtectedMember,PyUnresolvedReferences
-    from typing import _ForwardRef as ForwardRef
-
 
 try:
     # import sphinx classes if available ...
