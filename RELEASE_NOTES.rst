@@ -8,7 +8,8 @@ Release Notes
 ~~~~~
 
 - BUILD: the ``make_base.py`` build script no longer imports the actual module to obtain
-  the current package version, similarly as introduced for ``make.py` in *pytools* 1.1.7
+  the current package version, similarly as introduced for ``make.py`` in
+  *pytools* 1.1.7
 
 
 1.1.7
