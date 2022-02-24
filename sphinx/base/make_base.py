@@ -2,8 +2,6 @@
 """
 Sphinx documentation build script
 """
-import importlib
-import importlib.util
 import json
 import os
 import re
@@ -28,7 +26,7 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
-FACET_PROJECT = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
+PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
@@ -50,6 +48,9 @@ DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 # Environment variables
 # noinspection SpellCheckingInspection
 ENV_PYTHON_PATH = "PYTHONPATH"
+
+# regex pattern to match the version declaration in a top-level __init__.py
+RE_VERSION_DECLARATION = re.compile(r"\b__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 
 T = TypeVar("T")
 
@@ -529,25 +530,34 @@ def get_package_version() -> pkg_version.Version:
     """
     Retrieve the package version for the project from __init__ or _version
     """
-    project_src = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src"))
+    init_path = os.path.abspath(
+        os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME, "__init__.py")
+    )
 
-    if FACET_PROJECT in ("sklearndf", "flow"):
-        # for sklearndf and flow __init__ can't be trivially imported due to import
-        # dependencies. Load the version as defined in FACET_PROJECT._version module
-        spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, FACET_PROJECT, "_version.py")
+    print(f"Retrieving package version from {init_path}")
+
+    with open(init_path, "rt") as init_file:
+        init_lines = init_file.readlines()
+
+    matches = {
+        match[1] or match[2]
+        for match in (RE_VERSION_DECLARATION.match(line) for line in init_lines)
+        if match
+    }
+
+    if len(matches) == 0:
+        raise RuntimeError(f"No valid __version__ declaration found in {init_path}")
+
+    elif len(matches) > 1:
+        raise RuntimeError(
+            f"Multiple conflicting __version__ declarations found in {init_path}: "
+            f"{matches}"
         )
+
     else:
-        # pytools/facet: retrieve version from __init__.py
-        spec = importlib.util.spec_from_file_location(
-            "_version", os.path.join(project_src, FACET_PROJECT, "__init__.py")
-        )
+        package_version = next(iter(matches))
 
-    version_module = importlib.util.module_from_spec(spec)
-    # noinspection PyUnresolvedReferences
-    spec.loader.exec_module(version_module)
-    # noinspection PyUnresolvedReferences
-    return pkg_version.parse(version_module.__version__)
+    return pkg_version.parse(package_version)
 
 
 def is_azure_build() -> bool:

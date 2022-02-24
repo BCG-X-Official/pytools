@@ -4,12 +4,20 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.8
+~~~~~
+
+- BUILD: the ``make_base.py`` build script no longer imports the actual module to obtain
+  the current package version, similarly as introduced for ``make.py`` in
+  *pytools* 1.1.7
+
+
 1.1.7
 ~~~~~
 
-- BUILD: update the ``make.py`` build script to removes its reliance on importing the
+- BUILD: update the ``make.py`` build script to remove its reliance on importing the
   actual module just to obtain the build version; instead, ``make.py`` now scans the
-  top-level ``__init__.py`` file for a ``__version__`` declaration.
+  top-level ``__init__.py`` file for a ``__version__`` declaration
 
 
 1.1.6
