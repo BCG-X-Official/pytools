@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.2
 -------------
 
+1.2.4
+~~~~~
+
+This is a maintenance release to catch up with *pytools* 1.1.8.
+
+
 1.2.3
 ~~~~~
 
