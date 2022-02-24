@@ -3,6 +3,8 @@
 Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
+from __future__ import annotations
+
 import importlib
 import importlib.util
 import itertools
@@ -114,7 +116,7 @@ class Builder(metaclass=ABCMeta):
     @staticmethod
     def for_build_system(
         build_system: str, project: str, dependency_type: str
-    ) -> "Builder":
+    ) -> Builder:
         if build_system == B_CONDA:
             return CondaBuilder(project=project, dependency_type=dependency_type)
         elif build_system == B_TOX:

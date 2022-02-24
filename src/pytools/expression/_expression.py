@@ -1,6 +1,8 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+from __future__ import annotations
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Optional, Tuple, TypeVar
@@ -55,7 +57,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def to_text(self, expression: "Expression") -> str:
+    def to_text(self, expression: Expression) -> str:
         """
         Construct a text representation of the given expression.
 
@@ -65,7 +67,7 @@ class ExpressionFormatter(metaclass=ABCMeta):
         pass
 
     @staticmethod
-    def default(single_line: bool) -> "ExpressionFormatter":
+    def default(single_line: bool) -> ExpressionFormatter:
         """
         Get the default expression formatter, formatting expression objects as
         `Python` expressions with correct spacing and formatting.
@@ -89,7 +91,7 @@ class HasExpressionRepr(metaclass=ABCMeta):
     __ATTR_CLASS_ID = "__HasExpressionRepr__class_id"
 
     @abstractmethod
-    def to_expression(self) -> "Expression":
+    def to_expression(self) -> Expression:
         """
         Render this object as an expression.
 
@@ -124,12 +126,12 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def subexpressions_(self) -> Tuple["Expression", ...]:
+    def subexpressions_(self) -> Tuple[Expression, ...]:
         """
         The subexpressions of this expression.
         """
 
-    def or_(self, other: "Expression") -> "Expression":
+    def or_(self, other: Expression) -> Expression:
         """
         Create a logical `or` expression using this and another expression as operands.
 
@@ -140,7 +142,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return BinaryOperation(BinaryOperator.OR, self, other)
 
-    def and_(self, other: "Expression") -> "Expression":
+    def and_(self, other: Expression) -> Expression:
         """
         Create a logical `and` expression using this and another expression as operands.
 
@@ -152,7 +154,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return BinaryOperation(BinaryOperator.AND, self, other)
 
-    def not_(self) -> "Expression":
+    def not_(self) -> Expression:
         """
         Create a logical `not` expression using this expression as the operand.
 
@@ -162,7 +164,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return UnaryOperation(UnaryOperator.NOT, self)
 
-    def eq_(self, other: "Expression") -> bool:
+    def eq_(self, other: Expression) -> bool:
         """
         Compare this expression with another for equality.
 
@@ -196,7 +198,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         """
         pass
 
-    def to_expression(self) -> "Expression":
+    def to_expression(self) -> Expression:
         """[see superclass]"""
         return self
 
@@ -205,186 +207,186 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         # assuming other is the same type as self, check if self and other are equal
         pass
 
-    def __add__(self, other: Any) -> "Expression":
+    def __add__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.ADD, self, other)
 
-    def __sub__(self, other: Any) -> "Expression":
+    def __sub__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.SUB, self, other)
 
-    def __mul__(self, other: Any) -> "Expression":
+    def __mul__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MUL, self, other)
 
-    def __matmul__(self, other: Any) -> "Expression":
+    def __matmul__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MATMUL, self, other)
 
-    def __truediv__(self, other: Any) -> "Expression":
+    def __truediv__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.DIV, self, other)
 
-    def __floordiv__(self, other: Any) -> "Expression":
+    def __floordiv__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.FLOOR_DIV, self, other)
 
-    def __mod__(self, other: Any) -> "Expression":
+    def __mod__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MOD, self, other)
 
-    def __pow__(self, power: Any, modulo=None) -> "Expression":
+    def __pow__(self, power: Any, modulo=None) -> Expression:
         if modulo is not None:
             return NotImplemented
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.POW, self, power)
 
-    def __lshift__(self, other: Any) -> "Expression":
+    def __lshift__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.LSHIFT, self, other)
 
-    def __rshift__(self, other: Any) -> "Expression":
+    def __rshift__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.RSHIFT, self, other)
 
-    def __and__(self, other: Any) -> "Expression":
+    def __and__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.AND_BITWISE, self, other)
 
-    def __xor__(self, other: Any) -> "Expression":
+    def __xor__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.XOR_BITWISE, self, other)
 
-    def __or__(self, other: Any) -> "Expression":
+    def __or__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.OR_BITWISE, self, other)
 
-    def __radd__(self, other: Any) -> "Expression":
+    def __radd__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.ADD, other, self)
 
-    def __rsub__(self, other: Any) -> "Expression":
+    def __rsub__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.SUB, other, self)
 
-    def __rmul__(self, other: Any) -> "Expression":
+    def __rmul__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MUL, other, self)
 
-    def __rmatmul__(self, other: Any) -> "Expression":
+    def __rmatmul__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MATMUL, other, self)
 
-    def __rtruediv__(self, other: Any) -> "Expression":
+    def __rtruediv__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.DIV, other, self)
 
-    def __rfloordiv__(self, other: Any) -> "Expression":
+    def __rfloordiv__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.FLOOR_DIV, other, self)
 
-    def __rmod__(self, other: Any) -> "Expression":
+    def __rmod__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.MOD, other, self)
 
-    def __rpow__(self, power: Any, modulo=None) -> "Expression":
+    def __rpow__(self, power: Any, modulo=None) -> Expression:
         if modulo is not None:
             return NotImplemented
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.POW, (power, self))
 
-    def __rlshift__(self, other: Any) -> "Expression":
+    def __rlshift__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.LSHIFT, other, self)
 
-    def __rrshift__(self, other: Any) -> "Expression":
+    def __rrshift__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.RSHIFT, other, self)
 
-    def __rand__(self, other: Any) -> "Expression":
+    def __rand__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.AND_BITWISE, other, self)
 
-    def __rxor__(self, other: Any) -> "Expression":
+    def __rxor__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.XOR_BITWISE, other, self)
 
-    def __ror__(self, other: Any) -> "Expression":
+    def __ror__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.OR_BITWISE, other, self)
 
-    def __neg__(self) -> "Expression":
+    def __neg__(self) -> Expression:
         from .composite import UnaryOperation
 
         return UnaryOperation(UnaryOperator.NEG, self)
 
-    def __pos__(self) -> "Expression":
+    def __pos__(self) -> Expression:
         from .composite import UnaryOperation
 
         return UnaryOperation(UnaryOperator.POS, self)
 
-    def __invert__(self) -> "Expression":
+    def __invert__(self) -> Expression:
         from .composite import UnaryOperation
 
         return UnaryOperation(UnaryOperator.INVERT, self)
 
-    def __eq__(self, other: Any) -> "Expression":
+    def __eq__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.EQ, self, other)
 
-    def __ne__(self, other: Any) -> "Expression":
+    def __ne__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.NEQ, self, other)
 
-    def __gt__(self, other: Any) -> "Expression":
+    def __gt__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.GT, self, other)
 
-    def __ge__(self, other: Any) -> "Expression":
+    def __ge__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.GE, self, other)
 
-    def __lt__(self, other: Any) -> "Expression":
+    def __lt__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.LT, self, other)
 
-    def __le__(self, other: Any) -> "Expression":
+    def __le__(self, other: Any) -> Expression:
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.LE, self, other)
 
-    def __call__(self, *args: Any, **kwargs: Any) -> "Expression":
+    def __call__(self, *args: Any, **kwargs: Any) -> Expression:
         """
         Generate a :class:`.Call` expression.
 
@@ -394,7 +396,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return Call(self, *args, **kwargs)
 
-    def __getitem__(self, key: Any) -> "Expression":
+    def __getitem__(self, key: Any) -> Expression:
         from .composite import Index
 
         return Index(self, key)
@@ -405,7 +407,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
     def __delitem__(self, key: Any) -> None:
         raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
 
-    def __getattr__(self, key: str) -> "Expression":
+    def __getattr__(self, key: str) -> Expression:
         if key.startswith("_") or key.endswith("_"):
             raise AttributeError(key)
         else:
@@ -452,7 +454,7 @@ class FrozenExpression(HasExpressionRepr):
         """
         self._expression = expression
 
-    def to_expression(self) -> "Expression":
+    def to_expression(self) -> Expression:
         """
         Get the underlying un-frozen expression.
 
@@ -460,7 +462,7 @@ class FrozenExpression(HasExpressionRepr):
         """
         return self._expression
 
-    def __eq__(self, other: "FrozenExpression") -> bool:
+    def __eq__(self, other: FrozenExpression) -> bool:
         return type(self) is type(other) and self._expression.eq_(other._expression)
 
     def __hash__(self) -> int:
@@ -607,7 +609,7 @@ class ExpressionAlias(Expression):
         return self.expression_.precedence_
 
     @property
-    def subexpressions_(self) -> Tuple["Expression", ...]:
+    def subexpressions_(self) -> Tuple[Expression, ...]:
         """[see superclass]"""
         return (self._expression,)
 
@@ -615,7 +617,7 @@ class ExpressionAlias(Expression):
         """[see superclass]"""
         return self.expression_.hash_()
 
-    def _eq_same_type(self, other: "ExpressionAlias") -> bool:
+    def _eq_same_type(self, other: ExpressionAlias) -> bool:
         return self._expression.eq_(other._expression)
 
 

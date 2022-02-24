@@ -223,7 +223,7 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
 
         if include_return and not (
             signature.return_annotation is signature.empty
-            or signature.return_annotation is None
+            or signature.return_annotation in [None, "None"]
         ):
             actual_parameters.append(FunctionDefinition.PARAM_RETURN)
 

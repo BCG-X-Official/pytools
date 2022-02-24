@@ -1,6 +1,8 @@
 """
 Core implementation of :mod:`pytools.parallelization`.
 """
+from __future__ import annotations
+
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
@@ -129,7 +131,7 @@ class Job(Generic[T_Job_Result], metaclass=ABCMeta):
     @classmethod
     def delayed(
         cls, function: Callable[..., T_Job_Result]
-    ) -> "Callable[..., Job[T_Job_Result]]":
+    ) -> Callable[..., Job[T_Job_Result]]:
         """
         A decorator creating a `delayed` version of the given function which,
         if called with arguments, does not run immediately but instead returns a

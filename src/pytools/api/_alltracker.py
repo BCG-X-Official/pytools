@@ -4,28 +4,13 @@ Core implementation of :mod:`pytools.api`.
 
 import logging
 import re
-from collections import deque
-from types import FunctionType
-from typing import (
-    Any,
-    Callable,
-    Collection,
-    Deque,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Collection, Dict, Iterable, List, Optional, TypeVar
 
 log = logging.getLogger(__name__)
 
 __all__ = [
     "AllTracker",
     "public_module_prefix",
-    "update_forward_references",
 ]
 
 
@@ -75,11 +60,6 @@ class AllTracker:
     These validation checks can be overridden if required in special cases.
     """
 
-    #: if ``True``, automatically replace all forward
-    #: type references in function annotations with the referenced classes;
-    #: see :func:`.update_forward_references`
-    update_forward_references: bool
-
     #: if ``True``, allow exporting public global constants in ``__all__``;
     #: these typically have no ``__module__`` or ``__doc__`` attributes and will
     #: not be properly rendered in generated documentation
@@ -95,7 +75,6 @@ class AllTracker:
         globals_: Dict[str, Any],
         *,
         public_module: Optional[str] = None,
-        update_forward_references: bool = True,
         allow_global_constants: bool = False,
         allow_imported_definitions: bool = False,
     ) -> None:
@@ -104,10 +83,6 @@ class AllTracker:
             :meth:`._globals` in the current module scope
         :param public_module: full name of the public module that will export the items
             managed by this tracker
-        :param update_forward_references: if ``True``, automatically replace all forward
-            type references in function annotations with the referenced classes; see
-            :func:`.update_forward_references`
-            (default: ``True``)
         :param allow_global_constants: if ``True``, allow exporting public global
             constants in ``__all__``;
             these typically have no ``__module__`` or ``__doc__`` attributes and will
@@ -129,7 +104,6 @@ class AllTracker:
 
         self.public_module = globals_["__publicmodule__"] = public_module
 
-        self.update_forward_references = update_forward_references
         self.allow_global_constants = allow_global_constants
         self.allow_imported_definitions = allow_imported_definitions
 
@@ -195,10 +169,6 @@ class AllTracker:
             except AttributeError:
                 # objects without a __dict__ will not permit setting the public module
                 pass
-
-            if self.update_forward_references:
-                # update forward references in annotations
-                update_forward_references(obj, globals_=globals_)
 
     def get_tracked(self) -> List[str]:
         """
@@ -292,67 +262,6 @@ __tracker = AllTracker(globals())
 __tracker._imported.remove(AllTracker.__name__)
 # noinspection PyProtectedMember
 __tracker._imported.remove(public_module_prefix.__name__)
-
-
-def update_forward_references(
-    obj: Union[type, FunctionType], *, globals_: Dict[str, Any]
-) -> None:
-    """
-    Replace all forward references with their referenced classes.
-
-    :param obj: a function or class
-    :param globals_: a global namespace to search the referenced classes in
-    """
-
-    def _parse_cls_with_generic_arguments(cls: str) -> type:
-        def _parse(cls_tokens: Deque[str]) -> type:
-            real_cls = eval(cls_tokens.popleft(), globals_)
-            if cls_tokens and cls_tokens[0] not in ",]":
-                real_args: List[type] = list()
-                sep = cls_tokens.popleft()
-                if sep != "[":
-                    raise TypeError(
-                        f"invalid separator for generic type arguments: {sep}"
-                    )
-                while True:
-                    real_args.append(_parse(cls_tokens))
-                    sep = cls_tokens.popleft()
-                    if sep == "]":
-                        break
-                    elif sep != ",":
-                        raise TypeError(
-                            f"invalid separator for generic type arguments: {sep}"
-                        )
-                return real_cls.__getitem__(tuple(real_args))
-            else:
-                return real_cls
-
-        try:
-            return _parse(deque(map(str.strip, re.split(r"([,\[\]])", cls))))
-        except TypeError as e:
-            raise TypeError(f"invalid type syntax in forward reference: {cls}") from e
-
-    # keep track of classes we already visited to prevent infinite recursion
-    visited: Set[type] = set()
-
-    def _update(_obj: Any) -> None:
-        if isinstance(_obj, type):
-            if _obj not in visited:
-                visited.add(_obj)
-                for member in vars(_obj).values():
-                    _update(member)
-                _update_annotations(getattr(_obj, "__annotations__", None))
-
-        elif isinstance(_obj, FunctionType):
-            _update_annotations(_obj.__annotations__)
-
-    def _update_annotations(annotations: Optional[Dict[str, Any]]):
-        if annotations:
-            for arg, cls in annotations.items():
-                if isinstance(cls, str):
-                    annotations[arg] = _parse_cls_with_generic_arguments(cls)
-
-    _update(obj)
 
 
 __tracker.validate()
