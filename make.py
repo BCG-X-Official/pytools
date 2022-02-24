@@ -3,8 +3,8 @@
 Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
-import importlib
-import importlib.util
+from __future__ import annotations
+
 import itertools
 import os
 import re
@@ -53,6 +53,7 @@ TOX_BUILD_PATH_SUFFIX = os.path.join("dist", "tox")
 
 PKG_PYTHON = "python"
 
+RE_VERSION_DECLARATION = re.compile(r"\b__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 RE_VERSION = re.compile(
     r"(?:\s*"
     r"(?:[<>]=?|[!~=]=)\s*"
@@ -86,24 +87,30 @@ class Builder(metaclass=ABCMeta):
 
         project_root_path = os.path.abspath(os.path.join(projects_root_path, project))
         src_root_path = os.path.join(project_root_path, "src", project)
-        version_path = os.path.join(src_root_path, "_version.py")
+        init_path = os.path.join(src_root_path, "__init__.py")
 
-        if os.path.exists(version_path):
-            # For some projects, __init__ can't be trivially imported due to import
-            # dependencies.
-            # Therefore we first try to get the version from a project._version module.
-            spec = importlib.util.spec_from_file_location("_version", version_path)
-        else:
-            # otherwise: retrieve the version from __init__.py
-            spec = importlib.util.spec_from_file_location(
-                "_version", os.path.join(src_root_path, "__init__.py")
+        print(f"Retrieving package version from {init_path}")
+
+        with open(init_path, "rt") as init_file:
+            init_lines = init_file.readlines()
+
+        matches = {
+            match[1] or match[2]
+            for match in (RE_VERSION_DECLARATION.match(line) for line in init_lines)
+            if match
+        }
+
+        if len(matches) == 0:
+            raise RuntimeError(f"No valid __version__ declaration found in {init_path}")
+
+        elif len(matches) > 1:
+            raise RuntimeError(
+                f"Multiple conflicting __version__ declarations found in {init_path}: "
+                f"{matches}"
             )
 
-        version_module = importlib.util.module_from_spec(spec)
-        # noinspection PyUnresolvedReferences
-        spec.loader.exec_module(version_module)
-        # noinspection PyUnresolvedReferences
-        package_version = version_module.__version__
+        else:
+            package_version = next(iter(matches))
 
         os.environ[
             FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
@@ -114,7 +121,7 @@ class Builder(metaclass=ABCMeta):
     @staticmethod
     def for_build_system(
         build_system: str, project: str, dependency_type: str
-    ) -> "Builder":
+    ) -> Builder:
         if build_system == B_CONDA:
             return CondaBuilder(project=project, dependency_type=dependency_type)
         elif build_system == B_TOX:

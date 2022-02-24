@@ -1,6 +1,7 @@
 """
 String representations of expressions.
 """
+from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
@@ -50,7 +51,7 @@ class IndentedLine(NamedTuple):
     #: the text in this line
     text: str
 
-    def prepend(self, text: str) -> "IndentedLine":
+    def prepend(self, text: str) -> IndentedLine:
         """
         Add the given text to the start of this indented line.
 
@@ -59,7 +60,7 @@ class IndentedLine(NamedTuple):
         """
         return IndentedLine(indent=self.indent, text=text + self.text)
 
-    def append(self, text: str) -> "IndentedLine":
+    def append(self, text: str) -> IndentedLine:
         """
         Add the given text to the end of this indented line.
 
@@ -68,10 +69,10 @@ class IndentedLine(NamedTuple):
         """
         return IndentedLine(indent=self.indent, text=self.text + text)
 
-    def __add__(self, other: str) -> "IndentedLine":
+    def __add__(self, other: str) -> IndentedLine:
         return self.append(text=other)
 
-    def __radd__(self, other: str) -> "IndentedLine":
+    def __radd__(self, other: str) -> IndentedLine:
         return self.prepend(text=other)
 
     def __len__(self) -> int:
@@ -87,7 +88,7 @@ class TextualForm:
     DEFAULT_FORMAT = FormattingConfig()
 
     @staticmethod
-    def from_expression(expression: Expression) -> "TextualForm":
+    def from_expression(expression: Expression) -> TextualForm:
         """
         Generate a textual form for the given expression.
 
@@ -174,7 +175,7 @@ class TextualForm:
 
     def encapsulate(
         self, *, condition: bool = True, single_line: bool = True
-    ) -> "TextualForm":
+    ) -> TextualForm:
         """
         Return this form encapsulated in round parentheses.
 
@@ -351,7 +352,7 @@ class BracketedForm(ComplexForm):
         self.single_line = single_line
 
     @staticmethod
-    def from_bracketed_expression(expression: BracketedExpression) -> "BracketedForm":
+    def from_bracketed_expression(expression: BracketedExpression) -> BracketedForm:
         """
         Make a bracketed from for the given bracketed expression.
 

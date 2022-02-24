@@ -6,6 +6,7 @@ Linkage Tree.
 :class:`LinkageNode` and :class:`LeafNode` are the building blocks of
 :class:`LinkageTree`. Both these classes inherit from :class:`BaseNode`.
 """
+from __future__ import annotations
 
 from copy import copy
 from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
@@ -194,7 +195,7 @@ class LinkageTree(HasExpressionRepr):
         """
         return len(self) - len(self.scipy_linkage_matrix)
 
-    def sort_by_weight(self) -> "LinkageTree":
+    def sort_by_weight(self) -> LinkageTree:
         """
         Create a copy of this linkage trees, switching the left and right nodes of
         branches such that the mean leaf weight or any left node is always greater

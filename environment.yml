@@ -6,10 +6,10 @@ dependencies:
   # run
   - joblib ~= 1.1
   - matplotlib ~= 3.3
-  - numpy ~= 1.16
-  - pandas ~= 1.2
+  - numpy ~= 1.22
+  - pandas ~= 1.4
   - python ~= 3.8
-  - scipy ~= 1.6
+  - scipy ~= 1.7
   - typing_inspect ~= 0.7
   # build/test
   - black ~= 22.1
@@ -19,6 +19,7 @@ dependencies:
   - flit = 3
   - isort ~= 5.5
   - jinja2 ~= 2.11
+  - markupsafe < 2.1  # markupsafe 2.1 breaks support for jinja2
   - m2r ~= 0.2
   - mypy ~= 0.931
   - pluggy ~= 0.13

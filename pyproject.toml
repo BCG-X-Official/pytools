@@ -22,7 +22,7 @@ requires = [
     "typing_inspect ~=0.4",
 ]
 
-requires-python = ">=3.6,<4a"
+requires-python = ">=3.7,<4a"
 
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -34,9 +34,9 @@ classifiers = [
     "Operating System :: Unix",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Scientific/Engineering",
 ]
 
@@ -70,7 +70,7 @@ joblib         = "~=0.14.0"
 matplotlib     = "~=3.0.3"
 numpy          = ">=1.16.6,<1.17a"  # cannot use ~= due to conda bug
 pandas         = "~=0.24.2"
-python         = ">=3.6.8,<3.7a"  # cannot use ~= due to conda bug
+python         = ">=3.7,<3.8a"  # cannot use ~= due to conda bug
 scipy          = "~=1.2.1"
 typing_inspect = "~=0.4.0"
 
@@ -78,7 +78,7 @@ typing_inspect = "~=0.4.0"
 joblib         = "~=1.0"
 matplotlib     = "~=3.4"
 numpy          = ">=1.20,<2a"  # cannot use ~= due to conda bug
-pandas         = "~=1.2"
+pandas         = "~=1.4"
 python         = ">=3.8,<4a"  # cannot use ~= due to conda bug
 scipy          = "~=1.6"
 typing_inspect = "~=0.7"
@@ -86,7 +86,7 @@ typing_inspect = "~=0.7"
 [tool.black]
 # quiet = "True"
 line-length = 88
-target_version = ['py36']
+target_version = ['py37']
 include = '\.pyi?$'
 exclude = '''
 (

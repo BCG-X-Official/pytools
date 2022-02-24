@@ -1,6 +1,7 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+from __future__ import annotations
 
 import logging
 from typing import Any, Dict, Generic, TypeVar
@@ -68,9 +69,9 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 class _IdentifierMeta(type):
 
-    _identifiers: Dict[str, "Id"] = WeakValueDictionary()  # type: ignore
+    _identifiers: Dict[str, Id] = WeakValueDictionary()  # type: ignore
 
-    def __getattr__(self, name: str) -> "Id":
+    def __getattr__(self, name: str) -> Id:
         if name.startswith("_") or name.endswith("_") or name == "Id":
             # we do not allow creating identifiers with leading or trailing underscores
             # we also disallow "Id" to avoid a compatibility issue with sphinx
