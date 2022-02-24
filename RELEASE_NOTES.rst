@@ -108,11 +108,17 @@ Additions and enhancements to dendrogram and matrix visualizations.
 *pytools* 1.2
 -------------
 
+1.2.4
+~~~~~
+
+This is a maintenance release to catch up with *pytools* 1.1.8.
+
+
 1.2.3
 ~~~~~
 
 This release enhances support for generating Sphinx documentation, and catches up with
-*pytools* 1.1.6.
+*pytools* 1.1.7.
 
 - API: add sphinx processor :class:`.ResolveGenericClassParameters`
   to substitute generic type parameters introduced by base classes or via the
@@ -150,6 +156,22 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 
 *pytools* 1.1
 -------------
+
+1.1.8
+~~~~~
+
+- BUILD: the ``make_base.py`` build script no longer imports the actual module to obtain
+  the current package version, similarly as introduced for ``make.py`` in
+  *pytools* 1.1.7
+
+
+1.1.7
+~~~~~
+
+- BUILD: update the ``make.py`` build script to remove its reliance on importing the
+  actual module just to obtain the build version; instead, ``make.py`` now scans the
+  top-level ``__init__.py`` file for a ``__version__`` declaration
+
 
 1.1.6
 ~~~~~
