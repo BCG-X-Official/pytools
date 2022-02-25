@@ -57,6 +57,11 @@ Release Notes
   :class:`.ResolveTypeVariables` and updated to resolve type variables also in
   attribute signatures
 
+``pytools.text``
+^^^^^^^^^^^^^^^^
+
+- API: new function :func:`.camel_case_to_snake_case`
+
 ``pytools.viz``
 ^^^^^^^^^^^^^^^
 
