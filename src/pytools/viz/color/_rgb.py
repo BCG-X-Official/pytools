@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.viz.color`
 """
+from __future__ import annotations
 
 import logging
 from numbers import Number
@@ -63,11 +64,11 @@ class RgbColor(_RgbBase):
     """
 
     @overload
-    def __new__(cls, r: float, g: float, b: float) -> "RgbColor":
+    def __new__(cls, r: float, g: float, b: float) -> RgbColor:
         pass
 
     @overload
-    def __new__(cls, c: str) -> "RgbColor":
+    def __new__(cls, c: str) -> RgbColor:
         pass
 
     def __new__(cls, *args, alpha: None = None, **kwargs):
@@ -96,11 +97,11 @@ class RgbaColor(_RgbBase):
     @overload
     def __new__(
         cls, r: float, g: float, b: float, alpha: Optional[float] = None
-    ) -> "RgbaColor":
+    ) -> RgbaColor:
         pass
 
     @overload
-    def __new__(cls, c: str, alpha: Optional[float] = None) -> "RgbaColor":
+    def __new__(cls, c: str, alpha: Optional[float] = None) -> RgbaColor:
         pass
 
     def __new__(cls, *args, **kwargs):

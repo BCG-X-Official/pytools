@@ -22,7 +22,8 @@ from typing import (
     Union,
 )
 
-from ._api import AllTracker, to_tuple
+from ._alltracker import AllTracker
+from ._api import to_tuple
 from .doc import (
     APIDefinition,
     DocTest,
@@ -230,10 +231,6 @@ class DocValidator:
 
         # inspect classes recursively
         for cls in classes:
-            log.debug(
-                f"Inspecting elements of {cls.full_name}: "
-                f"{list(vars(cls.element).keys())}"
-            )
             self._validate_members(
                 members=[
                     attribute
