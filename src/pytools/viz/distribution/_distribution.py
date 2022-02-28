@@ -3,15 +3,19 @@ Core implementation of :mod:`pytools.viz.distribution`.
 """
 
 import logging
-from typing import Iterable, Optional, Sequence, Type, Union, cast
+from typing import Any, Iterable, Optional, Sequence, Type, Union, cast
 
 import numpy as np
 import pandas as pd
-from numpy.typing import ArrayLike
 
 from .. import Drawer, MatplotStyle
 from .base import ECDF, ECDFStyle, XYSeries
 from pytools.api import AllTracker, inheritdoc
+
+try:
+    from numpy.typing import ArrayLike
+except ImportError:
+    ArrayLike = Any  # type: ignore
 
 log = logging.getLogger(__name__)
 
