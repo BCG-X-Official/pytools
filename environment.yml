@@ -12,7 +12,7 @@ dependencies:
   - scipy ~= 1.7
   - typing_inspect ~= 0.7
   # build/test
-  - black ~= 22.0
+  - black ~= 22.1
   - conda-build ~= 3.21
   - conda-verify ~= 3.1
   - docutils ~= 0.17
@@ -21,6 +21,7 @@ dependencies:
   - jinja2 ~= 2.11
   - markupsafe < 2.1  # markupsafe 2.1 breaks support for jinja2
   - m2r ~= 0.2
+  - mypy ~= 0.931
   - pluggy ~= 0.13
   - pre-commit ~= 2.7
   - pydata-sphinx-theme ~= 0.7

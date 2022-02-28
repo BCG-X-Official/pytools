@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
+from dataclasses import dataclass
 from typing import List, NamedTuple, Tuple
 
 from .. import Expression, ExpressionAlias, ExpressionFormatter
@@ -41,7 +42,8 @@ class FormattingConfig(NamedTuple):
     """if ``True``, always produce a single line regardless of width"""
 
 
-class IndentedLine(NamedTuple):
+@dataclass
+class IndentedLine:
     """
     An indented line of text.
     """
@@ -139,8 +141,8 @@ class TextualForm:
                 return " " * (config.indent_width * indent)
 
             return "\n".join(
-                f"{_spacing(indent)}{text}"
-                for indent, text in self.to_lines(config=config)
+                f"{_spacing(line.indent)}{line.text}"
+                for line in self.to_lines(config=config)
             )
 
     @abstractmethod
@@ -638,6 +640,8 @@ class InfixForm(ComplexForm):
             last_idx = len(subforms) - 1
             infix = self.infix
 
+            lines: List[IndentedLine]
+
             if self.infix_padding is InfixForm.PADDING_RIGHT:
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(subforms):
@@ -662,7 +666,7 @@ class InfixForm(ComplexForm):
 
                 len_infix = len(infix)
                 for idx, inner_representation in enumerate(subforms):
-                    lines: List[IndentedLine] = inner_representation.to_lines(
+                    lines = inner_representation.to_lines(
                         config=config,
                         indent=indent,
                         leading_characters=leading_characters

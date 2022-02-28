@@ -4,11 +4,12 @@ Implementation of :mod:`pytools.expression` and subpackages.
 from __future__ import annotations
 
 import logging
+from abc import ABCMeta
 from typing import Any, Dict, Generic, TypeVar
 from weakref import WeakValueDictionary
 
 from ...api import AllTracker, inheritdoc
-from ...meta import SingletonMeta, compose_meta
+from ...meta import SingletonMeta
 from ..base import AtomicExpression
 
 log = logging.getLogger(__name__)
@@ -54,7 +55,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
         :param value: the literal value represented by this expression
         """
         super().__init__()
-        self._value = value
+        self._value: T_Literal = value
 
     @property
     def value_(self) -> T_Literal:
@@ -67,9 +68,9 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
         return repr(self.value_)
 
 
-class _IdentifierMeta(type):
+class _IdentifierMeta(ABCMeta):
 
-    _identifiers: Dict[str, Id] = WeakValueDictionary()
+    _identifiers: Dict[str, Id] = WeakValueDictionary()  # type: ignore
 
     def __getattr__(self, name: str) -> Id:
         if name.startswith("_") or name.endswith("_") or name == "Id":
@@ -85,10 +86,7 @@ class _IdentifierMeta(type):
 
 
 @inheritdoc(match="[see superclass]")
-class Id(
-    AtomicExpression[str],
-    metaclass=compose_meta(_IdentifierMeta, type(AtomicExpression)),
-):
+class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     """
     An identifier.
 
@@ -130,11 +128,12 @@ class Id(
         return self._name
 
 
+class _EpsilonMeta(SingletonMeta, ABCMeta):
+    pass
+
+
 @inheritdoc(match="[see superclass]")
-class Epsilon(
-    AtomicExpression[None],
-    metaclass=compose_meta(SingletonMeta, type(AtomicExpression)),
-):
+class Epsilon(AtomicExpression[None], metaclass=_EpsilonMeta):
     """
     A singleton class representing the empty expression.
     """

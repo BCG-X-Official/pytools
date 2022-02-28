@@ -114,8 +114,8 @@ class LinkageTree(HasExpressionRepr):
 
         self.scipy_linkage_matrix = scipy_linkage_matrix
 
-        leaf_names: List[str] = [str(name) for name in leaf_names]
-        leaf_weights: List[float] = [float(weight) for weight in leaf_weights]
+        leaf_names = [str(name) for name in leaf_names]
+        leaf_weights = [float(weight) for weight in leaf_weights]
 
         _validate_leaves(leaf_names, "leaf_labels")
         _validate_leaves(leaf_weights, "leaf_weights")
@@ -212,7 +212,9 @@ class LinkageTree(HasExpressionRepr):
             if n.is_leaf:
                 return n.weight, 1
 
-            l, r = self.children(n)
+            children = self.children(n)
+            assert children is not None, "Current node isn't a leaf"
+            l, r = children
 
             weight_left, leaves_left = _sort_node(l)
             weight_right, leaves_right = _sort_node(r)
@@ -247,7 +249,9 @@ class LinkageTree(HasExpressionRepr):
             else:
                 if inner:
                     yield n
-                l, r = self.children(n)
+                children = self.children(n)
+                assert children is not None, "Current node isn't a leaf"
+                l, r = children
                 yield from _iter(l)
                 yield from _iter(r)
 
@@ -266,7 +270,9 @@ class LinkageTree(HasExpressionRepr):
             if n.is_leaf:
                 return n.to_expression()
             else:
-                l, r = self.children(n)
+                children = self.children(n)
+                assert children is not None, "Current node isn't a leaf"
+                l, r = children
                 return n.to_expression()[_expr(l), _expr(r)]
 
         return Id(type(self))(

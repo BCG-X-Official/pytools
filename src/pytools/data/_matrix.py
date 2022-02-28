@@ -252,12 +252,16 @@ class Matrix(HasExpressionRepr):
         :return: a resized version of this matrix
         """
 
-        if size is None:
+        if size is None or size == (None, None):
             return self
 
-        if isinstance(size, tuple) and len(size) == 2 and all(map(np.isreal, size)):
+        if (
+            isinstance(size, tuple)
+            and len(size) == 2
+            and all(map(lambda x: x is None or isinstance(x, (int, float)), size))
+        ):
             rows, columns = size
-        elif np.isscalar(size) and np.isreal(size):
+        elif isinstance(size, (int, float)):
             rows = columns = size
         else:
             raise ValueError(f"arg size={size!r} must be a number or a pair of numbers")
@@ -304,15 +308,19 @@ class Matrix(HasExpressionRepr):
             weight_label=self.value_label,
         )
 
-    def __eq__(self, other: "Matrix") -> bool:
-        return (
-            isinstance(other, Matrix)
-            and np.array_equal(self.values, other.values)
-            and map(np.array_equal, zip(self.weights, other.weights))
-            and map(np.array_equal, zip(self.names, other.names))
-            and self.name_labels == other.name_labels
-            and self.value_label == other.value_label
-        )
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Matrix):
+            raise TypeError
+        else:
+            return (
+                np.array_equal(self.values, other.values)
+                and _arrays_equal_or_none(self.weights[0], other.weights[0])
+                and _arrays_equal_or_none(self.weights[1], other.weights[1])
+                and _arrays_equal_or_none(self.names[0], other.names[0])
+                and _arrays_equal_or_none(self.names[1], other.names[1])
+                and self.name_labels == other.name_labels
+                and self.value_label == other.value_label
+            )
 
 
 def _validate_resize_arg(
@@ -321,8 +329,10 @@ def _validate_resize_arg(
     def _message(error: str) -> str:
         return f"{axis_name} size {error}, but is {size_new!r}"
 
+    result: Tuple[Optional[int], Optional[float]] = (None, None)
+
     if size_new is None:
-        return (None, None)
+        return result
 
     if isinstance(size_new, int):
         if size_new > size_current:
@@ -363,6 +373,7 @@ def _top_items_mask(
     elif not target_ratio:
         assert target_ratio, "one of target size or target ratio is defined"
 
+    assert weights is not None, "weights are defined"
     mask = np.zeros(current_size, dtype=bool)
     ix_weights_descending_stable = (current_size - 1) - weights[::-1].argsort(
         kind="stable"
@@ -397,7 +408,7 @@ def _resize_rows(
     names: Optional[np.ndarray],
     current_size: int,
     target_size: Tuple[Optional[int], Optional[float]],
-) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[Tuple[str, ...]]]:
+) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[np.ndarray]]:
     mask = _top_items_mask(
         weights=weights, current_size=current_size, target_size=target_size
     )
@@ -407,6 +418,15 @@ def _resize_rows(
         None if weights is None else weights[mask],
         None if names is None else names[mask],
     )
+
+
+def _arrays_equal_or_none(a: Optional[np.ndarray], b: Optional[np.ndarray]) -> bool:
+    if a is None:
+        return b is None
+    elif b is None:
+        return False
+    else:
+        return np.array_equal(a, b)
 
 
 __tracker.validate()

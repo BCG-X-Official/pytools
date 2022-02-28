@@ -1,7 +1,7 @@
 """
 Utilities for creating simulated data sets.
 """
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ __tracker = AllTracker(globals())
 def sim_data(
     n: int = 100,
     intercept: float = -5,
-    two_way_coef: Optional[float] = None,
+    two_way_coef: Optional[Tuple[float, float, float]] = None,
     linear_vars: int = 10,
     linear_var_coef: Optional[Sequence[float]] = None,
     noise_vars: int = 0,
@@ -60,7 +60,7 @@ def sim_data(
     :param n: number of observations
     :param intercept: value for the intercept which can be modified to generate class
         imbalance
-    :param two_way_coef: list of three coefficients: two linear terms and an
+    :param two_way_coef: tuple of three coefficients: two linear terms and an
         interaction effect
     :param linear_vars: number of linear features
     :param linear_var_coef: an optional list of coefficients for linear features if
@@ -171,7 +171,7 @@ def sim_data(
 
     # generate linear predictor
     if two_way_coef is None:
-        two_way_coef = [4, 4, 2]
+        two_way_coef = (4.0, 4.0, 2.0)
 
     lp = (
         intercept
@@ -217,7 +217,11 @@ def sim_data(
     elif outcome == "regression":
 
         # continuous outcome based on linear predictor
-        tmp_data["target"] = np.random.normal(lp, regression_err, size=n)
+        tmp_data["target"] = (
+            np.random.normal(lp, size=n)
+            if regression_err is None
+            else np.random.normal(lp, regression_err, size=n)
+        )
 
     return tmp_data
 

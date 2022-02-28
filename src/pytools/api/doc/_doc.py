@@ -34,7 +34,7 @@ __all__ = [
 # Type variables
 #
 
-T = TypeVar("T")
+T_Type = TypeVar("T_Type", bound=Union[type, FunctionType])
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -150,15 +150,15 @@ class ModuleDefinition(APIDefinition):
 
 
 @inheritdoc(match="""[see superclass]""")
-class NamedElementDefinition(APIDefinition, Generic[T]):
+class NamedElementDefinition(APIDefinition, Generic[T_Type]):
     """
     A reference to a Python class or function definition.
     """
 
     #: the class or function
-    element: T
+    element: T_Type
 
-    def __init__(self, element: T, *, public_module: Optional[str] = None) -> None:
+    def __init__(self, element: T_Type, *, public_module: Optional[str] = None) -> None:
         """
         :param element: the API element
         :param public_module: the public module exposing the element; this can be
@@ -317,6 +317,7 @@ class HasWellFormedDocstring(DocTest):
                 continue
 
             line_elements = re.match(r"(\s*)(:(?:param|returns?|raises?))?", line)
+            assert line_elements is not None, "regex found matches"
             text_indent = line_elements.regs[1][1]
 
             is_param_line = text_indent < line_elements.regs[2][1]

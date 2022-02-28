@@ -10,14 +10,15 @@ from pytools.api._alltracker import AllTracker
 
 log = logging.getLogger(__name__)
 
-__all__ = ["inheritdoc", "subsdoc"]
 
 #
 # Type variables
 #
 
 T = TypeVar("T")
-T_Type = TypeVar("T_Type", bound=type)
+
+
+__all__ = ["inheritdoc", "subsdoc"]
 
 
 #
@@ -26,9 +27,9 @@ T_Type = TypeVar("T_Type", bound=type)
 __tracker = AllTracker(globals())
 
 
-def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
+def inheritdoc(*, match: str) -> Callable[[type], type]:
     """
-    Decorator to inherit docstrings of overridden methods.
+    Class decorator to inherit docstrings of overridden methods.
 
     Usage:
 
@@ -137,7 +138,7 @@ def _get_docstring(obj: Any) -> str:
         return obj.__doc__
 
 
-def _set_docstring(obj: Any, docstring: str) -> None:
+def _set_docstring(obj: Any, docstring: Optional[str]) -> None:
     # set the docstring of the given object
 
     try:

@@ -41,7 +41,7 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:

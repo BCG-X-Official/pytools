@@ -272,7 +272,7 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
         options: object,
         signature: Optional[str],
         return_annotation: Optional[str],
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
         try:
             return self.process(
                 app=app,
