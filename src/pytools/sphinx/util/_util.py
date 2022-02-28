@@ -6,6 +6,7 @@ import itertools
 import logging
 import re
 from abc import ABCMeta, abstractmethod
+from types import FunctionType, MethodType
 from typing import (
     Any,
     Callable,
@@ -62,6 +63,12 @@ __all__ = [
     "SkipIndirectImports",
 ]
 
+#
+# Type aliases
+#
+
+method_descriptor = type(str.__dict__["startswith"])
+wrapper_descriptor = str.__dict__["__add__"]
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -265,7 +272,7 @@ class AddInheritance(AutodocProcessDocstring):
             _subclass: type, _include_subclass: bool
         ) -> Generator[type, None, None]:
             # ensure we have the non-generic origin class
-            _subclass: type = typing_inspect.get_origin(_subclass) or _subclass
+            _subclass = typing_inspect.get_origin(_subclass) or _subclass
 
             if _subclass in visited_classes:
                 return
@@ -365,16 +372,13 @@ class CollapseModulePaths(metaclass=ABCMeta):
         # create the regex substitution rule given a raw match and replacement patterns
         pass
 
-    def collapse_module_paths(self, line: Optional[str]) -> Optional[str]:
+    def collapse_module_paths(self, line: str) -> str:
         """
         In the given line, replace all module paths with their collapsed version.
 
         :param line: the line in which to collapse module paths
         :return: the resulting line with collapsed module paths
         """
-        if not line:
-            return line
-
         if self._collapse_private_modules:
             line = self._collapse_private_module_paths(line)
 
@@ -455,9 +459,15 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
         """[see superclass]"""
         if signature or return_annotation:
             return (
-                self.collapse_module_paths(signature),
-                self.collapse_module_paths(return_annotation),
+                self.collapse_module_paths(signature) if signature else None,
+                (
+                    self.collapse_module_paths(return_annotation)
+                    if return_annotation
+                    else None
+                ),
             )
+
+        return None
 
     def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
         return re.compile(old), new
@@ -532,6 +542,8 @@ class SkipIndirectImports(AutodocSkipMember):
                 log.info(f"skipping: {what}: {name}")
                 return False
 
+        return None
+
 
 @inheritdoc(match="""[see superclass]""")
 class Replace3rdPartyDoc(AutodocProcessDocstring):
@@ -594,6 +606,10 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
             # replace 3rd party docstring with cross-reference
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
+
+            assert isinstance(
+                obj, (FunctionType, MethodType, method_descriptor, wrapper_descriptor)
+            ), f"{obj!r}:{type(obj)} is a function or method"
 
             if not obj_module or obj_module == "builtins":
                 full_name = obj.__qualname__

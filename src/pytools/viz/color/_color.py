@@ -2,8 +2,12 @@
 Core implementation of :mod:`pytools.viz.color`
 """
 
+from __future__ import annotations
+
 import logging
-from typing import Set, TypeVar, Union
+from abc import ABCMeta
+from types import FunctionType
+from typing import Callable, Set, TypeVar, Union, cast
 
 from matplotlib import cm
 from matplotlib.colors import Colormap, LinearSegmentedColormap
@@ -12,7 +16,7 @@ from ._rgb import RgbaColor, RgbColor
 from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
 from pytools.expression import Expression, HasExpressionRepr
 from pytools.expression.atomic import Id
-from pytools.meta import SingletonMeta, compose_meta
+from pytools.meta import SingletonMeta
 
 log = logging.getLogger(__name__)
 
@@ -98,6 +102,15 @@ _COLORMAP_FACET = LinearSegmentedColormap.from_list(
 #
 
 
+def _get_property_name(
+    # we use a union type here: depending on the type checker, properties
+    # will be considered a callable (mypy), or of type property (PyCharm)
+    p: Union[Callable[[ColorScheme], RgbColor], property]
+) -> str:
+    # helper function used while setting class attributes of class ColorScheme (below)
+    return cast(FunctionType, cast(property, p).fget).__name__
+
+
 @inheritdoc(match="[see superclass]")
 class ColorScheme(HasExpressionRepr):
     """
@@ -118,11 +131,11 @@ class ColorScheme(HasExpressionRepr):
         self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
     ) -> None:
         """
-        :param foreground: the foreground color
+        :param foreground: the p color
         :param background: the background color
         :param colors: additional colors as keyword arguments; one or more of %COLORS%
         """
-        validate_type(foreground, expected_type=tuple, name="arg foreground")
+        validate_type(foreground, expected_type=tuple, name="arg p")
         validate_type(background, expected_type=tuple, name="arg background")
         unsupported_colors = colors.keys() - ColorScheme._SUPPORTED_COLORS
         if unsupported_colors:
@@ -137,7 +150,7 @@ class ColorScheme(HasExpressionRepr):
     @property
     def foreground(self) -> RgbColor:
         """
-        The foreground color.
+        The p color.
         """
         return self._colors[ColorScheme._COLOR_FOREGROUND]
 
@@ -153,7 +166,7 @@ class ColorScheme(HasExpressionRepr):
         """
         The primary fill color.
 
-        Defaults to the halfway point between the foreground and background color
+        Defaults to the halfway point between the p and background color
         if not defined explicitly.
         """
         return self._colors.get(ColorScheme._COLOR_FILL_1) or RgbColor(
@@ -183,7 +196,7 @@ class ColorScheme(HasExpressionRepr):
         """
         The primary accent color.
 
-        Defaults to the foreground color if not defined explicitly.
+        Defaults to the p color if not defined explicitly.
         """
         return self._colors.get(ColorScheme._COLOR_ACCENT_1) or self.foreground
 
@@ -236,7 +249,7 @@ class ColorScheme(HasExpressionRepr):
         self, fill_color: Union[RgbColor, RgbaColor]
     ) -> Union[RgbColor, RgbaColor]:
         """
-        Return the foreground color or background color of this color schema,
+        Return the p color or background color of this color schema,
         depending on which maximises contrast with the given fill color.
 
         If the fill colour includes an alpha channel, this will be included unchanged
@@ -265,7 +278,7 @@ class ColorScheme(HasExpressionRepr):
 
         # preserve alpha channel of the fill color, if present
         if len(fill_color) > 3:
-            return RgbaColor(*(contrast_color + (fill_color[3],)))
+            return RgbaColor(*(contrast_color + (cast(RgbaColor, fill_color)[3],)))
         else:
             return contrast_color
 
@@ -273,17 +286,17 @@ class ColorScheme(HasExpressionRepr):
         """[see superclass]"""
         return Id(type(self))(**self._colors)
 
-    _COLOR_FOREGROUND = foreground.fget.__name__
-    _COLOR_BACKGROUND = background.fget.__name__
-    _COLOR_FILL_1 = fill_1.fget.__name__
-    _COLOR_FILL_2 = fill_2.fget.__name__
-    _COLOR_FILL_3 = fill_3.fget.__name__
-    _COLOR_ACCENT_1 = accent_1.fget.__name__
-    _COLOR_ACCENT_2 = accent_2.fget.__name__
-    _COLOR_ACCENT_3 = accent_3.fget.__name__
-    _COLOR_STATUS_OK = status_ok.fget.__name__
-    _COLOR_STATUS_WARNING = status_warning.fget.__name__
-    _COLOR_STATUS_CRITICAL = status_critical.fget.__name__
+    _COLOR_FOREGROUND = _get_property_name(foreground)
+    _COLOR_BACKGROUND = _get_property_name(background)
+    _COLOR_FILL_1 = _get_property_name(fill_1)
+    _COLOR_FILL_2 = _get_property_name(fill_2)
+    _COLOR_FILL_3 = _get_property_name(fill_3)
+    _COLOR_ACCENT_1 = _get_property_name(accent_1)
+    _COLOR_ACCENT_2 = _get_property_name(accent_2)
+    _COLOR_ACCENT_3 = _get_property_name(accent_3)
+    _COLOR_STATUS_OK = _get_property_name(status_ok)
+    _COLOR_STATUS_WARNING = _get_property_name(status_warning)
+    _COLOR_STATUS_CRITICAL = _get_property_name(status_critical)
 
     _SUPPORTED_COLORS: Set[str]
 
@@ -340,8 +353,8 @@ class MatplotColorScheme(ColorScheme):
         else:
             raise ValueError("arg colormap must be a Colormap or a string")
 
-    __doc_lines = ColorScheme.__init__.__doc__.split("\n")  # type: ignore
-    __doc_lines.insert(-2, __init__.__doc__[1:])
+    __doc_lines = cast(str, ColorScheme.__init__.__doc__).split("\n")
+    __doc_lines.insert(-2, cast(str, __init__.__doc__)[1:])
     __init__.__doc__ = "\n".join(__doc_lines)
     del __doc_lines
 
@@ -357,8 +370,12 @@ class MatplotColorScheme(ColorScheme):
         return Id(type(self))(**self._colors, colormap=self.colormap)
 
 
+class _FacetColorSchemeMeta(SingletonMeta, ABCMeta):
+    pass
+
+
 @inheritdoc(match="[see superclass]")
-class _FacetColorScheme(MatplotColorScheme):
+class _FacetColorScheme(MatplotColorScheme, metaclass=_FacetColorSchemeMeta):
     def __init__(self, foreground: RgbColor, background: RgbColor) -> None:
         super().__init__(
             foreground=foreground,
@@ -382,9 +399,7 @@ class _FacetColorScheme(MatplotColorScheme):
         return Id(type(self))()
 
 
-class FacetLightColorScheme(
-    _FacetColorScheme, metaclass=compose_meta(SingletonMeta, type(_FacetColorScheme))
-):
+class FacetLightColorScheme(_FacetColorScheme):
     """
     The default FACET color scheme with a light background.
     """
@@ -393,9 +408,7 @@ class FacetLightColorScheme(
         super().__init__(foreground=_RGB_BLACK, background=_RGB_WHITE)
 
 
-class FacetDarkColorScheme(
-    _FacetColorScheme, metaclass=compose_meta(SingletonMeta, type(_FacetColorScheme))
-):
+class FacetDarkColorScheme(_FacetColorScheme):
     """
     The default FACET color scheme with a dark background.
     """

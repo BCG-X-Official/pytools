@@ -3,7 +3,18 @@ Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple, Type, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 import numpy as np
 import pandas as pd
@@ -15,7 +26,7 @@ from matplotlib.ticker import FixedLocator, Formatter, FuncFormatter, NullLocato
 
 from ...data import Matrix
 from .. import ColorbarMatplotStyle, Drawer, TextStyle
-from ..color import ColorScheme
+from ..color import MatplotColorScheme, RgbColor
 from ..util import FittedText, PercentageFormatter
 from .base import MatrixStyle
 from pytools.api import AllTracker, inheritdoc
@@ -86,7 +97,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
-        colors: Optional[ColorScheme] = None,
+        colors: Optional[MatplotColorScheme] = None,
         font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Optional[Normalize] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
@@ -136,7 +147,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self.cell_formatter = cell_formatter
         self.nan_substitute = 0.0 if nan_substitute is None else nan_substitute
 
-    __init__.__doc__ = ColorbarMatplotStyle.__init__.__doc__ + __init__.__doc__  # type: ignore
+    __init__.__doc__ = cast(str, ColorbarMatplotStyle.__init__.__doc__) + cast(
+        str, __init__.__doc__
+    )
 
     def draw_matrix(
         self,
@@ -174,7 +187,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
                 hatch="////",
                 edgecolor=(
                     *colors.contrast_color(
-                        self.color_for_value(self.nan_substitute)[:3]
+                        cast(RgbColor, self.color_for_value(self.nan_substitute)[:3])
                     ),
                     0.25,
                 ),
@@ -310,7 +323,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
@@ -356,7 +369,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
-        colors: Optional[ColorScheme] = None,
+        colors: Optional[MatplotColorScheme] = None,
         font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Optional[Normalize] = None,
         nan_substitute: float = None,
@@ -382,14 +395,11 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
             ),
         )
 
-    __init__.__doc__ = (
-        "\n".join(
-            line
-            for line in ColorbarMatplotStyle.__init__.__doc__.split("\n")
-            if "_formatter:" not in line
-        )
-        + __init__.__doc__
-    )
+    __init__.__doc__ = "\n".join(
+        line
+        for line in cast(str, ColorbarMatplotStyle.__init__.__doc__).split("\n")
+        if "_formatter:" not in line
+    ) + cast(str, __init__.__doc__)
 
     @classmethod
     def get_default_style_name(cls) -> str:
@@ -407,13 +417,15 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
 
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(
+            title=title, name_labels=name_labels, weight_label=weight_label, **kwargs
+        )
 
         for i, dim_name in enumerate(("rows", "columns")):
             if name_labels[i]:

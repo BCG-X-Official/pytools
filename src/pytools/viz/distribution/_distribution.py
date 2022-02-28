@@ -43,7 +43,11 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
     """
 
     def _draw_ecdf(
-        self, ecdf: ECDF, x_label: str, iqr_multiple: float, iqr_multiple_far: float
+        self,
+        ecdf: ECDF,
+        x_label: str,
+        iqr_multiple: Optional[float],
+        iqr_multiple_far: Optional[float],
     ) -> None:
         def _iqr_annotation(multiple: float) -> str:
             return f"(> {multiple:.3g} * IQR)"
@@ -58,20 +62,22 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
             label="inlier",
             **matplotlib_kwargs,
         )
-        ax.plot(
-            ecdf.outliers.x,
-            ecdf.outliers.y,
-            color=colors.status_warning,
-            label=f"outlier {_iqr_annotation(multiple=iqr_multiple)}",
-            **matplotlib_kwargs,
-        )
-        ax.plot(
-            ecdf.far_outliers.x,
-            ecdf.far_outliers.y,
-            color=colors.status_critical,
-            label=f"far outlier {_iqr_annotation(multiple=iqr_multiple_far)}",
-            **matplotlib_kwargs,
-        )
+        if iqr_multiple is not None:
+            ax.plot(
+                ecdf.outliers.x,
+                ecdf.outliers.y,
+                color=colors.status_warning,
+                label=f"outlier {_iqr_annotation(multiple=iqr_multiple)}",
+                **matplotlib_kwargs,
+            )
+        if iqr_multiple_far is not None:
+            ax.plot(
+                ecdf.far_outliers.x,
+                ecdf.far_outliers.y,
+                color=colors.status_critical,
+                label=f"far outlier {_iqr_annotation(multiple=iqr_multiple_far)}",
+                **matplotlib_kwargs,
+            )
 
         # add axis labels and legend
         ax.set_xlabel(x_label, color=colors.foreground)
@@ -155,8 +161,9 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             attribute, then the default title will include the name)
         """
         if title is None:
-            if hasattr(data, "name"):
-                title = f"ECDF: {data.name}"
+            name = getattr(data, "name", None)
+            if name:
+                title = f"ECDF: {name}"
             else:
                 title = "ECDF"
         super().draw(data=data, title=title)

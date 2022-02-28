@@ -4,8 +4,7 @@ Core implementation of :mod:`pytools.viz.color`
 from __future__ import annotations
 
 import logging
-from numbers import Number
-from typing import Any, Optional, Tuple, overload
+from typing import Optional, Tuple, cast, overload
 
 from matplotlib.colors import to_rgba
 
@@ -22,6 +21,12 @@ __all__ = [
     "RgbaColor",
 ]
 
+
+#
+# Type Aliases
+#
+TupleRgb = Tuple[float, float, float]
+TupleRgba = Tuple[float, float, float, float]
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -86,7 +91,8 @@ class RgbColor(_RgbBase):
         if len(args) not in [0, 1, 3]:
             raise ValueError(f"need 1 color name or 3 RGB values, but got {args}")
 
-        return super().__new__(cls, _to_rgba(*args, **kwargs)[:3])
+        # disable static type checking: cannot infer correct signature of tuple.__new__
+        return super().__new__(cls, _to_rgba(*args, **kwargs)[:3])  # type: ignore
 
 
 class RgbaColor(_RgbBase):
@@ -123,19 +129,38 @@ class RgbaColor(_RgbBase):
         return self[3]
 
 
+@overload
 def _to_rgba(
-    *args: Any,
+    r: float, g: float, b: float, alpha: Optional[float] = None
+) -> Tuple[float, float, float, float]:
+    pass
+
+
+@overload
+def _to_rgba(
+    c: str, alpha: Optional[float] = None
+) -> Tuple[float, float, float, float]:
+    pass
+
+
+def _to_rgba(
+    *args,
     r: Optional[float] = None,
     g: Optional[float] = None,
     b: Optional[float] = None,
-    alpha: Optional[Any] = None,
+    alpha: Optional[float] = None,
     c: Optional[str] = None,
 ) -> Tuple[float, float, float, float]:
-    rgb = (r, g, b)
-    is_rgb = any(x is not None for x in rgb)
+    n_rgb_kwargs = (r is not None) + (g is not None) + (b is not None)
+    if n_rgb_kwargs in (1, 2):
+        raise ValueError(
+            "incomplete RGB keyword arguments: need to provide r, g, and b"
+        )
+    is_rgb = n_rgb_kwargs > 0
+
     is_c = c is not None
 
-    if bool(args) and (is_rgb or is_c):
+    if args and (is_rgb or is_c):
         raise ValueError(
             "mixed use of positional and keyword arguments for color arguments"
         )
@@ -150,38 +175,42 @@ def _to_rgba(
         c, alpha = args
 
     if isinstance(c, str):
-        if isinstance(alpha, Number):
-            # noinspection PyTypeChecker
-            return to_rgba(c, float(alpha))
+        if isinstance(alpha, (float, int)):
+            return to_rgba(c, alpha)
         elif alpha is None:
             return to_rgba(c)
         else:
-            raise ValueError(f"alpha must be a number but is: {alpha!r}")
+            raise ValueError(f"alpha must be numeric but is: {alpha!r}")
     elif c is not None:
         raise ValueError(f"single color argument must be a string but is: {c!r}")
 
     # case 2: color channels
 
-    if not is_rgb:
+    rgb: Tuple[float, ...]
+    if is_rgb:
+        assert not (r is None or g is None or b is None)
+        rgb = (r, g, b)
+    else:
+        if not all(isinstance(x, (float, int)) for x in args):
+            raise ValueError(f"all color arguments must be numeric, but are: {args}")
         rgb = args
 
+    rgba: TupleRgba
     if alpha is not None:
         if len(rgb) != 3:
             raise ValueError(f"need 3 RGB values but got {rgb}")
-        rgba = (*rgb, alpha)
+        rgba = cast(TupleRgba, (*rgb, alpha))
     else:
         if len(rgb) == 3:
-            rgba = (*rgb, 1.0)
+            rgba = cast(TupleRgba, (*rgb, 1.0))
         elif len(rgb) == 4:
-            rgba = rgb
+            rgba = cast(TupleRgba, rgb)
         else:
             raise ValueError(f"need 3 RGB values or 4 RGBA values but got: {rgb}")
 
-    # noinspection PyTypeChecker
-    if all(isinstance(x, Number) and 0 <= x <= 1 for x in rgba):
+    if all(isinstance(x, (float, int)) and 0.0 <= x <= 1.0 for x in rgba):
         assert len(rgba) == 4
-        # noinspection PyTypeChecker
-        return tuple(map(float, rgba))
+        return rgba
     else:
         raise ValueError(f"invalid RGBA values: {rgba}")
 

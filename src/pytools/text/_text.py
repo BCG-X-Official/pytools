@@ -159,13 +159,19 @@ def format_table(
     """
     n_columns = len(headings)
 
+    formats_seq: Sequence[Optional[str]]
+
     if formats is None:
-        formats = [None] * n_columns
+        formats_seq = [None] * n_columns
     elif len(formats) != n_columns:
         raise ValueError("arg formats must have the same length as arg headings")
+    else:
+        formats_seq = formats
+
+    alignment_seq: Sequence[Optional[str]]
 
     if alignment is None:
-        alignment = ["<"] * n_columns
+        alignment_seq = ["<"] * n_columns
     elif len(alignment) != n_columns:
         raise ValueError("arg alignment must have the same length as arg headings")
     elif not all(align in _ALIGNMENT_OPTIONS for align in alignment):
@@ -173,8 +179,10 @@ def format_table(
             f"arg alignment must only contain alignment options "
             f'{", ".join(_ALIGNMENT_OPTIONS)}'
         )
+    else:
+        alignment_seq = alignment
 
-    def _formatted(item: Any, format_string: str) -> str:
+    def _formatted(item: Any, format_string: Optional[str]) -> str:
         if format_string is None:
             return str(item)
         else:
@@ -193,12 +201,12 @@ def format_table(
             )
         return [
             _formatted(item, format_string)
-            for item, format_string in zip(items, formats)
+            for item, format_string in zip(items, formats_seq)
         ]
 
     body_rows = [_make_row(items) for items in _iterate_row_data()]
 
-    column_widths = [
+    column_widths: List[int] = [
         max(column_lengths)
         for column_lengths in zip(
             *(
@@ -213,13 +221,13 @@ def format_table(
 
     dividers = ["=" * column_width for column_width in column_widths]
 
-    def _format_rows(rows: List[List[str]], align: bool):
+    def _format_rows(rows: List[Sequence[str]], align: bool):
         return (
             "  ".join(
                 (
                     f'{item:{align_char if align else ""}{column_width}s}'
                     for item, align_char, column_width in zip(
-                        row, alignment, column_widths
+                        row, alignment_seq, column_widths
                     )
                 )
             )

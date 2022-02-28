@@ -16,6 +16,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 from ..api import AllTracker, inheritdoc
@@ -155,15 +156,18 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     A drawing style that supports color output.
     """
 
+    #: the color scheme used by this drawing style
+    _colors: T_ColorScheme
+
     def __init__(self, *, colors: Optional[T_ColorScheme] = None) -> None:
         """
         :param colors: the color scheme to be used by this drawing style
             (default: :class:`.%%COLORS_DEFAULT%%`)
         """
         super().__init__()
-        self._colors = colors or ColorScheme.DEFAULT
+        self._colors = colors or cast(T_ColorScheme, ColorScheme.DEFAULT)
 
-    __init__.__doc__ = __init__.__doc__.replace(
+    __init__.__doc__ = cast(str, __init__.__doc__).replace(
         "%%COLORS_DEFAULT%%", repr(ColorScheme.DEFAULT)
     )
 
@@ -172,7 +176,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         cls: Type[T_Style],
     ) -> Dict[str, Callable[..., T_Style]]:
         """[see superclass]"""
-        named_styles = super().get_named_styles()
+        named_styles = cast(Type[T_Style], super()).get_named_styles()
         return {
             **named_styles,
             **{
@@ -240,7 +244,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 f"{DrawingStyle.__name__}"
             )
 
-    __init__.__doc__ = __init__.__doc__.replace("%DEFAULT%", DEFAULT_STYLE)
+    __init__.__doc__ = cast(str, __init__.__doc__).replace("%DEFAULT%", DEFAULT_STYLE)
 
     @classmethod
     def get_named_styles(cls) -> Dict[str, Callable[..., T_Style]]:

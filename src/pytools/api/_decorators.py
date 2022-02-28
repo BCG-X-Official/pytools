@@ -4,11 +4,19 @@ Core implementation of decorators in :mod:`pytools.api`.
 
 import logging
 import re
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 from pytools.api._alltracker import AllTracker
 
 log = logging.getLogger(__name__)
+
+
+#
+# Type variables
+#
+
+T = TypeVar("T")
+
 
 __all__ = ["inheritdoc", "subsdoc"]
 
@@ -21,7 +29,7 @@ __tracker = AllTracker(globals())
 
 def inheritdoc(*, match: str) -> Callable[[type], type]:
     """
-    Decorator to inherit docstrings of overridden methods.
+    Class decorator to inherit docstrings of overridden methods.
 
     Usage:
 
@@ -83,7 +91,7 @@ def inheritdoc(*, match: str) -> Callable[[type], type]:
 
 def subsdoc(
     *, pattern: str, replacement: str, using: Optional[Any] = None
-) -> Callable[[object], object]:
+) -> Callable[[T], T]:
     """
     Decorator that matches a given pattern in the decorated object's docstring, and
     substitutes it with the given replacement string (see :func:`re.sub`)
@@ -95,7 +103,7 @@ def subsdoc(
     :return: the parameterized decorator
     """
 
-    def _decorate(_obj: object) -> object:
+    def _decorate(_obj: T) -> T:
         origin = _obj if using is None else using
         docstring_original = _get_docstring(origin)
         if not isinstance(docstring_original, str):

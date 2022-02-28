@@ -4,7 +4,7 @@ Supporting classes for linkage trees.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional
+from typing import cast
 
 from pytools.api import AllTracker, inheritdoc
 from pytools.expression import Expression, HasExpressionRepr
@@ -91,14 +91,14 @@ class LinkageNode(Node):
     An inner node in a :class:`.LinkageTree`.
     """
 
-    def __init__(self, index: int, children_distance: Optional[float]) -> None:
+    def __init__(self, index: int, children_distance: float) -> None:
         """
         :param children_distance: the distance between this node and its children
         """
         super().__init__(index=index)
         self._children_distance = children_distance
 
-    __init__.__doc__ = Node.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = cast(str, Node.__init__.__doc__) + cast(str, __init__.__doc__)
 
     @property
     def children_distance(self) -> float:
@@ -144,7 +144,7 @@ class LeafNode(Node):
         self._name = name
         self._weight = weight
 
-    __init__.__doc__ = Node.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = cast(str, Node.__init__.__doc__) + cast(str, __init__.__doc__)
 
     @property
     def children_distance(self) -> float:

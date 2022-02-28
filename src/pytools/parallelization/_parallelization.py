@@ -21,6 +21,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 import joblib
@@ -275,30 +276,30 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queues: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
+        queues_seq: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
             queues,
-            element_type=JobQueue,
+            element_type=cast(Type[JobQueue[T_Job_Result, T_Queue_Result]], JobQueue),
             arg_name="queues",
         )
 
         try:
-            for queue in queues:
+            for queue in queues_seq:
                 queue.lock.acquire()
 
             # notify the queues that we're about to run them
-            for queue in queues:
+            for queue in queues_seq:
                 queue.on_run()
 
             with self._parallel() as parallel:
                 results: List[T_Job_Result] = parallel(
-                    (job.run, (), {}) for queue in queues for job in queue.jobs()
+                    (job.run, (), {}) for queue in queues_seq for job in queue.jobs()
                 )
 
         finally:
-            for queue in queues:
+            for queue in queues_seq:
                 queue.lock.release()
 
-        queues_len = sum(len(queue) for queue in queues)
+        queues_len = sum(len(queue) for queue in queues_seq)
         if len(results) != queues_len:
             raise AssertionError(
                 f"Number of results ({len(results)}) does not match length of "
@@ -306,10 +307,12 @@ class JobRunner(ParallelizableMixin):
             )
 
         # split the results into a list for each queue
-        queue_ends = list(itertools.accumulate(len(queue) for queue in queues))
+        queue_ends = list(itertools.accumulate(len(queue) for queue in queues_seq))
         return [
             queue.aggregate(results[first_job:last_job])
-            for queue, first_job, last_job in zip(queues, [0, *queue_ends], queue_ends)
+            for queue, first_job, last_job in zip(
+                queues_seq, [0, *queue_ends], queue_ends
+            )
         ]
 
     def _parallel(self) -> joblib.Parallel:

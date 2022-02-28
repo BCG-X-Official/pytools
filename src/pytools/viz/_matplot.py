@@ -4,7 +4,7 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Iterable, List, Optional, Union
+from typing import Any, Iterable, List, Optional, Union, cast, overload
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -95,8 +95,8 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         self._font_family_original = None
 
-    __init__.__doc__ = __init__.__doc__.replace(
-        "%%COLORS%%", ColoredStyle.__init__.__doc__
+    __init__.__doc__ = cast(str, __init__.__doc__).replace(
+        "%%COLORS%%", cast(str, ColoredStyle.__init__.__doc__)
     )
 
     @classmethod
@@ -125,7 +125,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
-        Set the title of the matplot chart to the given title, and set the foreground
+        Set the title of the matplot chart to the given title, and set the p
         and background color according to the color scheme.
 
         :param title: the chart title
@@ -223,6 +223,10 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     style.
     """
 
+    #: The colorbar associated with this style;
+    #: set when :meth:`.ColorbarMatplotStyle.start_drawing` is called.
+    colorbar: Optional[ColorbarBase]
+
     def __init__(
         self,
         *,
@@ -257,7 +261,19 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
         self.colorbar = None
 
-    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = cast(str, MatplotStyle.__init__.__doc__) + cast(
+        str, __init__.__doc__
+    )
+
+    @overload
+    def color_for_value(self, z: Union[int, float]) -> RgbaColor:
+        """[overload]"""
+        pass
+
+    @overload
+    def color_for_value(self, z: np.ndarray) -> np.ndarray:
+        """[overload]"""
+        pass
 
     def color_for_value(
         self, z: Union[int, float, np.ndarray]

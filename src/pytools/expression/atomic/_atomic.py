@@ -4,11 +4,12 @@ Implementation of :mod:`pytools.expression` and subpackages.
 from __future__ import annotations
 
 import logging
+from abc import ABCMeta
 from typing import Any, Dict, Generic, TypeVar
 from weakref import WeakValueDictionary
 
 from ...api import AllTracker, inheritdoc
-from ...meta import SingletonMeta, compose_meta
+from ...meta import SingletonMeta
 from ..base import AtomicExpression
 
 log = logging.getLogger(__name__)
@@ -67,7 +68,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
         return repr(self.value_)
 
 
-class _IdentifierMeta(type):
+class _IdentifierMeta(ABCMeta):
 
     _identifiers: Dict[str, Id] = WeakValueDictionary()  # type: ignore
 
@@ -85,10 +86,7 @@ class _IdentifierMeta(type):
 
 
 @inheritdoc(match="[see superclass]")
-class Id(
-    AtomicExpression[str],
-    metaclass=compose_meta(_IdentifierMeta, type(AtomicExpression)),  # type: ignore
-):
+class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     """
     An identifier.
 
@@ -130,11 +128,12 @@ class Id(
         return self._name
 
 
+class _EpsilonMeta(SingletonMeta, ABCMeta):
+    pass
+
+
 @inheritdoc(match="[see superclass]")
-class Epsilon(
-    AtomicExpression[None],
-    metaclass=compose_meta(SingletonMeta, type(AtomicExpression)),  # type: ignore
-):
+class Epsilon(AtomicExpression[None], metaclass=_EpsilonMeta):
     """
     A singleton class representing the empty expression.
     """

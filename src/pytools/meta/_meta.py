@@ -1,8 +1,10 @@
 """
 Core implementation of :mod:`pytools.meta`.
 """
+from __future__ import annotations
+
 import logging
-from typing import Any, Optional, Type, TypeVar
+from typing import Any, Optional, TypeVar
 from weakref import ref
 
 from ..api import AllTracker
@@ -21,7 +23,7 @@ __all__ = ["SingletonMeta", "compose_meta"]
 # Type variables
 #
 
-T = TypeVar("T")
+T_SingletonMeta = TypeVar("T_SingletonMeta", bound="SingletonMeta")
 
 
 #
@@ -53,7 +55,7 @@ class SingletonMeta(type):
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None
 
-    def __call__(cls: Type[T], *args, **kwargs: Any) -> T:
+    def __call__(cls: T_SingletonMeta, *args, **kwargs: Any) -> T_SingletonMeta:
         """
         Return the existing singleton instance, or create a new one if none exists yet.
 
@@ -67,8 +69,6 @@ class SingletonMeta(type):
         """
         if args or kwargs:
             raise ValueError("singleton classes may not take any arguments")
-
-        cls: SingletonMeta
 
         if cls.__instance_ref:
             obj = cls.__instance_ref()

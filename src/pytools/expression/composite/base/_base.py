@@ -130,6 +130,9 @@ class LambdaDefinition(SimplePrefixExpression):
         :param params: the parameters of the lambda expression
         :param body: the body of the lambda expression
         """
+
+        params_expression: Expression
+
         if not params:
             params_expression = Epsilon()
         elif len(params) == 1:
