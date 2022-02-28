@@ -228,9 +228,7 @@ class Matrix(HasExpressionRepr):
 
     def resize(
         self,
-        size: Union[
-            int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
-        ],
+        size: Union[int, float, Tuple[Union[int, float], Union[int, float]], None],
     ) -> Matrix:
         r"""
         Create a version of this matrix with fewer rows and/or columns.
@@ -404,7 +402,7 @@ def _resize_rows(
     names: Optional[np.ndarray],
     current_size: int,
     target_size: Tuple[Optional[int], Optional[float]],
-) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[Tuple[str, ...]]]:
+) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[np.ndarray]]:
     mask = _top_items_mask(
         weights=weights, current_size=current_size, target_size=target_size
     )

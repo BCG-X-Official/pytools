@@ -186,7 +186,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             iqr_multiple_far=self.iqr_multiple_far,
         )
 
-    def _ecdf(self, data: Sequence[float]) -> ECDF:
+    def _ecdf(self, data: Union[Sequence[float], pd.Series, np.ndarray]) -> ECDF:
         """
         Compute ECDF for scalar values.
 

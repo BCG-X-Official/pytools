@@ -29,7 +29,7 @@ def sim_data(
     bin_var_p: float = 0,
     bin_coef: float = 0,
     outcome: str = "classification",
-    regression_err: Optional[float] = None,
+    regression_err: float = 1.0,
     seed_val: int = 4763546,
 ) -> pd.DataFrame:
     """
