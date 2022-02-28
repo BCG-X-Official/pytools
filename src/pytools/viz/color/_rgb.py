@@ -4,7 +4,7 @@ Core implementation of :mod:`pytools.viz.color`
 from __future__ import annotations
 
 import logging
-from typing import Optional, Tuple, cast, overload
+from typing import Iterable, Optional, Tuple, cast, overload
 
 from matplotlib.colors import to_rgba
 
@@ -25,7 +25,6 @@ __all__ = [
 #
 # Type Aliases
 #
-TupleRgb = Tuple[float, float, float]
 TupleRgba = Tuple[float, float, float, float]
 
 #
@@ -91,8 +90,7 @@ class RgbColor(_RgbBase):
         if len(args) not in [0, 1, 3]:
             raise ValueError(f"need 1 color name or 3 RGB values, but got {args}")
 
-        # disable static type checking: cannot infer correct signature of tuple.__new__
-        return super().__new__(cls, _to_rgba(*args, **kwargs)[:3])  # type: ignore
+        return super().__new__(cls, cast(Iterable, _to_rgba(*args, **kwargs)[:3]))
 
 
 class RgbaColor(_RgbBase):
@@ -130,16 +128,12 @@ class RgbaColor(_RgbBase):
 
 
 @overload
-def _to_rgba(
-    r: float, g: float, b: float, alpha: Optional[float] = None
-) -> Tuple[float, float, float, float]:
+def _to_rgba(r: float, g: float, b: float, alpha: Optional[float] = None) -> TupleRgba:
     pass
 
 
 @overload
-def _to_rgba(
-    c: str, alpha: Optional[float] = None
-) -> Tuple[float, float, float, float]:
+def _to_rgba(c: str, alpha: Optional[float] = None) -> TupleRgba:
     pass
 
 
@@ -150,7 +144,7 @@ def _to_rgba(
     b: Optional[float] = None,
     alpha: Optional[float] = None,
     c: Optional[str] = None,
-) -> Tuple[float, float, float, float]:
+) -> TupleRgba:
     n_rgb_kwargs = (r is not None) + (g is not None) + (b is not None)
     if n_rgb_kwargs in (1, 2):
         raise ValueError(
