@@ -42,9 +42,9 @@ try:
     from sphinx.util.docutils import Node
 except ImportError:
     # ... otherwise mock them up
-    Sphinx = type
-    Node = type
-    Text = type
+    Sphinx = type  # type: ignore
+    Node = type  # type: ignore
+    Text = type  # type: ignore
 
 log = logging.getLogger(__name__)
 
