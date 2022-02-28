@@ -3,7 +3,7 @@ Operators used in expressions.
 """
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Mapping, Optional, Set, Tuple, TypeVar
+from typing import Mapping, Optional, Set, Tuple
 
 from pytools.api import AllTracker
 
@@ -72,12 +72,6 @@ class Operator(metaclass=ABCMeta):
         return self.symbol
 
 
-# Create a placeholder type so Sphinx will generate correct type hints
-# for class attributes
-# noinspection PyTypeHints,PyTypeChecker
-_BinaryOperator = TypeVar("BinaryOperator", bound="BinaryOperator")
-
-
 class BinaryOperator(Operator):
     """
     A binary operator.
@@ -89,39 +83,39 @@ class BinaryOperator(Operator):
     #: Inherited from :attr:`.Operator.MAX_PRECEDENCE`.
     MAX_PRECEDENCE: int
 
-    DOT: _BinaryOperator  #: The ``.`` operator.
-    POW: _BinaryOperator  #: The ``**`` operator.
-    MUL: _BinaryOperator  #: The ``*`` operator.
-    MATMUL: _BinaryOperator  #: The ``@`` operator.
-    DIV: _BinaryOperator  #: The ``/`` operator (same as :attr:`.TRUE_DIV`).
-    TRUE_DIV: _BinaryOperator  #: The ``/`` operator (same as :attr:`.DIV`).
-    FLOOR_DIV: _BinaryOperator  #: The ``//`` operator.
-    MOD: _BinaryOperator  #: The ``%`` operator.
-    ADD: _BinaryOperator  #: The ``+`` operator.
-    SUB: _BinaryOperator  #: The ``-`` operator.
-    LSHIFT: _BinaryOperator  #: The ``<<`` operator.
-    RSHIFT: _BinaryOperator  #: The ``>>`` operator.
-    AND_BITWISE: _BinaryOperator  #: The ``&`` operator.
-    XOR_BITWISE: _BinaryOperator  #: The ``^`` operator.
-    OR_BITWISE: _BinaryOperator  #: The ``|`` operator.
-    IN: _BinaryOperator  #: The ``in`` operator.
-    NOT_IN: _BinaryOperator  #: The ``not in`` operator.
-    IS: _BinaryOperator  #: The ``is`` operator.
-    IS_NOT: _BinaryOperator  #: The ``is not`` operator.
-    LT: _BinaryOperator  #: The ``<`` operator.
-    LE: _BinaryOperator  #: The ``<=`` operator.
-    GT: _BinaryOperator  #: The ``>`` operator.
-    GE: _BinaryOperator  #: The ``>=`` operator.
-    NEQ_: _BinaryOperator  #: The ``<>`` operator.
-    NEQ: _BinaryOperator  #: The ``!=`` operator.
-    EQ: _BinaryOperator  #: The ``==`` operator.
-    AND: _BinaryOperator  #: The ``and`` operator.
-    OR: _BinaryOperator  #: The ``or`` operator.
-    ASSIGN: _BinaryOperator  #: The ``=`` operator.
-    COLON: _BinaryOperator  #: The ``:`` operator.
-    SLICE: _BinaryOperator  #: The ``:`` operator used in slice expressions.
-    COMMA: _BinaryOperator  #: The ``,`` operator.
-    NONE: _BinaryOperator  #: The empty operator.
+    DOT: "BinaryOperator"  #: The ``.`` operator.
+    POW: "BinaryOperator"  #: The ``**`` operator.
+    MUL: "BinaryOperator"  #: The ``*`` operator.
+    MATMUL: "BinaryOperator"  #: The ``@`` operator.
+    DIV: "BinaryOperator"  #: The ``/`` operator (same as :attr:`.TRUE_DIV`).
+    TRUE_DIV: "BinaryOperator"  #: The ``/`` operator (same as :attr:`.DIV`).
+    FLOOR_DIV: "BinaryOperator"  #: The ``//`` operator.
+    MOD: "BinaryOperator"  #: The ``%`` operator.
+    ADD: "BinaryOperator"  #: The ``+`` operator.
+    SUB: "BinaryOperator"  #: The ``-`` operator.
+    LSHIFT: "BinaryOperator"  #: The ``<<`` operator.
+    RSHIFT: "BinaryOperator"  #: The ``>>`` operator.
+    AND_BITWISE: "BinaryOperator"  #: The ``&`` operator.
+    XOR_BITWISE: "BinaryOperator"  #: The ``^`` operator.
+    OR_BITWISE: "BinaryOperator"  #: The ``|`` operator.
+    IN: "BinaryOperator"  #: The ``in`` operator.
+    NOT_IN: "BinaryOperator"  #: The ``not in`` operator.
+    IS: "BinaryOperator"  #: The ``is`` operator.
+    IS_NOT: "BinaryOperator"  #: The ``is not`` operator.
+    LT: "BinaryOperator"  #: The ``<`` operator.
+    LE: "BinaryOperator"  #: The ``<=`` operator.
+    GT: "BinaryOperator"  #: The ``>`` operator.
+    GE: "BinaryOperator"  #: The ``>=`` operator.
+    NEQ_: "BinaryOperator"  #: The ``<>`` operator.
+    NEQ: "BinaryOperator"  #: The ``!=`` operator.
+    EQ: "BinaryOperator"  #: The ``==`` operator.
+    AND: "BinaryOperator"  #: The ``and`` operator.
+    OR: "BinaryOperator"  #: The ``or`` operator.
+    ASSIGN: "BinaryOperator"  #: The ``=`` operator.
+    COLON: "BinaryOperator"  #: The ``:`` operator.
+    SLICE: "BinaryOperator"  #: The ``:`` operator used in slice expressions.
+    COMMA: "BinaryOperator"  #: The ``,`` operator.
+    NONE: "BinaryOperator"  #: The empty operator.
 
     @property
     def is_unary(self) -> bool:
@@ -129,12 +123,6 @@ class BinaryOperator(Operator):
         ``False``, as this is not a unary operator.
         """
         return False
-
-
-# Create a placeholder type so Sphinx will generate correct type hints
-# for class attributes
-# noinspection PyTypeHints,PyTypeChecker
-_UnaryOperator = TypeVar("UnaryOperator", bound="UnaryOperator")
 
 
 class UnaryOperator(Operator):
@@ -148,11 +136,11 @@ class UnaryOperator(Operator):
     #: Inherited from :attr:`.Operator.MAX_PRECEDENCE`.
     MAX_PRECEDENCE: int
 
-    POS: _UnaryOperator  #: The ``+`` prefix operator.
-    NEG: _UnaryOperator  #: The ``-`` prefix operator.
-    INVERT: _UnaryOperator  #: The ``~`` prefix operator.
-    NOT: _UnaryOperator  #: The ``not`` prefix operator.
-    LAMBDA: _UnaryOperator  #: The ``lambda`` prefix operator.
+    POS: "UnaryOperator"  #: The ``+`` prefix operator.
+    NEG: "UnaryOperator"  #: The ``-`` prefix operator.
+    INVERT: "UnaryOperator"  #: The ``~`` prefix operator.
+    NOT: "UnaryOperator"  #: The ``not`` prefix operator.
+    LAMBDA: "UnaryOperator"  #: The ``lambda`` prefix operator.
 
     @property
     def is_unary(self) -> bool:

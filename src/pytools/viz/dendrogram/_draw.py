@@ -103,7 +103,9 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
                 )
 
             else:
-                child_left, child_right = data.children(node=node)
+                children = data.children(node=node)
+                assert children is not None, "children of non-leaf node are defined"
+                child_left, child_right = children
 
                 subtree_left_info = _draw_node(
                     node=child_left,

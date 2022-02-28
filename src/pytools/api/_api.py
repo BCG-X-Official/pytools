@@ -17,6 +17,7 @@ from typing import (
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 import numpy as np
@@ -47,7 +48,7 @@ __all__ = [
 #
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", bound=Collection)
+T_Collection = TypeVar("T_Collection", list, set, tuple)
 T_Callable = TypeVar("T_Callable", bound=Callable)
 T_Iterable = TypeVar("T_Iterable", bound=Iterable)
 T_Type = TypeVar("T_Type", bound=type)
@@ -220,7 +221,7 @@ def _to_collection(
     ):
         if isinstance(values, collection_type or Collection):
             # no change needed, values already is the collection we need
-            elements = values
+            elements = cast(T_Collection, values)
         elif element_type and isinstance(values, element_type):
             # create a single-element collection
             elements = new_collection_type((values,))
@@ -272,11 +273,16 @@ def validate_type(
         else:
             message_head = "expected"
 
+        expected_type_tuple: Tuple[type, ...]
+
         if not isinstance(expected_type, tuple):
-            expected_type = (expected_type,)
+            expected_type_tuple = (expected_type,)
+        else:
+            expected_type_tuple = expected_type
         if optional:
-            expected_type = (*expected_type, type(None))
-        expected_type_str = " or ".join(t.__name__ for t in expected_type)
+            expected_type_tuple = (*expected_type_tuple, type(None))
+
+        expected_type_str = " or ".join(t.__name__ for t in expected_type_tuple)
 
         observed_type = type(value).__name__
 
@@ -416,7 +422,7 @@ def deprecated(
                 )
             return func(*args, **kwargs)
 
-        return new_func
+        return cast(T_Callable, new_func)
 
     if function is None:
         return _deprecated_inner

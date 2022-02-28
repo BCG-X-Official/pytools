@@ -14,7 +14,6 @@ from .operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)
 
-
 #
 # Exported names
 #
@@ -35,13 +34,13 @@ __all__ = [
 
 T = TypeVar("T")
 
-
 #
 # Ensure all symbols introduced below are included in __all__
 #
 
 
 __tracker = AllTracker(globals())
+
 
 #
 # Class definitions
@@ -164,7 +163,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return UnaryOperation(UnaryOperator.NOT, self)
 
-    def eq_(self, other: Expression) -> bool:
+    def eq_(self, other: Any) -> bool:
         """
         Compare this expression with another for equality.
 
@@ -178,10 +177,8 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         other_type = type(other)
 
         if self_type is ExpressionAlias:
-            self: ExpressionAlias
             return other.eq_(self.expression_)
         elif other_type is ExpressionAlias:
-            other: ExpressionAlias
             return self.eq_(other.expression_)
         else:
             # noinspection PyProtectedMember
@@ -356,12 +353,14 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return UnaryOperation(UnaryOperator.INVERT, self)
 
-    def __eq__(self, other: Any) -> Expression:
+    # we are returning an expression, not a bool so we need to disable type checks
+    def __eq__(self, other: Any) -> Expression:  # type: ignore
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.EQ, self, other)
 
-    def __ne__(self, other: Any) -> Expression:
+    # we are returning an expression, not a bool so we need to disable type checks
+    def __ne__(self, other: Any) -> Expression:  # type: ignore
         from .composite import BinaryOperation
 
         return BinaryOperation(BinaryOperator.NEQ, self, other)
@@ -437,7 +436,9 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         # convert the expression to a formatted string using the default formatter
         return ExpressionFormatter.default(single_line=False).to_text(self)
 
-    __hash__ = None
+    # mypy rejects this assignment as incompatible with object.__hash__,
+    # but setting __hash__ to None is a documented way to disable hashing
+    __hash__ = None  # type: ignore
 
 
 class FrozenExpression(HasExpressionRepr):
@@ -462,7 +463,7 @@ class FrozenExpression(HasExpressionRepr):
         """
         return self._expression
 
-    def __eq__(self, other: FrozenExpression) -> bool:
+    def __eq__(self, other: Any) -> bool:
         return type(self) is type(other) and self._expression.eq_(other._expression)
 
     def __hash__(self) -> int:

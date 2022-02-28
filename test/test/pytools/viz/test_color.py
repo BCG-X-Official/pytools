@@ -28,7 +28,7 @@ def test_rgb() -> None:
 
     with pytest.raises(ValueError, match="mixed use of named color and color channels"):
         # noinspection PyArgumentList
-        RgbColor(r=1, c=0)
+        RgbColor(r=1, g=1, b=1, c=0)
 
     with pytest.raises(ValueError, match="single color argument must be a string"):
         # noinspection PyTypeChecker
@@ -37,9 +37,19 @@ def test_rgb() -> None:
     with pytest.raises(ValueError, match="invalid RGBA values"):
         RgbColor(1, 0, 2)
 
-    with pytest.raises(ValueError, match="invalid RGBA values"):
+    with pytest.raises(
+        ValueError,
+        match="incomplete RGB keyword arguments: need to provide r, g, and b",
+    ):
         # noinspection PyArgumentList
         RgbColor(r=1, g=0)
+
+    with pytest.raises(
+        ValueError,
+        match="incomplete RGB keyword arguments: need to provide r, g, and b",
+    ):
+        # noinspection PyArgumentList
+        RgbColor(r=1, c=0)
 
 
 def test_rgba() -> None:
@@ -61,6 +71,13 @@ def test_rgba() -> None:
 
     with pytest.raises(ValueError, match="need 3 RGB values or 4 RGBA values"):
         # noinspection PyArgumentList
+        RgbaColor(1, 1, 1, 1, 1)
+
+    with pytest.raises(
+        ValueError,
+        match=r"all color arguments must be numeric, but are: \('red', 1, 1, 1, 1\)",
+    ):
+        # noinspection PyArgumentList
         RgbaColor("red", 1, 1, 1, 1)
 
     with pytest.raises(
@@ -72,7 +89,7 @@ def test_rgba() -> None:
 
     with pytest.raises(ValueError, match="mixed use of named color and color channels"):
         # noinspection PyArgumentList
-        RgbaColor(r=1, c=0, alpha=0)
+        RgbaColor(r=1, g=1, b=1, c=0, alpha=0)
 
     with pytest.raises(ValueError, match="single color argument must be a string"):
         # noinspection PyTypeChecker
@@ -89,6 +106,9 @@ def test_rgba() -> None:
     with pytest.raises(ValueError, match="invalid RGBA values"):
         RgbaColor(1, 0, 1, alpha=2)
 
-    with pytest.raises(ValueError, match="invalid RGBA values"):
+    with pytest.raises(
+        ValueError,
+        match="incomplete RGB keyword arguments: need to provide r, g, and b",
+    ):
         # noinspection PyArgumentList
-        RgbColor(r=1, g=0)
+        RgbaColor(r=1, g=0, alpha=1)

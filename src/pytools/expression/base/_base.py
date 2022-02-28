@@ -1,6 +1,9 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
+from __future__ import annotations
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, Generic, Iterable, Tuple, TypeVar
@@ -127,9 +130,6 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
 # Bracketed expressions
 #
 
-# noinspection PyTypeHints,PyTypeChecker
-_BracketPair = TypeVar("BracketPair", bound="BracketPair")
-
 
 @inheritdoc(match="[see superclass]")
 class BracketPair(HasExpressionRepr):
@@ -138,13 +138,13 @@ class BracketPair(HasExpressionRepr):
     """
 
     #: A pair of round brackets.
-    ROUND: _BracketPair = None
+    ROUND: BracketPair
     #: A pair of square brackets.
-    SQUARE: _BracketPair = None
+    SQUARE: BracketPair
     #: A pair of curly brackets.
-    CURLY: _BracketPair = None
+    CURLY: BracketPair
     #: A pair of angled brackets.
-    ANGLED: _BracketPair = None
+    ANGLED: BracketPair
 
     #: The opening bracket.
     opening: str
@@ -221,6 +221,8 @@ class CollectionLiteral(BracketedExpression):
     A collection literal, e.g., a list, set, tuple, or dictionary.
     """
 
+    _elements: Tuple[Expression, ...]
+
     def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
         """
         :param brackets: the brackets enclosing the collection
@@ -230,19 +232,19 @@ class CollectionLiteral(BracketedExpression):
         from ..atomic import Epsilon
         from ..composite import BinaryOperation
 
-        elements: Tuple[Expression, ...] = tuple(map(make_expression, elements))
+        elements_tuple: Tuple[Expression, ...] = tuple(map(make_expression, elements))
 
         subexpression: Expression
-        if not elements:
+        if not elements_tuple:
             subexpression = Epsilon()
-        elif len(elements) == 1:
-            subexpression = elements[0]
+        elif len(elements_tuple) == 1:
+            subexpression = elements_tuple[0]
         else:
-            subexpression = BinaryOperation(BinaryOperator.COMMA, *elements)
+            subexpression = BinaryOperation(BinaryOperator.COMMA, *elements_tuple)
 
         super().__init__(brackets, subexpression)
 
-        self._elements = elements
+        self._elements = elements_tuple
 
     @property
     def subexpression_(self) -> Expression:
@@ -257,7 +259,7 @@ class CollectionLiteral(BracketedExpression):
         return super().subexpression_
 
     @property
-    def elements_(self) -> Tuple[Expression]:
+    def elements_(self) -> Tuple[Expression, ...]:
         """
         The expression(s) representing the elements of this expression.
         """

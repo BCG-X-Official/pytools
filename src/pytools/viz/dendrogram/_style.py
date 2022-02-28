@@ -3,7 +3,7 @@ Dendrogram styles.
 """
 
 import logging
-from typing import Any, Iterable, Optional, Sequence, TextIO, Union
+from typing import Any, Iterable, Optional, Sequence, TextIO, Union, cast
 
 import numpy as np
 from matplotlib.axes import Axes
@@ -12,7 +12,7 @@ from matplotlib.colors import LogNorm
 from ...api import AllTracker, inheritdoc
 from ...text import CharacterMatrix
 from .. import ColorbarMatplotStyle, MatplotStyle, TextStyle
-from ..color import ColorScheme, RgbaColor
+from ..color import MatplotColorScheme, RgbaColor
 from ..util import FittedText, PercentageFormatter
 from .base import DendrogramStyle
 
@@ -59,7 +59,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         self,
         *,
         ax: Optional[Axes] = None,
-        colors: Optional[ColorScheme] = None,
+        colors: Optional[MatplotColorScheme] = None,
         font_family: Optional[Union[str, Iterable[str]]] = None,
         min_weight: float = 0.01,
         padding: float = 0.1,
@@ -88,7 +88,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
 
         self.padding = padding
 
-    __init__.__doc__ = MatplotStyle.__init__.__doc__ + __init__.__doc__
+    __init__.__doc__ = cast(str, MatplotStyle.__init__.__doc__) + cast(
+        str, __init__.__doc__
+    )
 
     def start_drawing(
         self,
@@ -102,7 +104,25 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(
+            title=title,
+            leaf_label=leaf_label,
+            distance_label=distance_label,
+            weight_label=weight_label,
+            max_distance=max_distance,
+            leaf_names=leaf_names,
+            **kwargs,
+        )
+
+        # super().start_drawing ensures the following kwargs and attributes are not None
+        assert not (
+            leaf_label is None
+            or distance_label is None
+            or weight_label is None
+            or max_distance is None
+            or leaf_names is None
+            or self.colorbar is None
+        )
 
         ax = self.ax
 
@@ -309,6 +329,9 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     #: the width of the weight column
     _WEIGHT_COLUMN_WIDTH = 5
 
+    _char_matrix: Optional[CharacterMatrix]
+    _n_labels: Optional[int]
+
     def __init__(
         self,
         out: TextIO = None,
@@ -345,9 +368,9 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         self._char_matrix = None
         self._n_labels = None
 
-    __init__.__doc__ = TextStyle.__init__.__doc__ + __init__.__doc__.replace(
-        "%DEFAULT_MAX_LABEL_WIDTH%", str(DEFAULT_MAX_LABEL_WIDTH)
-    )
+    __init__.__doc__ = cast(str, TextStyle.__init__.__doc__) + cast(
+        str, __init__.__doc__
+    ).replace("%DEFAULT_MAX_LABEL_WIDTH%", str(DEFAULT_MAX_LABEL_WIDTH))
 
     def draw_leaf_labels(
         self, *, names: Sequence[str], weights: Sequence[float]
@@ -355,6 +378,10 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         """[see superclass]"""
 
         matrix = self._char_matrix
+        assert (
+            matrix is not None
+        ), "self._char_matrix has been initialised in start_drawing()"
+
         n_labels = len(names)
         if n_labels > self.max_height:
             n_labels = self.max_height - 1
@@ -387,6 +414,9 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
 
         # get the character matrix
         matrix = self._char_matrix
+        assert (
+            matrix is not None
+        ), "self._char_matrix has been initialised in start_drawing()"
 
         # draw the link leg in the character matrix
         matrix[
@@ -424,6 +454,10 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         y1 = first_leaf + n_leaves_left + (n_leaves_right - 1) // 2
 
         matrix = self._char_matrix
+        assert (
+            matrix is not None
+        ), "self._char_matrix has been initialised in start_drawing()"
+
         if y1 - y0 > 1:
             matrix[(y0 + 1) : y1, x] = "|"
         matrix[y0, x] = "\\"
@@ -439,7 +473,10 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         :param leaf_names: the names of the dendrogram leaf nodes
         :param kwargs: additional drawer-specific arguments
         """
-        super().start_drawing(title=title, **kwargs)
+        super().start_drawing(title=title, leaf_names=leaf_names, **kwargs)
+
+        # super().start_drawing() ensures that arg leaf_names is not none
+        assert leaf_names is not None, "arg leaf_names is not None"
 
         self._label_width = min(
             self.max_label_width,
@@ -456,9 +493,17 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
 
         :param kwargs: additional drawer-specific arguments
         """
+        matrix = self._char_matrix
+        assert (
+            matrix is not None
+        ), "self._char_matrix has been initialised in start_drawing()"
+
+        n_labels = self._n_labels
+        assert n_labels is not None, "self._n_labels has been set in draw_leaf_labels()"
+
         try:
             print(
-                "\n".join(self._char_matrix.lines(range(self._n_labels))),
+                "\n".join(matrix.lines(range(n_labels))),
                 file=self.out,
             )
         finally:

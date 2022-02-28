@@ -4,7 +4,7 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Sequence
+from typing import Any, List, Optional, Sequence
 
 from pytools.api import AllTracker
 from pytools.viz import DrawingStyle
@@ -57,6 +57,23 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param leaf_names: the names of the dendrogram leaf nodes
         :param kwargs: additional drawer-specific arguments
         """
+
+        none_args: List[str] = [
+            arg
+            for arg, value in {
+                "leaf_label": leaf_label,
+                "distance_label": distance_label,
+                "weight_label": weight_label,
+                "max_distance": max_distance,
+                "leaf_names": leaf_names,
+            }.items()
+            if value is None
+        ]
+        if none_args:
+            raise ValueError(
+                "keyword arguments must not be None: " + ", ".join(none_args)
+            )
+
         super().start_drawing(title=title, **kwargs)
 
     def finalize_drawing(

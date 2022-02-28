@@ -178,11 +178,11 @@ class BinaryOperation(InfixExpression, Operation):
         if len(operands) < 2:
             raise ValueError("operation requires at least two operands")
 
-        operands: Tuple[Expression, ...] = tuple(
+        operands_expr: Tuple[Expression, ...] = tuple(
             make_expression(operand) for operand in operands
         )
 
-        first_operand = operands[0]
+        first_operand = operands_expr[0]
 
         if (
             isinstance(first_operand, BinaryOperation)
@@ -190,10 +190,10 @@ class BinaryOperation(InfixExpression, Operation):
         ):
             # if first operand has the same operator, we flatten the operand
             # noinspection PyUnresolvedReferences
-            operands = (*first_operand.operands_, *operands[1:])
+            operands_expr = (*first_operand.operands_, *operands_expr[1:])
 
         self._operator = operator
-        self._operands = operands
+        self._operands = operands_expr
 
     @property
     def operator_(self) -> BinaryOperator:

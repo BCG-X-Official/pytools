@@ -5,7 +5,17 @@ import importlib
 import logging
 from inspect import getattr_static
 from types import FunctionType, MethodType
-from typing import Any, Dict, Optional, Tuple, Type, TypeVar, Union, get_type_hints
+from typing import (
+    Any,
+    Dict,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+    get_type_hints,
+)
 
 import typing_inspect
 
@@ -73,7 +83,7 @@ class _TypeVarBindings:
     def _get_parameter_bindings(
         self,
         cls: type,
-        subclass_bindings: Dict[TypeVar, Union[Type, TypeVar]] = None,
+        subclass_bindings: Dict[TypeVar, Union[Type, TypeVar]],
     ) -> Dict[Type, Dict[TypeVar, Union[Type, TypeVar]]]:
         # get type variable bindings for all generic types defined in the class
         # hierarchy of the given parent class, applying the given bindings derived from
@@ -82,10 +92,11 @@ class _TypeVarBindings:
         # if arg cls has generic type parameters, it will have a corresponding
         cls_origin: Optional[type] = None
         if typing_inspect.is_generic_type(cls):
-            cls_origin: type = typing_inspect.get_origin(cls)
+            cls_origin = typing_inspect.get_origin(cls)
 
+        class_bindings: Dict[TypeVar, Union[type, TypeVar]]
         if cls_origin:
-            class_bindings: Dict[TypeVar, type] = {
+            class_bindings = {
                 param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
                 for param, arg in zip(
                     typing_inspect.get_parameters(cls_origin),
@@ -153,17 +164,19 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         self, bindings: _TypeVarBindings, func: FunctionType
     ) -> None:
         # get the class in which the method has been defined
-        defining_class = self._get_defining_class(func)
-        if defining_class is None:
+        defining_class_opt: Optional[type] = self._get_defining_class(func)
+        if defining_class_opt is None:
             # no or unknown defining class: nothing to resolve in the signature
             return
+        defining_class: type = defining_class_opt
+
         log.debug(f"function {func} was defined in {defining_class}")
 
         # get the original signature and convert it to a list of (name, type) tuples
         signature_original_items = list(self._get_original_signature(func).items())
 
-        def _get_self_or_cls_type_substitution() -> Tuple[
-            Optional[TypeVar], Optional[Type]
+        def _get_self_or_cls_type_substitution() -> Union[
+            Tuple[TypeVar, Type], Tuple[None, None]
         ]:
 
             if signature_original_items:
@@ -175,7 +188,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                     # when assigned to the 'self' or 'cls' parameters of methods
                     _, arg_0_type = signature_original_items[0]
                     if typing_inspect.is_typevar(arg_0_type):
-                        return arg_0_type, bindings.current_class
+                        return cast(TypeVar, arg_0_type), bindings.current_class
 
                 elif method_type is METHOD_TYPE_CLASS:
                     # special case: we substitute type vars bound to the class
@@ -200,12 +213,13 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 
         def _substitute_type_vars_in_type_expression(
             type_expression: Union[Type, TypeVar]
-        ) -> type:
+        ) -> Union[Type, TypeVar]:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 if type_expression == arg_0_type_var:
                     # special case: substitute a type variable introduced by the
                     # initial self/cls argument of a dynamic or class method
+                    assert arg_0_substitute is not None
                     return arg_0_substitute
                 else:
                     # resolve type variables defined by Generic[] in the
@@ -231,11 +245,12 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             signature[name] = _substitute_type_vars_in_type_expression(tp)
 
     def _resolve_attribute_signatures(self, cls: Type) -> None:
+        assert self._current_class_bindings is not None
         bindings: _TypeVarBindings = self._current_class_bindings
 
         def _substitute_type_vars_in_type_expression(
             type_expression: Union[Type, TypeVar]
-        ) -> type:
+        ) -> Union[type, TypeVar]:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 # resolve type variables defined by Generic[] in the
@@ -265,7 +280,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 
         if "." not in method.__qualname__:
             # this is a function, not a method
-            return
+            return None
 
         method_container: str
         if method.__qualname__.endswith(f".{method.__name__}"):
@@ -330,21 +345,22 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             # instance method definitions are unbound, so we need to remember
             # the class we are currently in
             if bindings is not None:
-                self._resolve_function_signature(bindings=bindings, func=obj),
+                self._resolve_function_signature(bindings=bindings, func=obj)
 
         elif isinstance(obj, MethodType):
             # class method definitions are bound, so we can infer the current class
             cls = obj.__self__
             assert isinstance(cls, type), "methods are class methods"
-            self._resolve_function_signature(
-                bindings=self._update_current_class(cls), func=obj.__func__
-            )
+
+            current_class: Optional[_TypeVarBindings] = self._update_current_class(cls)
+            assert current_class is not None
+            self._resolve_function_signature(bindings=current_class, func=obj.__func__)
 
     def _update_current_class(self, cls: Optional[type]) -> Optional[_TypeVarBindings]:
         if cls is None:
             return None
 
-        bindings = self._current_class_bindings
+        bindings: Optional[_TypeVarBindings] = self._current_class_bindings
         assert isinstance(cls, type), f"{cls} is a class"
         if bindings is None or not issubclass(bindings.current_class, cls):
             # we're visiting the class for the first time
