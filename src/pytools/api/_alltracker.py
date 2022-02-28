@@ -306,7 +306,6 @@ def update_forward_references(
 
     def _parse_cls_with_generic_arguments(cls: str) -> type:
         def _parse(cls_tokens: Deque[str]) -> type:
-            print(f"parsing {cls_tokens}")
             real_cls = eval(cls_tokens.popleft(), globals_)
             if cls_tokens and cls_tokens[0] not in ",]":
                 real_args: List[type] = list()
