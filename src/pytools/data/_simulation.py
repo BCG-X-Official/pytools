@@ -29,7 +29,7 @@ def sim_data(
     bin_var_p: float = 0,
     bin_coef: float = 0,
     outcome: str = "classification",
-    regression_err: float = 1.0,
+    regression_err: Optional[float] = None,
     seed_val: int = 4763546,
 ) -> pd.DataFrame:
     """
@@ -217,7 +217,11 @@ def sim_data(
     elif outcome == "regression":
 
         # continuous outcome based on linear predictor
-        tmp_data["target"] = np.random.normal(lp, regression_err, size=n)
+        tmp_data["target"] = (
+            np.random.normal(lp, size=n)
+            if regression_err is None
+            else np.random.normal(lp, regression_err, size=n)
+        )
 
     return tmp_data
 

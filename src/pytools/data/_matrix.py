@@ -228,7 +228,9 @@ class Matrix(HasExpressionRepr):
 
     def resize(
         self,
-        size: Union[int, float, Tuple[Union[int, float], Union[int, float]], None],
+        size: Union[
+            int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
+        ],
     ) -> Matrix:
         r"""
         Create a version of this matrix with fewer rows and/or columns.
@@ -250,10 +252,14 @@ class Matrix(HasExpressionRepr):
         :return: a resized version of this matrix
         """
 
-        if size is None:
+        if size is None or size == (None, None):
             return self
 
-        if isinstance(size, tuple) and len(size) == 2 and all(map(np.isreal, size)):
+        if (
+            isinstance(size, tuple)
+            and len(size) == 2
+            and all(map(lambda x: x is None or isinstance(x, (int, float)), size))
+        ):
             rows, columns = size
         elif isinstance(size, (int, float)):
             rows = columns = size
@@ -308,10 +314,10 @@ class Matrix(HasExpressionRepr):
         else:
             return (
                 np.array_equal(self.values, other.values)
-                and all(
-                    map(lambda x: np.array_equal(*x), zip(self.weights, other.weights))
-                )
-                and all(map(lambda x: np.array_equal(*x), zip(self.names, other.names)))
+                and _arrays_equal_or_none(self.weights[0], other.weights[0])
+                and _arrays_equal_or_none(self.weights[1], other.weights[1])
+                and _arrays_equal_or_none(self.names[0], other.names[0])
+                and _arrays_equal_or_none(self.names[1], other.names[1])
                 and self.name_labels == other.name_labels
                 and self.value_label == other.value_label
             )
@@ -412,6 +418,15 @@ def _resize_rows(
         None if weights is None else weights[mask],
         None if names is None else names[mask],
     )
+
+
+def _arrays_equal_or_none(a: Optional[np.ndarray], b: Optional[np.ndarray]) -> bool:
+    if a is None:
+        return b is None
+    elif b is None:
+        return False
+    else:
+        return np.array_equal(a, b)
 
 
 __tracker.validate()

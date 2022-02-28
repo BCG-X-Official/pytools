@@ -3,10 +3,11 @@ Core implementation of :mod:`pytools.viz.distribution`.
 """
 
 import logging
-from typing import Iterable, Optional, Sequence, Type, Union
+from typing import Iterable, Optional, Sequence, Type, Union, cast
 
 import numpy as np
 import pandas as pd
+from numpy.typing import ArrayLike
 
 from .. import Drawer, MatplotStyle
 from .base import ECDF, ECDFStyle, XYSeries
@@ -86,7 +87,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
+class ECDFDrawer(Drawer[Union[Sequence[float], ArrayLike], ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs), highlighting
     outliers using Tukey's outlier test.
@@ -149,9 +150,11 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
         self.iqr_multiple_far = iqr_multiple_far
         self.hide_far_outliers = hide_far_outliers
 
-    __init__.__doc__ = Drawer.__init__.__doc__ + __init__.__doc__  # type: ignore
+    __init__.__doc__ = cast(str, Drawer.__init__.__doc__) + cast(str, __init__.__doc__)
 
-    def draw(self, data: Sequence[float], *, title: Optional[str] = None) -> None:
+    def draw(
+        self, data: Union[Sequence[float], ArrayLike], *, title: Optional[str] = None
+    ) -> None:
         """
         Draw the ECDF.
 
@@ -175,7 +178,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             ECDFMatplotStyle,
         ]
 
-    def _draw(self, data: Sequence[float]) -> None:
+    def _draw(self, data: Union[Sequence[float], ArrayLike]) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")
         # noinspection PyProtectedMember
@@ -186,7 +189,7 @@ class ECDFDrawer(Drawer[Sequence[float], ECDFStyle]):
             iqr_multiple_far=self.iqr_multiple_far,
         )
 
-    def _ecdf(self, data: Union[Sequence[float], pd.Series, np.ndarray]) -> ECDF:
+    def _ecdf(self, data: Union[Sequence[float], ArrayLike]) -> ECDF:
         """
         Compute ECDF for scalar values.
 
