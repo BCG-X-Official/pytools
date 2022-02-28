@@ -6,6 +6,7 @@ import logging
 from typing import (
     Any,
     Callable,
+    Collection,
     Dict,
     Iterable,
     Optional,
@@ -443,13 +444,14 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         """[see superclass]"""
 
         def _axis_marks(
-            axis_names: Optional[np.ndarray], axis_weights: Optional[np.ndarray]
-        ) -> Optional[Iterable[Any]]:
+            axis_names: Optional[Collection[Any]],
+            axis_weights: Optional[Collection[Any]],
+        ) -> Optional[Iterable[str]]:
             if axis_names is None:
                 if axis_weights is None:
                     return None
                 else:
-                    axis_names = (f"#{i}" for i in range(len(axis_weights)))
+                    axis_names = [f"#{i}" for i in range(len(axis_weights))]
             elif axis_weights is None:
                 return axis_names
 

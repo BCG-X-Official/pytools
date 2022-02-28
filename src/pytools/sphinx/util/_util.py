@@ -42,7 +42,7 @@ try:
     from sphinx.util.docutils import Node
 except ImportError:
     # ... otherwise mock them up
-    Sphinx = Any
+    Sphinx = Any  # type: ignore
     Node = Any
     Text = Any
 
