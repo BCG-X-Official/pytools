@@ -68,7 +68,7 @@ __all__ = [
 #
 
 method_descriptor = type(str.__dict__["startswith"])
-wrapper_descriptor = str.__dict__["__add__"]
+wrapper_descriptor = type(str.__dict__["__add__"])
 
 #
 # Ensure all symbols introduced below are included in __all__
