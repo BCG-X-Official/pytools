@@ -4,6 +4,12 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.9
+~~~~~
+
+This is a bugfix release to restore the GitHub release process.
+
+
 1.1.8
 ~~~~~
 
