@@ -474,6 +474,7 @@ Example usage:
 def log(message: str) -> None:
     """
     Write a message to `stderr`.
+
     :param message: the message to write
     """
     print(message, file=sys.stderr)
