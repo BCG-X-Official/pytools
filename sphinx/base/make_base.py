@@ -88,7 +88,7 @@ class CommandMeta(ABCMeta):
 
 
 class Command(metaclass=CommandMeta):
-    """ Defines an available command that can be launched from this module."""
+    """Defines an available command that can be launched from this module."""
 
     __RE_CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
 
@@ -122,7 +122,7 @@ class Command(metaclass=CommandMeta):
         return dependencies_extended
 
     def run(self) -> None:
-        print(f"Running command {self.name} – {self.get_description()}")
+        log(f"Running command {self.name} – {self.get_description()}")
         self._run()
 
     @abstractmethod
@@ -163,7 +163,7 @@ class ApiDoc(Command):
         packages = [
             package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
         ]
-        print(f"Generating api documentation for {', '.join(packages)}")
+        log(f"Generating api documentation for {', '.join(packages)}")
 
         package_lines = "\n   ".join(packages)
         # noinspection SpellCheckingInspection
@@ -264,7 +264,7 @@ class FetchPkgVersions(Command):
         with open(JS_VERSIONS_FILE, "wt") as f:
             f.write(version_data_as_js)
 
-        print(f"Version data written into: {JS_VERSIONS_FILE}")
+        log(f"Version data written into: {JS_VERSIONS_FILE}")
 
 
 class PrepareDocsDeployment(Command):
@@ -284,7 +284,7 @@ class PrepareDocsDeployment(Command):
         # copy new the docs version to the deployment path
         if current_version == Versions().latest_stable_version:
             # only copy to deployment path if our version is the latest stable release
-            print("Build is latest stable release – updating root docs.")
+            log("Build is latest stable release – updating root docs.")
             # remove docs build currently deployed, except for the docs versions folder
             if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
                 with TemporaryDirectory() as DIR_TMP:
@@ -299,7 +299,7 @@ class PrepareDocsDeployment(Command):
             shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
         else:
             # build of a pre-release or patch to an earlier release
-            print("Build is not latest stable release – just updating versions.")
+            log("Build is not latest stable release – just updating versions.")
             # – only update "versions.js":
             new_versions_js = os.path.join(
                 DIR_SPHINX_BUILD_HTML, JS_VERSIONS_FILE_RELATIVE
@@ -312,7 +312,7 @@ class PrepareDocsDeployment(Command):
 
             os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
 
-            print(
+            log(
                 "Copying updated versions.js file from "
                 f"'{new_versions_js}' to '{versions_js_out}'"
             )
@@ -327,13 +327,13 @@ class PrepareDocsDeployment(Command):
         if os.path.exists(current_version_path):
             shutil.rmtree(path=current_version_path)
 
-        print(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
-        print("Pre-existing docs contents:")
+        log(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
+        log("Pre-existing docs contents:")
 
         if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
             DIR_ALL_DOCS_VERSIONS
         ):
-            print(os.listdir(DIR_ALL_DOCS_VERSIONS))
+            log(str(os.listdir(DIR_ALL_DOCS_VERSIONS)))
 
         else:
             raise FileNotFoundError(
@@ -351,7 +351,7 @@ class PrepareDocsDeployment(Command):
         new_versions_js = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
             old_versions_js = os.path.join(d, JS_VERSIONS_FILE_RELATIVE)
-            print(
+            log(
                 "Copying versions.js file from "
                 f"'{new_versions_js}' to '{old_versions_js}'"
             )
@@ -365,7 +365,7 @@ class PrepareDocsDeployment(Command):
         # noinspection SpellCheckingInspection
         open(os.path.join(DIR_DOCS, ".nojekyll"), "a").close()
 
-        print("Docs moved to ./docs and historic versions updated")
+        log("Docs moved to ./docs and historic versions updated")
 
 
 class Html(Command):
@@ -466,8 +466,8 @@ class Versions:
         ]
         latest_stable_version: pkg_version.Version = version_tags_stable[0]
 
-        print(f"Found versions: {', '.join(map(str, version_tags))}")
-        print("Latest stable version: ", latest_stable_version)
+        log(f"Found versions: {', '.join(map(str, version_tags))}")
+        log(f"Latest stable version: {latest_stable_version}")
 
         self.version_tags = version_tags
         self.version_tags_stable = version_tags_stable
@@ -486,7 +486,7 @@ def make(*, modules: List[str]) -> None:
     unknown_commands = set(commands_passed) - available_commands.keys()
 
     if unknown_commands:
-        print(f"Unknown build commands: {' '.join(unknown_commands)}\n")
+        log(f"Unknown build commands: {' '.join(unknown_commands)}\n")
         print_usage()
         exit(1)
 
@@ -516,6 +516,15 @@ def make(*, modules: List[str]) -> None:
         executed_commands.add(next_command)
 
 
+def log(message: str) -> None:
+    """
+    Write a message to `stderr`.
+
+    :param message: the message to write
+    """
+    print(message, file=sys.stderr)
+
+
 def quote_path(path: str) -> str:
     """
     Quote a file path if it contains whitespace.
@@ -534,7 +543,7 @@ def get_package_version() -> pkg_version.Version:
         os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME, "__init__.py")
     )
 
-    print(f"Retrieving package version from {init_path}")
+    log(f"Retrieving package version from {init_path}")
 
     with open(init_path, "rt") as init_file:
         init_lines = init_file.readlines()
