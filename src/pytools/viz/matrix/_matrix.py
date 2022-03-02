@@ -18,11 +18,13 @@ from typing import (
 
 import numpy as np
 import pandas as pd
+from matplotlib import __version__ as __matplotlib_version__
 from matplotlib.axes import Axes
 from matplotlib.axis import Axis
 from matplotlib.colors import Normalize
 from matplotlib.patches import Rectangle
 from matplotlib.ticker import FixedLocator, Formatter, FuncFormatter, NullLocator
+from packaging import version
 
 from ...data import Matrix
 from .. import ColorbarMatplotStyle, Drawer, TextStyle
@@ -33,6 +35,14 @@ from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
+
+#
+# constants
+#
+
+IS_MATPLOTLIB_3_5_OR_LATER: bool = version.parse(
+    __matplotlib_version__
+) >= version.parse("3.5")
 
 #
 # exported names
@@ -307,17 +317,24 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # create a white grid using minor tick positions
         ax.xaxis.set_minor_locator(FixedLocator(column_bounds[1:-1]))
         ax.yaxis.set_minor_locator(FixedLocator(row_bounds[1:-1]))
+
+        def _grid_visible_kwarg(value: bool) -> Dict[str, bool]:
+            if IS_MATPLOTLIB_3_5_OR_LATER:
+                return dict(visible=value)
+            else:
+                return dict(b=value)
+
         ax.grid(
-            b=True,
             which="minor",
             color=colors.background,
             linestyle="-",
             linewidth=0.5,
+            **_grid_visible_kwarg(True),
         )
         ax.tick_params(which="minor", bottom=False, left=False)
 
         # make sure we have no major grid, overriding any global settings
-        ax.grid(b=False, which="major")
+        ax.grid(which="major", **_grid_visible_kwarg(False))
 
     def start_drawing(
         self,
