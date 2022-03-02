@@ -68,19 +68,19 @@ Repository = "https://github.com/BCG-Gamma/pytools"
 # minimum requirements of gamma-pytools
 joblib         = "~=0.14.0"
 matplotlib     = "~=3.0.3"
-numpy          = ">=1.16.6,<1.17a"  # cannot use ~= due to conda bug
+numpy          = "=1.16.6"  # cannot use ~= due to conda bug
 pandas         = "~=0.24.2"
-python         = ">=3.7,<3.8a"  # cannot use ~= due to conda bug
+python         = "=3.7.12"  # cannot use ~= due to conda bug
 scipy          = "~=1.2.1"
 typing_inspect = "~=0.4.0"
 
 [build.matrix.max]
-joblib         = "~=1.0"
-matplotlib     = "~=3.4"
-numpy          = ">=1.20,<2a"  # cannot use ~= due to conda bug
+joblib         = "~=1.1"
+matplotlib     = "~=3.5"
+numpy          = ">=1.22,<2a"  # cannot use ~= due to conda bug
 pandas         = "~=1.4"
-python         = ">=3.8,<4a"  # cannot use ~= due to conda bug
-scipy          = "~=1.6"
+python         = ">=3.8.12,<4a"  # cannot use ~= due to conda bug
+scipy          = "~=1.8"
 typing_inspect = "~=0.7"
 
 [tool.black]
