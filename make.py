@@ -508,7 +508,7 @@ def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    log(
+    print(
         f"""Facet Build script
 ==================
 Build a distribution package for given project.
@@ -573,7 +573,7 @@ def run_make() -> None:
 
 
 def log(message: str) -> None:
-    print(message)
+    print(message, file=sys.stderr)
 
 
 if __name__ == "__main__":
