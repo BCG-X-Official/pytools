@@ -114,6 +114,12 @@ Additions and enhancements to dendrogram and matrix visualizations.
 *pytools* 1.2
 -------------
 
+1.2.5
+~~~~~
+
+This is a maintenance release to catch up with *pytools* 1.1.10.
+
+
 1.2.4
 ~~~~~
 
@@ -162,6 +168,20 @@ This is a maintenance release to catch up with *pytools* 1.1.4.
 
 *pytools* 1.1
 -------------
+
+1.1.10
+~~~~~~
+
+This release addresses additional issues in the release process, focusing on the
+`make_base.py` script for Sphinx builds used across *gamma-pytools*, *sklearndf*, and
+*gamma-facet*.
+
+
+1.1.9
+~~~~~
+
+This is a bugfix release to restore the GitHub release process.
+
 
 1.1.8
 ~~~~~

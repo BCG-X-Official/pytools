@@ -43,13 +43,22 @@ def set_config(
     Add required modules to the python path, and set custom configuration options
     """
 
+    from make_util import get_package_version
+
     globals_["project"] = project
+    globals_["version"] = str(
+        get_package_version(
+            package_path=(
+                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
+            )
+        )
+    )
 
     if html_logo:
         globals_["html_logo"] = html_logo
         globals_["latex_logo"] = html_logo
 
-    modules = set(modules) | {"pytools"}
+    modules = {"pytools", *modules}
     for module in modules:
         module_path = os.path.normpath(os.path.join(_dir_repo_root, module, "src"))
         if module_path not in sys.path:
@@ -71,9 +80,8 @@ _log.info(f"sys.path = {sys.path}")
 
 # -- Project information -----------------------------------------------------
 
-project = "pytools"
 # noinspection PyShadowingBuiltins
-copyright = "2021, Boston Consulting Group (BCG)"
+copyright = "2022, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
 # -- General configuration ---------------------------------------------------
@@ -181,31 +189,13 @@ html_logo = "_static/gamma_logo.jpg"
 # Class documentation to include docstrings both global to the class, and from __init__
 autoclass_content = "both"
 
-
-def _get_package_version() -> str:
-    """
-    Get the package version for the project being built.
-    :return: string with Python package version
-    """
-    # NOTE: sphinx-make changes the CWD into sphinx/source
-    #       while FACET's make_base expects a CWD <project>/src
-    #       hence: save current CWD, navigate to <project>/src, then go back
-    cwd = os.getcwd()
-    os.chdir(os.path.join(cwd, os.pardir, os.pardir, "src"))
-    import make_base
-
-    version_ = str(make_base.get_package_version())
-    os.chdir(cwd)
-    return version_
-
-
-version = _get_package_version()
 # -- End of options section ------------------------------------------------------------
 
 
 def setup(app: Sphinx) -> None:
     """
-    Add event handlers to the Sphinx application object
+    Add event handlers to the Sphinx application object.
+
     :param app: the Sphinx application object
     """
 
