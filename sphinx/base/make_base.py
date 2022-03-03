@@ -14,7 +14,7 @@ from tempfile import TemporaryDirectory
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar
 from weakref import ref
 
-from make_util import get_package_version
+from make_util import get_package_version as _get_package_version
 from packaging import version as pkg_version
 
 DIR_SPHINX_ROOT = os.getcwd()
@@ -280,9 +280,7 @@ class PrepareDocsDeployment(Command):
             raise RuntimeError("only implemented for Azure Pipelines")
 
         # get the current version of the package
-        current_version: pkg_version.Version = get_package_version(
-            package_path=DIR_PACKAGE_ROOT
-        )
+        current_version: pkg_version.Version = get_package_version()
 
         # copy new the docs version to the deployment path
         if current_version == Versions().latest_stable_version:
@@ -400,9 +398,7 @@ class Html(Command):
         sys.path.append(DIR_MAKE_BASE)
 
         # create copy of this build for the docs archive
-        version_built: pkg_version.Version = get_package_version(
-            package_path=DIR_PACKAGE_ROOT
-        )
+        version_built: pkg_version.Version = get_package_version()
         dir_path_this_build = os.path.join(
             DIR_ALL_DOCS_VERSIONS, version_string_to_url(version_built)
         )
@@ -459,9 +455,7 @@ class Versions:
         ]
 
         # append the version we are building to version_tags
-        version_built: pkg_version.Version = get_package_version(
-            package_path=DIR_PACKAGE_ROOT
-        )
+        version_built: pkg_version.Version = get_package_version()
 
         if version_built not in version_tags:
             version_tags.append(version_built)
@@ -549,6 +543,13 @@ def is_azure_build() -> bool:
     Check if this is an Azure DevOps pipelines build
     """
     return "BUILD_REASON" in os.environ
+
+
+def get_package_version() -> pkg_version.Version:
+    """
+    Get the version of the package being built.
+    """
+    return _get_package_version(package_path=DIR_PACKAGE_ROOT)
 
 
 def version_string_to_url(version: pkg_version.Version) -> str:
