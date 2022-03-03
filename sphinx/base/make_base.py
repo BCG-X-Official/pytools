@@ -14,9 +14,10 @@ from tempfile import TemporaryDirectory
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar
 from weakref import ref
 
+from make_util import get_package_version as _get_package_version
 from packaging import version as pkg_version
 
-cwd = os.getcwd()
+DIR_SPHINX_ROOT = os.getcwd()
 
 # Sphinx commands
 CMD_SPHINX_BUILD = "sphinx-build"
@@ -24,16 +25,16 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
 DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
-DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
+DIR_REPO_ROOT = os.path.realpath(os.path.join(DIR_SPHINX_ROOT, os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
-DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
-DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
+DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
+DIR_SPHINX_AUX = os.path.join(DIR_SPHINX_ROOT, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
-DIR_SPHINX_BUILD = os.path.join(cwd, "build")
+DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
 DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
@@ -44,13 +45,13 @@ DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_ba
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
+DIR_PACKAGE_ROOT = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME))
 
 # Environment variables
 # noinspection SpellCheckingInspection
 ENV_PYTHON_PATH = "PYTHONPATH"
 
 # regex pattern to match the version declaration in a top-level __init__.py
-RE_VERSION_DECLARATION = re.compile(r"\b__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 
 T = TypeVar("T")
 
@@ -88,7 +89,7 @@ class CommandMeta(ABCMeta):
 
 
 class Command(metaclass=CommandMeta):
-    """ Defines an available command that can be launched from this module."""
+    """Defines an available command that can be launched from this module."""
 
     __RE_CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
 
@@ -122,7 +123,7 @@ class Command(metaclass=CommandMeta):
         return dependencies_extended
 
     def run(self) -> None:
-        print(f"Running command {self.name} – {self.get_description()}")
+        log(f"Running command {self.name} – {self.get_description()}")
         self._run()
 
     @abstractmethod
@@ -163,7 +164,7 @@ class ApiDoc(Command):
         packages = [
             package for package in os.listdir(DIR_PACKAGE_SRC) if package[:1].isalnum()
         ]
-        print(f"Generating api documentation for {', '.join(packages)}")
+        log(f"Generating api documentation for {', '.join(packages)}")
 
         package_lines = "\n   ".join(packages)
         # noinspection SpellCheckingInspection
@@ -264,7 +265,7 @@ class FetchPkgVersions(Command):
         with open(JS_VERSIONS_FILE, "wt") as f:
             f.write(version_data_as_js)
 
-        print(f"Version data written into: {JS_VERSIONS_FILE}")
+        log(f"Version data written into: {JS_VERSIONS_FILE}")
 
 
 class PrepareDocsDeployment(Command):
@@ -284,7 +285,7 @@ class PrepareDocsDeployment(Command):
         # copy new the docs version to the deployment path
         if current_version == Versions().latest_stable_version:
             # only copy to deployment path if our version is the latest stable release
-            print("Build is latest stable release – updating root docs.")
+            log("Build is latest stable release – updating root docs.")
             # remove docs build currently deployed, except for the docs versions folder
             if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
                 with TemporaryDirectory() as DIR_TMP:
@@ -299,7 +300,7 @@ class PrepareDocsDeployment(Command):
             shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
         else:
             # build of a pre-release or patch to an earlier release
-            print("Build is not latest stable release – just updating versions.")
+            log("Build is not latest stable release – just updating versions.")
             # – only update "versions.js":
             new_versions_js = os.path.join(
                 DIR_SPHINX_BUILD_HTML, JS_VERSIONS_FILE_RELATIVE
@@ -312,7 +313,7 @@ class PrepareDocsDeployment(Command):
 
             os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
 
-            print(
+            log(
                 "Copying updated versions.js file from "
                 f"'{new_versions_js}' to '{versions_js_out}'"
             )
@@ -327,13 +328,13 @@ class PrepareDocsDeployment(Command):
         if os.path.exists(current_version_path):
             shutil.rmtree(path=current_version_path)
 
-        print(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
-        print("Pre-existing docs contents:")
+        log(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
+        log("Pre-existing docs contents:")
 
         if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
             DIR_ALL_DOCS_VERSIONS
         ):
-            print(os.listdir(DIR_ALL_DOCS_VERSIONS))
+            log(str(os.listdir(DIR_ALL_DOCS_VERSIONS)))
 
         else:
             raise FileNotFoundError(
@@ -351,7 +352,7 @@ class PrepareDocsDeployment(Command):
         new_versions_js = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
             old_versions_js = os.path.join(d, JS_VERSIONS_FILE_RELATIVE)
-            print(
+            log(
                 "Copying versions.js file from "
                 f"'{new_versions_js}' to '{old_versions_js}'"
             )
@@ -365,7 +366,7 @@ class PrepareDocsDeployment(Command):
         # noinspection SpellCheckingInspection
         open(os.path.join(DIR_DOCS, ".nojekyll"), "a").close()
 
-        print("Docs moved to ./docs and historic versions updated")
+        log("Docs moved to ./docs and historic versions updated")
 
 
 class Html(Command):
@@ -466,8 +467,8 @@ class Versions:
         ]
         latest_stable_version: pkg_version.Version = version_tags_stable[0]
 
-        print(f"Found versions: {', '.join(map(str, version_tags))}")
-        print("Latest stable version: ", latest_stable_version)
+        log(f"Found versions: {', '.join(map(str, version_tags))}")
+        log(f"Latest stable version: {latest_stable_version}")
 
         self.version_tags = version_tags
         self.version_tags_stable = version_tags_stable
@@ -477,6 +478,8 @@ class Versions:
 def make(*, modules: List[str]) -> None:
     """
     Run this make script with the given arguments.
+
+    :param modules: the modules to consider for the doc build
     """
     if len(sys.argv) < 2:
         print_usage()
@@ -486,7 +489,7 @@ def make(*, modules: List[str]) -> None:
     unknown_commands = set(commands_passed) - available_commands.keys()
 
     if unknown_commands:
-        print(f"Unknown build commands: {' '.join(unknown_commands)}\n")
+        log(f"Unknown build commands: {' '.join(unknown_commands)}\n")
         print_usage()
         exit(1)
 
@@ -516,6 +519,15 @@ def make(*, modules: List[str]) -> None:
         executed_commands.add(next_command)
 
 
+def log(message: str) -> None:
+    """
+    Write a message to `stderr`.
+
+    :param message: the message to write
+    """
+    print(message, file=sys.stderr)
+
+
 def quote_path(path: str) -> str:
     """
     Quote a file path if it contains whitespace.
@@ -526,45 +538,18 @@ def quote_path(path: str) -> str:
         return path
 
 
-def get_package_version() -> pkg_version.Version:
-    """
-    Retrieve the package version for the project from __init__ or _version
-    """
-    init_path = os.path.abspath(
-        os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME, "__init__.py")
-    )
-
-    print(f"Retrieving package version from {init_path}")
-
-    with open(init_path, "rt") as init_file:
-        init_lines = init_file.readlines()
-
-    matches = {
-        match[1] or match[2]
-        for match in (RE_VERSION_DECLARATION.match(line) for line in init_lines)
-        if match
-    }
-
-    if len(matches) == 0:
-        raise RuntimeError(f"No valid __version__ declaration found in {init_path}")
-
-    elif len(matches) > 1:
-        raise RuntimeError(
-            f"Multiple conflicting __version__ declarations found in {init_path}: "
-            f"{matches}"
-        )
-
-    else:
-        package_version = next(iter(matches))
-
-    return pkg_version.parse(package_version)
-
-
 def is_azure_build() -> bool:
     """
     Check if this is an Azure DevOps pipelines build
     """
     return "BUILD_REASON" in os.environ
+
+
+def get_package_version() -> pkg_version.Version:
+    """
+    Get the version of the package being built.
+    """
+    return _get_package_version(package_path=DIR_PACKAGE_ROOT)
 
 
 def version_string_to_url(version: pkg_version.Version) -> str:
