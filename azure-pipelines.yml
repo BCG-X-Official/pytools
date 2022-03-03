@@ -467,7 +467,7 @@ stages:
                 pip install packaging~=20.9
                 package_path=$(System.DefaultWorkingDirectory)/$(project_root)/src/$(project_name)
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/sphinx/base
-                version=$(python -c "import make_util; print(make_base.get_package_version(package_path='$package_path'))")
+                version=$(python -c "import make_util; print(make_util.get_package_version(package_path='$package_path'))")
                 echo "Current version: $version"
                 echo "Detecting pre-release ('dev' or 'rc' in version)"
                 prerelease=False
