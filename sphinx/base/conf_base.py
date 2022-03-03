@@ -73,7 +73,7 @@ _log.info(f"sys.path = {sys.path}")
 
 # -- Project information -----------------------------------------------------
 
-project = "pytools"
+project = "<undefined>"  # set by function set_config
 # noinspection PyShadowingBuiltins
 copyright = "2022, Boston Consulting Group (BCG)"
 author = "FACET Team"
