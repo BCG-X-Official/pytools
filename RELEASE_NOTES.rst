@@ -4,6 +4,14 @@ Release Notes
 *pytools* 1.1
 -------------
 
+1.1.10
+~~~~~~
+
+This release addresses additional issues in the release process, focusing on the
+`make_base.py` script for Sphinx builds used across *gamma-pytools*, *sklearndf*, and
+*gamma-facet*.
+
+
 1.1.9
 ~~~~~
 
