@@ -74,7 +74,8 @@ _log.info(f"sys.path = {sys.path}")
 # -- Project information -----------------------------------------------------
 
 project = "pytools"
-copyright = "2021, Boston Consulting Group (BCG)"
+# noinspection PyShadowingBuiltins
+copyright = "2022, Boston Consulting Group (BCG)"
 author = "FACET Team"
 
 # -- General configuration ---------------------------------------------------
