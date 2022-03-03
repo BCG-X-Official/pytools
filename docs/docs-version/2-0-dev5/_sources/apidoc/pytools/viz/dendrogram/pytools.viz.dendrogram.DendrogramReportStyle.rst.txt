@@ -1,0 +1,43 @@
+pytools.viz.dendrogram.DendrogramReportStyle
+============================================
+
+.. currentmodule:: pytools.viz.dendrogram
+
+.. autoclass:: DendrogramReportStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DendrogramReportStyle.draw_leaf_labels
+      ~DendrogramReportStyle.draw_link_connector
+      ~DendrogramReportStyle.draw_link_leg
+      ~DendrogramReportStyle.finalize_drawing
+      ~DendrogramReportStyle.get_default_style_name
+      ~DendrogramReportStyle.get_named_styles
+      ~DendrogramReportStyle.start_drawing
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~DendrogramReportStyle.DEFAULT_MAX_LABEL_WIDTH
+      ~DendrogramReportStyle.max_label_width
+      ~DendrogramReportStyle.max_height
+      ~DendrogramReportStyle.out
+      ~DendrogramReportStyle.width
+   
+   
+
+   .. rubric:: Definitions

@@ -25,6 +25,8 @@ const DOCS_VERSIONS = {
         "1.0.1"
     ],
     "all": [
+        "2.0.dev5",
+        "2.0.dev4",
         "2.0.dev2",
         "2.0.dev1",
         "2.0.dev0",

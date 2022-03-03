@@ -1,0 +1,48 @@
+pytools.text
+============
+
+.. automodule:: pytools.text
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: text
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      CharacterMatrix
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: text
+      :nosignatures:
+   
+      camel_case_to_snake_case
+      format_table
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

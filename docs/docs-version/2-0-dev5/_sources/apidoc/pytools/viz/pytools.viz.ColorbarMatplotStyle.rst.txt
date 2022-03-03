@@ -1,0 +1,41 @@
+pytools.viz.ColorbarMatplotStyle
+================================
+
+.. currentmodule:: pytools.viz
+
+.. autoclass:: ColorbarMatplotStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ColorbarMatplotStyle.apply_color_scheme
+      ~ColorbarMatplotStyle.color_for_value
+      ~ColorbarMatplotStyle.finalize_drawing
+      ~ColorbarMatplotStyle.get_default_style_name
+      ~ColorbarMatplotStyle.get_named_styles
+      ~ColorbarMatplotStyle.get_renderer
+      ~ColorbarMatplotStyle.start_drawing
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ColorbarMatplotStyle.ax
+      ~ColorbarMatplotStyle.colors
+      ~ColorbarMatplotStyle.colorbar
+   
+   
+
+   .. rubric:: Definitions

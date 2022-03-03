@@ -1,0 +1,36 @@
+pytools.viz.color.RgbColor
+==========================
+
+.. currentmodule:: pytools.viz.color
+
+.. autoclass:: RgbColor
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~RgbColor.count
+      ~RgbColor.index
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~RgbColor.b
+      ~RgbColor.g
+      ~RgbColor.r
+   
+   
+
+   .. rubric:: Definitions
