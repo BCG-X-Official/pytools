@@ -1,0 +1,34 @@
+pytools.text.CharacterMatrix
+============================
+
+.. currentmodule:: pytools.text
+
+.. autoclass:: CharacterMatrix
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~CharacterMatrix.lines
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~CharacterMatrix.n_columns
+      ~CharacterMatrix.n_rows
+   
+   
+
+   .. rubric:: Definitions

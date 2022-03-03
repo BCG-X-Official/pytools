@@ -1,0 +1,42 @@
+pytools.expression.base.BracketedExpression
+===========================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: BracketedExpression
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~BracketedExpression.and_
+      ~BracketedExpression.eq_
+      ~BracketedExpression.get_class_id
+      ~BracketedExpression.hash_
+      ~BracketedExpression.not_
+      ~BracketedExpression.or_
+      ~BracketedExpression.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~BracketedExpression.brackets_
+      ~BracketedExpression.precedence_
+      ~BracketedExpression.subexpression_
+      ~BracketedExpression.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

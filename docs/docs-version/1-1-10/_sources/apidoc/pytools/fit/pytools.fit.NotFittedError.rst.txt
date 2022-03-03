@@ -1,0 +1,6 @@
+pytools.fit.NotFittedError
+==========================
+
+.. currentmodule:: pytools.fit
+
+.. autoexception:: NotFittedError

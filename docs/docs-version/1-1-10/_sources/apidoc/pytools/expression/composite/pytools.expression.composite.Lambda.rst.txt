@@ -1,0 +1,43 @@
+pytools.expression.composite.Lambda
+===================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: Lambda
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Lambda.and_
+      ~Lambda.eq_
+      ~Lambda.get_class_id
+      ~Lambda.hash_
+      ~Lambda.not_
+      ~Lambda.or_
+      ~Lambda.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Lambda.body_
+      ~Lambda.precedence_
+      ~Lambda.prefix_
+      ~Lambda.separator_
+      ~Lambda.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,617 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.viz.dendrogram.DendrogramLineStyle &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/gamma.js"></script>
+    <script src="../../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})</script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="pytools.viz.dendrogram.DendrogramReportStyle" href="pytools.viz.dendrogram.DendrogramReportStyle.html" />
+    <link rel="prev" title="pytools.viz.dendrogram.DendrogramHeatmapStyle" href="pytools.viz.dendrogram.DendrogramHeatmapStyle.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../../index.html">
+    
+      <img src="../../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../../../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../../release_notes.html">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../../pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.expression.html">pytools.expression</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.sphinx.html">pytools.sphinx</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../../pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../../pytools.viz.html">pytools.viz</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.ColorbarMatplotStyle.html">pytools.viz.ColorbarMatplotStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.ColoredStyle.html">pytools.viz.ColoredStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.Drawer.html">pytools.viz.Drawer</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.DrawingStyle.html">pytools.viz.DrawingStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.MatplotStyle.html">pytools.viz.MatplotStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.TextStyle.html">pytools.viz.TextStyle</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.color.html">pytools.viz.color</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="../pytools.viz.dendrogram.html">pytools.viz.dendrogram</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.distribution.html">pytools.viz.distribution</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.matrix.html">pytools.viz.matrix</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="../pytools.viz.util.html">pytools.viz.util</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pytools-viz-dendrogram-dendrogramlinestyle">
+<h1>pytools.viz.dendrogram.DendrogramLineStyle<a class="headerlink" href="#pytools-viz-dendrogram-dendrogramlinestyle" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle">
+<em class="property">class </em><code class="sig-prename descclassname">pytools.viz.dendrogram.</code><code class="sig-name descname">DendrogramLineStyle</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ax</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">colors</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min_weight</span><span class="o">=</span><span class="default_value">0.01</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/dendrogram/_style.html#DendrogramLineStyle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws dendrograms as “classical” trees, using coloring lines along a color gradient
+to indicate leaf/branch weights.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Bases</dt>
+<dd class="field-odd"><p><a class="reference internal" href="base/pytools.viz.dendrogram.base.DendrogramMatplotStyle.html#pytools.viz.dendrogram.base.DendrogramMatplotStyle" title="pytools.viz.dendrogram.base.DendrogramMatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramMatplotStyle</span></code></a></p>
+</dd>
+<dt class="field-even">Metaclasses</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABCMeta" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]) – optional axes object to draw on; create a new figure if not specified</p></li>
+<li><p><strong>colors</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="../color/pytools.viz.color.ColorScheme.html#pytools.viz.color.ColorScheme" title="pytools.viz.color.ColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">ColorScheme</span></code></a>]) – the color scheme to be used by this drawing style</p></li>
+<li><p><strong>min_weight</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the minimum weight on the logarithmic feature importance
+color scale; must be greater than <cite>0</cite> and smaller than <cite>1</cite>
+(default: <cite>0.01</cite>, i.e., 1%)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Method summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.apply_color_scheme" title="pytools.viz.dendrogram.DendrogramLineStyle.apply_color_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_color_scheme</span></code></a></p></td>
+<td><p>Apply this style’s color scheme to the given <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.color_for_value" title="pytools.viz.dendrogram.DendrogramLineStyle.color_for_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">color_for_value</span></code></a></p></td>
+<td><p>Get the color associated with a given scalar, based on the color map and normalization defined for this style.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.dark" title="pytools.viz.dendrogram.DendrogramLineStyle.dark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dark</span></code></a></p></td>
+<td><p>Create a dark variant of this drawing style class, using the default dark background color scheme <a class="reference internal" href="../color/pytools.viz.color.FacetDarkColorScheme.html#pytools.viz.color.FacetDarkColorScheme" title="pytools.viz.color.FacetDarkColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">FacetDarkColorScheme</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_leaf_names" title="pytools.viz.dendrogram.DendrogramLineStyle.draw_leaf_names"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw_leaf_names</span></code></a></p></td>
+<td><p>Render the names for all leaves.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_link_connector" title="pytools.viz.dendrogram.DendrogramLineStyle.draw_link_connector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw_link_connector</span></code></a></p></td>
+<td><p>Draw a connector between two sub-trees and their parent node.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_link_leg" title="pytools.viz.dendrogram.DendrogramLineStyle.draw_link_leg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw_link_leg</span></code></a></p></td>
+<td><p>Draw a “leg” connecting two levels of the linkage tree hierarchy.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.finalize_drawing" title="pytools.viz.dendrogram.DendrogramLineStyle.finalize_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_drawing</span></code></a></p></td>
+<td><p>Finalize the dendrogram, adding labels to the axes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.get_default_style_name" title="pytools.viz.dendrogram.DendrogramLineStyle.get_default_style_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_style_name</span></code></a></p></td>
+<td><p>Get the name of the default style associated with this style class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.get_named_styles" title="pytools.viz.dendrogram.DendrogramLineStyle.get_named_styles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_named_styles</span></code></a></p></td>
+<td><p>Get a mapping of names to default instances of this style class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.start_drawing" title="pytools.viz.dendrogram.DendrogramLineStyle.start_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_drawing</span></code></a></p></td>
+<td><p>Prepare a new dendrogram for drawing, using the given title.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.text_dimensions" title="pytools.viz.dendrogram.DendrogramLineStyle.text_dimensions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_dimensions</span></code></a></p></td>
+<td><p>Calculate the horizontal and vertical dimensions of the given text in axis units.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attribute summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.ax" title="pytools.viz.dendrogram.DendrogramLineStyle.ax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ax</span></code></a></p></td>
+<td><p>The matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object on which to draw.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.colors" title="pytools.viz.dendrogram.DendrogramLineStyle.colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">colors</span></code></a></p></td>
+<td><p>The color scheme used by this style.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.renderer" title="pytools.viz.dendrogram.DendrogramLineStyle.renderer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">renderer</span></code></a></p></td>
+<td><p>The renderer used by this style’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object (see <a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.ax" title="pytools.viz.dendrogram.DendrogramLineStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Definitions</p>
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.apply_color_scheme">
+<code class="sig-name descname">apply_color_scheme</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ax</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.apply_color_scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this style’s color scheme to the given <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>.</p>
+<p>Style implementations can use this to apply the color scheme to sub-axes.
+Does not need to be applied to main axes, as this is already done in method
+<a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.start_drawing" title="pytools.viz.dendrogram.DendrogramLineStyle.start_drawing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_drawing()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>) – the axes to apply the color scheme to</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.color_for_value">
+<code class="sig-name descname">color_for_value</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">z</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.color_for_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the color associated with a given scalar, based on the color map and
+normalization defined for this style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>z</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the scalar to be color-encoded</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Tuple" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the resulting color as a RGBA tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.dark">
+<em class="property">classmethod </em><code class="sig-name descname">dark</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.dark" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a dark variant of this drawing style class, using the default dark
+background color scheme <a class="reference internal" href="../color/pytools.viz.color.FacetDarkColorScheme.html#pytools.viz.color.FacetDarkColorScheme" title="pytools.viz.color.FacetDarkColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">FacetDarkColorScheme</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>~T_Style_Class</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the dark drawing style class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.draw_leaf_names">
+<code class="sig-name descname">draw_leaf_names</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">names</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_leaf_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render the names for all leaves.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>names</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Sequence" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the names of all leaves</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.draw_link_connector">
+<code class="sig-name descname">draw_link_connector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bottom</span></em>, <em class="sig-param"><span class="n">top</span></em>, <em class="sig-param"><span class="n">first_leaf</span></em>, <em class="sig-param"><span class="n">n_leaves_left</span></em>, <em class="sig-param"><span class="n">n_leaves_right</span></em>, <em class="sig-param"><span class="n">weight</span></em>, <em class="sig-param"><span class="n">tree_height</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/dendrogram/_style.html#DendrogramLineStyle.draw_link_connector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_link_connector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a connector between two sub-trees and their parent node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bottom</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the height (i.e. cluster distance) of the sub-trees</p></li>
+<li><p><strong>top</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the height of the parent node</p></li>
+<li><p><strong>first_leaf</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – the index of the first leaf in the left sub-tree</p></li>
+<li><p><strong>n_leaves_left</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – the number of leaves in the left sub-tree</p></li>
+<li><p><strong>n_leaves_right</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#int" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – the number of leaves in the right sub-tree</p></li>
+<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the weight of the parent node</p></li>
+<li><p><strong>tree_height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the total height of the linkage tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.draw_link_leg">
+<code class="sig-name descname">draw_link_leg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bottom</span></em>, <em class="sig-param"><span class="n">top</span></em>, <em class="sig-param"><span class="n">leaf</span></em>, <em class="sig-param"><span class="n">weight</span></em>, <em class="sig-param"><span class="n">tree_height</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/dendrogram/_style.html#DendrogramLineStyle.draw_link_leg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.draw_link_leg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw a “leg” connecting two levels of the linkage tree hierarchy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bottom</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the height of the child node in the linkage tree</p></li>
+<li><p><strong>top</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the height of the parent node in the linkage tree</p></li>
+<li><p><strong>leaf</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the index of the leaf where the link leg should be drawn (may be
+a <code class="docutils literal notranslate"><span class="pre">float</span></code>, indicating a position in between two leaves)</p></li>
+<li><p><strong>weight</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the weight of the child node</p></li>
+<li><p><strong>tree_height</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – the total height of the linkage tree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.finalize_drawing">
+<code class="sig-name descname">finalize_drawing</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">leaf_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distance_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weight_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.finalize_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalize the dendrogram, adding labels to the axes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leaf_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the leaf axis</p></li>
+<li><p><strong>distance_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the distance axis</p></li>
+<li><p><strong>weight_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the weight scale</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional drawer-specific arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.get_default_style_name">
+<em class="property">classmethod </em><code class="sig-name descname">get_default_style_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/dendrogram/_style.html#DendrogramLineStyle.get_default_style_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.get_default_style_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the default style associated with this style class.</p>
+<p>The default style is obtained by instantiating this style class without
+parameters.</p>
+<p>Common examples for default style names are <cite>matplot</cite> and <cite>text</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the name of the default style</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.get_named_styles">
+<em class="property">classmethod </em><code class="sig-name descname">get_named_styles</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.get_named_styles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a mapping of names to default instances of this style class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Dict" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, ~T_Style_Class]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary mapping of names to default instances of this style class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.start_drawing">
+<code class="sig-name descname">start_drawing</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">title</span></em>, <em class="sig-param"><span class="n">leaf_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">distance_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">weight_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.start_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare a new dendrogram for drawing, using the given title.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the title of the chart</p></li>
+<li><p><strong>leaf_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the leaf axis</p></li>
+<li><p><strong>distance_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the distance axis</p></li>
+<li><p><strong>weight_label</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the label for the weight scale</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional drawer-specific arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/constants.html#None" title="(in Python v3.6)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.text_dimensions">
+<code class="sig-name descname">text_dimensions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">text</span></em>, <em class="sig-param"><span class="n">x</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.text_dimensions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the horizontal and vertical dimensions of the given text in axis
+units.</p>
+<p>Constructs a <code class="xref py py-class docutils literal notranslate"><span class="pre">Text</span></code> artist then calculates it size
+relative to the axis <a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.ax" title="pytools.viz.dendrogram.DendrogramLineStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a> managed by this style object.
+For non-linear axis scales, text size differs depending on placement,
+so the intended placement (in data coordinates) should be provided.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – text to calculate the dimensions for</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – intended horizontal text placement (optional, defaults to left of
+view)</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – intended vertical text placement (optional, defaults to bottom of
+view)</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Any" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional keyword arguments to use when constructing the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Text</span></code> artist, e.g., rotation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Tuple" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/functions.html#float" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple <cite>(width, height)</cite> in axis units</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.ax">
+<em class="property">property </em><code class="sig-name descname">ax</code><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.ax" title="Permalink to this definition">¶</a></dt>
+<dd><p>The matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object on which to draw.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.colors">
+<em class="property">property </em><code class="sig-name descname">colors</code><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The color scheme used by this style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>~T_ColorScheme</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pytools.viz.dendrogram.DendrogramLineStyle.renderer">
+<em class="property">property </em><code class="sig-name descname">renderer</code><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramLineStyle.renderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>The renderer used by this style’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object
+(see <a class="reference internal" href="#pytools.viz.dendrogram.DendrogramLineStyle.ax" title="pytools.viz.dendrogram.DendrogramLineStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RendererBase</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="pytools.viz.dendrogram.DendrogramHeatmapStyle.html" title="previous page">pytools.viz.dendrogram.DendrogramHeatmapStyle</a>
+    <a class='right-next' id="next-link" href="pytools.viz.dendrogram.DendrogramReportStyle.html" title="next page">pytools.viz.dendrogram.DendrogramReportStyle</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2022, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.4.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
