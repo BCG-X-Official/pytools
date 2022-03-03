@@ -45,13 +45,22 @@ def set_config(
     Add required modules to the python path, and set custom configuration options
     """
 
+    from make_util import get_package_version
+
     globals_["project"] = project
+    globals_["version"] = str(
+        get_package_version(
+            package_path=(
+                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
+            )
+        )
+    )
 
     if html_logo:
         globals_["html_logo"] = html_logo
         globals_["latex_logo"] = html_logo
 
-    modules = set(modules) | {"pytools"}
+    modules = {"pytools", *modules}
     for module in modules:
         module_path = os.path.normpath(os.path.join(_dir_repo_root, module, "src"))
         if module_path not in sys.path:
@@ -73,7 +82,6 @@ _log.info(f"sys.path = {sys.path}")
 
 # -- Project information -----------------------------------------------------
 
-project = "<undefined>"  # set by function set_config
 # noinspection PyShadowingBuiltins
 copyright = "2022, Boston Consulting Group (BCG)"
 author = "FACET Team"
@@ -178,30 +186,13 @@ html_logo = "_static/gamma_logo.jpg"
 # Class documentation to include docstrings both global to the class, and from __init__
 autoclass_content = "both"
 
-
-def _get_package_version() -> str:
-    """
-    Get the package version for the project being built.
-    :return: string with Python package version
-    """
-    from make_util import get_package_version
-
-    return str(
-        get_package_version(
-            package_path=(
-                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
-            )
-        )
-    )
-
-
-version = _get_package_version()
 # -- End of options section ------------------------------------------------------------
 
 
 def setup(app: Sphinx) -> None:
     """
-    Add event handlers to the Sphinx application object
+    Add event handlers to the Sphinx application object.
+
     :param app: the Sphinx application object
     """
 
