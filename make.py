@@ -14,6 +14,7 @@ import sys
 import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
+from traceback import print_exc
 from typing import Any, Dict, Iterator, List, Set, cast
 from urllib import request
 from xml.etree import ElementTree
@@ -169,11 +170,11 @@ class Builder(metaclass=ABCMeta):
         package: str = self.get_package_dist_name()
         new_version: Version = Version(self.package_version)
 
-        print(f"Testing package version: {package} {new_version}")
+        log(f"Testing package version: {package} {new_version}")
 
         releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
 
-        print(f"Getting existing releases from {releases_uri}")
+        log(f"Getting existing releases from {releases_uri}")
         with request.urlopen(releases_uri) as response:
             assert response.getcode() == 200, "Error getting releases from PyPi"
             releases_xml = response.read()
@@ -185,7 +186,7 @@ class Builder(metaclass=ABCMeta):
             Version(r) for r in [r.text for r in releases_nodes]
         )
 
-        print(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
+        log(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
 
         if new_version in released_versions:
             raise AssertionError(
@@ -210,7 +211,7 @@ class Builder(metaclass=ABCMeta):
                     f"{new_version.release[0]}.{new_version.release[1]}.rc0"
                 )
 
-            print(
+            log(
                 f"Pre-releases {pre_releases} exist; "
                 f"release of major/minor version {new_version} can go ahead"
             )
@@ -528,35 +529,40 @@ def run_make() -> None:
     """
     Run this build script with the given arguments.
     """
-    if len(sys.argv) < 3:
-        print_usage()
-        exit(1)
-
-    project = sys.argv[1]
-    build_system = sys.argv[2]
-
-    if len(sys.argv) > 3:
-        dependency_type = sys.argv[3]
-    else:
-        dependency_type = DEP_DEFAULT
-
-    # sanitize input
-    for arg_name, arg_value, valid_values in (
-        ("project", project, get_known_projects()),
-        ("build system", build_system, KNOWN_BUILD_SYSTEMS),
-        ("dependency type", dependency_type, KNOWN_DEPENDENCY_TYPES),
-    ):
-
-        if arg_value not in valid_values:
-            log(
-                f"Wrong value for {arg_name} argument: "
-                f"got {arg_value} but expected one of {', '.join(valid_values)}"
-            )
+    # noinspection PyBroadException
+    try:
+        if len(sys.argv) < 3:
+            print_usage()
             exit(1)
 
-    Builder.for_build_system(
-        build_system=build_system, project=project, dependency_type=dependency_type
-    ).run()
+        project = sys.argv[1]
+        build_system = sys.argv[2]
+
+        if len(sys.argv) > 3:
+            dependency_type = sys.argv[3]
+        else:
+            dependency_type = DEP_DEFAULT
+
+        # sanitize input
+        for arg_name, arg_value, valid_values in (
+            ("project", project, get_known_projects()),
+            ("build system", build_system, KNOWN_BUILD_SYSTEMS),
+            ("dependency type", dependency_type, KNOWN_DEPENDENCY_TYPES),
+        ):
+
+            if arg_value not in valid_values:
+                log(
+                    f"Wrong value for {arg_name} argument: "
+                    f"got {arg_value} but expected one of {', '.join(valid_values)}"
+                )
+                exit(1)
+
+        Builder.for_build_system(
+            build_system=build_system, project=project, dependency_type=dependency_type
+        ).run()
+    except BaseException:
+        print_exc(file=sys.stderr)
+        exit(1)
 
 
 if __name__ == "__main__":
