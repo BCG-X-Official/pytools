@@ -17,8 +17,14 @@ from urllib.request import pathname2url
 
 import toml
 
-CWD = os.getcwd()
 SCRIPT_DIR = os.path.abspath(os.path.dirname(__file__))
+
+sys.path.insert(
+    0,
+    os.path.normpath(os.path.join(SCRIPT_DIR, "sphinx", "base")),
+)
+# noinspection PyUnresolvedReferences
+from make_util import get_package_version
 
 FACET_PATH_ENV = "FACET_PATH"
 FACET_PATH_URI_ENV = "FACET_PATH_URI"
@@ -77,30 +83,8 @@ class Builder(metaclass=ABCMeta):
 
         project_root_path = os.path.abspath(os.path.join(projects_root_path, project))
         src_root_path = os.path.join(project_root_path, "src", project)
-        init_path = os.path.join(src_root_path, "__init__.py")
 
-        print(f"Retrieving package version from {init_path}")
-
-        with open(init_path, "rt") as init_file:
-            init_lines = init_file.readlines()
-
-        matches = {
-            match[1] or match[2]
-            for match in (RE_VERSION_DECLARATION.match(line) for line in init_lines)
-            if match
-        }
-
-        if len(matches) == 0:
-            raise RuntimeError(f"No valid __version__ declaration found in {init_path}")
-
-        elif len(matches) > 1:
-            raise RuntimeError(
-                f"Multiple conflicting __version__ declarations found in {init_path}: "
-                f"{matches}"
-            )
-
-        else:
-            package_version = next(iter(matches))
+        package_version = str(get_package_version(package_path=src_root_path))
 
         os.environ[
             FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
@@ -154,7 +138,7 @@ class Builder(metaclass=ABCMeta):
         pyproject_toml_path = os.path.join(
             os.environ[FACET_PATH_ENV], self.project, "pyproject.toml"
         )
-        print(f"Reading build configuration from {pyproject_toml_path}")
+        log(f"Reading build configuration from {pyproject_toml_path}")
         with open(pyproject_toml_path, "rt") as f:
             return toml.load(f)
 
@@ -251,7 +235,7 @@ class Builder(metaclass=ABCMeta):
         for package, version in requirements_to_expose.items():
             # bash ENV variables can not use dash, replace it to _
             env_var_name = "FACET_V_" + re.sub(r"[^\w]", "_", package.upper())
-            print(f"Exporting {env_var_name}={version !r}")
+            log(f"Exporting {env_var_name}={version !r}")
             os.environ[env_var_name] = version
 
     @abstractmethod
@@ -266,7 +250,7 @@ class Builder(metaclass=ABCMeta):
             f"VERSION {self.package_version}"
         )
         separator = "=" * len(message)
-        print(f"{separator}\n{message}\n{separator}")
+        log(f"{separator}\n{message}\n{separator}")
 
     @abstractmethod
     def build(self) -> None:
@@ -321,7 +305,7 @@ class CondaBuilder(Builder):
         # purge pre-existing build directories
         package_dist_name = self.get_package_dist_name()
         for obsolete_folder in glob(os.path.join(build_path, f"{package_dist_name}_*")):
-            print(f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}")
+            log(f"Clean: Removing obsolete conda-build folder at: {obsolete_folder}")
             shutil.rmtree(obsolete_folder, ignore_errors=True)
 
         # remove broken packages
@@ -341,7 +325,7 @@ class CondaBuilder(Builder):
 
         os.makedirs(build_path, exist_ok=True)
         build_cmd = f"conda-build -c conda-forge -c bcg_gamma {recipe_path}"
-        print(
+        log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
             f"Build Command: {build_cmd}"
@@ -384,9 +368,9 @@ class ToxBuilder(Builder):
             os.chdir(build_path)
 
             build_cmd = f"tox -e {tox_env} -v"
-            print(f"Build Command: {build_cmd}")
+            log(f"Build Command: {build_cmd}")
             subprocess.run(args=build_cmd, shell=True, check=True)
-            print("Tox build completed – creating local PyPi index")
+            log("Tox build completed – creating local PyPi index")
 
             # Create/update a local PyPI PEP 503 (the simple repository API) compliant
             # folder structure, so that it can be used with PIP's --extra-index-url
@@ -418,7 +402,7 @@ class ToxBuilder(Builder):
             with open(project_index_html_path, "wt") as f:
                 f.writelines(package_file_links)
 
-            print(f"Local PyPi Index created at: {pypi_index_path}")
+            log(f"Local PyPi Index created at: {pypi_index_path}")
 
         finally:
             os.chdir(original_dir)
@@ -471,6 +455,15 @@ Example usage:
     print(usage)
 
 
+def log(message: str) -> None:
+    """
+    Write a message to `stderr`.
+
+    :param message: the message to write
+    """
+    print(message, file=sys.stderr)
+
+
 def run_make() -> None:
     """
     Run this build script with the given arguments.
@@ -495,7 +488,7 @@ def run_make() -> None:
     ):
 
         if arg_value not in valid_values:
-            print(
+            log(
                 f"Wrong value for {arg_name} argument: "
                 f"got {arg_value} but expected one of {', '.join(valid_values)}"
             )
