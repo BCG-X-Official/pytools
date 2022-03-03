@@ -1,0 +1,42 @@
+pytools.expression.base.Operation
+=================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: Operation
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Operation.and_
+      ~Operation.eq_
+      ~Operation.get_class_id
+      ~Operation.hash_
+      ~Operation.not_
+      ~Operation.or_
+      ~Operation.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Operation.operands_
+      ~Operation.operator_
+      ~Operation.precedence_
+      ~Operation.subexpressions_
+   
+   
+
+   .. rubric:: Definitions
