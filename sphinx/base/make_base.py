@@ -14,9 +14,10 @@ from tempfile import TemporaryDirectory
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar
 from weakref import ref
 
+from make_util import get_package_version
 from packaging import version as pkg_version
 
-cwd = os.getcwd()
+DIR_SPHINX_ROOT = os.getcwd()
 
 # Sphinx commands
 CMD_SPHINX_BUILD = "sphinx-build"
@@ -24,16 +25,16 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
 DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
-DIR_REPO_ROOT = os.path.realpath(os.path.join(os.getcwd(), os.pardir))
+DIR_REPO_ROOT = os.path.realpath(os.path.join(DIR_SPHINX_ROOT, os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
 DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
-DIR_SPHINX_SOURCE = os.path.join(cwd, "source")
-DIR_SPHINX_AUX = os.path.join(cwd, "auxiliary")
+DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
+DIR_SPHINX_AUX = os.path.join(DIR_SPHINX_ROOT, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
-DIR_SPHINX_BUILD = os.path.join(cwd, "build")
+DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
 DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
@@ -44,13 +45,13 @@ DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_ba
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
+DIR_PACKAGE_ROOT = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME))
 
 # Environment variables
 # noinspection SpellCheckingInspection
 ENV_PYTHON_PATH = "PYTHONPATH"
 
 # regex pattern to match the version declaration in a top-level __init__.py
-RE_VERSION_DECLARATION = re.compile(r"\b__version__\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 
 T = TypeVar("T")
 
@@ -279,7 +280,9 @@ class PrepareDocsDeployment(Command):
             raise RuntimeError("only implemented for Azure Pipelines")
 
         # get the current version of the package
-        current_version: pkg_version.Version = get_package_version()
+        current_version: pkg_version.Version = get_package_version(
+            package_path=DIR_PACKAGE_ROOT
+        )
 
         # copy new the docs version to the deployment path
         if current_version == Versions().latest_stable_version:
@@ -397,7 +400,9 @@ class Html(Command):
         sys.path.append(DIR_MAKE_BASE)
 
         # create copy of this build for the docs archive
-        version_built: pkg_version.Version = get_package_version()
+        version_built: pkg_version.Version = get_package_version(
+            package_path=DIR_PACKAGE_ROOT
+        )
         dir_path_this_build = os.path.join(
             DIR_ALL_DOCS_VERSIONS, version_string_to_url(version_built)
         )
@@ -454,7 +459,9 @@ class Versions:
         ]
 
         # append the version we are building to version_tags
-        version_built: pkg_version.Version = get_package_version()
+        version_built: pkg_version.Version = get_package_version(
+            package_path=DIR_PACKAGE_ROOT
+        )
 
         if version_built not in version_tags:
             version_tags.append(version_built)
@@ -477,6 +484,8 @@ class Versions:
 def make(*, modules: List[str]) -> None:
     """
     Run this make script with the given arguments.
+
+    :param modules: the modules to consider for the doc build
     """
     if len(sys.argv) < 2:
         print_usage()
@@ -533,40 +542,6 @@ def quote_path(path: str) -> str:
         return f'"{path}"'
     else:
         return path
-
-
-def get_package_version() -> pkg_version.Version:
-    """
-    Retrieve the package version for the project from __init__ or _version
-    """
-    init_path = os.path.abspath(
-        os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME, "__init__.py")
-    )
-
-    log(f"Retrieving package version from {init_path}")
-
-    with open(init_path, "rt") as init_file:
-        init_lines = init_file.readlines()
-
-    matches = {
-        match[1] or match[2]
-        for match in (RE_VERSION_DECLARATION.match(line) for line in init_lines)
-        if match
-    }
-
-    if len(matches) == 0:
-        raise RuntimeError(f"No valid __version__ declaration found in {init_path}")
-
-    elif len(matches) > 1:
-        raise RuntimeError(
-            f"Multiple conflicting __version__ declarations found in {init_path}: "
-            f"{matches}"
-        )
-
-    else:
-        package_version = next(iter(matches))
-
-    return pkg_version.parse(package_version)
 
 
 def is_azure_build() -> bool:

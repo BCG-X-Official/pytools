@@ -183,16 +183,15 @@ def _get_package_version() -> str:
     Get the package version for the project being built.
     :return: string with Python package version
     """
-    # NOTE: sphinx-make changes the CWD into sphinx/source
-    #       while FACET's make_base expects a CWD <project>/src
-    #       hence: save current CWD, navigate to <project>/src, then go back
-    cwd = os.getcwd()
-    os.chdir(os.path.join(cwd, os.pardir, os.pardir, "src"))
-    import make_base
+    from make_util import get_package_version
 
-    version_ = str(make_base.get_package_version())
-    os.chdir(cwd)
-    return version_
+    return str(
+        get_package_version(
+            package_path=(
+                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
+            )
+        )
+    )
 
 
 version = _get_package_version()
