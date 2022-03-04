@@ -66,11 +66,10 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
         """
         pass
 
-    def _ensure_fitted(self) -> None:
+    def ensure_fitted(self) -> None:
         """
         Raise a :class:`.NotFittedError` if this object is not fitted.
 
-        :meta public:
         :raise NotFittedError: this object is not fitted
         """
         if not self.is_fitted:
