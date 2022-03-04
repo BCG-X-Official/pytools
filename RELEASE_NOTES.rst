@@ -34,6 +34,12 @@ and is now subject to static type checking with :mod:`mypy`.
   function :func:`.make_expression`
 - API: remove method ``get_class_id`` from class :class:`.HasExpressionRepr`
 
+``pytools.fit``
+^^^^^^^^^^^^^^^
+
+- API: method :meth:`.FittableMixin.ensure_fitted` is now public, replacing the formerly
+  private method ``_ensure_fitted()``
+
 ``pytools.parallelization``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
