@@ -1,0 +1,35 @@
+pytools.sphinx.util.CollapseModulePathsInXRef
+=============================================
+
+.. currentmodule:: pytools.sphinx.util
+
+.. autoclass:: CollapseModulePathsInXRef
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~CollapseModulePathsInXRef.collapse_module_paths
+      ~CollapseModulePathsInXRef.connect
+      ~CollapseModulePathsInXRef.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~CollapseModulePathsInXRef.event
+   
+   
+
+   .. rubric:: Definitions

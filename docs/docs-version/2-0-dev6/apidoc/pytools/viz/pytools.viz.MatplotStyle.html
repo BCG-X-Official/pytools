@@ -1,0 +1,1351 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>pytools.viz.MatplotStyle &#8212; pytools  documentation</title>
+    
+    <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  
+    
+    <link rel="stylesheet"
+      href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+    
+      
+  
+    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/pydata-sphinx-theme.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
+    
+    <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/gamma.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="pytools.viz.TextStyle" href="pytools.viz.TextStyle.html" />
+    <link rel="prev" title="pytools.viz.DrawingStyle" href="pytools.viz.DrawingStyle.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../getting_started/getting_started.html">
+  Getting started
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="reference internal nav-link" href="../../pytools.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../contribution_guide.html">
+  Development Guidelines
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../faqs.html">
+  FAQ
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../release_notes.html">
+  Release Notes
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.api.html">
+   pytools.api
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
+  <label for="toctree-checkbox-1">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.AllTracker.html">
+     pytools.api.AllTracker
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.DocValidator.html">
+     pytools.api.DocValidator
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.deprecated.html">
+     pytools.api.deprecated
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.deprecation_warning.html">
+     pytools.api.deprecation_warning
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.get_generic_bases.html">
+     pytools.api.get_generic_bases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.inheritdoc.html">
+     pytools.api.inheritdoc
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.is_list_like.html">
+     pytools.api.is_list_like
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.public_module_prefix.html">
+     pytools.api.public_module_prefix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.subsdoc.html">
+     pytools.api.subsdoc
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.to_collection.html">
+     pytools.api.to_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.to_list.html">
+     pytools.api.to_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.to_set.html">
+     pytools.api.to_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.to_tuple.html">
+     pytools.api.to_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.update_forward_references.html">
+     pytools.api.update_forward_references
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.validate_element_types.html">
+     pytools.api.validate_element_types
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.validate_type.html">
+     pytools.api.validate_type
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../api/pytools.api.doc.html">
+     pytools.api.doc
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.APIDefinition.html">
+       pytools.api.doc.APIDefinition
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.DocTest.html">
+       pytools.api.doc.DocTest
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.FunctionDefinition.html">
+       pytools.api.doc.FunctionDefinition
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.HasDocstring.html">
+       pytools.api.doc.HasDocstring
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.HasMatchingParameterDoc.html">
+       pytools.api.doc.HasMatchingParameterDoc
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.HasTypeHints.html">
+       pytools.api.doc.HasTypeHints
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.HasWellFormedDocstring.html">
+       pytools.api.doc.HasWellFormedDocstring
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.ModuleDefinition.html">
+       pytools.api.doc.ModuleDefinition
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../api/doc/pytools.api.doc.NamedElementDefinition.html">
+       pytools.api.doc.NamedElementDefinition
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.data.html">
+   pytools.data
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/>
+  <label for="toctree-checkbox-3">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../data/pytools.data.LinkageTree.html">
+     pytools.data.LinkageTree
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../data/pytools.data.Matrix.html">
+     pytools.data.Matrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../data/pytools.data.sim_data.html">
+     pytools.data.sim_data
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../data/pytools.data.linkage.html">
+     pytools.data.linkage
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/>
+    <label for="toctree-checkbox-4">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../data/linkage/pytools.data.linkage.LeafNode.html">
+       pytools.data.linkage.LeafNode
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../data/linkage/pytools.data.linkage.LinkageNode.html">
+       pytools.data.linkage.LinkageNode
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../data/linkage/pytools.data.linkage.Node.html">
+       pytools.data.linkage.Node
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.expression.html">
+   pytools.expression
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/>
+  <label for="toctree-checkbox-5">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.Expression.html">
+     pytools.expression.Expression
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.ExpressionAlias.html">
+     pytools.expression.ExpressionAlias
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.ExpressionFormatter.html">
+     pytools.expression.ExpressionFormatter
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.FrozenExpression.html">
+     pytools.expression.FrozenExpression
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.HasExpressionRepr.html">
+     pytools.expression.HasExpressionRepr
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.freeze.html">
+     pytools.expression.freeze
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../expression/pytools.expression.make_expression.html">
+     pytools.expression.make_expression
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expression/pytools.expression.atomic.html">
+     pytools.expression.atomic
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/>
+    <label for="toctree-checkbox-6">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/atomic/pytools.expression.atomic.Epsilon.html">
+       pytools.expression.atomic.Epsilon
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/atomic/pytools.expression.atomic.Id.html">
+       pytools.expression.atomic.Id
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/atomic/pytools.expression.atomic.Lit.html">
+       pytools.expression.atomic.Lit
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expression/pytools.expression.base.html">
+     pytools.expression.base
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/>
+    <label for="toctree-checkbox-7">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.AtomicExpression.html">
+       pytools.expression.base.AtomicExpression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.BracketPair.html">
+       pytools.expression.base.BracketPair
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.BracketedExpression.html">
+       pytools.expression.base.BracketedExpression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.CollectionLiteral.html">
+       pytools.expression.base.CollectionLiteral
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.InfixExpression.html">
+       pytools.expression.base.InfixExpression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.Invocation.html">
+       pytools.expression.base.Invocation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.Operation.html">
+       pytools.expression.base.Operation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.PrefixExpression.html">
+       pytools.expression.base.PrefixExpression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.SimplePrefixExpression.html">
+       pytools.expression.base.SimplePrefixExpression
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/base/pytools.expression.base.SingletonExpression.html">
+       pytools.expression.base.SingletonExpression
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expression/pytools.expression.composite.html">
+     pytools.expression.composite
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/>
+    <label for="toctree-checkbox-8">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.Attr.html">
+       pytools.expression.composite.Attr
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.BinaryOperation.html">
+       pytools.expression.composite.BinaryOperation
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.Call.html">
+       pytools.expression.composite.Call
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.DictLiteral.html">
+       pytools.expression.composite.DictLiteral
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.Index.html">
+       pytools.expression.composite.Index
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.Lambda.html">
+       pytools.expression.composite.Lambda
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.ListLiteral.html">
+       pytools.expression.composite.ListLiteral
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.SetLiteral.html">
+       pytools.expression.composite.SetLiteral
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.TupleLiteral.html">
+       pytools.expression.composite.TupleLiteral
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.UnaryOperation.html">
+       pytools.expression.composite.UnaryOperation
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="../expression/composite/pytools.expression.composite.base.html">
+       pytools.expression.composite.base
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/>
+      <label for="toctree-checkbox-9">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../expression/composite/base/pytools.expression.composite.base.DictEntry.html">
+         pytools.expression.composite.base.DictEntry
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../expression/composite/base/pytools.expression.composite.base.KeywordArgument.html">
+         pytools.expression.composite.base.KeywordArgument
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="../expression/composite/base/pytools.expression.composite.base.LambdaDefinition.html">
+         pytools.expression.composite.base.LambdaDefinition
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expression/pytools.expression.formatter.html">
+     pytools.expression.formatter
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/>
+    <label for="toctree-checkbox-10">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/formatter/pytools.expression.formatter.PythonExpressionFormatter.html">
+       pytools.expression.formatter.PythonExpressionFormatter
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../expression/pytools.expression.operator.html">
+     pytools.expression.operator
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/>
+    <label for="toctree-checkbox-11">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/operator/pytools.expression.operator.BinaryOperator.html">
+       pytools.expression.operator.BinaryOperator
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/operator/pytools.expression.operator.Operator.html">
+       pytools.expression.operator.Operator
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../expression/operator/pytools.expression.operator.UnaryOperator.html">
+       pytools.expression.operator.UnaryOperator
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.fit.html">
+   pytools.fit
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/>
+  <label for="toctree-checkbox-12">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../fit/pytools.fit.FittableMixin.html">
+     pytools.fit.FittableMixin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../fit/pytools.fit.NotFittedError.html">
+     pytools.fit.NotFittedError
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.meta.html">
+   pytools.meta
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/>
+  <label for="toctree-checkbox-13">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../meta/pytools.meta.SingletonMeta.html">
+     pytools.meta.SingletonMeta
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../meta/pytools.meta.compose_meta.html">
+     pytools.meta.compose_meta
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.parallelization.html">
+   pytools.parallelization
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/>
+  <label for="toctree-checkbox-14">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.Job.html">
+     pytools.parallelization.Job
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.JobQueue.html">
+     pytools.parallelization.JobQueue
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.JobRunner.html">
+     pytools.parallelization.JobRunner
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.NestedQueue.html">
+     pytools.parallelization.NestedQueue
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.ParallelizableMixin.html">
+     pytools.parallelization.ParallelizableMixin
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../parallelization/pytools.parallelization.SimpleQueue.html">
+     pytools.parallelization.SimpleQueue
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.sphinx.html">
+   pytools.sphinx
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/>
+  <label for="toctree-checkbox-15">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.AutodocBeforeProcessSignature.html">
+     pytools.sphinx.AutodocBeforeProcessSignature
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.AutodocProcessBases.html">
+     pytools.sphinx.AutodocProcessBases
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.AutodocProcessDocstring.html">
+     pytools.sphinx.AutodocProcessDocstring
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.AutodocProcessSignature.html">
+     pytools.sphinx.AutodocProcessSignature
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.AutodocSkipMember.html">
+     pytools.sphinx.AutodocSkipMember
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.ObjectDescriptionTransform.html">
+     pytools.sphinx.ObjectDescriptionTransform
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.SphinxCallback.html">
+     pytools.sphinx.SphinxCallback
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="../sphinx/pytools.sphinx.util.html">
+     pytools.sphinx.util
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/>
+    <label for="toctree-checkbox-16">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.AddInheritance.html">
+       pytools.sphinx.util.AddInheritance
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.CollapseModulePaths.html">
+       pytools.sphinx.util.CollapseModulePaths
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.CollapseModulePathsInDocstring.html">
+       pytools.sphinx.util.CollapseModulePathsInDocstring
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.CollapseModulePathsInSignature.html">
+       pytools.sphinx.util.CollapseModulePathsInSignature
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.CollapseModulePathsInXRef.html">
+       pytools.sphinx.util.CollapseModulePathsInXRef
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.Replace3rdPartyDoc.html">
+       pytools.sphinx.util.Replace3rdPartyDoc
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html">
+       pytools.sphinx.util.ResolveTypeVariables
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.SkipIndirectImports.html">
+       pytools.sphinx.util.SkipIndirectImports
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 has-children">
+  <a class="reference internal" href="../pytools.text.html">
+   pytools.text
+  </a>
+  <input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/>
+  <label for="toctree-checkbox-17">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../text/pytools.text.CharacterMatrix.html">
+     pytools.text.CharacterMatrix
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../text/pytools.text.camel_case_to_snake_case.html">
+     pytools.text.camel_case_to_snake_case
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../text/pytools.text.format_table.html">
+     pytools.text.format_table
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toctree-l1 current active has-children">
+  <a class="reference internal" href="../pytools.viz.html">
+   pytools.viz
+  </a>
+  <input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/>
+  <label for="toctree-checkbox-18">
+   <i class="fas fa-chevron-down">
+   </i>
+  </label>
+  <ul class="current">
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.viz.ColorbarMatplotStyle.html">
+     pytools.viz.ColorbarMatplotStyle
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.viz.ColoredStyle.html">
+     pytools.viz.ColoredStyle
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.viz.Drawer.html">
+     pytools.viz.Drawer
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.viz.DrawingStyle.html">
+     pytools.viz.DrawingStyle
+    </a>
+   </li>
+   <li class="toctree-l2 current active">
+    <a class="current reference internal" href="#">
+     pytools.viz.MatplotStyle
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.viz.TextStyle.html">
+     pytools.viz.TextStyle
+    </a>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pytools.viz.color.html">
+     pytools.viz.color
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/>
+    <label for="toctree-checkbox-19">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.ColorScheme.html">
+       pytools.viz.color.ColorScheme
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.FacetDarkColorScheme.html">
+       pytools.viz.color.FacetDarkColorScheme
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.FacetLightColorScheme.html">
+       pytools.viz.color.FacetLightColorScheme
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.MatplotColorScheme.html">
+       pytools.viz.color.MatplotColorScheme
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.RgbColor.html">
+       pytools.viz.color.RgbColor
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="color/pytools.viz.color.RgbaColor.html">
+       pytools.viz.color.RgbaColor
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pytools.viz.dendrogram.html">
+     pytools.viz.dendrogram
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/>
+    <label for="toctree-checkbox-20">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="dendrogram/pytools.viz.dendrogram.DendrogramDrawer.html">
+       pytools.viz.dendrogram.DendrogramDrawer
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="dendrogram/pytools.viz.dendrogram.DendrogramMatplotStyle.html">
+       pytools.viz.dendrogram.DendrogramMatplotStyle
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html">
+       pytools.viz.dendrogram.DendrogramReportStyle
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="dendrogram/pytools.viz.dendrogram.base.html">
+       pytools.viz.dendrogram.base
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/>
+      <label for="toctree-checkbox-21">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="dendrogram/base/pytools.viz.dendrogram.base.DendrogramStyle.html">
+         pytools.viz.dendrogram.base.DendrogramStyle
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pytools.viz.distribution.html">
+     pytools.viz.distribution
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/>
+    <label for="toctree-checkbox-22">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="distribution/pytools.viz.distribution.ECDFDrawer.html">
+       pytools.viz.distribution.ECDFDrawer
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="distribution/pytools.viz.distribution.ECDFMatplotStyle.html">
+       pytools.viz.distribution.ECDFMatplotStyle
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="distribution/pytools.viz.distribution.base.html">
+       pytools.viz.distribution.base
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/>
+      <label for="toctree-checkbox-23">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="distribution/base/pytools.viz.distribution.base.ECDF.html">
+         pytools.viz.distribution.base.ECDF
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="distribution/base/pytools.viz.distribution.base.ECDFStyle.html">
+         pytools.viz.distribution.base.ECDFStyle
+        </a>
+       </li>
+       <li class="toctree-l4">
+        <a class="reference internal" href="distribution/base/pytools.viz.distribution.base.XYSeries.html">
+         pytools.viz.distribution.base.XYSeries
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pytools.viz.matrix.html">
+     pytools.viz.matrix
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/>
+    <label for="toctree-checkbox-24">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matrix/pytools.viz.matrix.MatrixDrawer.html">
+       pytools.viz.matrix.MatrixDrawer
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matrix/pytools.viz.matrix.MatrixMatplotStyle.html">
+       pytools.viz.matrix.MatrixMatplotStyle
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matrix/pytools.viz.matrix.MatrixReportStyle.html">
+       pytools.viz.matrix.MatrixReportStyle
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="matrix/pytools.viz.matrix.PercentageMatrixMatplotStyle.html">
+       pytools.viz.matrix.PercentageMatrixMatplotStyle
+      </a>
+     </li>
+     <li class="toctree-l3 has-children">
+      <a class="reference internal" href="matrix/pytools.viz.matrix.base.html">
+       pytools.viz.matrix.base
+      </a>
+      <input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/>
+      <label for="toctree-checkbox-25">
+       <i class="fas fa-chevron-down">
+       </i>
+      </label>
+      <ul>
+       <li class="toctree-l4">
+        <a class="reference internal" href="matrix/base/pytools.viz.matrix.base.MatrixStyle.html">
+         pytools.viz.matrix.base.MatrixStyle
+        </a>
+       </li>
+      </ul>
+     </li>
+    </ul>
+   </li>
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="pytools.viz.util.html">
+     pytools.viz.util
+    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/>
+    <label for="toctree-checkbox-26">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="util/pytools.viz.util.FittedText.html">
+       pytools.viz.util.FittedText
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="util/pytools.viz.util.PercentageFormatter.html">
+       pytools.viz.util.PercentageFormatter
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+
+<nav id="bd-toc-nav">
+    
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <section id="pytools-viz-matplotstyle">
+<h1>pytools.viz.MatplotStyle<a class="headerlink" href="#pytools-viz-matplotstyle" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.viz.</span></span><span class="sig-name descname"><span class="pre">MatplotStyle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_family</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class of drawing styles using <cite>matplotlib</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Bases</dt>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.viz.ColoredStyle.html#pytools.viz.ColoredStyle" title="pytools.viz.ColoredStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">ColoredStyle</span></code></a> [<a class="reference internal" href="color/pytools.viz.color.MatplotColorScheme.html#pytools.viz.color.MatplotColorScheme" title="pytools.viz.color.MatplotColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotColorScheme</span></code></a>]</p>
+</dd>
+<dt class="field-even">Metaclasses</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/abc.html#abc.ABCMeta" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+</dd>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]) – optional axes object to draw on; create a new figure if not specified</p></li>
+<li><p><strong>colors</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="color/pytools.viz.color.MatplotColorScheme.html#pytools.viz.color.MatplotColorScheme" title="pytools.viz.color.MatplotColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotColorScheme</span></code></a>]) – the color scheme to be used by this drawing style
+(default: <a class="reference internal" href="color/pytools.viz.color.FacetLightColorScheme.html#pytools.viz.color.FacetLightColorScheme" title="pytools.viz.color.FacetLightColorScheme"><code class="xref py py-class docutils literal notranslate"><span class="pre">FacetLightColorScheme()</span></code></a>)</p></li>
+<li><p><strong>font_family</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – name of one or more fonts to use for all text, in descending
+order of preference; defaults to a monospaced font if undefined, or if none
+of the given fonts is available</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Method summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.apply_color_scheme" title="pytools.viz.MatplotStyle.apply_color_scheme"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_color_scheme</span></code></a></p></td>
+<td><p>Apply this style's color scheme to the given <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.finalize_drawing" title="pytools.viz.MatplotStyle.finalize_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize_drawing</span></code></a></p></td>
+<td><p>Finalize the drawing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.get_default_style_name" title="pytools.viz.MatplotStyle.get_default_style_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_style_name</span></code></a></p></td>
+<td><p>Get the name of the default style associated with this style class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.get_named_styles" title="pytools.viz.MatplotStyle.get_named_styles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_named_styles</span></code></a></p></td>
+<td><p>Get a mapping of names to default instances of this style class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.get_renderer" title="pytools.viz.MatplotStyle.get_renderer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_renderer</span></code></a></p></td>
+<td><p>Get the renderer used by this style's <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object (see <a class="reference internal" href="#pytools.viz.MatplotStyle.ax" title="pytools.viz.MatplotStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.start_drawing" title="pytools.viz.MatplotStyle.start_drawing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_drawing</span></code></a></p></td>
+<td><p>Set the title of the matplot chart to the given title, and set the p and background color according to the color scheme.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attribute summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.ax" title="pytools.viz.MatplotStyle.ax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ax</span></code></a></p></td>
+<td><p>The matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object on which to draw.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.MatplotStyle.colors" title="pytools.viz.MatplotStyle.colors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">colors</span></code></a></p></td>
+<td><p>The color scheme used by this style.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Definitions</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.apply_color_scheme">
+<span class="sig-name descname"><span class="pre">apply_color_scheme</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle.apply_color_scheme"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle.apply_color_scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply this style’s color scheme to the given <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>.</p>
+<p>Style implementations can use this to apply the color scheme to sub-axes.
+Does not need to be applied to main axes, as this is already done in method
+<a class="reference internal" href="#pytools.viz.MatplotStyle.start_drawing" title="pytools.viz.MatplotStyle.start_drawing"><code class="xref py py-meth docutils literal notranslate"><span class="pre">start_drawing()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ax</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>) – the axes to apply the color scheme to</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.finalize_drawing">
+<span class="sig-name descname"><span class="pre">finalize_drawing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle.finalize_drawing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle.finalize_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finalize the drawing.</p>
+<p>Any additional drawer-specific arguments, obtained from
+method <a class="reference internal" href="pytools.viz.Drawer.html#pytools.viz.Drawer.get_style_kwargs" title="pytools.viz.Drawer.get_style_kwargs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Drawer.get_style_kwargs()</span></code></a>, will be passed
+as keyword arguments.</p>
+<p>Subclasses overriding this method should call <code class="docutils literal notranslate"><span class="pre">super().finalize_drawing()</span></code>
+<em>after</em> executing their own drawer-specific finalization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional drawer-specific arguments</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.get_default_style_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_style_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle.get_default_style_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle.get_default_style_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the default style associated with this style class.</p>
+<p>The default style is obtained by instantiating this style class without
+parameters.</p>
+<p>Common examples for default style names are <cite>matplot</cite> and <cite>text</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the name of the default style</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.get_named_styles">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_named_styles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.MatplotStyle.get_named_styles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a mapping of names to default instances of this style class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Callable" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[…, <a class="reference internal" href="#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a>]]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary mapping of names to default instances of this style class</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.get_renderer">
+<span class="sig-name descname"><span class="pre">get_renderer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle.get_renderer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle.get_renderer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the renderer used by this style’s <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object
+(see <a class="reference internal" href="#pytools.viz.MatplotStyle.ax" title="pytools.viz.MatplotStyle.ax"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ax</span></code></a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RendererBase</span></code></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the renderer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.start_drawing">
+<span class="sig-name descname"><span class="pre">start_drawing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/viz/_matplot.html#MatplotStyle.start_drawing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.MatplotStyle.start_drawing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the title of the matplot chart to the given title, and set the p
+and background color according to the color scheme.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the chart title</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – additional drawer-specific arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.ax">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">matplotlib.axes.Axes</span></em><a class="headerlink" href="#pytools.viz.MatplotStyle.ax" title="Permalink to this definition">¶</a></dt>
+<dd><p>The matplotlib <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code> object on which to draw.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.viz.MatplotStyle.colors">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">colors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T_ColorScheme</span></em><a class="headerlink" href="#pytools.viz.MatplotStyle.colors" title="Permalink to this definition">¶</a></dt>
+<dd><p>The color scheme used by this style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>~T_ColorScheme</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+    <a class='left-prev' id="prev-link" href="pytools.viz.DrawingStyle.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">pytools.viz.DrawingStyle</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="pytools.viz.TextStyle.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">pytools.viz.TextStyle</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+    <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, Boston Consulting Group (BCG).<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.4.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
