@@ -204,6 +204,9 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
     #: name of the special "return" parameter used in signatures and type annotations
     PARAM_RETURN = "return"
 
+    # defined in superclass, repeated here for Sphinx
+    element: FunctionType
+
     def list_actual_parameters(self, include_return: bool) -> List[str]:
         """
         Extract all parameter names from the function signature

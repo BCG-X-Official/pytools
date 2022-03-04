@@ -117,6 +117,9 @@ class BinaryOperator(Operator):
     COMMA: "BinaryOperator"  #: The ``,`` operator.
     NONE: "BinaryOperator"  #: The empty operator.
 
+    # defined in superclass, repeated here for Sphinx
+    symbol: str
+
     @property
     def is_unary(self) -> bool:
         """
@@ -141,6 +144,9 @@ class UnaryOperator(Operator):
     INVERT: "UnaryOperator"  #: The ``~`` prefix operator.
     NOT: "UnaryOperator"  #: The ``not`` prefix operator.
     LAMBDA: "UnaryOperator"  #: The ``lambda`` prefix operator.
+
+    #: the symbol representing this operator
+    symbol: str
 
     @property
     def is_unary(self) -> bool:

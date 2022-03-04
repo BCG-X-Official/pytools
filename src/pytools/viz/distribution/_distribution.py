@@ -108,6 +108,9 @@ class ECDFDrawer(Drawer[Union[Sequence[float], ArrayLike], ECDFStyle]):
     and :math:`m = 3` for far outliers.
     """
 
+    # defined in superclass, repeated here for Sphinx
+    style: ECDFStyle
+
     #: iqr multiple to determine outliers;
     #: if ``None``, then no outliers and far outliers are computed
     iqr_multiple: Optional[float]

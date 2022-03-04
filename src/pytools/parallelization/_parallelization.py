@@ -71,6 +71,20 @@ class ParallelizableMixin:
     Mix-in class that supports parallelizing one or more operations using joblib.
     """
 
+    #: Number of jobs to use in parallel; if ``None``, use joblib default.
+    n_jobs: Optional[int]
+
+    #: If ``True``, use threads in the parallel runs;
+    #: if ``False`` or ``None``, use multiprocessing.
+    shared_memory: Optional[bool]
+
+    #: Number of batches to pre-dispatch; if ``None``, use joblib default.
+    pre_dispatch: Optional[Union[str, int]]
+
+    #: Verbosity level used in the parallel computation;
+    #: if ``None``, use joblib default.
+    verbose: Optional[int]
+
     def __init__(
         self,
         *,
@@ -83,25 +97,16 @@ class ParallelizableMixin:
         :param n_jobs: number of jobs to use in parallel;
             if ``None``, use joblib default (default: ``None``)
         :param shared_memory: if ``True``, use threads in the parallel runs; if
-            ``False``, use multiprocessing (default: ``False``)
+            ``False`` or ``None``, use multiprocessing (default: ``None``)
         :param pre_dispatch: number of batches to pre-dispatch;
             if ``None``, use joblib default (default: ``None``)
         :param verbose: verbosity level used in the parallel computation;
             if ``None``, use joblib default (default: ``None``)
         """
         super().__init__()
-        #: Number of jobs to use in parallel; if ``None``, use joblib default.
         self.n_jobs = n_jobs
-
-        #: If ``True``, use threads in the parallel runs;
-        #: if ``False``, use multiprocessing.
         self.shared_memory = shared_memory
-
-        #: Number of batches to pre-dispatch; if ``None``, use joblib default.
         self.pre_dispatch = pre_dispatch
-
-        #: Verbosity level used in the parallel computation;
-        #: if ``None``, use joblib default.
         self.verbose = verbose
 
         self._parallel_kwargs = {
@@ -211,6 +216,18 @@ class JobRunner(ParallelizableMixin):
     """
     Runs job queues in parallel and aggregates results.
     """
+
+    # defined in superclass, repeated here for Sphinx
+    n_jobs: Optional[int]
+
+    # defined in superclass, repeated here for Sphinx
+    shared_memory: Optional[bool]
+
+    # defined in superclass, repeated here for Sphinx
+    pre_dispatch: Optional[Union[str, int]]
+
+    # defined in superclass, repeated here for Sphinx
+    verbose: Optional[int]
 
     @classmethod
     def from_parallelizable(
@@ -331,6 +348,9 @@ class SimpleQueue(
     A simple queue, running a given list of jobs.
     """
 
+    # defined in superclass, repeated here for Sphinx
+    lock: LockType
+
     #: The jobs run by this queue.
     _jobs: Tuple[Job[T_Job_Result], ...]
 
@@ -355,6 +375,9 @@ class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
     Runs all jobs in a given list of compatible queues and returns their results as a
     flat list.
     """
+
+    # defined in superclass, repeated here for Sphinx
+    lock: LockType
 
     #: The queues run by this queue.
     queues: Tuple[JobQueue[T_Job_Result, List[T_Job_Result]], ...]
