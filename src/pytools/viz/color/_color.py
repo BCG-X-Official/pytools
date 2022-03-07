@@ -165,7 +165,7 @@ class ColorScheme(HasExpressionRepr):
         """
         The primary fill color.
 
-        Defaults to the halfway point between the p and background color
+        Defaults to the halfway point between the foreground and background color
         if not defined explicitly.
         """
         return self._colors.get(ColorScheme._COLOR_FILL_1) or RgbColor(
