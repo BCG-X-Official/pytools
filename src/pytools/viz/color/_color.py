@@ -1,7 +1,6 @@
 """
 Core implementation of :mod:`pytools.viz.color`
 """
-
 from __future__ import annotations
 
 import logging
@@ -119,13 +118,13 @@ class ColorScheme(HasExpressionRepr):
     """
 
     #: The default color scheme.
-    DEFAULT: "ColorScheme"
+    DEFAULT: ColorScheme
 
     #: The default light color scheme.
-    DEFAULT_LIGHT: "FacetLightColorScheme"
+    DEFAULT_LIGHT: FacetLightColorScheme
 
     #: The default dark color scheme.
-    DEFAULT_DARK: "FacetDarkColorScheme"
+    DEFAULT_DARK: FacetDarkColorScheme
 
     def __init__(
         self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
