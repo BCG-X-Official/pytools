@@ -36,6 +36,13 @@ __all__ = [
 
 T_Type = TypeVar("T_Type", bound=Union[type, FunctionType])
 
+
+#
+# Type constants
+#
+NoneType = type(None)
+
+
 #
 # Ensure all symbols introduced below are included in __all__
 #
@@ -224,11 +231,14 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
             if i > 0 or parameter not in {"self", "cls"}
         ]
 
-        if include_return and not (
-            signature.return_annotation is signature.empty
-            or signature.return_annotation in [None, "None"]
-        ):
-            actual_parameters.append(FunctionDefinition.PARAM_RETURN)
+        if include_return:
+            return_annotation = signature.return_annotation
+            if not (
+                return_annotation is signature.empty
+                or return_annotation is None
+                or return_annotation is NoneType
+            ):
+                actual_parameters.append(FunctionDefinition.PARAM_RETURN)
 
         return actual_parameters
 

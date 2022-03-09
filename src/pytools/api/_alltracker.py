@@ -4,13 +4,11 @@ Core implementation of :mod:`pytools.api`.
 
 import logging
 import re
-from collections import deque
 from types import FunctionType
 from typing import (
     Any,
     Callable,
     Collection,
-    Deque,
     Dict,
     Iterable,
     List,
@@ -18,6 +16,7 @@ from typing import (
     Set,
     TypeVar,
     Union,
+    get_type_hints,
 )
 
 log = logging.getLogger(__name__)
@@ -304,67 +303,27 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
-    def _parse_cls_with_generic_arguments(cls: str) -> type:
-        def _parse(cls_tokens: Deque[str]) -> type:
-            real_cls = eval(cls_tokens.popleft(), globals_)
-            if cls_tokens and cls_tokens[0] not in ",]":
-                real_args: List[type] = list()
-                sep = cls_tokens.popleft()
-                if sep != "[":
-                    raise TypeError(
-                        f"invalid separator for generic type arguments: {sep!r}"
-                    )
-                while True:
-                    real_args.append(_parse(cls_tokens))
-                    sep = cls_tokens.popleft()
-                    if sep == "]":
-                        break
-                    elif sep != ",":
-                        raise TypeError(
-                            f"invalid separator for generic type arguments: {sep!r}"
-                        )
-
-                try:
-                    return real_cls.__class_getitem__(tuple(real_args))
-                except AttributeError:
-                    return real_cls.__getitem__(
-                        tuple(real_args) if len(real_args) > 1 else real_args[0]
-                    )
-            else:
-                return real_cls
-
-        try:
-            return _parse(
-                deque(
-                    token
-                    for token in map(str.strip, re.split(r"([,\[\]])", cls))
-                    if token
-                )
-            )
-        except TypeError as e:
-            raise TypeError(
-                f"invalid type syntax in forward reference: {cls} {e}"
-            ) from e
-
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()
 
-    def _update(_obj: Any) -> None:
+    def _update(_obj: Any, local_ns: Optional[Dict[str, Any]] = None) -> None:
         if isinstance(_obj, type):
             if _obj not in visited:
                 visited.add(_obj)
+                local_ns = _obj.__dict__
                 for member in vars(_obj).values():
-                    _update(member)
-                _update_annotations(getattr(_obj, "__annotations__", None))
+                    _update(member, local_ns=local_ns)
+                _update_annotations(_obj, local_ns)
 
         elif isinstance(_obj, FunctionType):
-            _update_annotations(_obj.__annotations__)
+            _update_annotations(_obj, local_ns)
 
-    def _update_annotations(annotations: Optional[Dict[str, Any]]):
+    def _update_annotations(_obj: Any, local_ns: Optional[Dict[str, Any]]):
+        annotations = get_type_hints(
+            _obj, globalns=getattr(_obj, "__globals__", globals_), localns=local_ns
+        )
         if annotations:
-            for arg, cls in annotations.items():
-                if isinstance(cls, str):
-                    annotations[arg] = _parse_cls_with_generic_arguments(cls)
+            _obj.__annotations__ = annotations
 
     _update(obj)
 
