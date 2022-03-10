@@ -1,0 +1,37 @@
+pytools.viz.TextStyle
+=====================
+
+.. currentmodule:: pytools.viz
+
+.. autoclass:: TextStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TextStyle.finalize_drawing
+      ~TextStyle.get_default_style_name
+      ~TextStyle.get_named_styles
+      ~TextStyle.start_drawing
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~TextStyle.out
+      ~TextStyle.width
+   
+   
+
+   .. rubric:: Definitions
