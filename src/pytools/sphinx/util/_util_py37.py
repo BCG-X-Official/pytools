@@ -1,6 +1,7 @@
 """
 Implementation of sphinx module.
 """
+import collections.abc
 import importlib
 import logging
 from inspect import getattr_static
@@ -17,6 +18,7 @@ from typing import (
     get_type_hints,
 )
 
+# todo: switch from typing_inspect over to typing once typing implements it completely
 import typing_inspect
 
 from ...api import AllTracker, get_generic_bases, inheritdoc
@@ -250,7 +252,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 
         def _substitute_type_vars_in_type_expression(
             type_expression: Union[Type, TypeVar]
-        ) -> Union[type, TypeVar]:
+        ) -> Union[Type, TypeVar]:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 # resolve type variables defined by Generic[] in the
@@ -260,6 +262,14 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                 # dynamically resolve type variables inside nested type expressions
                 args = typing_inspect.get_args(type_expression)
                 if args:
+                    # unpack callable args, since copy_with() expects a flat tuple
+                    # (arg_1, arg_2, ..., arg_n, return)
+                    # instead of ([arg_1, arg_2, ..., arg_n], return)
+                    if typing_inspect.get_origin(
+                        type_expression
+                    ) is collections.abc.Callable and isinstance(args[0], list):
+                        args = (*args[0], *args[1:])
+
                     # noinspection PyUnresolvedReferences
                     return type_expression.copy_with(
                         tuple(map(_substitute_type_vars_in_type_expression, args))
@@ -295,7 +305,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         except NameError:
             # we could not find the container of the given method in the method's global
             # namespace - this is likely an inherited method where the parent class
-            #
+            # sits in a different module
             log.warning(
                 f"failed to find container {method.__module__}.{method_container!r} "
                 f"of method {method.__name__!r}"
