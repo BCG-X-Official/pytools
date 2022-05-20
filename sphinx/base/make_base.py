@@ -2,6 +2,8 @@
 """
 Sphinx documentation build script
 """
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -11,7 +13,7 @@ import sys
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from tempfile import TemporaryDirectory
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Type, TypeVar
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 from weakref import ref
 
 from make_util import get_package_version as _get_package_version
@@ -51,10 +53,6 @@ DIR_PACKAGE_ROOT = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src", PROJECT_NA
 # noinspection SpellCheckingInspection
 ENV_PYTHON_PATH = "PYTHONPATH"
 
-# regex pattern to match the version declaration in a top-level __init__.py
-
-T = TypeVar("T")
-
 
 class CommandMeta(ABCMeta):
     """
@@ -67,7 +65,7 @@ class CommandMeta(ABCMeta):
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None
 
-    def __call__(cls: Type[T], *args, **kwargs: Any) -> T:
+    def __call__(cls, *args, **kwargs: Any) -> CommandMeta:
         """
         Return the existing command instance, or create a new one if none exists yet.
 
@@ -75,8 +73,6 @@ class CommandMeta(ABCMeta):
         """
         if args or kwargs:
             raise ValueError("command classes may not take any arguments")
-
-        cls: CommandMeta
 
         if cls.__instance_ref:
             obj = cls.__instance_ref()
@@ -111,7 +107,7 @@ class Command(metaclass=CommandMeta):
             dependencies_inherited = dependency.get_dependencies()
             if self in dependencies_inherited:
                 raise ValueError(
-                    f"circular dependency: {dependency.name} " f"depends on {self.name}"
+                    f"circular dependency: {dependency.name} depends on {self.name}"
                 )
             dependencies_extended.extend(
                 dependency
