@@ -258,7 +258,7 @@ class Matrix(HasExpressionRepr):
         if (
             isinstance(size, tuple)
             and len(size) == 2
-            and all(map(lambda x: x is None or isinstance(x, (int, float)), size))
+            and all((x is None or isinstance(x, (int, float))) for x in size)
         ):
             rows, columns = size
         elif isinstance(size, (int, float)):

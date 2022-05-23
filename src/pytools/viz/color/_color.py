@@ -316,7 +316,7 @@ ColorScheme._SUPPORTED_COLORS = {
 # noinspection PyProtectedMember
 ColorScheme.__init__.__doc__ = ColorScheme.__init__.__doc__.replace(  # type: ignore
     "%COLORS%",
-    ", ".join(sorted(map(lambda code: f"``{code}``", ColorScheme._SUPPORTED_COLORS))),
+    ", ".join(sorted(f"``{code}``" for code in ColorScheme._SUPPORTED_COLORS)),
 )
 
 

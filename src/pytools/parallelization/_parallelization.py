@@ -359,7 +359,9 @@ class SimpleQueue(
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(jobs, element_type=Job, arg_name="jobs")
+        self._jobs = to_tuple(
+            jobs, element_type=cast(Type[Job[T_Job_Result]], Job), arg_name="jobs"
+        )
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """[see superclass]"""
@@ -389,7 +391,13 @@ class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
         :param queues: queues to be run by this queue in the given order
         """
         super().__init__()
-        self.queues = to_tuple(queues)
+        self.queues = to_tuple(
+            queues,
+            element_type=cast(
+                Type[JobQueue[T_Job_Result, List[T_Job_Result]]], JobQueue
+            ),
+            arg_name="queues",
+        )
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
         """[see superclass]"""
