@@ -310,7 +310,7 @@ def update_forward_references(
         if isinstance(_obj, type):
             if _obj not in visited:
                 visited.add(_obj)
-                local_ns = _obj.__dict__
+                local_ns = dict(_obj.__dict__)
                 for member in vars(_obj).values():
                     _update(member, local_ns=local_ns)
                 _update_annotations(_obj, local_ns)

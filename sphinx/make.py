@@ -21,9 +21,9 @@ def make() -> None:
         ),
     )
     # noinspection PyUnresolvedReferences
-    from make_base import make
+    from make_base import make as make_
 
-    make(modules=["pytools"])
+    make_(modules=["pytools"])
 
 
 if __name__ == "__main__":
