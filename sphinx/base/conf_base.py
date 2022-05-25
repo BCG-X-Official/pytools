@@ -126,7 +126,7 @@ nbsphinx_allow_errors = True
 intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "pd": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "matplotlib": ("https://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "np": ("https://numpy.org/doc/stable", None),
     "python": ("https://docs.python.org/3.7", None),
