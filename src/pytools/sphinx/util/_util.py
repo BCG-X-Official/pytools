@@ -115,111 +115,78 @@ class AddInheritance(AutodocProcessDocstring):
     ) -> None:
         """[see superclass]"""
 
-        if what == "class":
+        if what != "class":
+            return
 
-            # add bases and generics documentation to class
+        # add bases and generics documentation to class
 
-            # generate the RST for bases and generics
-            class_ = cast(type, obj)
+        # generate the RST for bases and generics
+        class_ = cast(type, obj)
 
-            _current_lines = "\n".join(lines)
-            try:
-                _seen_lines = self._visited[class_]
-                if _current_lines != _seen_lines:
-                    # we are seeing another part of the docstring, probably in __init__
-                    # vs. the class docstring;
-                    # ignore this to prevent adding the same content at two places
-                    return
-            except KeyError:
-                # we are seeing a class for the first time; store its content so we can
-                # detect and allow repeat visits
-                self._visited[class_] = _current_lines
+        _current_lines = "\n".join(lines)
+        try:
+            _seen_lines = self._visited[class_]
+            if _current_lines != _seen_lines:
+                # we are seeing another part of the docstring, probably in __init__
+                # vs. the class docstring;
+                # ignore this to prevent adding the same content at two places
+                return
+        except KeyError:
+            # we are seeing a class for the first time; store its content so we can
+            # detect and allow repeat visits
+            self._visited[class_] = _current_lines
 
-            bases_with_origin = [
-                (base, typing_inspect.get_origin(base) or base)
-                for base in set(self._get_bases(class_, include_subclass=False))
-            ]
-            bases = [
-                base
-                for base, origin in bases_with_origin
-                if not any(
-                    origin is not other and issubclass(other, origin)
-                    for _, other in bases_with_origin
-                )
-            ]
+        bases_lines: List[str] = [""]
 
-            bases_lines: List[str] = [""]
-            if bases:
-                base_names = (self._class_name_with_generics(base) for base in bases)
-                bases_lines.append(f'{AddInheritance.F_BASES} {", ".join(base_names)}')
+        bases: List[type] = _get_minimal_bases(class_)
+        if bases:
+            base_names = (self._class_name_with_generics(base) for base in bases)
+            bases_lines.append(f'{AddInheritance.F_BASES} {", ".join(base_names)}')
 
-            generics: List[str] = self._get_generics(class_)
-            if generics:
-                bases_lines.append(f'{AddInheritance.F_GENERICS} {", ".join(generics)}')
+        generics: List[str] = self._get_generics(class_)
+        if generics:
+            bases_lines.append(f'{AddInheritance.F_GENERICS} {", ".join(generics)}')
 
-            metaclasses: List[str] = self._get_metaclasses(class_)
-            if metaclasses:
-                bases_lines.append(
-                    f'{AddInheritance.F_METACLASSES} {", ".join(metaclasses)}'
-                )
+        metaclasses: List[str] = self._get_metaclasses(class_)
+        if metaclasses:
+            bases_lines.append(
+                f'{AddInheritance.F_METACLASSES} {", ".join(metaclasses)}'
+            )
 
-            bases_lines.append("")
+        bases_lines.append("")
 
-            # insert this after the intro text, and before class parameters
+        # insert this after the intro text, and before class parameters
 
-            def _insert_position() -> int:
-                for n, line in enumerate(lines):
-                    if re.match(r"\s*:\w+(?:\s+\w+)*:", line) and (
-                        n == 0 or not lines[n - 1].strip()
-                    ):
-                        return n
-                return len(lines)
-
-            if len(bases_lines) > 0:
-                pos = _insert_position()
-                lines[pos:pos] = bases_lines
+        self._insert_bases_lines(bases_lines, lines)
 
     @staticmethod
-    def _class_attr(cls: type, attr: str, default: Callable[[], str]) -> str:
-        def _get_attr(_cls: type) -> str:
-            try:
-                # we try to get the class attribute
-                return getattr(_cls, attr)
-            except AttributeError:
-                # if the attribute is not defined, this class is likely to have generic
-                # arguments, so we re-try recursively with the origin (unless the origin
-                # is the class itself to avoid infinite recursion)
-                cls_origin = typing_inspect.get_origin(cls)
-                if cls_origin != _cls:
-                    return _get_attr(_cls=cls_origin)
-                else:
-                    # as a last resort, we create the default value
-                    return default()
+    def _insert_bases_lines(bases_lines: List[str], lines: List[str]) -> None:
+        def _insert_position() -> int:
+            for n, line in enumerate(lines):
+                if re.match(r"\s*:\w+(?:\s+\w+)*:", line) and (
+                    n == 0 or not lines[n - 1].strip()
+                ):
+                    return n
+            return len(lines)
 
-        return _get_attr(_cls=cls)
+        if len(bases_lines) > 0:
+            pos = _insert_position()
+            lines[pos:pos] = bases_lines
 
     def _class_module(self, cls: type) -> str:
-        module_name = AddInheritance._class_attr(
+        module_name = _class_attr(
             cls=cls,
             attr="__publicmodule__",
-            default=lambda: AddInheritance._class_attr(
-                cls=cls, attr="__module__", default=lambda: ""
-            ),
+            default=lambda: _class_attr(cls=cls, attr="__module__", default=lambda: ""),
         )
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    @staticmethod
-    def _class_name(cls: type) -> str:
-        return AddInheritance._class_attr(
-            cls=cls, attr="__qualname__", default=lambda: str(cls)
-        )
-
     def _full_name(self, cls: type) -> str:
         # get the full name of the class, including the module prefix
-        return f"{self._class_module(cls=cls)}.{self._class_name(cls=cls)}"
+        return f"{self._class_module(cls=cls)}.{_class_name(cls=cls)}"
 
     def _class_name_with_generics(self, cls: Any) -> str:
         def _class_tag(_name: Any) -> str:
@@ -265,52 +232,6 @@ class AddInheritance(AutodocProcessDocstring):
         else:
             return str(cls)
 
-    def _get_bases(
-        self, subclass: type, include_subclass: bool
-    ) -> Generator[type, None, None]:
-        # get the names of the immediate base classes of arg _subclass
-
-        visited_classes: Set[type] = set()
-
-        def _inner(
-            _subclass: type, _include_subclass: bool
-        ) -> Generator[type, None, None]:
-            # ensure we have the non-generic origin class
-            _subclass = typing_inspect.get_origin(_subclass) or _subclass
-
-            if _subclass in visited_classes:
-                return
-            visited_classes.add(_subclass)
-
-            # get the base classes; try generic bases first then fall back to regular
-            # bases
-            base_classes: Tuple[type, ...] = (
-                get_generic_bases(_subclass) or _subclass.__bases__
-            )
-
-            # include the _subclass itself in the list of bases, if requested
-            if _include_subclass:
-                # noinspection PyTypeChecker
-                base_classes = (_subclass, *base_classes)
-
-            # get the names of all base classes; go up the class hierarchy in case of
-            # hidden classes
-            for base in base_classes:
-
-                # exclude object and Generic types
-                if base is object or typing_inspect.get_origin(base) is Generic:
-                    continue
-
-                # exclude protected classes
-                elif self._class_name(base).startswith("_"):
-                    yield from _inner(base, _include_subclass=False)
-
-                # all other classes will be listed as bases
-                else:
-                    yield base
-
-        return _inner(subclass, _include_subclass=include_subclass)
-
     def _get_generics(self, child_class: type) -> List[str]:
         return list(
             itertools.chain.from_iterable(
@@ -326,7 +247,7 @@ class AddInheritance(AutodocProcessDocstring):
     def _get_metaclasses(self, class_: type) -> List[str]:
         return [
             self._class_name_with_generics(meta_)
-            for meta_ in self._get_bases(type(class_), include_subclass=True)
+            for meta_ in _get_bases(type(class_), include_subclass=True)
             if meta_ is not type
         ]
 
@@ -630,6 +551,92 @@ class Replace3rdPartyDoc(AutodocProcessDocstring):
     def __root_package(name: str) -> str:
         root_package_match = Replace3rdPartyDoc.__RE_ROOT_PACKAGE.match(name)
         return root_package_match[0] if root_package_match else ""
+
+
+#
+# auxiliary functions
+#
+
+
+def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, None]:
+    # get the names of the immediate base classes of arg _subclass
+
+    visited_classes: Set[type] = set()
+
+    def _inner(_subclass: type, _include_subclass: bool) -> Generator[type, None, None]:
+        # ensure we have the non-generic origin class
+        _subclass = typing_inspect.get_origin(_subclass) or _subclass
+
+        if _subclass in visited_classes:
+            return
+        visited_classes.add(_subclass)
+
+        # get the base classes; try generic bases first then fall back to regular
+        # bases
+        base_classes: Tuple[type, ...] = (
+            get_generic_bases(_subclass) or _subclass.__bases__
+        )
+
+        # include the _subclass itself in the list of bases, if requested
+        if _include_subclass:
+            # noinspection PyTypeChecker
+            base_classes = (_subclass, *base_classes)
+
+        # get the names of all base classes; go up the class hierarchy in case of
+        # hidden classes
+        for base in base_classes:
+
+            # exclude object and Generic types
+            if base is object or typing_inspect.get_origin(base) is Generic:
+                continue
+
+            # exclude protected classes
+            elif _class_name(base).startswith("_"):
+                yield from _inner(base, _include_subclass=False)
+
+            # all other classes will be listed as bases
+            else:
+                yield base
+
+    return _inner(subclass, _include_subclass=include_subclass)
+
+
+def _get_minimal_bases(class_: type) -> List[type]:
+    bases_with_origin = [
+        (base, typing_inspect.get_origin(base) or base)
+        for base in set(_get_bases(class_, include_subclass=False))
+    ]
+    return [
+        base
+        for base, origin in bases_with_origin
+        if not any(
+            origin is not other and issubclass(other, origin)
+            for _, other in bases_with_origin
+        )
+    ]
+
+
+def _class_name(cls: type) -> str:
+    return _class_attr(cls=cls, attr="__qualname__", default=lambda: str(cls))
+
+
+def _class_attr(cls: type, attr: str, default: Callable[[], str]) -> str:
+    def _get_attr(_cls: type) -> str:
+        try:
+            # we try to get the class attribute
+            return getattr(_cls, attr)
+        except AttributeError:
+            # if the attribute is not defined, this class is likely to have generic
+            # arguments, so we re-try recursively with the origin (unless the origin
+            # is the class itself to avoid infinite recursion)
+            cls_origin = typing_inspect.get_origin(cls)
+            if cls_origin != _cls:
+                return _get_attr(_cls=cls_origin)
+            else:
+                # as a last resort, we create the default value
+                return default()
+
+    return _get_attr(_cls=cls)
 
 
 #
