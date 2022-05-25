@@ -39,12 +39,10 @@ try:
     # import sphinx classes if available ...
     from docutils.nodes import Element, Text
     from sphinx.application import Sphinx
-    from sphinx.util.docutils import Node
 except ImportError:
     # ... otherwise mock them up
     Sphinx = type  # type: ignore
     Element = type  # type: ignore
-    Node = type  # type: ignore
     Text = type  # type: ignore
 
 log = logging.getLogger(__name__)
@@ -411,17 +409,16 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
 
     # noinspection SpellCheckingInspection
     def process(
-        self, app: Sphinx, domain: str, objtype: str, contentnode: Node
+        self, app: Sphinx, domain: str, objtype: str, contentnode: Element
     ) -> None:
         """[see superclass]"""
         if domain == "py" and objtype == "class":
             self._process_children(contentnode)
 
-    def _process_children(self, parent_node: Node):
+    def _process_children(self, parent_node: Element):
         self._process_child(parent_node)
         try:
-            # noinspection PyUnresolvedReferences
-            children: Iterable[Node] = parent_node.children
+            children: Iterable[Element] = parent_node.children
         except AttributeError:
             # parent node is not an Element instance
             return
