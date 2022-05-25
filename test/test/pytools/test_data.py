@@ -10,18 +10,26 @@ from pandas.testing import assert_frame_equal
 
 from pytools.data import Matrix
 
+MSG_GOT_A_3_TUPLE = r"got a 3-tuple"
+MSG_GOT_A_3D_ARRAY = r"got a 3d array"
+MSG_GOT_A_STR = r"got a str"
+
 
 def test_matrix_validation() -> None:
-    with pytest.raises(ValueError, match="got a 3d array"):
+
+    with pytest.raises(ValueError, match=MSG_GOT_A_3D_ARRAY):
         Matrix(np.arange(20).reshape((4, 5, 1)))
 
-    with pytest.raises(TypeError, match="got a str"):
+    with pytest.raises(TypeError, match=MSG_GOT_A_STR):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), names="invalid")
+        Matrix(np.arange(20).reshape((4, 5)), names="invalid")  # type: ignore
 
-    with pytest.raises(ValueError, match="got a 3-tuple"):
+    with pytest.raises(ValueError, match=MSG_GOT_A_3_TUPLE):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), names=("invalid", "invalid", "invalid"))
+        Matrix(
+            np.arange(20).reshape((4, 5)),
+            names=("invalid", "invalid", "invalid"),  # type: ignore
+        )
 
     with pytest.raises(
         ValueError,
@@ -29,15 +37,15 @@ def test_matrix_validation() -> None:
     ):
         Matrix(np.arange(20).reshape((4, 5)), names=("invalid", "invalid"))
 
-    with pytest.raises(ValueError, match="got a 3-tuple"):
+    with pytest.raises(ValueError, match=MSG_GOT_A_3_TUPLE):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), weights=(1, 2, 3))
+        Matrix(np.arange(20).reshape((4, 5)), weights=(1, 2, 3))  # type: ignore
 
     with pytest.raises(
         ValueError, match=r"arg weights\[0\] must be a 1d array, but has shape \(\)"
     ):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), weights=(1, [2, 4]))
+        Matrix(np.arange(20).reshape((4, 5)), weights=(1, [2, 4]))  # type: ignore
 
     with pytest.raises(
         ValueError,
@@ -58,19 +66,19 @@ def test_matrix_validation() -> None:
 
     with pytest.raises(
         ValueError,
-        match="got a 3-tuple",
+        match=MSG_GOT_A_3_TUPLE,
     ):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), name_labels=(1, 2, 3))
+        Matrix(np.arange(20).reshape((4, 5)), name_labels=(1, 2, 3))  # type: ignore
 
     with pytest.raises(
         TypeError,
         match=(
-            "^arg value_label requires an instance of str or NoneType but got a float$"
+            r"^arg value_label requires an instance of str or NoneType but got a float$"
         ),
     ):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), value_label=1.0)
+        Matrix(np.arange(20).reshape((4, 5)), value_label=1.0)  # type: ignore
 
     with pytest.raises(
         TypeError,
@@ -79,7 +87,7 @@ def test_matrix_validation() -> None:
         ),
     ):
         # noinspection PyTypeChecker
-        Matrix(np.arange(20).reshape((4, 5)), weight_label=1)
+        Matrix(np.arange(20).reshape((4, 5)), weight_label=1)  # type: ignore
 
 
 def test_matrix_from_frame() -> None:
@@ -171,21 +179,21 @@ def test_matrix_resize() -> None:
         match=r"arg size=\(1, 2, 3\) must be a number or a pair of numbers",
     ):
         # noinspection PyTypeChecker
-        m.resize((1, 2, 3))
+        m.resize((1, 2, 3))  # type: ignore
 
     with pytest.raises(
         ValueError,
         match=r"arg size=\(1, '5'\) must be a number or a pair of numbers",
     ):
         # noinspection PyTypeChecker
-        m.resize((1, "5"))
+        m.resize((1, "5"))  # type: ignore
 
     with pytest.raises(
         ValueError,
         match=r"arg size='5' must be a number or a pair of numbers",
     ):
         # noinspection PyTypeChecker
-        m.resize("5")
+        m.resize("5")  # type: ignore
 
     with pytest.raises(
         ValueError,
