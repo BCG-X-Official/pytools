@@ -83,9 +83,9 @@ class Matrix(HasExpressionRepr):
         """
         :param values: the values of the matrix cells, as a 2d array
         :param names: the names of the rows and columns as a pair of iterables
-            (each of which may me ``None`` if not specified)
+            (each of which may be ``None`` if not applicable)
         :param weights: the weights of the rows and columns as a pair of iterables
-            (each of which may me ``None`` if not specified)
+            (each of which may be ``None`` if not applicable)
         :param value_label: the label for the value axis
         :param name_labels: the labels for the row and column axes as a pair of strings
         :param weight_label: the label for the weight axis
