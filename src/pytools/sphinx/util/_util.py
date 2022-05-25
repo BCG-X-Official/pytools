@@ -97,9 +97,12 @@ class AddInheritance(AutodocProcessDocstring):
         #: Dict mapping visited classes to their unprocessed docstrings.
         self._visited: Dict[type, str] = {}
 
-    F_BASES = ":bases:"  #: Field directive for base classes.
-    F_GENERICS = ":generic types:"  #: Field directive for generic types.
-    F_METACLASSES = ":metaclasses:"  #: Field directive for metaclasses.
+    #: Field directive for base classes.
+    F_BASES = ":bases:"
+    #: Field directive for generic types.
+    F_GENERICS = ":generic types:"
+    #: Field directive for metaclasses.
+    F_METACLASSES = ":metaclasses:"
 
     def process(
         self,
@@ -391,9 +394,12 @@ class CollapseModulePaths(metaclass=ABCMeta):
     @staticmethod
     def _collapse_private_module_paths(line: str) -> str:
         for (
-            public_module_path,  # e.g., "pytools.expression"
-            private_module_path,  # e.g., "._expression"
-            item_name,  # e.g., "Expression"
+            # e.g., "pytools.expression"
+            public_module_path,
+            # e.g., "._expression"
+            private_module_path,
+            # e.g., "Expression"
+            item_name,
         ) in CollapseModulePaths.__RE_PRIVATE_MODULE_AND_ITEM.findall(line):
             module_path = public_module_path + private_module_path
             collapsed_path = public_module_path
@@ -493,6 +499,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
     def _process_children(self, parent_node: Node):
         self._process_child(parent_node)
         try:
+            # noinspection PyUnresolvedReferences
             children: Iterable[Node] = parent_node.children
         except AttributeError:
             # parent node is not an Element instance
@@ -538,10 +545,9 @@ class SkipIndirectImports(AutodocSkipMember):
         options: object,
     ) -> Optional[bool]:
         """[see superclass]"""
-        if not skip:
-            if what == "module" and name.startswith("_"):
-                log.info(f"skipping: {what}: {name}")
-                return False
+        if not skip and what == "module" and name.startswith("_"):
+            log.info(f"skipping: {what}: {name}")
+            return False
 
         return None
 
