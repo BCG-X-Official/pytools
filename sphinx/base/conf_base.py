@@ -162,6 +162,7 @@ exclude_patterns = ["*/.ipynb_checkpoints/*"]
 set_type_checking_flag = False
 typehints_fully_qualified = False
 always_document_param_types = False
+autodoc_typehints_format = "short"
 
 # -- Options for Math output -----------------------------------------------------------
 
