@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Generic, MutableMapping, TypeVar
 from weakref import WeakValueDictionary
 
 from ...api import AllTracker, inheritdoc
@@ -70,7 +70,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 class _IdentifierMeta(ABCMeta):
 
-    _identifiers: Dict[str, Id] = WeakValueDictionary()  # type: ignore
+    _identifiers: MutableMapping[str, Id] = WeakValueDictionary()  # type: ignore
 
     def __getattr__(self, name: str) -> Id:
         if name.startswith("_") or name.endswith("_") or name == "Id":
