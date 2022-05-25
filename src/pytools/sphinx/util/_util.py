@@ -37,12 +37,13 @@ from .. import (
 
 try:
     # import sphinx classes if available ...
-    from docutils.nodes import Text
+    from docutils.nodes import Element, Text
     from sphinx.application import Sphinx
     from sphinx.util.docutils import Node
 except ImportError:
     # ... otherwise mock them up
     Sphinx = type  # type: ignore
+    Element = type  # type: ignore
     Node = type  # type: ignore
     Text = type  # type: ignore
 
@@ -499,7 +500,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
         for child_node in children:
             self._process_children(child_node)
 
-    def _process_child(self, content_node: Node):
+    def _process_child(self, content_node: Element):
         if type(content_node).__name__ == "pending_xref" and tuple(
             type(c).__name__ for c in content_node.children
         ) == ("Text",):

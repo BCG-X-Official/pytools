@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import logging
 from copy import copy
-from numbers import Number
 from typing import Any, Iterable, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -23,6 +22,12 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = ["Matrix"]
+
+#
+# Type Aliases
+#
+
+Number = Union[float, int]
 
 
 #

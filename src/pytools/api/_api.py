@@ -18,6 +18,7 @@ from typing import (
     TypeVar,
     Union,
     cast,
+    overload,
 )
 
 import numpy as np
@@ -50,6 +51,7 @@ __all__ = [
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", list, set, tuple)
 T_Callable = TypeVar("T_Callable", bound=Callable)
+T_Callable_Unbound = TypeVar("T_Callable_Unbound", bound=Callable)
 T_Iterable = TypeVar("T_Iterable", bound=Iterable)
 T_Type = TypeVar("T_Type", bound=type)
 
@@ -98,6 +100,30 @@ def is_list_like(obj: Any) -> bool:
     )
 
 
+@overload
+def to_tuple(
+    values: Iterable[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Tuple[T, ...]:
+    """see below for implementation"""
+    pass
+
+
+@overload
+def to_tuple(
+    values: Optional[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Tuple[T, ...]:
+    """see below for implementation"""
+    pass
+
+
 def to_tuple(
     values: Union[Iterable[T], T, None],
     *,
@@ -135,6 +161,30 @@ def to_tuple(
     )
 
 
+@overload
+def to_list(
+    values: Iterable[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> List[T]:
+    """see below for implementation"""
+    pass
+
+
+@overload
+def to_list(
+    values: Optional[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> List[T]:
+    """see below for implementation"""
+    pass
+
+
 @subsdoc(pattern="tuple", replacement="list", using=to_tuple)
 def to_list(
     values: Union[Iterable[T], T, None],
@@ -155,6 +205,30 @@ def to_list(
     )
 
 
+@overload
+def to_set(
+    values: Iterable[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Set[T]:
+    """see below for implementation"""
+    pass
+
+
+@overload
+def to_set(
+    values: Optional[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Set[T]:
+    """see below for implementation"""
+    pass
+
+
 @subsdoc(pattern="tuple", replacement="set", using=to_tuple)
 def to_set(
     values: Union[Iterable[T], T, None],
@@ -173,6 +247,30 @@ def to_set(
         optional=optional,
         arg_name=arg_name,
     )
+
+
+@overload
+def to_collection(
+    values: Iterable[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Collection[T]:
+    """see below for implementation"""
+    pass
+
+
+@overload
+def to_collection(
+    values: Optional[T],
+    *,
+    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    optional: bool = False,
+    arg_name: Optional[str] = None,
+) -> Collection[T]:
+    """see below for implementation"""
+    pass
 
 
 @subsdoc(pattern="iterable other than a collection", replacement="iterable")
@@ -372,13 +470,25 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 #
 
 
+@overload
+def deprecated(function: T_Callable) -> T_Callable:
+    """see below for implementation"""
+    pass
+
+
+@overload
+def deprecated(*, message: Optional[str] = None) -> Callable[[T_Callable], T_Callable]:
+    """see below for implementation"""
+    pass
+
+
 def deprecated(
     function: Optional[T_Callable] = None, *, message: Optional[str] = None
-) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
+) -> Union[T_Callable, Callable[[T_Callable_Unbound], T_Callable_Unbound]]:
     """
     Decorator to mark a function as deprecated.
 
-    Logs a warning when the decorated function is called.
+    Issues a warning when the decorated function is called.
 
     Usage:
 
@@ -403,7 +513,7 @@ def deprecated(
         if not callable(func):
             raise ValueError("Deprecated object must be callable")
 
-    def _deprecated_inner(func: T_Callable) -> T_Callable:
+    def _deprecated_inner(func: T_Callable_Unbound) -> T_Callable_Unbound:
         _validate_function(func)
 
         @wraps(func)
@@ -422,7 +532,7 @@ def deprecated(
                 )
             return func(*args, **kwargs)
 
-        return cast(T_Callable, new_func)
+        return cast(T_Callable_Unbound, new_func)
 
     if function is None:
         return _deprecated_inner

@@ -106,7 +106,7 @@ class DictLiteral(CollectionLiteral):
     A dictionary expression.
     """
 
-    def __init__(self, *args: Tuple[Any, Any], **kwargs: Tuple[str, Any]) -> None:
+    def __init__(self, *args: Tuple[Any, Any], **kwargs: Any) -> None:
         """
         :param args: dictionary entries as tuples ``(key, value)``
         :param kwargs: dictionary entries as keyword arguments
