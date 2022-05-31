@@ -361,34 +361,15 @@ def validate_type(
     if optional and value is None:
         return None
 
-    if isinstance(value, expected_type):
-        return value
-    else:
-        if name:
-            message_head = f"{name} requires"
-        else:
-            message_head = "expected"
-
-        expected_type_tuple: Tuple[type, ...]
-
-        if not isinstance(expected_type, tuple):
-            expected_type_tuple = (expected_type,)
-        else:
-            expected_type_tuple = expected_type
-        if optional:
-            expected_type_tuple = (*expected_type_tuple, type(None))
-
-        expected_type_str = " or ".join(t.__name__ for t in expected_type_tuple)
-
-        observed_type = type(value).__name__
-
-        # noinspection SpellCheckingInspection
-        det = "an" if observed_type[0] in "aeiou" else "a"
-
-        raise TypeError(
-            f"{message_head} an instance of {expected_type_str} "
-            f"but got {det} {observed_type}"
+    if not isinstance(value, expected_type):
+        _raise_type_mismatch(
+            name=name,
+            expected_type=_as_optional_type(expected_type, is_optional=optional),
+            mismatched_type=type(value),
+            is_single=True,
         )
+
+    return value
 
 
 def validate_element_types(
@@ -419,31 +400,56 @@ def validate_element_types(
         )
 
     if expected_type is not object:
-        if optional:
-            expected_type = (
-                (*expected_type, type(None))
-                if isinstance(expected_type, tuple)
-                else (expected_type, type(None))
-            )
+        expected_type = _as_optional_type(type_=expected_type, is_optional=optional)
+
         for element in iterable:
             if not isinstance(element, expected_type):
-                if name:
-                    message_head = f"{name} requires"
-                else:
-                    message_head = "expected"
-
-                if isinstance(expected_type, type):
-                    expected_type_str = expected_type.__name__
-                else:
-                    expected_type_str = (
-                        f"one of {{{', '.join(t.__name__ for t in expected_type)}}}"
-                    )
-                raise TypeError(
-                    f"{message_head} instances of {expected_type_str} "
-                    f"but got a {type(element).__name__}"
+                _raise_type_mismatch(
+                    name=name,
+                    expected_type=expected_type,
+                    mismatched_type=type(element),
+                    is_single=False,
                 )
 
     return iterable
+
+
+def _as_optional_type(
+    type_: Union[type, Tuple[type, ...]], *, is_optional: bool
+) -> Union[type, Tuple[type, ...]]:
+    # if is_optional is True, return a tuple comprising the original (types) and None
+    if is_optional:
+        if isinstance(type_, tuple):
+            return (*type_, type(None))
+        else:
+            return (type_, type(None))
+    else:
+        return type_
+
+
+def _raise_type_mismatch(
+    *,
+    name: Optional[str],
+    expected_type: Union[type, Tuple[type, ...]],
+    mismatched_type: type,
+    is_single: bool,
+) -> None:
+    if name:
+        message_head = f"{name} requires"
+    else:
+        message_head = "expected"
+
+    if isinstance(expected_type, type):
+        expected_type_str = expected_type.__name__
+    else:
+        expected_type_str = f"one of {{{', '.join(t.__name__ for t in expected_type)}}}"
+
+    instance = "an instance" if is_single else "instances"
+
+    raise TypeError(
+        f"{message_head} {instance} of {expected_type_str} "
+        f"but got: {mismatched_type.__name__}"
+    )
 
 
 def get_generic_bases(class_: type) -> Tuple[type, ...]:

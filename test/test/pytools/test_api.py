@@ -145,29 +145,33 @@ def test_type_validation() -> None:
     validate_type(None, expected_type=(int, float), optional=True)
 
     with pytest.raises(
-        TypeError, match="^expected an instance of float but got an int$"
+        TypeError, match=r"^expected an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float)
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of float but got an int$"
+        TypeError, match=r"^value requires an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float, name="value")
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of float but got an int$"
+        TypeError, match=r"^value requires an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float, name="value")
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of int or float but got a str$"
+        TypeError,
+        match=r"^value requires an instance of one of {int, float} but got: str$",
     ):
         # noinspection PyTypeChecker
         validate_type("3", expected_type=(int, float), name="value")
 
     with pytest.raises(
         TypeError,
-        match="^value requires an instance of int or float or NoneType but got a str$",
+        match=(
+            r"^value requires an instance of one of \{int, float, NoneType\} "
+            r"but got: str$"
+        ),
     ):
         # noinspection PyTypeChecker
         validate_type("3", expected_type=(int, float), optional=True, name="value")
@@ -222,7 +226,7 @@ def test_all_tracker() -> None:
         )
     )
     with pytest.raises(
-        AssertionError, match="^exporting a global constant is not permitted: 1$"
+        AssertionError, match=r"^exporting a global constant is not permitted: 1$"
     ):
         tracker.validate()
 

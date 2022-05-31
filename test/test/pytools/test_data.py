@@ -74,7 +74,8 @@ def test_matrix_validation() -> None:
     with pytest.raises(
         TypeError,
         match=(
-            r"^arg value_label requires an instance of str or NoneType but got a float$"
+            r"^arg value_label requires an instance of one of \{str, NoneType\} "
+            r"but got: float$"
         ),
     ):
         # noinspection PyTypeChecker
@@ -83,7 +84,8 @@ def test_matrix_validation() -> None:
     with pytest.raises(
         TypeError,
         match=(
-            "^arg weight_label requires an instance of str or NoneType but got an int$"
+            r"^arg weight_label requires an instance of one of \{str, NoneType\} "
+            r"but got: int$"
         ),
     ):
         # noinspection PyTypeChecker
