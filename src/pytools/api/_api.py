@@ -50,8 +50,6 @@ __all__ = [
 
 T = TypeVar("T")
 T_Collection = TypeVar("T_Collection", list, set, tuple)
-T_Callable = TypeVar("T_Callable", bound=Callable)
-T_Callable_Unbound = TypeVar("T_Callable_Unbound", bound=Callable)
 T_Iterable = TypeVar("T_Iterable", bound=Iterable)
 T_Type = TypeVar("T_Type", bound=type)
 
@@ -470,21 +468,9 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 #
 
 
-@overload
-def deprecated(function: T_Callable) -> T_Callable:
-    """see below for implementation"""
-    pass
-
-
-@overload
-def deprecated(*, message: Optional[str] = None) -> Callable[[T_Callable], T_Callable]:
-    """see below for implementation"""
-    pass
-
-
 def deprecated(
-    function: Optional[T_Callable] = None, *, message: Optional[str] = None
-) -> Union[T_Callable, Callable[[T_Callable_Unbound], T_Callable_Unbound]]:
+    function: Optional[Callable] = None, *, message: Optional[str] = None
+) -> Callable:
     """
     Decorator to mark a function as deprecated.
 
@@ -513,7 +499,7 @@ def deprecated(
         if not callable(func):
             raise ValueError("Deprecated object must be callable")
 
-    def _deprecated_inner(func: T_Callable_Unbound) -> T_Callable_Unbound:
+    def _deprecated_inner(func: Callable) -> Callable:
         _validate_function(func)
 
         @wraps(func)
@@ -532,7 +518,7 @@ def deprecated(
                 )
             return func(*args, **kwargs)
 
-        return cast(T_Callable_Unbound, new_func)
+        return new_func
 
     if function is None:
         return _deprecated_inner
