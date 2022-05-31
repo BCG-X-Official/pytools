@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["SingletonMeta", "compose_meta"]
+__all__ = ["SingletonMeta"]
 
 
 #
@@ -78,26 +78,6 @@ class SingletonMeta(type):
         instance = super(SingletonMeta, cls).__call__()
         cls.__instance_ref = ref(instance)
         return instance
-
-
-#
-# Functions
-#
-
-
-def compose_meta(*metaclasses: type) -> type:
-    """
-    Compose multiple metaclasses by dynamically creating a new metaclass.
-
-    :param metaclasses: one or more metaclasses
-    :return: a new metaclass, composing all given metaclasses
-    """
-    metaclasses = tuple(
-        mcs
-        for i, mcs in enumerate(metaclasses)
-        if mcs is not type and mcs not in metaclasses[:i]
-    )
-    return type("_" + "_".join(mcs.__name__ for mcs in metaclasses), metaclasses, {})
 
 
 __tracker.validate()
