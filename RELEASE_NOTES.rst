@@ -40,6 +40,11 @@ and is now subject to static type checking with :mod:`mypy`.
 - API: method :meth:`.FittableMixin.ensure_fitted` is now public, replacing the formerly
   private method ``_ensure_fitted()``
 
+``pytools.meta``
+^^^^^^^^^^^^^^^
+
+- API: remove function ``compose_meta`` due to conflicts with *mypy* static type checks
+
 ``pytools.parallelization``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
