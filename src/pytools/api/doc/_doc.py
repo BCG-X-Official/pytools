@@ -271,7 +271,7 @@ class HasDocstring(DocTest):
         """[see superclass]"""
 
         doc = definition.docstring
-        if not (doc and str(doc).strip()) and not definition.name == "__init__":
+        if not (doc and str(doc).strip()) and definition.name != "__init__":
             return "missing docstring"
         else:
             return None
