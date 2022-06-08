@@ -94,7 +94,7 @@ class DocValidator:
     DEFAULT_VALIDATE_PROTECTED = ("__init__",)
 
     #: default doc tests to run
-    DEFAULT_DOC_TESTS: Tuple[DocTest, DocTest, DocTest, DocTest] = (
+    DEFAULT_DOC_TESTS: Tuple[DocTest, ...] = (
         HasDocstring(),
         HasMatchingParameterDoc(),
         HasWellFormedDocstring(),
