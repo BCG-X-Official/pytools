@@ -257,6 +257,9 @@ class DocTest(metaclass=ABCMeta):
         """
         pass
 
+    def __repr__(self) -> str:
+        return type(self).__name__ + "()"
+
 
 @inheritdoc(match="""[see superclass]""")
 class HasDocstring(DocTest):
