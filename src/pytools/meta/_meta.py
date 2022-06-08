@@ -17,8 +17,10 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["SingletonMeta"]
-
+__all__ = [
+    "SingletonABCMeta",
+    "SingletonMeta",
+]
 
 #
 # Type variables
