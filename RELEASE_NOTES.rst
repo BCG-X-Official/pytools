@@ -32,7 +32,7 @@ and is now subject to static type checking with :mod:`mypy`.
 
 - API: improved conversion of :mod:`numpy` arrays to :class:`.Expression` objects in
   function :func:`.make_expression`
-- API: remove method ``get_class_id`` from class :class:`.HasExpressionRepr`
+- API: removed method ``get_class_id`` from class :class:`.HasExpressionRepr`
 
 ``pytools.fit``
 ^^^^^^^^^^^^^^^
@@ -41,9 +41,9 @@ and is now subject to static type checking with :mod:`mypy`.
   private method ``_ensure_fitted()``
 
 ``pytools.meta``
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
-- API: remove function ``compose_meta`` due to conflicts with *mypy* static type checks
+- API: removed function ``compose_meta`` due to conflicts with *mypy* static type checks
 
 ``pytools.parallelization``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

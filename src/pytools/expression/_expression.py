@@ -87,8 +87,6 @@ class HasExpressionRepr(metaclass=ABCMeta):
     representations using expression objects.
     """
 
-    __ATTR_CLASS_ID = "__HasExpressionRepr__class_id"
-
     @abstractmethod
     def to_expression(self) -> Expression:
         """
@@ -464,6 +462,7 @@ class FrozenExpression(HasExpressionRepr):
         return self._expression
 
     def __eq__(self, other: Any) -> bool:
+        # noinspection PyProtectedMember
         return type(self) is type(other) and self._expression.eq_(other._expression)
 
     def __hash__(self) -> int:

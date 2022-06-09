@@ -40,17 +40,17 @@ __tracker = AllTracker(globals())
 
 class SingletonMeta(type):
     """
-    Meta-class for singleton classes.
+    Metaclass for singleton classes.
 
     Subsequent instantiations of a singleton class return the identical object.
-    Singleton classes may not accept any parameters upon instantiation.
+    Singleton classes must not accept any parameters upon instantiation.
     """
 
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
         """
-        :param args: arguments to be passed on to the initializer of the superclass
+        :param args: arguments to be passed on to the initializer of the base metaclass
         :param kwargs: keyword arguments to be passed on to the initializer of the
-            superclass
+            base metaclass
         """
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None

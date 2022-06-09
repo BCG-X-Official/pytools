@@ -42,7 +42,7 @@ class LinkageTree(HasExpressionRepr):
     """
     A traversable tree derived from a SciPy linkage matrix.
 
-    Supports :func:`len`, and numerical indexing and iteration of nodes.
+    Supports :func:`len`, numerical indexing, and node iteration.
     """
 
     __F_CHILD_LEFT = 0
