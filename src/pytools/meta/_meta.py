@@ -88,7 +88,5 @@ class SingletonABCMeta(SingletonMeta, ABCMeta):
     Convenience metaclass combining :class:`.SingletonMeta` and :class:`.ABCMeta`.
     """
 
-    pass
-
 
 __tracker.validate()
