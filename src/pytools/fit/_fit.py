@@ -68,9 +68,9 @@ class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
 
     def ensure_fitted(self) -> None:
         """
-        Raise a :class:`.NotFittedError` if this object is not fitted.
+        Ensure that this object is not fitted.
 
-        :raise NotFittedError: this object is not fitted
+        :raise pytools.fit.NotFittedError: this object is not fitted
         """
         if not self.is_fitted:
             raise NotFittedError(f"{type(self).__name__} is not fitted")

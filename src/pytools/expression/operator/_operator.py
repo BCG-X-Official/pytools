@@ -1,6 +1,8 @@
 """
 Operators used in expressions.
 """
+from __future__ import annotations
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import Mapping, Optional, Set, Tuple
@@ -83,39 +85,42 @@ class BinaryOperator(Operator):
     #: Inherited from :attr:`.Operator.MAX_PRECEDENCE`.
     MAX_PRECEDENCE: int
 
-    DOT: "BinaryOperator"  #: The ``.`` operator.
-    POW: "BinaryOperator"  #: The ``**`` operator.
-    MUL: "BinaryOperator"  #: The ``*`` operator.
-    MATMUL: "BinaryOperator"  #: The ``@`` operator.
-    DIV: "BinaryOperator"  #: The ``/`` operator (same as :attr:`.TRUE_DIV`).
-    TRUE_DIV: "BinaryOperator"  #: The ``/`` operator (same as :attr:`.DIV`).
-    FLOOR_DIV: "BinaryOperator"  #: The ``//`` operator.
-    MOD: "BinaryOperator"  #: The ``%`` operator.
-    ADD: "BinaryOperator"  #: The ``+`` operator.
-    SUB: "BinaryOperator"  #: The ``-`` operator.
-    LSHIFT: "BinaryOperator"  #: The ``<<`` operator.
-    RSHIFT: "BinaryOperator"  #: The ``>>`` operator.
-    AND_BITWISE: "BinaryOperator"  #: The ``&`` operator.
-    XOR_BITWISE: "BinaryOperator"  #: The ``^`` operator.
-    OR_BITWISE: "BinaryOperator"  #: The ``|`` operator.
-    IN: "BinaryOperator"  #: The ``in`` operator.
-    NOT_IN: "BinaryOperator"  #: The ``not in`` operator.
-    IS: "BinaryOperator"  #: The ``is`` operator.
-    IS_NOT: "BinaryOperator"  #: The ``is not`` operator.
-    LT: "BinaryOperator"  #: The ``<`` operator.
-    LE: "BinaryOperator"  #: The ``<=`` operator.
-    GT: "BinaryOperator"  #: The ``>`` operator.
-    GE: "BinaryOperator"  #: The ``>=`` operator.
-    NEQ_: "BinaryOperator"  #: The ``<>`` operator.
-    NEQ: "BinaryOperator"  #: The ``!=`` operator.
-    EQ: "BinaryOperator"  #: The ``==`` operator.
-    AND: "BinaryOperator"  #: The ``and`` operator.
-    OR: "BinaryOperator"  #: The ``or`` operator.
-    ASSIGN: "BinaryOperator"  #: The ``=`` operator.
-    COLON: "BinaryOperator"  #: The ``:`` operator.
-    SLICE: "BinaryOperator"  #: The ``:`` operator used in slice expressions.
-    COMMA: "BinaryOperator"  #: The ``,`` operator.
-    NONE: "BinaryOperator"  #: The empty operator.
+    DOT: BinaryOperator  #: The ``.`` operator.
+    POW: BinaryOperator  #: The ``**`` operator.
+    MUL: BinaryOperator  #: The ``*`` operator.
+    MATMUL: BinaryOperator  #: The ``@`` operator.
+    DIV: BinaryOperator  #: The ``/`` operator (same as :attr:`.TRUE_DIV`).
+    TRUE_DIV: BinaryOperator  #: The ``/`` operator (same as :attr:`.DIV`).
+    FLOOR_DIV: BinaryOperator  #: The ``//`` operator.
+    MOD: BinaryOperator  #: The ``%`` operator.
+    ADD: BinaryOperator  #: The ``+`` operator.
+    SUB: BinaryOperator  #: The ``-`` operator.
+    LSHIFT: BinaryOperator  #: The ``<<`` operator.
+    RSHIFT: BinaryOperator  #: The ``>>`` operator.
+    AND_BITWISE: BinaryOperator  #: The ``&`` operator.
+    XOR_BITWISE: BinaryOperator  #: The ``^`` operator.
+    OR_BITWISE: BinaryOperator  #: The ``|`` operator.
+    IN: BinaryOperator  #: The ``in`` operator.
+    NOT_IN: BinaryOperator  #: The ``not in`` operator.
+    IS: BinaryOperator  #: The ``is`` operator.
+    IS_NOT: BinaryOperator  #: The ``is not`` operator.
+    LT: BinaryOperator  #: The ``<`` operator.
+    LE: BinaryOperator  #: The ``<=`` operator.
+    GT: BinaryOperator  #: The ``>`` operator.
+    GE: BinaryOperator  #: The ``>=`` operator.
+    NEQ_: BinaryOperator  #: The ``<>`` operator.
+    NEQ: BinaryOperator  #: The ``!=`` operator.
+    EQ: BinaryOperator  #: The ``==`` operator.
+    AND: BinaryOperator  #: The ``and`` operator.
+    OR: BinaryOperator  #: The ``or`` operator.
+    ASSIGN: BinaryOperator  #: The ``=`` operator.
+    COLON: BinaryOperator  #: The ``:`` operator.
+    SLICE: BinaryOperator  #: The ``:`` operator used in slice expressions.
+    COMMA: BinaryOperator  #: The ``,`` operator.
+    NONE: BinaryOperator  #: The empty operator.
+
+    # defined in superclass, repeated here for Sphinx
+    symbol: str
 
     @property
     def is_unary(self) -> bool:
@@ -136,11 +141,14 @@ class UnaryOperator(Operator):
     #: Inherited from :attr:`.Operator.MAX_PRECEDENCE`.
     MAX_PRECEDENCE: int
 
-    POS: "UnaryOperator"  #: The ``+`` prefix operator.
-    NEG: "UnaryOperator"  #: The ``-`` prefix operator.
-    INVERT: "UnaryOperator"  #: The ``~`` prefix operator.
-    NOT: "UnaryOperator"  #: The ``not`` prefix operator.
-    LAMBDA: "UnaryOperator"  #: The ``lambda`` prefix operator.
+    POS: UnaryOperator  #: The ``+`` prefix operator.
+    NEG: UnaryOperator  #: The ``-`` prefix operator.
+    INVERT: UnaryOperator  #: The ``~`` prefix operator.
+    NOT: UnaryOperator  #: The ``not`` prefix operator.
+    LAMBDA: UnaryOperator  #: The ``lambda`` prefix operator.
+
+    #: the symbol representing this operator
+    symbol: str
 
     @property
     def is_unary(self) -> bool:

@@ -50,7 +50,7 @@ def inheritdoc(*, match: str) -> Callable[[type], type]:
           \"""This docstring will not be replaced\"""
           # …
 
-    In this example, the docstring of the ``my_function`` will be replaced with the
+    In this example, the docstring of ``my_function`` will be replaced with the
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
@@ -93,8 +93,10 @@ def subsdoc(
     *, pattern: str, replacement: str, using: Optional[Any] = None
 ) -> Callable[[T], T]:
     """
-    Decorator that matches a given pattern in the decorated object's docstring, and
-    substitutes it with the given replacement string (see :func:`re.sub`)
+    Decorator for substituting parts of an object's docstring.
+
+    Matches the given pattern in the docstring, and substitutes it with the given
+    replacement string (analogous to :func:`re.sub`).
 
     :param pattern: a regular expression for the pattern to match
     :param replacement: the replacement for substrings matching the pattern
