@@ -74,26 +74,26 @@ class DocValidator:
     is provided in parameter ``validate_protected``.
     """
 
-    #: the root directory of all Python files to be validated
+    #: The root directory of all Python files to be validated.
     root_dir: str
 
-    #: names of protected functions and methods to be validated
+    #: Names of protected functions and methods to be validated.
     validate_protected: Tuple[str, ...]
 
-    #: names of modules for which parameter documentation and type hints should not be
-    #: validated
+    #: Names of modules for which parameter documentation and type hints should not be
+    #: validated.
     exclude_from_parameter_validation: Optional[Pattern]
 
-    #: after validation, lists all errors per definition
+    #: A dictionary mapping definitions to lists of errors identified during validation.
     validation_errors: Dict[str, List[str]]
 
-    #: tests to run on each definition during validation
+    #: The documentation tests to run on each definition during validation.
     validation_tests: Tuple[DocTest, ...]
 
-    #: default value for parameter ``validate_protected``
+    #: The default value for parameter ``validate_protected``.
     DEFAULT_VALIDATE_PROTECTED = ("__init__",)
 
-    #: default doc tests to run
+    #: Default collection of documentation tests to run during validation.
     DEFAULT_DOC_TESTS: Tuple[DocTest, DocTest, DocTest, DocTest] = (
         HasDocstring(),
         HasMatchingParameterDoc(),

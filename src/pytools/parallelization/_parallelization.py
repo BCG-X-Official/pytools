@@ -68,7 +68,7 @@ __tracker = AllTracker(globals())
 
 class ParallelizableMixin:
     """
-    Mix-in class that supports parallelizing one or more operations using joblib.
+    Mix-in class that supports parallelizing one or more operations using :mod:`joblib`.
     """
 
     #: Number of jobs to use in parallel; if ``None``, use joblib default.
@@ -374,8 +374,7 @@ class SimpleQueue(
 @inheritdoc(match="""[see superclass]""")
 class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
     """
-    Runs all jobs in a given list of compatible queues and returns their results as a
-    flat list.
+    A queue composed from a collection of compatible queues.
     """
 
     # defined in superclass, repeated here for Sphinx
@@ -388,7 +387,8 @@ class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Resu
         self, queues: Sequence[JobQueue[T_Job_Result, List[T_Job_Result]]]
     ) -> None:
         """
-        :param queues: queues to be run by this queue in the given order
+        :param queues: queues whose elements will be added to this queue in the given
+            order
         """
         super().__init__()
         self.queues = to_tuple(

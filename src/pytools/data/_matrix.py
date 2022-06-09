@@ -47,7 +47,7 @@ __tracker = AllTracker(globals())
 @inheritdoc(match="[see superclass]")
 class Matrix(HasExpressionRepr):
     """
-    A 2d matrix with optional names and weights for rows and columns.
+    A 2D matrix with optional names and weights for rows and columns.
     """
 
     #: the values of the matrix cells, as a 2d array
