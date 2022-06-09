@@ -4,6 +4,7 @@ Core implementation of :mod:`pytools.meta`.
 from __future__ import annotations
 
 import logging
+from abc import ABCMeta
 from typing import Any, Optional, TypeVar
 from weakref import ref
 
@@ -16,8 +17,10 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["SingletonMeta"]
-
+__all__ = [
+    "SingletonABCMeta",
+    "SingletonMeta",
+]
 
 #
 # Type variables
@@ -78,6 +81,12 @@ class SingletonMeta(type):
         instance = super(SingletonMeta, cls).__call__()
         cls.__instance_ref = ref(instance)
         return instance
+
+
+class SingletonABCMeta(SingletonMeta, ABCMeta):
+    """
+    Convenience metaclass combining :class:`.SingletonMeta` and :class:`~abc.ABCMeta`.
+    """
 
 
 __tracker.validate()
