@@ -79,8 +79,8 @@ def is_list_like(obj: Any) -> bool:
     - :class:`str`
     - :class:`bytes`
     - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface;
-        iterating a data frame yields the values of the column index, while the length
-        of a data frame is its number of rows
+      iterating a data frame yields the values of the column index, while the length
+      of a data frame is its number of rows
     - :class:`numpy.ndarray` instances with 0 dimensions
 
     :param obj: The object to check
@@ -106,12 +106,12 @@ def to_tuple(
     arg_name: Optional[str] = None,
 ) -> Tuple[T, ...]:
     """
-    Return the given values as a tuple.
+    Return the given values as a tuple:
 
-    - if arg `values` is a tuple, return arg `values` unchanged
-    - if arg `values` is an iterable other than a tuple, return a tuple of its elements
-    - if arg `values` is not an iterable, return a tuple with the value as its only
-      element
+    - If arg `values` is a tuple, return arg `values` unchanged.
+    - If arg `values` is an iterable other than a tuple, return a tuple of its elements.
+    - If arg `values` is not an iterable, return a tuple with the value as its only
+      element.
 
     :param values: one or more elements to return as a tuple
     :param element_type: expected type of the values, or a tuple of alternative types

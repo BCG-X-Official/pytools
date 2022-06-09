@@ -211,6 +211,9 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
     #: name of the special "return" parameter used in signatures and type annotations
     PARAM_RETURN = "return"
 
+    # defined in superclass, repeated here for Sphinx
+    element: FunctionType
+
     def list_actual_parameters(self, include_return: bool) -> List[str]:
         """
         Extract all parameter names from the function signature
@@ -264,7 +267,7 @@ class DocTest(metaclass=ABCMeta):
 @inheritdoc(match="""[see superclass]""")
 class HasDocstring(DocTest):
     """
-    Test that the definition's docstring is defined and not empty.
+    Test that the definition's docstring exists and is not empty.
     """
 
     def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:

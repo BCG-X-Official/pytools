@@ -126,7 +126,7 @@ nbsphinx_allow_errors = True
 intersphinx_mapping = {
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "pd": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "matplotlib": ("https://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "np": ("https://numpy.org/doc/stable", None),
     "python": ("https://docs.python.org/3.7", None),
@@ -162,6 +162,7 @@ exclude_patterns = ["*/.ipynb_checkpoints/*"]
 set_type_checking_flag = False
 typehints_fully_qualified = False
 always_document_param_types = False
+autodoc_typehints_format = "short"
 
 # -- Options for Math output -----------------------------------------------------------
 

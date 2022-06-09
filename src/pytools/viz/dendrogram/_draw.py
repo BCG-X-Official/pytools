@@ -46,6 +46,9 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     Draws dendrogram representations of :class:`.LinkageTree` objects.
     """
 
+    # defined in superclass, repeated here for Sphinx
+    style: DendrogramStyle
+
     def __init__(self, style: Optional[Union[DendrogramStyle, str]] = None) -> None:
         """[see superclass]"""
         super().__init__(style=style)

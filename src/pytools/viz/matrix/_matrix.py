@@ -9,6 +9,7 @@ from typing import (
     Dict,
     Iterable,
     Optional,
+    TextIO,
     Tuple,
     Type,
     TypeVar,
@@ -92,13 +93,9 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     - a :class:`~matplotlib.ticker.Formatter` instance
     """
 
-    #: The maximum number of ticks to put on the x and y axis;
-    #: ``None`` to determine the number of ticks automatically.
-    max_ticks: Optional[Tuple[int, int]]
-
     #: Formatter for annotating each matrix cell with its value; if ``None``,
     #: no cells are annotated.
-    cell_formatter: Optional[Formatter]
+    cell_formatter: Optional[Formatter] = None
 
     #: The value to look up in the colormap for undefined matrix cells.
     nan_substitute: float
@@ -382,6 +379,9 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
     Annotates matrix cells with percentage values.
     """
 
+    # defined in superclass, repeated here for Sphinx
+    nan_substitute: float
+
     def __init__(
         self,
         *,
@@ -429,6 +429,12 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
     """
     Text report style for matrices.
     """
+
+    # defined in superclass, repeated here for Sphinx
+    out: TextIO
+
+    # defined in superclass, repeated here for Sphinx
+    width: int
 
     def start_drawing(
         self,
@@ -507,6 +513,9 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
       percentages, using a :class:`.PercentageMatrixMatplotStyle`
     - ``"text"``: text representation of the matrix, using a :class:`.MatrixReportStyle`
     """
+
+    #: see :attr:`.Drawer.style`
+    style: MatrixStyle
 
     def __init__(self, style: Optional[Union[MatrixStyle, str]] = None) -> None:
         """
