@@ -180,7 +180,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": lambda: style(colors=ColorScheme.DEFAULT_DARK)
+                f"{name}_dark": lambda style=style: style(
+                    colors=ColorScheme.DEFAULT_DARK
+                )
                 for name, style in named_styles.items()
                 if isinstance(style, type)
             },
