@@ -85,7 +85,7 @@ class SingletonMeta(type):
 
 class SingletonABCMeta(SingletonMeta, ABCMeta):
     """
-    Convenience metaclass combining :class:`.SingletonMeta` and :class:`.ABCMeta`.
+    Convenience metaclass combining :class:`.SingletonMeta` and :class:`~abc.ABCMeta`.
     """
 
 

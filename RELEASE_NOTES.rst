@@ -61,7 +61,7 @@ and is now subject to static type checking with :mod:`mypy`.
   :meth:`.JobQueue.aggregate`
 - API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
   method :meth:`.SimpleQueue.aggregate`
-- API: renamed class ``NestedQueue` to :class:`.CompositeQueue`
+- API: renamed class ``NestedQueue`` to :class:`.CompositeQueue`
 
 ``pytools.sphinx``
 ^^^^^^^^^^^^^^^^^^
