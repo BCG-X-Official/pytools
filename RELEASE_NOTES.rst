@@ -41,7 +41,7 @@ and is now subject to static type checking with :mod:`mypy`.
   private method ``_ensure_fitted()``
 
 ``pytools.meta``
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 - API: remove function ``compose_meta`` due to conflicts with *mypy* static type checks
 
