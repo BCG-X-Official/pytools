@@ -40,7 +40,7 @@ __tracker = AllTracker(globals())
 
 class SingletonMeta(type):
     """
-    Meta-class for singleton classes.
+    Metaclass for singleton classes.
 
     Subsequent instantiations of a singleton class return the identical object.
     Singleton classes must not accept any parameters upon instantiation.
