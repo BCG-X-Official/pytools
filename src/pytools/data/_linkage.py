@@ -55,7 +55,6 @@ class LinkageTree(HasExpressionRepr):
     __F_CHILD_LEFT = 0
     __F_CHILD_RIGHT = 1
     __F_CHILDREN_DISTANCE = 2
-    __F_N_DESCENDANTS = 3
 
     #: The original linkage matrix created by :func:`scipy.cluster.hierarchy.linkage`.
     #:
