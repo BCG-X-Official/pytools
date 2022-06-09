@@ -39,7 +39,7 @@ __all__ = [
     "Job",
     "JobQueue",
     "JobRunner",
-    "NestedQueue",
+    "CompositeQueue",
     "ParallelizableMixin",
     "SimpleQueue",
 ]
@@ -352,7 +352,7 @@ class SimpleQueue(
 
 
 @inheritdoc(match="""[see superclass]""")
-class NestedQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
+class CompositeQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
     """
     Runs all jobs in a given list of compatible queues and returns their results as a
     flat list.
