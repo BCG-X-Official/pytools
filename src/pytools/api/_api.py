@@ -233,7 +233,9 @@ def _to_collection(
 
     if element_type:
         validate_element_types(
-            elements, expected_type=element_type, name=f"arg {arg_name}"
+            elements,
+            expected_type=element_type,
+            name=f"arg {arg_name}" if arg_name else None,
         )
 
     return elements
