@@ -26,6 +26,13 @@ __all__ = ["LinkageTree"]
 
 
 #
+# Constants
+#
+
+ASSERTION_CURRENT_NODE_NOT_A_LEAF = "current node must not be a leaf"
+
+
+#
 # Ensure all symbols introduced below are included in __all__
 #
 
@@ -213,7 +220,7 @@ class LinkageTree(HasExpressionRepr):
                 return n.weight, 1
 
             children = self.children(n)
-            assert children is not None, "Current node isn't a leaf"
+            assert children is not None, ASSERTION_CURRENT_NODE_NOT_A_LEAF
             l, r = children
 
             weight_left, leaves_left = _sort_node(l)
@@ -250,7 +257,7 @@ class LinkageTree(HasExpressionRepr):
                 if inner:
                     yield n
                 children = self.children(n)
-                assert children is not None, "Current node isn't a leaf"
+                assert children is not None, ASSERTION_CURRENT_NODE_NOT_A_LEAF
                 l, r = children
                 yield from _iter(l)
                 yield from _iter(r)
@@ -271,7 +278,7 @@ class LinkageTree(HasExpressionRepr):
                 return n.to_expression()
             else:
                 children = self.children(n)
-                assert children is not None, "Current node isn't a leaf"
+                assert children is not None, ASSERTION_CURRENT_NODE_NOT_A_LEAF
                 l, r = children
                 return n.to_expression()[_expr(l), _expr(r)]
 
