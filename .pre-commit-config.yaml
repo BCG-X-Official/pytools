@@ -8,7 +8,9 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        language_version: python3
+        language_version: python38
+        additional_dependencies:
+          - click~=8.0.4
 
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.0
