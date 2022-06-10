@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Generic, MutableMapping, TypeVar
 from weakref import WeakValueDictionary
 
 from ...api import AllTracker, inheritdoc
@@ -70,7 +70,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 class _IdentifierMeta(ABCMeta):
 
-    _identifiers: Dict[str, Id] = WeakValueDictionary()  # type: ignore
+    _identifiers: MutableMapping[str, Id] = WeakValueDictionary()  # type: ignore
 
     def __getattr__(self, name: str) -> Id:
         if name.startswith("_") or name.endswith("_") or name == "Id":
@@ -98,10 +98,11 @@ class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     The attribute access method will return the identical :class:`Id` instance
     for subsequent access to an attribute of the same name (stored internally using a
     weak reference dictionary).
-    Attribute access requires attribute names that do not start or end with an
-    underscore character (``_``), otherwise an :class:`AttributeError` is raised.
-    For compatibility reasons, attribute access does not work for the ``Id`` name, i.e.,
-    ``Id.Id`` will raise an :class:`AttributeError`.
+    Creating identifiers using attribute access requires attribute names that do not
+    start or end with an underscore character (``_``), otherwise an
+    :class:`AttributeError` is raised.
+    For compatibility reasons, attribute access does not work for the ``Id`` name.
+    Evaluating ``Id.Id`` will raise an :class:`AttributeError`.
     """
 
     def __init__(self, name: Any) -> None:

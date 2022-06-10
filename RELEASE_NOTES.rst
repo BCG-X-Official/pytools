@@ -32,13 +32,20 @@ and is now subject to static type checking with :mod:`mypy`.
 
 - API: improved conversion of :mod:`numpy` arrays to :class:`.Expression` objects in
   function :func:`.make_expression`
-- API: remove method ``get_class_id`` from class :class:`.HasExpressionRepr`
+- API: removed method ``get_class_id`` from class :class:`.HasExpressionRepr`
 
 ``pytools.fit``
 ^^^^^^^^^^^^^^^
 
 - API: method :meth:`.FittableMixin.ensure_fitted` is now public, replacing the formerly
   private method ``_ensure_fitted()``
+
+``pytools.meta``
+^^^^^^^^^^^^^^^^
+
+- API: removed function ``compose_meta`` due to conflicts with *mypy* static type checks
+- API: new metaclass :class:`.SingletonABCMeta` combining :class:`.SingletonMeta` and
+  :class:`~abc.ABCMeta`
 
 ``pytools.parallelization``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -54,6 +61,7 @@ and is now subject to static type checking with :mod:`mypy`.
   :meth:`.JobQueue.aggregate`
 - API: :class:`.SimpleQueue` is now an abstract class, expecting subclasses to implement
   method :meth:`.SimpleQueue.aggregate`
+- API: renamed class ``NestedQueue`` to :class:`.CompositeQueue`
 
 ``pytools.sphinx``
 ^^^^^^^^^^^^^^^^^^

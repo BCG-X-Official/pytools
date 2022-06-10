@@ -306,9 +306,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             # we could not find the container of the given method in the method's global
             # namespace - this is likely an inherited method where the parent class
             # sits in a different module
-            log.warning(
-                f"failed to find container {method.__module__}.{method_container!r} "
-                f"of method {method.__name__!r}"
+            log.debug(
+                f"failed to find container '{method.__module__}.{method_container}' "
+                f"of method '{method.__name__}'"
             )
             return None
 

@@ -1,6 +1,8 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+from __future__ import annotations
+
 import itertools
 import logging
 from abc import ABCMeta
@@ -106,7 +108,7 @@ class DictLiteral(CollectionLiteral):
     A dictionary expression.
     """
 
-    def __init__(self, *args: Tuple[Any, Any], **kwargs: Tuple[str, Any]) -> None:
+    def __init__(self, *args: Tuple[Any, Any], **kwargs: Any) -> None:
         """
         :param args: dictionary entries as tuples ``(key, value)``
         :param kwargs: dictionary entries as keyword arguments
@@ -230,7 +232,7 @@ class BinaryOperation(InfixExpression, Operation):
 
         return operands
 
-    def _eq_same_type(self, other: "BinaryOperation") -> bool:
+    def _eq_same_type(self, other: BinaryOperation) -> bool:
         if self.operator_ == other.operator_:
             self_operands_ = self._flattened_operands()
             other_operands_ = other._flattened_operands()

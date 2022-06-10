@@ -1,7 +1,6 @@
 """
 Core implementation of :mod:`pytools.viz.color`
 """
-
 from __future__ import annotations
 
 import logging
@@ -119,13 +118,13 @@ class ColorScheme(HasExpressionRepr):
     """
 
     #: The default color scheme.
-    DEFAULT: "ColorScheme"
+    DEFAULT: ColorScheme
 
     #: The default light color scheme.
-    DEFAULT_LIGHT: "FacetLightColorScheme"
+    DEFAULT_LIGHT: FacetLightColorScheme
 
     #: The default dark color scheme.
-    DEFAULT_DARK: "FacetDarkColorScheme"
+    DEFAULT_DARK: FacetDarkColorScheme
 
     def __init__(
         self, foreground: RgbColor, background: RgbColor, **colors: RgbColor
@@ -166,7 +165,7 @@ class ColorScheme(HasExpressionRepr):
         """
         The primary fill color.
 
-        Defaults to the halfway point between the p and background color
+        Defaults to the halfway point between the foreground and background color
         if not defined explicitly.
         """
         return self._colors.get(ColorScheme._COLOR_FILL_1) or RgbColor(
@@ -317,7 +316,7 @@ ColorScheme._SUPPORTED_COLORS = {
 # noinspection PyProtectedMember
 ColorScheme.__init__.__doc__ = ColorScheme.__init__.__doc__.replace(  # type: ignore
     "%COLORS%",
-    ", ".join(sorted(map(lambda code: f"``{code}``", ColorScheme._SUPPORTED_COLORS))),
+    ", ".join(sorted(f"``{code}``" for code in ColorScheme._SUPPORTED_COLORS)),
 )
 
 

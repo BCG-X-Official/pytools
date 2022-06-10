@@ -60,8 +60,8 @@ class DrawingStyle(metaclass=ABCMeta):
     Base class for styles used by :class:`.Drawer` objects.
 
     Provides low-level rendering methods used by specific type of :class:`.Drawer`.
-    Typically, there are several drawing styles for one drawer type, offering the same
-    rendering methods but implementing them differently (e.g., matplot output vs. text
+    Typically, there are several drawing styles for one drawer type, implementing
+    different rendering methods for the same data type (e.g., matplot output vs. text
     output).
     The style class and its rendering methods should not be aware of the actual object
     to be rendered; overall control of the rendering process stays with the
@@ -117,7 +117,7 @@ class DrawingStyle(metaclass=ABCMeta):
         :return: the name of the default style
         """
 
-    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:  # NOSONAR
         """
         Prepare a new chart for drawing, using the given title.
 
@@ -125,7 +125,7 @@ class DrawingStyle(metaclass=ABCMeta):
         method :meth:`Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
 
-        Subclasses overriding this method should call ``super().start_drawing()``
+        Subclasses overriding this method must call ``super().start_drawing()``
         *before* executing their own drawer-specific initializations.
 
         :param title: the title of the chart
@@ -134,7 +134,7 @@ class DrawingStyle(metaclass=ABCMeta):
         """
         self._status = DrawingStyle._STATUS_STARTED
 
-    def finalize_drawing(self, **kwargs: Any) -> None:
+    def finalize_drawing(self, **kwargs: Any) -> None:  # NOSONAR
         """
         Finalize the drawing.
 
@@ -142,7 +142,7 @@ class DrawingStyle(metaclass=ABCMeta):
         method :meth:`.Drawer.get_style_kwargs`, will be passed
         as keyword arguments.
 
-        Subclasses overriding this method should call ``super().finalize_drawing()``
+        Subclasses overriding this method must call ``super().finalize_drawing()``
         *after* executing their own drawer-specific finalization.
 
         :param kwargs: additional drawer-specific arguments
@@ -180,7 +180,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": lambda: style(colors=ColorScheme.DEFAULT_DARK)
+                f"{name}_dark": lambda style=style: style(
+                    colors=ColorScheme.DEFAULT_DARK
+                )
                 for name, style in named_styles.items()
                 if isinstance(style, type)
             },
@@ -275,6 +277,17 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         """
         Render the data using the style associated with this drawer.
 
+        Creates a thread-safe lock on this drawer, then calls the following methods in
+        sequence:
+
+        1. Method :meth:`~.DrawingStyle.start_drawing` of this drawer's :attr:`~style`
+           attribute, passing the title and additional keyword arguments obtained from
+           this drawer's :meth:`~get_style_kwargs`
+        2. Method :meth:`._draw`, passing along the ``data`` argument
+        3. Method :meth:`~.DrawingStyle.finalize_drawing` of this drawer's
+           :attr:`~style` attribute, passing the keyword arguments obtained from this
+           drawer's :meth:`~get_style_kwargs`
+
         :param data: the data to be rendered
         :param title: the title of the resulting chart
         """
@@ -318,6 +331,8 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     def _draw(self, data: T_Model) -> None:
         """
         Core drawing method invoked my method :meth:`.draw`.
+
+        Must be implemented by subclasses of :class:`.Drawer`.
 
         :meta public:
         :param data: the data to be rendered

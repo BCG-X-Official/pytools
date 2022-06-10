@@ -66,8 +66,8 @@ class AllTracker:
     definitions for being exported:
 
     - constant definitions should not be exported, as this will pose difficulties
-      with Sphinx documentation and - from a design perspective - provides less context
-      than defining constants inside classes
+      with Sphinx documentation and - from an API design perspective - provides less
+      context than defining constants inside classes
     - definitions exported from other modules should not be re-exported by the importing
       module
 
@@ -99,8 +99,8 @@ class AllTracker:
         allow_imported_definitions: bool = False,
     ) -> None:
         """
-        :param globals_: the dictionary of global variables returned by calling
-            :meth:`._globals` in the current module scope
+        :param globals_: the dictionary of global variables obtained by calling
+            :meth:`.globals` in the current module scope
         :param public_module: full name of the public module that will export the items
             managed by this tracker
         :param update_forward_references: if ``True``, automatically replace all forward
@@ -310,7 +310,7 @@ def update_forward_references(
         if isinstance(_obj, type):
             if _obj not in visited:
                 visited.add(_obj)
-                local_ns = _obj.__dict__
+                local_ns = dict(_obj.__dict__)
                 for member in vars(_obj).values():
                     _update(member, local_ns=local_ns)
                 _update_annotations(_obj, local_ns)

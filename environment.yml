@@ -12,7 +12,7 @@ dependencies:
   - scipy ~= 1.8
   - typing_inspect ~= 0.7
   # build/test
-  - black ~= 22.1
+  - black ~= 22.3
   - conda-build ~= 3.21
   - conda-verify ~= 3.1
   - docutils ~= 0.17
@@ -28,7 +28,7 @@ dependencies:
   - pytest ~= 5.4
   - pytest-cov ~= 2.12
   - pyyaml ~= 5.4
-  - sphinx ~= 4.2
+  - sphinx ~= 4.4
   - sphinx-autodoc-typehints ~= 1.12
   - toml ~= 0.10
   - tox ~= 3.24
@@ -36,6 +36,6 @@ dependencies:
   # notebooks
   - jupyterlab ~= 3.2
   - nbclassic ~= 0.3
-  - nbsphinx ~= 0.7.1
+  - nbsphinx ~= 0.8.8
   - openpyxl ~= 3.0
   - seaborn ~= 0.11

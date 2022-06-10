@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import logging
 from copy import copy
-from numbers import Number
 from typing import Any, Iterable, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
@@ -23,6 +22,12 @@ log = logging.getLogger(__name__)
 #
 
 __all__ = ["Matrix"]
+
+#
+# Type Aliases
+#
+
+Number = Union[float, int]
 
 
 #
@@ -47,7 +52,7 @@ __tracker = AllTracker(globals())
 @inheritdoc(match="[see superclass]")
 class Matrix(HasExpressionRepr):
     """
-    A 2d matrix with optional names and weights for rows and columns.
+    A 2D matrix with optional names and weights for rows and columns.
     """
 
     #: the values of the matrix cells, as a 2d array
@@ -83,9 +88,9 @@ class Matrix(HasExpressionRepr):
         """
         :param values: the values of the matrix cells, as a 2d array
         :param names: the names of the rows and columns as a pair of iterables
-            (each of which may me ``None`` if not specified)
+            (each of which may be ``None`` if not applicable)
         :param weights: the weights of the rows and columns as a pair of iterables
-            (each of which may me ``None`` if not specified)
+            (each of which may be ``None`` if not applicable)
         :param value_label: the label for the value axis
         :param name_labels: the labels for the row and column axes as a pair of strings
         :param weight_label: the label for the weight axis
@@ -258,7 +263,7 @@ class Matrix(HasExpressionRepr):
         if (
             isinstance(size, tuple)
             and len(size) == 2
-            and all(map(lambda x: x is None or isinstance(x, (int, float)), size))
+            and all((x is None or isinstance(x, (int, float))) for x in size)
         ):
             rows, columns = size
         elif isinstance(size, (int, float)):

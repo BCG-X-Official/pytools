@@ -4,6 +4,7 @@ Core implementation of :mod:`pytools.meta`.
 from __future__ import annotations
 
 import logging
+from abc import ABCMeta
 from typing import Any, Optional, TypeVar
 from weakref import ref
 
@@ -16,8 +17,10 @@ log = logging.getLogger(__name__)
 # Exported names
 #
 
-__all__ = ["SingletonMeta", "compose_meta"]
-
+__all__ = [
+    "SingletonABCMeta",
+    "SingletonMeta",
+]
 
 #
 # Type variables
@@ -40,17 +43,17 @@ __tracker = AllTracker(globals())
 
 class SingletonMeta(type):
     """
-    Meta-class for singleton classes.
+    Metaclass for singleton classes.
 
     Subsequent instantiations of a singleton class return the identical object.
-    Singleton classes may not accept any parameters upon instantiation.
+    Singleton classes must not accept any parameters upon instantiation.
     """
 
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
         """
-        :param args: arguments to be passed on to the initializer of the superclass
+        :param args: arguments to be passed on to the initializer of the base metaclass
         :param kwargs: keyword arguments to be passed on to the initializer of the
-            superclass
+            base metaclass
         """
         super().__init__(*args, **kwargs)
         cls.__instance_ref: Optional[ref] = None
@@ -80,24 +83,10 @@ class SingletonMeta(type):
         return instance
 
 
-#
-# Functions
-#
-
-
-def compose_meta(*metaclasses: type) -> type:
+class SingletonABCMeta(SingletonMeta, ABCMeta):
     """
-    Compose multiple metaclasses by dynamically creating a new metaclass.
-
-    :param metaclasses: one or more metaclasses
-    :return: a new metaclass, composing all given metaclasses
+    Convenience metaclass combining :class:`.SingletonMeta` and :class:`~abc.ABCMeta`.
     """
-    metaclasses = tuple(
-        mcs
-        for i, mcs in enumerate(metaclasses)
-        if mcs is not type and mcs not in metaclasses[:i]
-    )
-    return type("_" + "_".join(mcs.__name__ for mcs in metaclasses), metaclasses, {})
 
 
 __tracker.validate()

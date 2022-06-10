@@ -225,7 +225,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     #: The colorbar associated with this style;
     #: set when :meth:`.ColorbarMatplotStyle.start_drawing` is called.
-    colorbar: Optional[ColorbarBase]
+    colorbar: Optional[ColorbarBase] = None
 
     def __init__(
         self,

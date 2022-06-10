@@ -318,6 +318,12 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     #: The default width of labels.
     DEFAULT_MAX_LABEL_WIDTH = 20
 
+    # defined in superclass, repeated here for Sphinx
+    out: TextIO
+
+    # defined in superclass, repeated here for Sphinx
+    width: int
+
     #: The number of characters that will be allocated for the label column,
     #: including the weight.
     max_label_width: int

@@ -44,7 +44,7 @@ class CharacterMatrix:
 
     The matrix is initialised with space characters (`" "`).
 
-    Characters can be "painted" in the matrix using 2D index expressions:
+    Characters can be "painted" in the matrix using 2D index assignments:
 
     - ``matrix[r, c] = chr`` assigns character `chr` at position `(r, c)`
     - ``matrix[r, c1:c2] = str`` writes string `str` at positions

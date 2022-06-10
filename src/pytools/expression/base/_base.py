@@ -93,7 +93,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
         """[see superclass]"""
         return BinaryOperator.MAX_PRECEDENCE
 
-    def _eq_same_type(self, other: "AtomicExpression") -> bool:
+    def _eq_same_type(self, other: AtomicExpression) -> bool:
         return self.value_ == other.value_
 
     def hash_(self) -> int:
@@ -210,7 +210,7 @@ class BracketedExpression(SingletonExpression, metaclass=ABCMeta):
         """[see superclass]"""
         return hash((type(self), self.brackets_, self.subexpression_.hash_()))
 
-    def _eq_same_type(self, other: "BracketedExpression") -> bool:
+    def _eq_same_type(self, other: BracketedExpression) -> bool:
         return self.brackets_ == other.brackets_ and self.subexpression_.eq_(
             other.subexpression_
         )
@@ -343,7 +343,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         """
         return self.prefix_, self.body_
 
-    def _eq_same_type(self, other: "PrefixExpression") -> bool:
+    def _eq_same_type(self, other: PrefixExpression) -> bool:
         return self.prefix_.eq_(other.prefix_) and self.body_.eq_(other.body_)
 
     def hash_(self) -> int:
