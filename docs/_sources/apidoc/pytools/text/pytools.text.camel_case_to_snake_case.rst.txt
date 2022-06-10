@@ -1,0 +1,6 @@
+pytools.text.camel\_case\_to\_snake\_case
+=========================================
+
+.. currentmodule:: pytools.text
+
+.. autofunction:: camel_case_to_snake_case

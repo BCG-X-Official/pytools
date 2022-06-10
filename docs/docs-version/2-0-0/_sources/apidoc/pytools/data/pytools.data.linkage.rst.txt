@@ -1,0 +1,39 @@
+pytools.data.linkage
+====================
+
+.. automodule:: pytools.data.linkage
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: linkage
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      LeafNode
+      LinkageNode
+      Node
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

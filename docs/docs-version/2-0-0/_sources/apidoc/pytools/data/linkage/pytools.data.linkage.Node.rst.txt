@@ -1,0 +1,37 @@
+pytools.data.linkage.Node
+=========================
+
+.. currentmodule:: pytools.data.linkage
+
+.. autoclass:: Node
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Node.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Node.children_distance
+      ~Node.index
+      ~Node.is_leaf
+      ~Node.name
+      ~Node.weight
+   
+   
+
+   .. rubric:: Definitions
