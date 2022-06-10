@@ -8,9 +8,7 @@ repos:
     rev: 22.3.0
     hooks:
       - id: black
-        language_version: python38
-        additional_dependencies:
-          - click~=8.0.4
+        language_version: python3
 
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.9.0
@@ -19,7 +17,8 @@ repos:
         name: flake8
         entry: flake8 --config tox.ini
         language: python_venv
-        additional_dependencies: [ flake8-comprehensions, flake8-import-order ]
+        additional_dependencies:
+          - flake8-comprehensions ~= 3.10
         types: [ python ]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
