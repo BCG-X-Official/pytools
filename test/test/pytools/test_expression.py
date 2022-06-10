@@ -183,7 +183,7 @@ def test_expression_operators() -> None:
     assert freeze(a / b) == freeze(BinaryOperation(BinaryOperator.DIV, a, b))
     assert freeze(a // b) == freeze(BinaryOperation(BinaryOperator.FLOOR_DIV, a, b))
     assert freeze(a % b) == freeze(BinaryOperation(BinaryOperator.MOD, a, b))
-    assert freeze(a ** b) == freeze(BinaryOperation(BinaryOperator.POW, a, b))
+    assert freeze(a**b) == freeze(BinaryOperation(BinaryOperator.POW, a, b))
     assert freeze(a << b) == freeze(BinaryOperation(BinaryOperator.LSHIFT, a, b))
     assert freeze(a >> b) == freeze(BinaryOperation(BinaryOperator.RSHIFT, a, b))
     assert freeze(a & b) == freeze(BinaryOperation(BinaryOperator.AND_BITWISE, a, b))

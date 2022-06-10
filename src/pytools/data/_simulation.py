@@ -178,7 +178,7 @@ def sim_data(
         - two_way_coef[0] * tmp_data.TwoFactor1
         + two_way_coef[1] * tmp_data.TwoFactor2
         + two_way_coef[2] * tmp_data.TwoFactor1 * tmp_data.TwoFactor2
-        + tmp_data.Nonlinear1 ** 3
+        + tmp_data.Nonlinear1**3
         + 2 * np.exp(-6 * (tmp_data.Nonlinear1 - 0.3) ** 2)
         + 2 * np.sin(np.pi * tmp_data.Nonlinear2 * tmp_data.Nonlinear3)
     )
