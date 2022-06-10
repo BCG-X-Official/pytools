@@ -3,6 +3,7 @@ Tests for module pytools.expression
 """
 
 import logging
+from typing import List, Tuple
 
 import pytest
 
@@ -96,7 +97,7 @@ def test_expression_formatting() -> None:
 def test_expression() -> None:
     lit_5 = Lit(5)
     lit_abc = Lit("abc")
-    expressions = [
+    expressions: List[Tuple[Expression, str]] = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
         (Id.xx, "xx"),
@@ -163,7 +164,7 @@ def test_comparison_expressions() -> None:
     assert repr(x <= y) == "x <= y"
 
     assert freeze(x) != freeze(y)
-    assert not freeze(x) == freeze(y)
+    assert not freeze(x) == freeze(y)  # NOSONAR
 
     a: Expression = make_expression([(x + (y * 3)), {freeze(y): x}])
     a_copy: Expression = make_expression([(x + (y * 3)), {freeze(y): x}])
