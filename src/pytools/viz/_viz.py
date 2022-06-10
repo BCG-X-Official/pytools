@@ -117,7 +117,7 @@ class DrawingStyle(metaclass=ABCMeta):
         :return: the name of the default style
         """
 
-    def start_drawing(self, *, title: str, **kwargs: Any) -> None:
+    def start_drawing(self, *, title: str, **kwargs: Any) -> None:  # NOSONAR
         """
         Prepare a new chart for drawing, using the given title.
 
@@ -134,7 +134,7 @@ class DrawingStyle(metaclass=ABCMeta):
         """
         self._status = DrawingStyle._STATUS_STARTED
 
-    def finalize_drawing(self, **kwargs: Any) -> None:
+    def finalize_drawing(self, **kwargs: Any) -> None:  # NOSONAR
         """
         Finalize the drawing.
 
@@ -180,7 +180,9 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         return {
             **named_styles,
             **{
-                f"{name}_dark": lambda: style(colors=ColorScheme.DEFAULT_DARK)
+                f"{name}_dark": lambda style=style: style(
+                    colors=ColorScheme.DEFAULT_DARK
+                )
                 for name, style in named_styles.items()
                 if isinstance(style, type)
             },

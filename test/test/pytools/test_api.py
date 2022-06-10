@@ -1,6 +1,7 @@
 """
 Basic test cases for the `pytools.api` module
 """
+from typing import Any, Dict
 
 import pytest
 
@@ -16,10 +17,13 @@ from pytools.api import (
     validate_type,
 )
 
+PKG_TEST_PYTOOLS_TEST_API = "test.pytools.test_api"
+
 
 def test_deprecated() -> None:
     @deprecated
     def _f() -> None:
+        # dummy function to test the @deprecated decorator
         pass
 
     with pytest.warns(
@@ -30,6 +34,7 @@ def test_deprecated() -> None:
 
     @deprecated(message="test message")
     def _g() -> None:
+        # dummy function to test the @deprecated decorator
         pass
 
     with pytest.warns(
@@ -49,6 +54,7 @@ def test_subsdoc() -> None:
 
     @subsdoc(pattern="A5C", replacement="Foo", using=_A._f)
     def _g() -> None:
+        # empty function
         pass
 
     assert _g.__doc__ == "Foo aac A3C"
@@ -68,18 +74,18 @@ def test_collection_conversions() -> None:
     assert to_collection((1, 2)) == (1, 2)
     assert to_collection(iter([1, 2])) == (1, 2)
 
-    s = {1, 2}
-    l = [1, 2]
-    t = (1, 2)
-    d = {1: 10, 2: 20}
+    my_set = {1, 2}
+    my_list = [1, 2]
+    my_tuple = (1, 2)
+    my_dict = {1: 10, 2: 20}
 
-    assert to_set(s) is s
-    assert to_list(l) is l
-    assert to_tuple(t) is t
-    assert to_collection(s) is s
-    assert to_collection(l) is l
-    assert to_collection(t) is t
-    assert to_collection(d) is d
+    assert to_set(my_set) is my_set  # NOSONAR
+    assert to_list(my_list) is my_list  # NOSONAR
+    assert to_tuple(my_tuple) is my_tuple  # NOSONAR
+    assert to_collection(my_set) is my_set  # NOSONAR
+    assert to_collection(my_list) is my_list  # NOSONAR
+    assert to_collection(my_tuple) is my_tuple  # NOSONAR
+    assert to_collection(my_dict) is my_dict  # NOSONAR
 
     assert to_set(None, optional=True) == set()
     assert to_list(None, optional=True) == []
@@ -101,13 +107,13 @@ def test_collection_conversions() -> None:
         to_collection(1, element_type=str)
 
     with pytest.raises(TypeError):
-        to_set(["a", 1], element_type=str)
+        to_set(["a", 1], element_type=str)  # type: ignore
     with pytest.raises(TypeError):
-        to_list(["a", 1], element_type=str)
+        to_list(["a", 1], element_type=str)  # type: ignore
     with pytest.raises(TypeError):
-        to_tuple(["a", 1], element_type=str)
+        to_tuple(["a", 1], element_type=str)  # type: ignore
     with pytest.raises(TypeError):
-        to_collection(["a", 1], element_type=str)
+        to_collection(["a", 1], element_type=str)  # type: ignore
 
     validate_element_types([1, 2, 3], expected_type=int)
     with pytest.raises(TypeError, match=r"^xyz "):
@@ -129,35 +135,45 @@ def test_type_validation() -> None:
     validate_type(3, expected_type=int, optional=True)
     validate_type(None, expected_type=int, optional=True)
 
+    # noinspection PyTypeChecker
     validate_type(3, expected_type=(int, float))
+    # noinspection PyTypeChecker
     validate_type(3.0, expected_type=(int, float))
+    # noinspection PyTypeChecker
     validate_type(3.0, expected_type=(int, float), optional=True)
+    # noinspection PyTypeChecker
     validate_type(None, expected_type=(int, float), optional=True)
 
     with pytest.raises(
-        TypeError, match="^expected an instance of float but got an int$"
+        TypeError, match=r"^expected an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float)
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of float but got an int$"
+        TypeError, match=r"^value requires an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float, name="value")
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of float but got an int$"
+        TypeError, match=r"^value requires an instance of float but got: int$"
     ):
         validate_type(3, expected_type=float, name="value")
 
     with pytest.raises(
-        TypeError, match="^value requires an instance of int or float but got a str$"
+        TypeError,
+        match=r"^value requires an instance of one of {int, float} but got: str$",
     ):
+        # noinspection PyTypeChecker
         validate_type("3", expected_type=(int, float), name="value")
 
     with pytest.raises(
         TypeError,
-        match="^value requires an instance of int or float or NoneType but got a str$",
+        match=(
+            r"^value requires an instance of one of \{int, float, NoneType\} "
+            r"but got: str$"
+        ),
     ):
+        # noinspection PyTypeChecker
         validate_type("3", expected_type=(int, float), optional=True, name="value")
 
 
@@ -173,9 +189,9 @@ def test_all_tracker() -> None:
 
     # test with defaults, no constant declaration
 
-    mock_globals = dict(
+    mock_globals: Dict[str, Any] = dict(
         __all__=["A", "B"],
-        __name__="test.pytools.test_api",
+        __name__=PKG_TEST_PYTOOLS_TEST_API,
     )
     tracker = AllTracker(mock_globals)
 
@@ -197,7 +213,7 @@ def test_all_tracker() -> None:
 
     mock_globals = dict(
         __all__=["A", "B", "CONST"],
-        __name__="test.pytools.test_api",
+        __name__=PKG_TEST_PYTOOLS_TEST_API,
     )
     tracker = AllTracker(mock_globals)
 
@@ -210,7 +226,7 @@ def test_all_tracker() -> None:
         )
     )
     with pytest.raises(
-        AssertionError, match="^exporting a global constant is not permitted: 1$"
+        AssertionError, match=r"^exporting a global constant is not permitted: 1$"
     ):
         tracker.validate()
 
@@ -218,7 +234,7 @@ def test_all_tracker() -> None:
 
     mock_globals = dict(
         __all__=["A", "B", "CONST"],
-        __name__="test.pytools.test_api",
+        __name__=PKG_TEST_PYTOOLS_TEST_API,
     )
     tracker = AllTracker(mock_globals, allow_global_constants=True)
 

@@ -94,7 +94,7 @@ class DocValidator:
     DEFAULT_VALIDATE_PROTECTED = ("__init__",)
 
     #: Default collection of documentation tests to run during validation.
-    DEFAULT_DOC_TESTS: Tuple[DocTest, DocTest, DocTest, DocTest] = (
+    DEFAULT_VALIDATION_TESTS: Tuple[DocTest, ...] = (
         HasDocstring(),
         HasMatchingParameterDoc(),
         HasWellFormedDocstring(),
@@ -138,9 +138,9 @@ class DocValidator:
 
         self.validation_errors = {}
         self.validation_tests = (
-            (*self.DEFAULT_DOC_TESTS, *additional_tests)
+            (*self.DEFAULT_VALIDATION_TESTS, *additional_tests)
             if additional_tests
-            else self.DEFAULT_DOC_TESTS
+            else self.DEFAULT_VALIDATION_TESTS
         )
 
     __init__.__doc__ = __init__.__doc__.replace(  # type: ignore
