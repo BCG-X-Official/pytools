@@ -40,9 +40,9 @@ DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
 DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_TEMPLATES, "base")
-DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_BASE, "_static")
+FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -171,8 +171,8 @@ class ApiDoc(Command):
    {package_lines}
 """
 
-        os.makedirs(os.path.dirname(DIR_SPHINX_AUTOSUMMARY_TEMPLATE), exist_ok=True)
-        with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
+        os.makedirs(os.path.dirname(FILE_AUTOSUMMARY_TEMPLATE), exist_ok=True)
+        with open(FILE_AUTOSUMMARY_TEMPLATE, "wt") as f:
             f.writelines(autosummary_rst)
         autogen_options = " ".join(
             [
@@ -182,7 +182,7 @@ class ApiDoc(Command):
                 # include imports
                 "-i",
                 # the autosummary source file
-                quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
+                quote_path(FILE_AUTOSUMMARY_TEMPLATE),
             ]
         )
 
