@@ -241,12 +241,8 @@ def _add_custom_css_and_js(app: Sphinx):
     for js in js_rel_paths:
         app.add_js_file(filename=js)
 
-    src_root = os.path.normpath(
-        os.path.join(_dir_conf_base, os.pardir, "source", "_static_base")
-    )
-    dst_html = os.path.normpath(
-        os.path.join(_dir_sphinx, os.pardir, "build", "html", "_static")
-    )
+    src_root = os.path.join(_dir_sphinx, "base", "_static")
+    dst_html = os.path.join(_dir_sphinx, "build", "html", "_static")
     for rel_path in css_rel_paths + js_rel_paths:
         dst_dir = os.path.join(dst_html, os.path.dirname(rel_path))
         os.makedirs(dst_dir, exist_ok=True)

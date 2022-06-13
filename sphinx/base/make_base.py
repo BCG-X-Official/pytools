@@ -26,7 +26,7 @@ CMD_SPHINX_BUILD = "sphinx-build"
 CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
-DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
+DIR_SPHINX_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.realpath(os.path.join(DIR_SPHINX_ROOT, os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
@@ -42,7 +42,7 @@ DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
 DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_TEMPLATES, "base")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE, "_static_base")
+DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_BASE, "_static")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -390,7 +390,7 @@ class Html(Command):
         )
 
         # create interactive versions of all notebooks
-        sys.path.append(DIR_MAKE_BASE)
+        sys.path.append(DIR_SPHINX_BASE)
 
         # create copy of this build for the docs archive
         version_built: pkg_version.Version = get_package_version()
