@@ -1,6 +1,6 @@
 .. autosummary::
    :toctree: ../apidoc
-   :template: custom-module-template.rst
+   :template: base/custom-module-template.rst
    :recursive:
 
    pytools
