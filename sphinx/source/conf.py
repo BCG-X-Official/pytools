@@ -26,9 +26,4 @@ from conf_base import set_config
 
 # ----- custom configuration -----
 
-set_config(
-    globals(),
-    project="pytools",
-    modules=["pytools"],
-    html_logo="_static/gamma_pytools_logo.png",
-)
+set_config(globals(), project="pytools", html_logo="_static/gamma_pytools_logo.png")

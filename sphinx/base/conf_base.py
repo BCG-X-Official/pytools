@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Optional
 
 from sphinx.application import Sphinx
 
@@ -25,10 +25,8 @@ _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
 _dir_conf_base = os.path.dirname(os.path.realpath(__file__))
-_dir_repo_root = os.path.normpath(
-    os.path.join(_dir_conf_base, os.pardir, os.pardir, os.pardir)
-)
-_dir_sphinx = os.path.abspath(os.getcwd())
+_dir_sphinx = os.path.dirname(_dir_conf_base)
+_dir_src = os.path.join(os.path.dirname(_dir_sphinx), "src")
 
 
 # noinspection PyShadowingNames
@@ -36,7 +34,6 @@ def set_config(
     globals_: Dict[str, Any],
     *,
     project: str,
-    modules: Iterable[str],
     html_logo: Optional[str] = None,
 ) -> None:
     """
@@ -58,13 +55,11 @@ def set_config(
         globals_["html_logo"] = html_logo
         globals_["latex_logo"] = html_logo
 
-    modules = {"pytools", *modules}
-    for module in modules:
-        module_path = os.path.normpath(os.path.join(_dir_repo_root, module, "src"))
-        if module_path not in sys.path:
-            # noinspection PyUnboundLocalVariable
-            sys.path.insert(0, module_path)
-            _log.info(f"added `{module_path}` to python paths")
+    module_path = _dir_src
+    if module_path not in sys.path:
+        # noinspection PyUnboundLocalVariable
+        sys.path.insert(0, module_path)
+        _log.info(f"added `{module_path}` to python paths")
 
     # Update global variables
     globals_.update(
