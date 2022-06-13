@@ -39,11 +39,10 @@ DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_star
 DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
-DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
-DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_templates")
+DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_TEMPLATES, "base")
 DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_base")
+DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE, "_static_base")
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -471,11 +470,9 @@ class Versions:
         self.latest_stable_version = latest_stable_version
 
 
-def make(*, modules: List[str]) -> None:
+def make() -> None:
     """
     Run this make script with the given arguments.
-
-    :param modules: the modules to consider for the doc build
     """
     if len(sys.argv) < 2:
         print_usage()
@@ -490,10 +487,7 @@ def make(*, modules: List[str]) -> None:
         exit(1)
 
     # set up the Python path
-    module_paths = [
-        os.path.abspath(os.path.join(DIR_REPO_PARENT, module, "src"))
-        for module in modules
-    ]
+    module_paths = [os.path.abspath(os.path.join(DIR_REPO_ROOT, "src"))]
     if ENV_PYTHON_PATH in os.environ:
         module_paths.append(os.environ[ENV_PYTHON_PATH])
     os.environ[ENV_PYTHON_PATH] = os.pathsep.join(module_paths)
