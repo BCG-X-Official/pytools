@@ -38,11 +38,12 @@ DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
 DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
 DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
-DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
-DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_TEMPLATES, "base")
+DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_ROOT, "base", "_templates")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_BASE, "_static")
-FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
+FILE_AUTOSUMMARY_TEMPLATE = os.path.join(
+    DIR_SPHINX_SOURCE, "_templates", "autosummary.rst"
+)
 JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
 JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
@@ -178,7 +179,7 @@ class ApiDoc(Command):
             [
                 # template path
                 "-t",
-                quote_path(DIR_SPHINX_TEMPLATES_BASE),
+                quote_path(DIR_SPHINX_TEMPLATES),
                 # include imports
                 "-i",
                 # the autosummary source file
@@ -225,7 +226,7 @@ class GettingStartedDoc(Command):
         # create a new getting_started.rst that combines the header from templates and
         # adds an include for the README
         with open(
-            os.path.join(DIR_SPHINX_TEMPLATES_BASE, "getting-started-header.rst"), "r"
+            os.path.join(DIR_SPHINX_TEMPLATES, "getting-started-header.rst"), "r"
         ) as file:
             template_data = file.read()
 

@@ -7,10 +7,10 @@ def run_make(branch: str) -> None:
 
         # paths relative to pytools/sphinx
         PATH_MAKE_BASE = ["base"]
-        PATH_STATIC_BASE = ["base", "_static"]
+        PATH_STATIC_BASE = [*PATH_MAKE_BASE, "_static"]
         PATH_CSS = [*PATH_STATIC_BASE, "css"]
         PATH_JS = [*PATH_STATIC_BASE, "js"]
-        PATH_TEMPLATES_BASE = ["source", "_templates", "base"]
+        PATH_TEMPLATES_BASE = [*PATH_MAKE_BASE, "_templates"]
 
         # path/filename pairs of files to load from the pytools repo
         FILES_TO_LOAD: List[Tuple[List[str], str]] = [
