@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_dir_conf_base = os.path.dirname(os.path.realpath(__file__))
+_dir_conf_base = os.path.dirname(os.path.abspath(__file__))
 _dir_sphinx = os.path.dirname(_dir_conf_base)
 _dir_src = os.path.join(os.path.dirname(_dir_sphinx), "src")
 
@@ -44,11 +44,7 @@ def set_config(
 
     globals_["project"] = project
     globals_["version"] = str(
-        get_package_version(
-            package_path=(
-                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
-            )
-        )
+        get_package_version(package_path=os.path.join(_dir_src, project))
     )
 
     if html_logo:
@@ -176,7 +172,7 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-html_logo = "_static/gamma_logo.jpg"
+html_logo = os.path.join("_static", "gamma_logo.jpg")
 
 # Class documentation to include docstrings both global to the class, and from __init__
 autoclass_content = "both"
@@ -228,8 +224,8 @@ def setup(app: Sphinx) -> None:
 
 def _add_custom_css_and_js(app: Sphinx):
     # add custom css and js files, and copy them to the build/html/_static folder
-    css_rel_paths = (os.path.join("css", "gamma.css"),)
-    js_rel_paths = (os.path.join("js", "gamma.js"), os.path.join("js", "versions.js"))
+    css_rel_paths = [os.path.join("css", "gamma.css")]
+    js_rel_paths = [os.path.join("js", "gamma.js"), os.path.join("js", "versions.js")]
 
     for css in css_rel_paths:
         app.add_css_file(filename=css)
