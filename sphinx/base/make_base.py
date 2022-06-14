@@ -554,8 +554,8 @@ def check_sphinx_version() -> None:
     import sphinx
 
     sphinx_version = pkg_version.parse(sphinx.__version__)
-    if sphinx_version < pkg_version.parse("3.2.1"):
-        raise RuntimeError("please upgrade sphinx to version 3.2.1 or newer")
+    if sphinx_version < pkg_version.parse("4.5"):
+        raise RuntimeError("please upgrade sphinx to version 4.5 or newer")
 
 
 def print_usage() -> None:
