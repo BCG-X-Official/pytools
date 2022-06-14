@@ -35,12 +35,13 @@ DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
 DIR_SPHINX_AUX = os.path.join(DIR_SPHINX_ROOT, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
-DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
+DIR_SPHINX_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "_generated")
 DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_ROOT, "base", "_templates")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
 DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_BASE, "_static")
+FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_GENERATED, "autosummary.rst_")
 FILE_AUTOSUMMARY_TEMPLATE = os.path.join(
     DIR_SPHINX_SOURCE, "_templates", "autosummary.rst"
 )
@@ -144,8 +145,8 @@ class Clean(Command):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
         if os.path.exists(DIR_SPHINX_API_GENERATED):
             shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
-        if os.path.exists(DIR_SPHINX_GET_STARTED_GENERATED):
-            shutil.rmtree(path=DIR_SPHINX_GET_STARTED_GENERATED)
+        if os.path.exists(DIR_SPHINX_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_GENERATED)
 
 
 class ApiDoc(Command):
@@ -205,7 +206,7 @@ class GettingStartedDoc(Command):
     def _run(self) -> None:
 
         # make dir if it does not exist
-        os.makedirs(DIR_SPHINX_GET_STARTED_GENERATED, exist_ok=True)
+        os.makedirs(DIR_SPHINX_GENERATED, exist_ok=True)
 
         # open the rst readme file
         with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
@@ -218,7 +219,7 @@ class GettingStartedDoc(Command):
             r"\.\. Begin-Badges.*?\.\. End-Badges", "", readme_data, flags=re.S
         )
 
-        with open(os.path.join(DIR_SPHINX_SOURCE, "release_notes.rst"), "w") as dst:
+        with open(os.path.join(DIR_SPHINX_GENERATED, "release_notes.rst"), "w") as dst:
             dst.write(".. _release-notes:\n\n")
             with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst"), "r") as src:
                 dst.write(src.read())
@@ -231,7 +232,7 @@ class GettingStartedDoc(Command):
             template_data = file.read()
 
         with open(
-            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"),
+            os.path.join(DIR_SPHINX_GENERATED, "getting_started.rst"),
             "wt",
         ) as file:
             file.writelines(template_data)

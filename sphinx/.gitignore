@@ -1,5 +1,3 @@
 base/_static/js/versions.js
+source/_generated
 source/apidoc
-source/getting_started
-source/release_notes.rst
-source/_templates/autosummary.rst
