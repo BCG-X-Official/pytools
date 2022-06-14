@@ -52,7 +52,7 @@ def run_make(branch: str) -> None:
             target_file = os.path.join(target_path, filename)
             if (
                 os.path.exists(target_file)
-                and os.path.getmtime(target_file) < time.time() + self.CACHE_LIFESPAN
+                and os.path.getmtime(target_file) > time.time() - self.CACHE_LIFESPAN
             ):
                 # no need to refresh the file
                 return
