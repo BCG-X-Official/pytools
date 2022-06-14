@@ -40,15 +40,12 @@ DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
 DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_ROOT, "base", "_templates")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_BASE, "_static")
-FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_GENERATED, "autosummary.rst_")
-FILE_AUTOSUMMARY_TEMPLATE = os.path.join(
-    DIR_SPHINX_SOURCE, "_templates", "autosummary.rst"
-)
-JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
-JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 DIR_PACKAGE_ROOT = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME))
+
+FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_GENERATED, "autosummary.rst_")
+FILE_JS_VERSIONS_RELATIVE = os.path.join("_static", "js", "versions.js")
+FILE_JS_VERSIONS = os.path.join(DIR_SPHINX_BASE, FILE_JS_VERSIONS_RELATIVE)
 
 # Environment variables
 # noinspection SpellCheckingInspection
@@ -259,10 +256,10 @@ class FetchPkgVersions(Command):
             f"const DOCS_VERSIONS = {json.dumps(version_data, indent=4,)}"
         )
 
-        with open(JS_VERSIONS_FILE, "wt") as f:
+        with open(FILE_JS_VERSIONS, "wt") as f:
             f.write(version_data_as_js)
 
-        log(f"Version data written into: {JS_VERSIONS_FILE}")
+        log(f"Version data written into: {FILE_JS_VERSIONS}")
 
 
 class PrepareDocsDeployment(Command):
@@ -300,13 +297,13 @@ class PrepareDocsDeployment(Command):
             log("Build is not latest stable release – just updating versions.")
             # – only update "versions.js":
             new_versions_js = os.path.join(
-                DIR_SPHINX_BUILD_HTML, JS_VERSIONS_FILE_RELATIVE
+                DIR_SPHINX_BUILD_HTML, FILE_JS_VERSIONS_RELATIVE
             )
 
             if not os.path.exists(new_versions_js):
                 raise FileNotFoundError(f"No versions.js file at: {new_versions_js}")
 
-            versions_js_out = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
+            versions_js_out = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
 
             os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
 
@@ -346,9 +343,9 @@ class PrepareDocsDeployment(Command):
 
         # Replace all docs version lists with the most up-to-date to have all versions
         # accessible also from older versions
-        new_versions_js = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
+        new_versions_js = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
-            old_versions_js = os.path.join(d, JS_VERSIONS_FILE_RELATIVE)
+            old_versions_js = os.path.join(d, FILE_JS_VERSIONS_RELATIVE)
             log(
                 "Copying versions.js file from "
                 f"'{new_versions_js}' to '{old_versions_js}'"
@@ -413,7 +410,7 @@ class Html(Command):
             shutil.move(src=DIR_ALL_DOCS_VERSIONS, dst=DIR_SPHINX_BUILD_HTML)
 
         # empty versions file to blank template
-        with open(JS_VERSIONS_FILE, "wt") as f:
+        with open(FILE_JS_VERSIONS, "wt") as f:
             f.write("")
 
 
