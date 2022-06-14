@@ -66,10 +66,6 @@ def set_config(
         (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
     )
 
-    globals_.update(
-        (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
-    )
-
 
 _log.info(f"sys.path = {sys.path}")
 
