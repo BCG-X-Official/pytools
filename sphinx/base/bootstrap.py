@@ -59,7 +59,7 @@ def run_make(branch: str) -> None:
 
             url = (
                 f"{self.GITHUB_ROOT_URL}/{self.branch}/sphinx/"
-                f"{'/'.join(path)}/{filename}"
+                f"{'/'.join(path)}/{filename}?raw=true"
             )
             print(f"downloading {url} to {target_file}")
             with request.urlopen(url) as response:
