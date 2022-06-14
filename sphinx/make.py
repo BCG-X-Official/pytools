@@ -6,25 +6,11 @@ Make sphinx documentation using the makefile in pytools
 import os
 import sys
 
-
-def make() -> None:
-    """
-    Run the common make file available in the pytools repo
-    """
-    cwd = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(cwd)
-
-    sys.path.insert(
-        0,
-        os.path.normpath(
-            os.path.join(cwd, os.pardir, os.pardir, "pytools", "sphinx", "base")
-        ),
-    )
-    # noinspection PyUnresolvedReferences
-    from make_base import make as make_
-
-    make_(modules=["pytools"])
-
-
 if __name__ == "__main__":
+    sys.path.insert(
+        0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "base")
+    )
+
+    from make_base import make
+
     make()

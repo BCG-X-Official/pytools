@@ -10,10 +10,9 @@
       <excludeFolder url="file://$MODULE_DIR$/.tox" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/sphinx/build" />
-      <excludeFolder url="file://$MODULE_DIR$/sphinx/source/_templates_base" />
+      <excludeFolder url="file://$MODULE_DIR$/sphinx/source/_generated" />
       <excludeFolder url="file://$MODULE_DIR$/sphinx/source/apidoc" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/sphinx/source/getting_started" />
     </content>
     <orderEntry type="jdk" jdkName="facet-develop" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

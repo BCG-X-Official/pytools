@@ -26,7 +26,7 @@ CMD_SPHINX_BUILD = "sphinx-build"
 CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 
 # File paths
-DIR_MAKE_BASE = os.path.dirname(os.path.realpath(__file__))
+DIR_SPHINX_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.realpath(os.path.join(DIR_SPHINX_ROOT, os.pardir))
 DIR_REPO_PARENT = os.path.realpath(os.path.join(DIR_REPO_ROOT, os.pardir))
 PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
@@ -35,19 +35,17 @@ DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
 DIR_SPHINX_AUX = os.path.join(DIR_SPHINX_ROOT, "auxiliary")
 DIR_SPHINX_API_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "apidoc")
-DIR_SPHINX_GET_STARTED_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "getting_started")
+DIR_SPHINX_GENERATED = os.path.join(DIR_SPHINX_SOURCE, "_generated")
 DIR_SPHINX_BUILD = os.path.join(DIR_SPHINX_ROOT, "build")
 DIR_SPHINX_BUILD_HTML = os.path.join(DIR_SPHINX_BUILD, "html")
-DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_SOURCE, "_templates")
-DIR_SPHINX_SOURCE_BASE = os.path.join(DIR_MAKE_BASE, os.pardir, "source")
-DIR_SPHINX_TEMPLATES_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_templates")
-DIR_SPHINX_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_TEMPLATES, "autosummary.rst")
+DIR_SPHINX_TEMPLATES = os.path.join(DIR_SPHINX_ROOT, "base", "_templates")
 DIR_SPHINX_TUTORIAL = os.path.join(DIR_SPHINX_SOURCE, "tutorial")
-DIR_SPHINX_SOURCE_STATIC_BASE = os.path.join(DIR_SPHINX_SOURCE_BASE, "_static_base")
-JS_VERSIONS_FILE = os.path.join(DIR_SPHINX_SOURCE_STATIC_BASE, "js", "versions.js")
-JS_VERSIONS_FILE_RELATIVE = os.path.join("_static", "js", "versions.js")
 DIR_ALL_DOCS_VERSIONS = os.path.join(DIR_SPHINX_BUILD, "docs-version")
 DIR_PACKAGE_ROOT = os.path.abspath(os.path.join(DIR_REPO_ROOT, "src", PROJECT_NAME))
+
+FILE_AUTOSUMMARY_TEMPLATE = os.path.join(DIR_SPHINX_GENERATED, "autosummary.rst_")
+FILE_JS_VERSIONS_RELATIVE = os.path.join("_static", "js", "versions.js")
+FILE_JS_VERSIONS = os.path.join(DIR_SPHINX_BASE, FILE_JS_VERSIONS_RELATIVE)
 
 # Environment variables
 # noinspection SpellCheckingInspection
@@ -144,8 +142,8 @@ class Clean(Command):
             shutil.rmtree(path=DIR_SPHINX_BUILD)
         if os.path.exists(DIR_SPHINX_API_GENERATED):
             shutil.rmtree(path=DIR_SPHINX_API_GENERATED)
-        if os.path.exists(DIR_SPHINX_GET_STARTED_GENERATED):
-            shutil.rmtree(path=DIR_SPHINX_GET_STARTED_GENERATED)
+        if os.path.exists(DIR_SPHINX_GENERATED):
+            shutil.rmtree(path=DIR_SPHINX_GENERATED)
 
 
 class ApiDoc(Command):
@@ -172,18 +170,18 @@ class ApiDoc(Command):
    {package_lines}
 """
 
-        os.makedirs(os.path.dirname(DIR_SPHINX_AUTOSUMMARY_TEMPLATE), exist_ok=True)
-        with open(DIR_SPHINX_AUTOSUMMARY_TEMPLATE, "wt") as f:
+        os.makedirs(os.path.dirname(FILE_AUTOSUMMARY_TEMPLATE), exist_ok=True)
+        with open(FILE_AUTOSUMMARY_TEMPLATE, "wt") as f:
             f.writelines(autosummary_rst)
         autogen_options = " ".join(
             [
                 # template path
                 "-t",
-                quote_path(DIR_SPHINX_TEMPLATES_BASE),
+                quote_path(DIR_SPHINX_TEMPLATES),
                 # include imports
                 "-i",
                 # the autosummary source file
-                quote_path(DIR_SPHINX_AUTOSUMMARY_TEMPLATE),
+                quote_path(FILE_AUTOSUMMARY_TEMPLATE),
             ]
         )
 
@@ -205,7 +203,7 @@ class GettingStartedDoc(Command):
     def _run(self) -> None:
 
         # make dir if it does not exist
-        os.makedirs(DIR_SPHINX_GET_STARTED_GENERATED, exist_ok=True)
+        os.makedirs(DIR_SPHINX_GENERATED, exist_ok=True)
 
         # open the rst readme file
         with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
@@ -218,7 +216,7 @@ class GettingStartedDoc(Command):
             r"\.\. Begin-Badges.*?\.\. End-Badges", "", readme_data, flags=re.S
         )
 
-        with open(os.path.join(DIR_SPHINX_SOURCE, "release_notes.rst"), "w") as dst:
+        with open(os.path.join(DIR_SPHINX_GENERATED, "release_notes.rst"), "w") as dst:
             dst.write(".. _release-notes:\n\n")
             with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst"), "r") as src:
                 dst.write(src.read())
@@ -226,12 +224,12 @@ class GettingStartedDoc(Command):
         # create a new getting_started.rst that combines the header from templates and
         # adds an include for the README
         with open(
-            os.path.join(DIR_SPHINX_TEMPLATES_BASE, "getting-started-header.rst"), "r"
+            os.path.join(DIR_SPHINX_TEMPLATES, "getting-started-header.rst"), "r"
         ) as file:
             template_data = file.read()
 
         with open(
-            os.path.join(DIR_SPHINX_GET_STARTED_GENERATED, "getting_started.rst"),
+            os.path.join(DIR_SPHINX_GENERATED, "getting_started.rst"),
             "wt",
         ) as file:
             file.writelines(template_data)
@@ -258,10 +256,10 @@ class FetchPkgVersions(Command):
             f"const DOCS_VERSIONS = {json.dumps(version_data, indent=4,)}"
         )
 
-        with open(JS_VERSIONS_FILE, "wt") as f:
+        with open(FILE_JS_VERSIONS, "wt") as f:
             f.write(version_data_as_js)
 
-        log(f"Version data written into: {JS_VERSIONS_FILE}")
+        log(f"Version data written into: {FILE_JS_VERSIONS}")
 
 
 class PrepareDocsDeployment(Command):
@@ -299,13 +297,13 @@ class PrepareDocsDeployment(Command):
             log("Build is not latest stable release – just updating versions.")
             # – only update "versions.js":
             new_versions_js = os.path.join(
-                DIR_SPHINX_BUILD_HTML, JS_VERSIONS_FILE_RELATIVE
+                DIR_SPHINX_BUILD_HTML, FILE_JS_VERSIONS_RELATIVE
             )
 
             if not os.path.exists(new_versions_js):
                 raise FileNotFoundError(f"No versions.js file at: {new_versions_js}")
 
-            versions_js_out = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
+            versions_js_out = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
 
             os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
 
@@ -345,9 +343,9 @@ class PrepareDocsDeployment(Command):
 
         # Replace all docs version lists with the most up-to-date to have all versions
         # accessible also from older versions
-        new_versions_js = os.path.join(DIR_DOCS, JS_VERSIONS_FILE_RELATIVE)
+        new_versions_js = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
         for d in glob(os.path.join(DIR_DOCS, "docs-version", "*", "")):
-            old_versions_js = os.path.join(d, JS_VERSIONS_FILE_RELATIVE)
+            old_versions_js = os.path.join(d, FILE_JS_VERSIONS_RELATIVE)
             log(
                 "Copying versions.js file from "
                 f"'{new_versions_js}' to '{old_versions_js}'"
@@ -391,7 +389,7 @@ class Html(Command):
         )
 
         # create interactive versions of all notebooks
-        sys.path.append(DIR_MAKE_BASE)
+        sys.path.append(DIR_SPHINX_BASE)
 
         # create copy of this build for the docs archive
         version_built: pkg_version.Version = get_package_version()
@@ -412,7 +410,7 @@ class Html(Command):
             shutil.move(src=DIR_ALL_DOCS_VERSIONS, dst=DIR_SPHINX_BUILD_HTML)
 
         # empty versions file to blank template
-        with open(JS_VERSIONS_FILE, "wt") as f:
+        with open(FILE_JS_VERSIONS, "wt") as f:
             f.write("")
 
 
@@ -471,11 +469,9 @@ class Versions:
         self.latest_stable_version = latest_stable_version
 
 
-def make(*, modules: List[str]) -> None:
+def make() -> None:
     """
     Run this make script with the given arguments.
-
-    :param modules: the modules to consider for the doc build
     """
     if len(sys.argv) < 2:
         print_usage()
@@ -490,10 +486,7 @@ def make(*, modules: List[str]) -> None:
         exit(1)
 
     # set up the Python path
-    module_paths = [
-        os.path.abspath(os.path.join(DIR_REPO_PARENT, module, "src"))
-        for module in modules
-    ]
+    module_paths = [os.path.abspath(os.path.join(DIR_REPO_ROOT, "src"))]
     if ENV_PYTHON_PATH in os.environ:
         module_paths.append(os.environ[ENV_PYTHON_PATH])
     os.environ[ENV_PYTHON_PATH] = os.pathsep.join(module_paths)
@@ -561,8 +554,8 @@ def check_sphinx_version() -> None:
     import sphinx
 
     sphinx_version = pkg_version.parse(sphinx.__version__)
-    if sphinx_version < pkg_version.parse("3.2.1"):
-        raise RuntimeError("please upgrade sphinx to version 3.2.1 or newer")
+    if sphinx_version < pkg_version.parse("4.5"):
+        raise RuntimeError("please upgrade sphinx to version 4.5 or newer")
 
 
 def print_usage() -> None:

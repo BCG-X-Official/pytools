@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Optional
 
 from sphinx.application import Sphinx
 
@@ -24,11 +24,9 @@ logging.basicConfig(level=logging.INFO)
 _log = logging.getLogger(name=__name__)
 
 # this is the directory that contains all required repos
-_dir_conf_base = os.path.dirname(os.path.realpath(__file__))
-_dir_repo_root = os.path.normpath(
-    os.path.join(_dir_conf_base, os.pardir, os.pardir, os.pardir)
-)
-_dir_sphinx = os.path.abspath(os.getcwd())
+_dir_conf_base = os.path.dirname(os.path.abspath(__file__))
+_dir_sphinx = os.path.dirname(_dir_conf_base)
+_dir_src = os.path.join(os.path.dirname(_dir_sphinx), "src")
 
 
 # noinspection PyShadowingNames
@@ -36,7 +34,6 @@ def set_config(
     globals_: Dict[str, Any],
     *,
     project: str,
-    modules: Iterable[str],
     html_logo: Optional[str] = None,
 ) -> None:
     """
@@ -47,30 +44,20 @@ def set_config(
 
     globals_["project"] = project
     globals_["version"] = str(
-        get_package_version(
-            package_path=(
-                os.path.join(os.getcwd(), os.pardir, os.pardir, "src", project)
-            )
-        )
+        get_package_version(package_path=os.path.join(_dir_src, project))
     )
 
     if html_logo:
         globals_["html_logo"] = html_logo
         globals_["latex_logo"] = html_logo
 
-    modules = {"pytools", *modules}
-    for module in modules:
-        module_path = os.path.normpath(os.path.join(_dir_repo_root, module, "src"))
-        if module_path not in sys.path:
-            # noinspection PyUnboundLocalVariable
-            sys.path.insert(0, module_path)
-            _log.info(f"added `{module_path}` to python paths")
+    module_path = _dir_src
+    if module_path not in sys.path:
+        # noinspection PyUnboundLocalVariable
+        sys.path.insert(0, module_path)
+        _log.info(f"added `{module_path}` to python paths")
 
     # Update global variables
-    globals_.update(
-        (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
-    )
-
     globals_.update(
         (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
     )
@@ -185,7 +172,7 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
-html_logo = "_static/gamma_logo.jpg"
+html_logo = os.path.join("_static", "gamma_logo.jpg")
 
 # Class documentation to include docstrings both global to the class, and from __init__
 autoclass_content = "both"
@@ -237,8 +224,8 @@ def setup(app: Sphinx) -> None:
 
 def _add_custom_css_and_js(app: Sphinx):
     # add custom css and js files, and copy them to the build/html/_static folder
-    css_rel_paths = (os.path.join("css", "gamma.css"),)
-    js_rel_paths = (os.path.join("js", "gamma.js"), os.path.join("js", "versions.js"))
+    css_rel_paths = [os.path.join("css", "gamma.css")]
+    js_rel_paths = [os.path.join("js", "gamma.js"), os.path.join("js", "versions.js")]
 
     for css in css_rel_paths:
         app.add_css_file(filename=css)
@@ -246,12 +233,8 @@ def _add_custom_css_and_js(app: Sphinx):
     for js in js_rel_paths:
         app.add_js_file(filename=js)
 
-    src_root = os.path.normpath(
-        os.path.join(_dir_conf_base, os.pardir, "source", "_static_base")
-    )
-    dst_html = os.path.normpath(
-        os.path.join(_dir_sphinx, os.pardir, "build", "html", "_static")
-    )
+    src_root = os.path.join(_dir_sphinx, "base", "_static")
+    dst_html = os.path.join(_dir_sphinx, "build", "html", "_static")
     for rel_path in css_rel_paths + js_rel_paths:
         dst_dir = os.path.join(dst_html, os.path.dirname(rel_path))
         os.makedirs(dst_dir, exist_ok=True)
