@@ -154,15 +154,6 @@ class AllTracker:
                 f"expected:\n__all__ = {all_expected}"
             )
 
-        def _qualname(_obj: Any) -> str:
-            try:
-                return _obj.__qualname__
-            except AttributeError:
-                try:
-                    return _obj.__name__
-                except AttributeError:
-                    return repr(_obj)
-
         module = self._module
         public_module = self.public_module
         allow_global_constants = self.allow_global_constants
@@ -335,3 +326,18 @@ def update_forward_references(
 
 
 __tracker.validate()
+
+
+#
+# Auxiliary functions
+#
+
+
+def _qualname(_obj: Any) -> str:
+    try:
+        return _obj.__qualname__
+    except AttributeError:
+        try:
+            return _obj.__name__
+        except AttributeError:
+            return repr(_obj)
