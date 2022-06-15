@@ -303,9 +303,14 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
+    try:
+        my_module = obj.__module__
+    except AttributeError:
+        # the object cannot be a type or function; no action required
+        return
+
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()
-    my_module = obj.__module__
 
     def _update(_obj: Any, local_ns: Optional[Dict[str, Any]] = None) -> None:
         if isinstance(_obj, type) and _obj.__module__ == my_module:
