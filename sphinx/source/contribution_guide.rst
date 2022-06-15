@@ -270,21 +270,21 @@ The ``sphinx/source`` folder contains:
   needed to customize the input and output behavior of the Sphinx documentation build
   (see below for further details).
 
-- the base .rst files used for the documentation build, which are:
+- the essential ``.rst`` files used for the documentation build, which are:
 
-    *	``index.rst``: definition of the high-level documentation structure which mainly
-      references the other rst files in this directory.
+  * ``index.rst``: definition of the high-level documentation structure which mainly
+    references the other ``.rst`` files in this directory.
 
-    *	``contribution_guide.rst``: detailed information on building and releasing
-      *pytools*.
+  * ``contribution_guide.rst``: detailed information on building and releasing
+    *pytools*.
 
-    *	``faqs.rst``: contains guidance on bug reports/feature requests, how to contribute
-      and answers to frequently asked questions including small code snippets.
+  * ``faqs.rst``: contains guidance on bug reports/feature requests, how to contribute
+    and answers to frequently asked questions including small code snippets.
 
-    * ``api_landing.rst``: for placing any API landing page preamble for documentation
-      as needed. This information will appear on the API landing page in the
-      documentation build after the short description in ``src/__init__.py``. This file
-      is included in the documentation build via the ``custom-module-template.rst``.
+  * ``api_landing.rst``: for placing any API landing page preamble for documentation
+    as needed. This information will appear on the API landing page in the
+    documentation build after the short description in ``src/__init__.py``. This file
+    is included in the documentation build via the ``custom-module-template.rst``.
 
 - ``_static`` contains additional material used in the documentation build, in this
   case, logos and icons.
@@ -444,11 +444,11 @@ change and merge into develop before going any further.
 
 The release process has the following key steps:
 
-* Create a new release branch from the tag of the latest release named
+- Create a new release branch from the tag of the latest release named
   ``release/<version>`` where ``<version>`` is the version number of the new release
-* Create a new branch from the baseline branch (e.g., ``2.0.x``) named
+- Create a new branch from the baseline branch (e.g., ``2.0.x``) named
   ``dev/<version>`` where ``<version>`` is the version number of the new release
-* Opening a PR to merge ``dev/<version>`` onto ``release/<version>``.
+- Opening a PR to merge ``dev/<version>`` onto ``release/<version>``.
   This will automatically run all conda/pip build tests via
   Azure Pipelines prior to allowing to merge the PR.
   This will trigger automatic upload of artifacts (conda and pip
@@ -456,8 +456,9 @@ The release process has the following key steps:
   build is checked using `PyPI test <https://test.pypi.org/>`__ to ensure all
   metadata presents correctly. This is important as package versions in
   PyPI proper are immutable.
-* If everything passes and looks okay, merge the PR using a *merge commit*
-  (not squashing), this will trigger the release pipeline which will:
+- If everything passes and looks okay, merge the PR using a *merge commit*
+  (not squashing).
+  This will trigger the release pipeline which will:
 
   * Tag the release commit with version number as specified in ``src/__init__.py``
   * Create a release on GitHub for the new version, please check the `documentation
@@ -467,11 +468,11 @@ The release process has the following key steps:
     commits since the last release. Please note this can be manually edited to be more
     succinct afterwards
   * Attach build artifacts (conda and pip packages) to GitHub release
-
   * Upload build artifacts to conda/PyPI using ``anaconda upload`` and
-   ``flit publish``, respectively
-*  Remove any test versions for pip from PyPI test
-*  Merge ``release/<version>`` back onto the baseline branch from which
+    ``flit publish``, respectively
+
+-  Remove any test versions for pip from PyPI test
+-  Merge ``release/<version>`` back onto the baseline branch from which
    ``dev/<version>`` was branched
-*  Bump up version in ``src/__init__.py`` on the baseline branch to start work towards
+-  Bump up version in ``src/__init__.py`` on the baseline branch to start work towards
    the next release
