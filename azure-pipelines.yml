@@ -233,7 +233,7 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            conda install -y -c anaconda conda-build~=3.21 conda-verify toml~=0.10 flit~=3.7 packaging~=20
+            conda install -y -c anaconda "conda-build~=3.21" conda-verify "toml~=0.10" "flit~=3.7" "packaging~=20"
           displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
