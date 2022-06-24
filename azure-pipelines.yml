@@ -241,7 +241,7 @@ stages:
             python -m pip install "toml~=0.10"
             python -m pip install "flit~=3.7"
             flit --version
-            python -m pip install "tox~=3.20"
+            python -m pip install "tox~=3.25"
             tox --version
           displayName: 'Install tox, flit & toml'
           condition: eq(variables['BUILD_SYSTEM'], 'tox')
