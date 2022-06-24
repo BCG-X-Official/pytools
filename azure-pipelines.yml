@@ -233,15 +233,15 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            conda install -y -c anaconda conda-build~=3.21 conda-verify toml=0.10.* flit=3.0.* packaging~=20.9
+            conda install -y -c anaconda conda-build~=3.21 conda-verify toml~=0.10 flit~=3.7 packaging~=20
           displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
         - script: |
-            python -m pip install "toml==0.10.*"
-            python -m pip install "flit==3.0.*"
+            python -m pip install "toml~=0.10"
+            python -m pip install "flit~=3.7"
             flit --version
-            python -m pip install "tox==3.20.*"
+            python -m pip install "tox~=3.20"
             tox --version
           displayName: 'Install tox, flit & toml'
           condition: eq(variables['BUILD_SYSTEM'], 'tox')
