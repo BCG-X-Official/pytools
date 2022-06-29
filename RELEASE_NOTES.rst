@@ -10,8 +10,11 @@ and is now subject to static type checking with :mod:`mypy`.
 2.0.1
 ~~~~~
 
+- FIX: in class :class:`.AllTracker`, do not attempt to update forward references in
+  imported objects
 - BUILD: update build scripts to support the stricter dependency resolver introduced by
-  *pip 20.3*
+  *pip 20.3*, and to fix a compatibility issue with recent updates to nbsphinx
+- BUILD: enable local sphinx builds in other FACET packages
 
 
 2.0.0
