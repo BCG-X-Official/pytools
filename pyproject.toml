@@ -64,6 +64,10 @@ docs = [
 Documentation = "https://bcg-gamma.github.io/pytools/"
 Repository = "https://github.com/BCG-Gamma/pytools"
 
+[build]
+# comma-separated list of packages to be built from source in pip min builds
+no-binary.min = ["matplotlib"]
+
 [build.matrix.min]
 # minimum requirements of gamma-pytools
 joblib         = "~=0.14.0"
@@ -75,6 +79,7 @@ scipy          = "~=1.2.1"
 typing_inspect = "~=0.4.0"
 
 [build.matrix.max]
+# maximum requirements of gamma-pytools
 joblib         = "~=1.1"
 matplotlib     = "~=3.5"
 numpy          = ">=1.22,<2a"  # cannot use ~= due to conda bug
