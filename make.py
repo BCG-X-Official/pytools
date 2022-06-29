@@ -15,7 +15,7 @@ import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from traceback import print_exc
-from typing import Any, Dict, Iterator, List, Set, cast
+from typing import Any, Dict, Iterator, List, Mapping, Set, cast
 from urllib import request
 from xml.etree import ElementTree
 
@@ -34,13 +34,16 @@ from make_util import get_package_version
 FACET_PATH_ENV = "FACET_PATH"
 FACET_PATH_URI_ENV = "FACET_PATH_URI"
 FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
+FACET_DEPENDENCY_VERSION_ENV = "FACET_V_{package}"
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
+FACET_NO_BINARY_ENV = "FACET_NO_BINARY"
 
 # pyproject.toml: elements of the hierarchy
 TOML_BUILD = "build"
 TOML_DIST_NAME = "dist-name"
 TOML_FLIT = "flit"
 TOML_MATRIX = "matrix"
+TOML_NO_BINARY = "no-binary"
 TOML_METADATA = "metadata"
 TOML_REQUIRES = "requires"
 TOML_REQUIRES_PYTHON = "requires-python"
@@ -102,6 +105,7 @@ class Builder(metaclass=ABCMeta):
         ] = package_version
 
         self.package_version = package_version
+        self.pyproject_toml = None
 
     @staticmethod
     def for_build_system(
@@ -142,16 +146,21 @@ class Builder(metaclass=ABCMeta):
         """
         return os.path.join(self.make_build_path(), "simple")
 
-    def get_pyproject_toml(self) -> Dict[str, Any]:
+    def get_pyproject_toml(self) -> Mapping[str, Any]:
         """
         Retrieve a parsed Dict for a given project's pyproject.toml.
         """
+        if self.pyproject_toml is not None:
+            return self.pyproject_toml
+
         pyproject_toml_path = os.path.join(
             os.environ[FACET_PATH_ENV], self.project, "pyproject.toml"
         )
         log(f"Reading build configuration from {pyproject_toml_path}")
         with open(pyproject_toml_path, "rt") as f:
-            return toml.load(f)
+            self.pyproject_toml = pyproject_toml = toml.load(f)
+
+        return pyproject_toml
 
     def get_package_dist_name(self) -> str:
         """
@@ -225,11 +234,47 @@ class Builder(metaclass=ABCMeta):
         Export package dependencies for builds as environment variables.
         """
 
-        # get full project specification from the TOML file
-        pyproject_toml = self.get_pyproject_toml()
+        requirements_to_expose = self._get_requirements_to_expose()
 
+        for package, version in requirements_to_expose.items():
+            # bash ENV variables can not use dash, replace it to _
+            export_environment_variable(
+                name=FACET_DEPENDENCY_VERSION_ENV.format(
+                    package=re.sub(r"[^\w]", "_", package.upper())
+                ),
+                value=version,
+            )
+
+        # get packages to be built from source
+        build_no_binaries: List[str] = (
+            self.get_pyproject_toml()[TOML_BUILD]
+            .get(TOML_NO_BINARY, {})
+            .get(self.dependency_type, [])
+        )
+
+        if not isinstance(build_no_binaries, list):
+            raise TypeError(
+                f"option {TOML_BUILD}.{TOML_NO_BINARY}.{self.dependency_type} "
+                f"expected to be a list of package names but got: {build_no_binaries!r}"
+            )
+
+        # check all no-binaries packages are required packages
+        build_no_binaries_unknown = (
+            set(build_no_binaries) - requirements_to_expose.keys()
+        )
+        if build_no_binaries_unknown:
+            raise ValueError(
+                f"unknown packages stated in no-binaries option: "
+                f"{build_no_binaries_unknown!r}"
+            )
+
+        export_environment_variable(
+            name=FACET_NO_BINARY_ENV, value=",".join(build_no_binaries)
+        )
+
+    def _get_run_dependencies(self) -> Mapping[str, str]:
         # get the python version and run dependencies from the flit metadata
-        flit_metadata = pyproject_toml[TOML_TOOL][TOML_FLIT][TOML_METADATA]
+        flit_metadata = self.get_pyproject_toml()[TOML_TOOL][TOML_FLIT][TOML_METADATA]
 
         python_version = flit_metadata[TOML_REQUIRES_PYTHON]
         run_dependencies: Dict[str, str] = {
@@ -249,8 +294,17 @@ class Builder(metaclass=ABCMeta):
             )
         run_dependencies[PKG_PYTHON] = python_version
 
+        return run_dependencies
+
+    def _get_requirements_to_expose(self) -> Mapping[str, str]:
+        # get the run dependencies
+        run_dependencies = self._get_run_dependencies()
+
+        # get full project specification from the TOML file
         # get the matrix test dependencies (min and max)
-        build_matrix_definition = pyproject_toml[TOML_BUILD][TOML_MATRIX]
+        build_matrix_definition: Dict[str, Dict[str, str]] = self.get_pyproject_toml()[
+            TOML_BUILD
+        ][TOML_MATRIX]
 
         def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
             return {
@@ -296,12 +350,7 @@ class Builder(metaclass=ABCMeta):
                 if package not in requirements_to_expose
             }
         )
-
-        for package, version in requirements_to_expose.items():
-            # bash ENV variables can not use dash, replace it to _
-            env_var_name = "FACET_V_" + re.sub(r"[^\w]", "_", package.upper())
-            log(f"Exporting {env_var_name}={version !r}")
-            os.environ[env_var_name] = version
+        return requirements_to_expose
 
     @abstractmethod
     def clean(self) -> None:
@@ -361,7 +410,7 @@ class CondaBuilder(Builder):
 
     def adapt_version_requirement_syntax(self, version: str) -> str:
         # CONDA expects = instead of ==
-        return re.sub(r"==", "=", version)
+        return version.replace("==", "=")
 
     def clean(self) -> None:
         build_path = self.make_build_path()
@@ -380,7 +429,7 @@ class CondaBuilder(Builder):
         """
 
         build_path = self.make_build_path()
-        os.environ[CONDA_BUILD_PATH_ENV] = build_path
+        export_environment_variable(name=CONDA_BUILD_PATH_ENV, value=build_path)
 
         recipe_path = os.path.abspath(
             os.path.join(os.environ[FACET_PATH_ENV], self.project, "condabuild")
@@ -476,7 +525,7 @@ def get_projects_root_path() -> str:
         facet_path = os.environ[FACET_PATH_ENV]
     else:
         facet_path = os.path.abspath(os.path.join(SCRIPT_DIR, os.pardir))
-        os.environ[FACET_PATH_ENV] = facet_path
+        export_environment_variable(name=FACET_PATH_ENV, value=facet_path)
 
     return facet_path
 
@@ -516,13 +565,18 @@ Example usage:
     )
 
 
-def log(message: str) -> None:
+def export_environment_variable(name: str, value: str) -> None:
+    log(f"Exporting {name}={value!r}")
+    os.environ[name] = value
+
+
+def log(message: Any) -> None:
     """
     Write a message to `stderr`.
 
     :param message: the message to write
     """
-    print(message, file=sys.stderr)
+    print(str(message), file=sys.stderr)
 
 
 def run_make() -> None:
@@ -560,7 +614,7 @@ def run_make() -> None:
         Builder.for_build_system(
             build_system=build_system, project=project, dependency_type=dependency_type
         ).run()
-    except BaseException:
+    except BaseException:  # NOSONAR
         print_exc(file=sys.stderr)
         exit(1)
 
