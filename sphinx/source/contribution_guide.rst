@@ -201,24 +201,24 @@ explain usage patterns.
   .. code-block:: python
 
     def f(x: int) -> float:
-        """
-        Do something.
+      """
+      Do something.
 
-        :param x: input value
-        :return: output value
-        """
+      :param x: input value
+      :return: output value
+      """
 
   but not
 
   .. code-block:: python
 
     def f(x: int) -> float:
-       """
-       Do something.
+      """
+      Do something.
 
-       :param int x: input value
-       :return float: output value
-       """
+      :param int x: input value
+      :return float: output value
+      """
 
 
 Sphinx Build
@@ -248,17 +248,17 @@ building and releasing *pytools* below.
 
 The ``sphinx`` folder in the root directory contains the following:
 
-- a ``make.py`` script for executing the documentation build via python.
+- a ``make.py`` script for executing the documentation build via python
 
 - a ``source`` directory containing predefined .rst files for the documentation build
-  and other required elements, see below for more details.
+  and other required elements (see below for more details)
 
 - a ``base`` folder which contains
 
   * the ``make_base.py`` and ``conf_base.py`` scripts with nearly all configuration for
-    ``make.py`` and ``conf.py``.
+    ``make.py`` and ``conf.py``
   * ``_static`` directory, containing logos, icons, javascript and css used for
-    *pytools* and other packages documentation builds.
+    *pytools* and other packages documentation builds
   * ``_templates`` directory, containing *autodoc* templates used in generating and
     formatting the modules and classes for the API documentation
 
@@ -268,32 +268,32 @@ The ``sphinx/source`` folder contains:
 - a ``conf.py`` script that is the
   `build configuration file <https://www.sphinx-doc.org/en/master/usage/configuration.html>`_
   needed to customize the input and output behavior of the Sphinx documentation build
-  (see below for further details).
+  (see below for further details)
 
 - the essential ``.rst`` files used for the documentation build, which are:
 
   * ``index.rst``: definition of the high-level documentation structure which mainly
-    references the other ``.rst`` files in this directory.
+    references the other ``.rst`` files in this directory
 
   * ``contribution_guide.rst``: detailed information on building and releasing
     *pytools*.
 
   * ``faqs.rst``: contains guidance on bug reports/feature requests, how to contribute
-    and answers to frequently asked questions including small code snippets.
+    and answers to frequently asked questions including small code snippets
 
   * ``api_landing.rst``: for placing any API landing page preamble for documentation
     as needed. This information will appear on the API landing page in the
     documentation build after the short description in ``src/__init__.py``. This file
-    is included in the documentation build via the ``custom-module-template.rst``.
+    is included in the documentation build via the ``custom-module-template.rst``
 
 - ``_static`` contains additional material used in the documentation build, in this
-  case, logos and icons.
+  case, logos and icons
 
 
 The two key scripts are ``make.py`` and ``conf.py``. The base configuration for the
 these scripts can be found in `pytools/sphinx <https://github.com/BCG-Gamma/pytools/tree/develop/sphinx/base>`_.
 The reason for this is to minimise code given the standardization of the documentation
-build across multiple packages.
+build across multiple packages
 
 **make.py**: All base configuration comes from ``pytools/sphinx/base/make_base.py`` and
 this script includes defined commands for key steps in the documentation build. Briefly,
@@ -317,7 +317,7 @@ the documentation build. In particular, this file highlights key extensions need
 the build process, of which some key ones are as follows:
 
 - `intersphinx <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_
-  (external links to other documentations built with Sphinx: scikit-learn, numpy...)
+  (external links to other documentations built with Sphinx: matplotlib, numpy, ...)
 
 - `viewcode <https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html>`_
   to include source code in the documentation, and links to the source code from the objects documentation
@@ -335,10 +335,10 @@ markdown format. The reason for this is the ``README.rst`` is included as the qu
 guide in the documentation build. This helped minimize code duplication. However,
 there are a few key points to be aware of:
 
-- The README has links to logos and icons located in the ``sphinx/source/_static`` folder.
-  To ensure these links are correct when the documentation is built, they are altered and then the
-  contents of the ``README.rst`` is incorporated into the ``getting_started.rst`` which is generated
-  during the build and can be found in ``sphinx/source/getting_started``.
+The README has links to logos and icons located in the ``sphinx/source/_static`` folder.
+To ensure these links are correct when the documentation is built, they are altered and then the
+contents of the ``README.rst`` is incorporated into the ``getting_started.rst`` which is generated
+during the build and can be found in ``sphinx/source/getting_started``.
 
 
 Package builds
@@ -414,10 +414,10 @@ Please note the following:
 - Build output will be stored in the ``dist/`` directory.
 - Some useful references for conda builds:
 
-    - `Conda build tutorial
-      <https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/building-conda-packages.html>`_
-    - `Conda build metadata reference
-      <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_
+  - `Conda build tutorial
+    <https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/building-conda-packages.html>`_
+  - `Conda build metadata reference
+    <https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html>`_
 
 Azure DevOps CI/CD
 ------------------
