@@ -7,6 +7,13 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with :mod:`mypy`.
 
+2.0.1
+~~~~~
+
+- BUILD: update build scripts to support the stricter dependency resolver introduced by
+  *pip 20.3*
+
+
 2.0.0
 ~~~~~
 
