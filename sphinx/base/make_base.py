@@ -56,6 +56,10 @@ FILE_JS_VERSIONS = os.path.join(DIR_SPHINX_BASE, FILE_JS_VERSIONS_RELATIVE)
 ENV_PYTHON_PATH = "PYTHONPATH"
 
 
+# Version of the package being built
+PACKAGE_VERSION = _get_package_version(package_path=DIR_PACKAGE_ROOT)
+
+
 class CommandMeta(ABCMeta):
     """
     Meta-class for command classes.
@@ -94,9 +98,6 @@ class Command(metaclass=CommandMeta):
     def __init__(self) -> None:
         self.name = self.__RE_CAMEL_TO_SNAKE.sub("_", type(self).__name__).lower()
 
-        # get the current version of the package we're building documentation for
-        self.package_version: pkg_version.Version = get_package_version()
-
     @abstractmethod
     def get_description(self) -> str:
         pass
@@ -124,7 +125,7 @@ class Command(metaclass=CommandMeta):
         return dependencies_extended
 
     def run(self) -> None:
-        log(f"{'=' * 80}\n" f"Running command {self.name} – {self.get_description()}\n")
+        log(f"{'=' * 80}\nRunning command {self.name} – {self.get_description()}\n")
         self._run()
 
     @abstractmethod
@@ -297,7 +298,7 @@ class PrepareDocsDeployment(Command):
 
         dir_docs_current_version = os.path.join(
             DIR_DOCS_VERSION,
-            version_string_to_url(self.package_version),
+            version_string_to_url(PACKAGE_VERSION),
         )
 
         if os.path.exists(dir_docs_current_version):
@@ -312,7 +313,7 @@ class PrepareDocsDeployment(Command):
         # accessible also from older versions
         new_versions_js = os.path.join(
             DIR_DOCS_VERSION,
-            version_string_to_url(self.package_version),
+            version_string_to_url(PACKAGE_VERSION),
             FILE_JS_VERSIONS_RELATIVE,
         )
 
@@ -424,8 +425,7 @@ def get_versions() -> Versions:
     )
 
     # append the version we are building to version_tags
-    version_built: pkg_version.Version = get_package_version()
-    version_tags = (*version_tags, version_built)
+    version_tags = (*version_tags, PACKAGE_VERSION)
 
     versions_by_minor_version: Dict[str, List[pkg_version.Version]] = defaultdict(list)
 
@@ -511,13 +511,6 @@ def is_azure_build() -> bool:
         log("Azure build detected")
 
     return is_azure
-
-
-def get_package_version() -> pkg_version.Version:
-    """
-    Get the version of the package being built.
-    """
-    return _get_package_version(package_path=DIR_PACKAGE_ROOT)
 
 
 def version_string_to_url(version: pkg_version.Version) -> str:
