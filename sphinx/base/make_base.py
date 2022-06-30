@@ -278,42 +278,54 @@ class PrepareDocsDeployment(Command):
 
         # copy new the docs version to the deployment path
         if current_version == Versions().latest_stable_version:
-            # only copy to deployment path if our version is the latest stable release
-            log("Build is latest stable release – updating root docs.")
-            # remove docs build currently deployed, except for the docs versions folder
-            if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
-                with TemporaryDirectory() as DIR_TMP:
-                    shutil.move(src=os.path.join(DIR_DOCS, "docs-version"), dst=DIR_TMP)
-                    shutil.rmtree(path=DIR_DOCS)
-                    os.makedirs(DIR_DOCS)
-                    shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
-            else:
-                os.makedirs(DIR_DOCS, exist_ok=True)
-
-            # copy new docs version to deployment path
-            shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
+            self._copy_latest_docs()
         else:
-            # build of a pre-release or patch to an earlier release
-            log("Build is not latest stable release – just updating versions.")
-            # – only update "versions.js":
-            new_versions_js = os.path.join(
-                DIR_SPHINX_BUILD_HTML, FILE_JS_VERSIONS_RELATIVE
-            )
+            self._update_versions_js()
 
-            if not os.path.exists(new_versions_js):
-                raise FileNotFoundError(f"No versions.js file at: {new_versions_js}")
+        self._copy_historic_docs(current_version)
 
-            versions_js_out = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
+        self._update_historic_docs()
 
-            os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
+    @staticmethod
+    def _copy_latest_docs() -> None:
+        # only copy to deployment path if our version is the latest stable release
+        log("Build is latest stable release – updating root docs.")
 
-            log(
-                "Copying updated versions.js file from "
-                f"'{new_versions_js}' to '{versions_js_out}'"
-            )
+        # remove docs build currently deployed, except for the docs versions folder
+        if os.path.exists(os.path.join(DIR_DOCS, "docs-version")):
+            with TemporaryDirectory() as DIR_TMP:
+                shutil.move(src=os.path.join(DIR_DOCS, "docs-version"), dst=DIR_TMP)
+                shutil.rmtree(path=DIR_DOCS)
+                os.makedirs(DIR_DOCS)
+                shutil.move(src=os.path.join(DIR_TMP, "docs-version"), dst=DIR_DOCS)
+        else:
+            os.makedirs(DIR_DOCS, exist_ok=True)
 
-            shutil.copy(src=new_versions_js, dst=versions_js_out)
+        # copy new docs version to deployment path
+        shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=DIR_DOCS, dirs_exist_ok=True)
 
+    @staticmethod
+    def _update_versions_js() -> None:
+        # build of a pre-release or patch to an earlier release
+        log("Build is not latest stable release – just updating versions.")
+        # – only update "versions.js":
+        new_versions_js = os.path.join(DIR_SPHINX_BUILD_HTML, FILE_JS_VERSIONS_RELATIVE)
+        if not os.path.exists(new_versions_js):
+            raise FileNotFoundError(f"No versions.js file at: {new_versions_js}")
+
+        versions_js_out = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
+
+        os.makedirs(os.path.dirname(versions_js_out), exist_ok=True)
+
+        log(
+            "Copying updated versions.js file from "
+            f"'{new_versions_js}' to '{versions_js_out}'"
+        )
+
+        shutil.copy(src=new_versions_js, dst=versions_js_out)
+
+    @staticmethod
+    def _copy_historic_docs(current_version: pkg_version.Version) -> None:
         # get current version of package in the form of folder/URL name (e.g., "1-0-0")
         current_version_path = os.path.join(
             DIR_DOCS, "docs-version", version_string_to_url(current_version)
@@ -323,11 +335,11 @@ class PrepareDocsDeployment(Command):
             shutil.rmtree(path=current_version_path)
 
         log(f"Copying pre-existing docs from: '{DIR_ALL_DOCS_VERSIONS}'")
-        log("Pre-existing docs contents:")
 
         if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
             DIR_ALL_DOCS_VERSIONS
         ):
+            log("Pre-existing docs contents:")
             log(os.listdir(DIR_ALL_DOCS_VERSIONS))
 
         else:
@@ -341,6 +353,8 @@ class PrepareDocsDeployment(Command):
             dirs_exist_ok=True,
         )
 
+    @staticmethod
+    def _update_historic_docs() -> None:
         # Replace all docs version lists with the most up-to-date to have all versions
         # accessible also from older versions
         new_versions_js = os.path.join(DIR_DOCS, FILE_JS_VERSIONS_RELATIVE)
