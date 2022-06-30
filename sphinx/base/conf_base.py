@@ -168,7 +168,11 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "navigation_depth": 4,
+    # Omit the `theme-switcher` since we don't support dark mode:
+    "navbar_end": ["navbar-icon-links"],
 }
+
+html_context = {"default_mode": "light"}
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
