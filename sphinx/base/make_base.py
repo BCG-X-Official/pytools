@@ -328,7 +328,7 @@ class PrepareDocsDeployment(Command):
         if os.path.exists(DIR_ALL_DOCS_VERSIONS) and os.path.isdir(
             DIR_ALL_DOCS_VERSIONS
         ):
-            log(str(os.listdir(DIR_ALL_DOCS_VERSIONS)))
+            log(os.listdir(DIR_ALL_DOCS_VERSIONS))
 
         else:
             raise FileNotFoundError(
@@ -508,13 +508,13 @@ def make() -> None:
         executed_commands.add(next_command)
 
 
-def log(message: str) -> None:
+def log(message: Any) -> None:
     """
     Write a message to `stderr`.
 
     :param message: the message to write
     """
-    print(message, file=sys.stderr)
+    print(str(message), file=sys.stderr)
 
 
 def quote_path(path: str) -> str:
