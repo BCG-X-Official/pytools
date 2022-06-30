@@ -24,7 +24,7 @@ const buildVersionSelector = function() {
             );
     });
 
-    $("#navbar-collabsible").append(versionSelector);
+    $("#navbar-menu").append(versionSelector);
 }
 
 const getActiveDocsVersion = function() {

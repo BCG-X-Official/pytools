@@ -1,6 +1,0 @@
-pytools.expression.make\_expression
-===================================
-
-.. currentmodule:: pytools.expression
-
-.. autofunction:: make_expression

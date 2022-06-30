@@ -1,6 +1,0 @@
-pytools.api.deprecated
-======================
-
-.. currentmodule:: pytools.api
-
-.. autofunction:: deprecated

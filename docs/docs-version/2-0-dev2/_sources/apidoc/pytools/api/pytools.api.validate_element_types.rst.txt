@@ -1,6 +1,0 @@
-pytools.api.validate\_element\_types
-====================================
-
-.. currentmodule:: pytools.api
-
-.. autofunction:: validate_element_types

@@ -1,6 +1,0 @@
-pytools.api.subsdoc
-===================
-
-.. currentmodule:: pytools.api
-
-.. autofunction:: subsdoc
