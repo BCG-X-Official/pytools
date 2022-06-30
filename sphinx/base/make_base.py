@@ -266,7 +266,7 @@ class FetchPkgVersions(Command):
         with open(FILE_JS_VERSIONS, "wt") as f:
             f.write(version_data_as_js)
 
-        log(f"Version data written into: {FILE_JS_VERSIONS}")
+        log(f"Version data written to: {FILE_JS_VERSIONS}")
 
 
 class PrepareDocsDeployment(Command):
