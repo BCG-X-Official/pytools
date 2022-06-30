@@ -151,7 +151,14 @@ stages:
               set -eux
               eval "$(conda shell.bash hook)"
               conda env create
+              conda activate $(project_name)-develop
+
+              echo "##vso[task.setvariable variable=conda_env_path]$CONDA_PREFIX"
+
           displayName: 'create development environment'
+
+        - publish: $(conda_env_path)
+          artifact: conda_environment
 
 
   - stage:
