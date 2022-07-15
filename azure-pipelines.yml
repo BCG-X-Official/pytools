@@ -684,6 +684,14 @@ stages:
               mv docs $(Build.ArtifactStagingDirectory)/docs.new
           displayName: 'Merge previous and latest docs'
 
+        - task: PublishBuildArtifacts@1
+          inputs:
+            pathtoPublish: $(Build.ArtifactStagingDirectory)/docs.new
+            artifactName: $(project_name)_docs
+            publishLocation: Container
+
+          displayName: 'Publish docs artifact'
+
         - task: Bash@3
           condition: eq(variables['source_is_release_branch'], 'True')
           inputs:
