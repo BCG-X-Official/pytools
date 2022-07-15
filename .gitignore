@@ -404,5 +404,6 @@ TSWLatexianTemp*
 #
 # project specific
 #
+/docs
 /tmp
 !/tmp/README.md

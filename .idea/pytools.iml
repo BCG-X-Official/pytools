@@ -13,6 +13,7 @@
       <excludeFolder url="file://$MODULE_DIR$/sphinx/source/_generated" />
       <excludeFolder url="file://$MODULE_DIR$/sphinx/source/apidoc" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/docs" />
     </content>
     <orderEntry type="jdk" jdkName="facet-develop" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
