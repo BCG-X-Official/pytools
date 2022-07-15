@@ -1,6 +1,0 @@
-pytools.data.sim\_data
-======================
-
-.. currentmodule:: pytools.data
-
-.. autofunction:: sim_data

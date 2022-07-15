@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pytools.api._alltracker &#8212; pytools  documentation</title>
 <script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
 </script>
 
@@ -43,7 +43,7 @@
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
     <div class="bd-header-announcement container-fluid" id="banner">
       
 
@@ -82,7 +82,7 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../getting_started/getting_started.html">
+ <a class="reference internal nav-link" href="../../../_generated/getting_started.html">
   Getting started
  </a>
 </li>
@@ -106,7 +106,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../release_notes.html">
+ <a class="reference internal nav-link" href="../../../_generated/release_notes.html">
   Release Notes
  </a>
 </li>
@@ -118,14 +118,6 @@
     </div>
 
     <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -329,15 +321,6 @@
                 <span class="sa">f</span><span class="s2">&quot;expected:</span><span class="se">\n</span><span class="s2">__all__ = </span><span class="si">{</span><span class="n">all_expected</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_qualname</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__qualname__</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__name__</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
-
         <span class="n">module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span>
         <span class="n">public_module</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">public_module</span>
         <span class="n">allow_global_constants</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_global_constants</span>
@@ -478,11 +461,17 @@
 <span class="sd">    :param globals_: a global namespace to search the referenced classes in</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">my_module</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># the object cannot be a type or function; no action required</span>
+        <span class="k">return</span>
+
     <span class="c1"># keep track of classes we already visited to prevent infinite recursion</span>
     <span class="n">visited</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">my_module</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
                 <span class="n">local_ns</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">_obj</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
@@ -490,7 +479,7 @@
                     <span class="n">_update</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">local_ns</span><span class="o">=</span><span class="n">local_ns</span><span class="p">)</span>
                 <span class="n">_update_annotations</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">my_module</span><span class="p">:</span>
             <span class="n">_update_annotations</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_update_annotations</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]):</span>
@@ -504,6 +493,21 @@
 
 
 <span class="n">__tracker</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Auxiliary functions</span>
+<span class="c1">#</span>
+
+
+<span class="k">def</span> <span class="nf">_qualname</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__qualname__</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
 </pre></div>
 
               </article>

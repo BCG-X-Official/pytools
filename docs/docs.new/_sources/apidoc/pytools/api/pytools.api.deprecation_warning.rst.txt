@@ -1,6 +1,0 @@
-pytools.api.deprecation\_warning
-================================
-
-.. currentmodule:: pytools.api
-
-.. autofunction:: deprecation_warning

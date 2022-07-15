@@ -1,6 +1,0 @@
-pytools.text.format\_table
-==========================
-
-.. currentmodule:: pytools.text
-
-.. autofunction:: format_table

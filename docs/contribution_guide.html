@@ -8,7 +8,7 @@
 
     <title>Development Guidelines &#8212; pytools  documentation</title>
 <script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+  document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
   document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
 </script>
 
@@ -46,7 +46,7 @@
   </head>
   
   
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
     <div class="bd-header-announcement container-fluid" id="banner">
       
 
@@ -85,7 +85,7 @@
       <div class="navbar-center-item">
         <ul id="navbar-main-elements" class="navbar-nav">
     <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="getting_started/getting_started.html">
+ <a class="reference internal nav-link" href="_generated/getting_started.html">
   Getting started
  </a>
 </li>
@@ -109,7 +109,7 @@
 </li>
 
 <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="release_notes.html">
+ <a class="reference internal nav-link" href="_generated/release_notes.html">
   Release Notes
  </a>
 </li>
@@ -121,14 +121,6 @@
     </div>
 
     <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <span id="theme-switch" class="btn btn-sm btn-outline-primary navbar-btn rounded-circle">
-    <a class="theme-switch" data-mode="light"><i class="fas fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="far fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fas fa-adjust"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -368,6 +360,7 @@ For example:</p>
 <span class="s2">    Explains the inner workings of a predictive model using the SHAP approach.</span>
 
 <span class="s2">    The inspector offers the following analyses:</span>
+
 <span class="s2">    - ...</span>
 <span class="s2">    - ...</span>
 </pre></div>
@@ -385,7 +378,7 @@ any information.</p>
 <li><p>Properties should be documented as if they were attributes, not as methods, e.g.,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
 <span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The child nodes of the tree&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;The child nodes of the tree.&quot;&quot;&quot;</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
@@ -434,20 +427,22 @@ the trailing triple quote, e.g.,</p>
 <li><p>For method arguments, return value, and class parameters, one must hint the type using
 the typing module. Do not specify the parameter types in the docstrings, e.g.,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-   <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">   Do something.</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Do something.</span>
 
-<span class="s2">   :param x: input value</span>
-<span class="s2">   :return: output value</span>
+<span class="sd">  :param x: input value</span>
+<span class="sd">  :return: output value</span>
+<span class="sd">  &quot;&quot;&quot;</span>
 </pre></div>
 </div>
 <p>but not</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-   <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">   Do something.</span>
+  <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">  Do something.</span>
 
-<span class="s2">   :param int x: input value</span>
-<span class="s2">   :return float: output value</span>
+<span class="sd">  :param int x: input value</span>
+<span class="sd">  :return float: output value</span>
+<span class="sd">  &quot;&quot;&quot;</span>
 </pre></div>
 </div>
 </li>
@@ -475,31 +470,47 @@ documentation for <em>pytools</em> can then be found at <code class="docutils li
 building and releasing <em>pytools</em> below.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">sphinx</span></code> folder in the root directory contains the following:</p>
 <ul class="simple">
-<li><p>a <code class="docutils literal notranslate"><span class="pre">make.py</span></code> script for executing the documentation build via python.</p></li>
-<li><p>a <code class="docutils literal notranslate"><span class="pre">source</span></code> directory containing predefined .rst files for the documentation build and other required elements, see below for more details.</p></li>
-<li><p>a <code class="docutils literal notranslate"><span class="pre">base</span></code> folder which contains the <code class="docutils literal notranslate"><span class="pre">make_base.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf_base.py</span></code> scripts which contain nearly all configuration for <code class="docutils literal notranslate"><span class="pre">make.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>.</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">make.py</span></code> script for executing the documentation build via python</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">source</span></code> directory containing predefined .rst files for the documentation build
+and other required elements (see below for more details)</p></li>
+<li><p>a <code class="docutils literal notranslate"><span class="pre">base</span></code> folder which contains</p>
+<ul>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">make_base.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf_base.py</span></code> scripts with nearly all configuration for
+<code class="docutils literal notranslate"><span class="pre">make.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf.py</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_static</span></code> directory, containing logos, icons, javascript and css used for
+<em>pytools</em> and other packages documentation builds</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_templates</span></code> directory, containing <em>autodoc</em> templates used in generating and
+formatting the modules and classes for the API documentation</p></li>
+</ul>
+</li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">sphinx/source</span></code> folder contains:</p>
+<ul class="simple">
+<li><p>a <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> script that is the
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/configuration.html">build configuration file</a>
+needed to customize the input and output behavior of the Sphinx documentation build
+(see below for further details)</p></li>
+<li><p>the essential <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files used for the documentation build, which are:</p>
 <ul>
-<li><p>a <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> script that is the <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/configuration.html">build configuration file</a> needed to customize the input and output behavior of the Sphinx documentation build (see below for further details).</p></li>
-<li><p>the base .rst files used for the documentation build, which are:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">index.rst</span></code>: definition of the high-level documentation structure which mainly references the other rst files in this directory.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">contribution_guide.rst</span></code>: detailed information on building and releasing <em>pytools</em>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">faqs.rst</span></code>: contains guidance on bug reports/feature requests, how to contribute and answers to frequently asked questions including small code snippets.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">api_landing.rst</span></code>: for placing any API landing page preamble for documentation as needed. This information will appear on the API landing page in the documentation build after the short description in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code>. This file is included in the documentation build via the <code class="docutils literal notranslate"><span class="pre">custom-module-template.rst</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">index.rst</span></code>: definition of the high-level documentation structure which mainly
+references the other <code class="docutils literal notranslate"><span class="pre">.rst</span></code> files in this directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contribution_guide.rst</span></code>: detailed information on building and releasing
+<em>pytools</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">faqs.rst</span></code>: contains guidance on bug reports/feature requests, how to contribute
+and answers to frequently asked questions including small code snippets</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">api_landing.rst</span></code>: for placing any API landing page preamble for documentation
+as needed. This information will appear on the API landing page in the
+documentation build after the short description in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code>. This file
+is included in the documentation build via the <code class="docutils literal notranslate"><span class="pre">custom-module-template.rst</span></code></p></li>
 </ul>
-</div></blockquote>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_static</span></code> contains additional material used in the documentation build, in this case, logos and icons.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_static_base</span></code> contains logos, icons, javascript and css used for <em>pytools</em> and other packages documentation builds.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">_templates</span></code> contains the <code class="docutils literal notranslate"><span class="pre">autosummary.rst</span></code> which relies on the <code class="docutils literal notranslate"><span class="pre">custom-module-template.rst</span></code> from <code class="docutils literal notranslate"><span class="pre">pytools/tree/develop/sphinx/source/_templates</span></code> which is used in generating/formatting the modules and classes for the API documentation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_static</span></code> contains additional material used in the documentation build, in this
+case, logos and icons</p></li>
 </ul>
 <p>The two key scripts are <code class="docutils literal notranslate"><span class="pre">make.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>. The base configuration for the
-these scripts can be found in <a class="reference external" href="https://github.com/BCG-Gamma/pytools/tree/develop/sphinx">pytools/sphinx</a>.
-The reason for this was to minimise code given the standardization of the documentation
-build across multiple packages.</p>
+these scripts can be found in <a class="reference external" href="https://github.com/BCG-Gamma/pytools/tree/develop/sphinx/base">pytools/sphinx</a>.
+The reason for this is to minimise code given the standardization of the documentation
+build across multiple packages</p>
 <p><strong>make.py</strong>: All base configuration comes from <code class="docutils literal notranslate"><span class="pre">pytools/sphinx/base/make_base.py</span></code> and
 this script includes defined commands for key steps in the documentation build. Briefly,
 the key steps for the documentation build are:</p>
@@ -510,16 +521,20 @@ the key steps for the documentation build are:</p>
 <li><p><strong>Html</strong>: run Sphinx build to generate HTMl documentation</p></li>
 </ul>
 <p>The two other commands are <strong>Help</strong> and <strong>PrepareDocsDeployment</strong>, the latter of which
-is covered below under building and releasing <em>pytools</em>.</p>
+is covered below under <em>Building and releasing pytools</em>.</p>
 <p><strong>conf.py</strong>: All base configuration comes from <code class="docutils literal notranslate"><span class="pre">pytools/sphinx/base/conf_base.py</span></code>. This
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/configuration.html">build configuration file</a>
 is a requirement of Sphinx and is needed to customize the input and output behavior of
 the documentation build. In particular, this file highlights key extensions needed in
 the build process, of which some key ones are as follows:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">intersphinx</a> (external links to other documentations built with Sphinx: scikit-learn, numpy…)</p></li>
-<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html">viewcode</a> to include source code in the documentation, and links to the source code from the objects documentation</p></li>
-<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/math.html">imgmath</a> to render math expressions in doc strings. Note that a local latex installation is required (e.g., <a class="reference external" href="https://miktex.org/">MiKTeX</a> for Windows)</p></li>
+<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">intersphinx</a>
+(external links to other documentations built with Sphinx: matplotlib, numpy, …)</p></li>
+<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/viewcode.html">viewcode</a>
+to include source code in the documentation, and links to the source code from the objects documentation</p></li>
+<li><p><a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/math.html">imgmath</a>
+to render math expressions in doc strings. Note that a local latex installation is
+required (e.g., <a class="reference external" href="https://miktex.org/">MiKTeX</a> for Windows)</p></li>
 </ul>
 </section>
 <section id="readme">
@@ -528,12 +543,10 @@ the build process, of which some key ones are as follows:</p>
 markdown format. The reason for this is the <code class="docutils literal notranslate"><span class="pre">README.rst</span></code> is included as the quick start
 guide in the documentation build. This helped minimize code duplication. However,
 there are a few key points to be aware of:</p>
-<ul class="simple">
-<li><p>The README has links to logos and icons located in the <code class="docutils literal notranslate"><span class="pre">sphinx/source/_static</span></code> folder.
+<p>The README has links to logos and icons located in the <code class="docutils literal notranslate"><span class="pre">sphinx/source/_static</span></code> folder.
 To ensure these links are correct when the documentation is built, they are altered and then the
 contents of the <code class="docutils literal notranslate"><span class="pre">README.rst</span></code> is incorporated into the <code class="docutils literal notranslate"><span class="pre">getting_started.rst</span></code> which is generated
-during the build and can be found in <code class="docutils literal notranslate"><span class="pre">sphinx/source/getting_started</span></code>.</p></li>
-</ul>
+during the build and can be found in <code class="docutils literal notranslate"><span class="pre">sphinx/source/getting_started</span></code>.</p>
 </section>
 </section>
 <section id="package-builds">
@@ -596,15 +609,13 @@ anaconda upload --user BCG_Gamma dist/conda/noarch/&lt;*package.tar.gz*&gt;
 </pre></div>
 </div>
 <p>Please note the following:</p>
-<ul>
+<ul class="simple">
 <li><p>Build output will be stored in the <code class="docutils literal notranslate"><span class="pre">dist/</span></code> directory.</p></li>
 <li><p>Some useful references for conda builds:</p>
-<blockquote>
-<div><ul class="simple">
+<ul>
 <li><p><a class="reference external" href="https://docs.conda.io/projects/conda-build/en/latest/user-guide/tutorials/building-conda-packages.html">Conda build tutorial</a></p></li>
 <li><p><a class="reference external" href="https://docs.conda.io/projects/conda-build/en/latest/resources/define-metadata.html">Conda build metadata reference</a></p></li>
 </ul>
-</div></blockquote>
 </li>
 </ul>
 </section>
@@ -631,15 +642,21 @@ versioning. If the version needs to be corrected/bumped then open a PR for the
 change and merge into develop before going any further.</p>
 <p>The release process has the following key steps:</p>
 <ul class="simple">
-<li><p>Create a new release branch from develop and open a PR to master</p></li>
-<li><p>Opening the PR to master will automatically run all conda/pip build tests via
-Azure Pipelines, triggering automatic upload of artifacts (conda and pip
-packages) to Azure DevOps. At this stage, it is recommended that the pip package
+<li><p>Create a new release branch from the tag of the latest release named
+<code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> is the version number of the new release</p></li>
+<li><p>Create a new branch from the baseline branch (e.g., <code class="docutils literal notranslate"><span class="pre">2.0.x</span></code>) named
+<code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> is the version number of the new release</p></li>
+<li><p>Opening a PR to merge <code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> onto <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code>.
+This will automatically run all conda/pip build tests via
+Azure Pipelines prior to allowing to merge the PR.
+This will trigger automatic upload of artifacts (conda and pip
+packages) from Azure DevOps. At this stage, it is recommended that the pip package
 build is checked using <a class="reference external" href="https://test.pypi.org/">PyPI test</a> to ensure all
 metadata presents correctly. This is important as package versions in
-PyPI proper are immutable</p></li>
-<li><p>If everything passes and looks okay, merge the PR into master, this will
-trigger the release pipeline which will:</p>
+PyPI proper are immutable.</p></li>
+<li><p>If everything passes and looks okay, merge the PR using a <em>merge commit</em>
+(not squashing).
+This will trigger the release pipeline which will:</p>
 <ul>
 <li><p>Tag the release commit with version number as specified in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code></p></li>
 <li><p>Create a release on GitHub for the new version, please check the <a class="reference external" href="https://docs.github.com/en/free-pro-team&#64;latest/github/administering-a-repository/releasing-projects-on-github">documentation</a>
@@ -648,14 +665,15 @@ for details</p></li>
 commits since the last release. Please note this can be manually edited to be more
 succinct afterwards</p></li>
 <li><p>Attach build artifacts (conda and pip packages) to GitHub release</p></li>
+<li><p>Upload build artifacts to conda/PyPI using <code class="docutils literal notranslate"><span class="pre">anaconda</span> <span class="pre">upload</span></code> and
+<code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">publish</span></code>, respectively</p></li>
 </ul>
 </li>
-<li><p>Manually upload build artifacts to conda/PyPI using <code class="docutils literal notranslate"><span class="pre">anaconda</span> <span class="pre">upload</span></code> and
-<code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">publish</span></code>, respectively (see relevant sections under Package builds above)
-This may be automated in the future</p></li>
 <li><p>Remove any test versions for pip from PyPI test</p></li>
-<li><p>Merge any changes from release branch also back to develop</p></li>
-<li><p>Bump up version in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> on develop to start work towards next release</p></li>
+<li><p>Merge <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> back onto the baseline branch from which
+<code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> was branched</p></li>
+<li><p>Bump up version in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> on the baseline branch to start work towards
+the next release</p></li>
 </ul>
 </section>
 </section>

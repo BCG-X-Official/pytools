@@ -5,7 +5,7 @@ pytools
    :no-imported-members:
 
    
-   .. include:: ../_templates/api_landing.rst
+   .. include:: ../api_landing.rst
    
 
    
