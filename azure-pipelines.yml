@@ -18,7 +18,7 @@ schedules:
   displayName: Nightly full build
   branches:
     include:
-    - 1.2.x
+    - 2.0.x
 
 resources:
   repositories:
@@ -76,7 +76,7 @@ stages:
               versionSpec: '3.8'
             displayName: 'use Python 3.8'
           - script: |
-              python -m pip install flake8==3.9.0 flake8-comprehensions flake8-import-order
+              python -m pip install flake8==3.9.0 flake8-comprehensions
               python -m flake8 --config tox.ini -v .
             displayName: 'Run flake8'
       - job:
@@ -124,7 +124,6 @@ stages:
                 set +x
                 echo "##vso[task.setvariable variable=conda_build_config_changed;isOutput=true]$build_changed"
 
-
   - stage:
     displayName: 'Unit tests'
     dependsOn: 'detect_build_config_changes'
@@ -155,10 +154,13 @@ stages:
             script: |
               set -eux
               eval "$(conda shell.bash hook)"
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src/
-              export RUN_PACKAGE_VERSION_TEST=$(project_name)
+
               conda env create
               conda activate $(project_name)-develop
+
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/src/
+              export RUN_PACKAGE_VERSION_TEST=$(project_name)
+
               pytest \
                  --cov $(project_name) \
                  --cov-config "tox.ini" \
@@ -233,15 +235,15 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            conda install -y -c anaconda conda-build~=3.21 conda-verify toml=0.10.* flit=3.0.* packaging~=20.9
+            conda install -y -c anaconda conda-build~=3.21 conda-verify~=3.4 toml~=0.10 flit~=3.6 packaging~=20.9
           displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
         - script: |
-            python -m pip install "toml==0.10.*"
-            python -m pip install "flit==3.0.*"
+            python -m pip install "toml~=0.10"
+            python -m pip install "flit~=3.7"
             flit --version
-            python -m pip install "tox==3.20.*"
+            python -m pip install "tox~=3.25"
             tox --version
           displayName: 'Install tox, flit & toml'
           condition: eq(variables['BUILD_SYSTEM'], 'tox')
@@ -320,7 +322,7 @@ stages:
         - script: dir $(Build.SourcesDirectory)
 
         - script: |
-            conda install -y -c anaconda conda-build~=3.21 conda-verify toml=0.10.* flit=3.0.* packaging~=20.9
+            conda install -y -c anaconda conda-build~=3.21 conda-verify~=3.4 toml~=0.10 flit~=3.6 packaging~=20.9
           displayName: 'Install conda-build, flit, toml'
           condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
@@ -588,10 +590,10 @@ stages:
       displayName: 'Build and publish docs'
       condition: >
         or(
-        eq(variables.source_is_release_branch, 'True'),
-        eq(variables.source_is_develop_branch, 'True')
+          eq(variables.source_is_release_branch, 'True'),
+          eq(variables.source_is_develop_branch, 'True'),
+          eq(variables['Build.Reason'], 'Manual')
         )
-
 
       pool:
           vmImage: 'ubuntu-latest'
@@ -619,15 +621,21 @@ stages:
             targetType: 'inline'
             script: |
               set -eux
+
               cd $(System.DefaultWorkingDirectory)/$(project_root)
+              echo "Checking out github-pages"
               git checkout --track origin/github-pages
-              mkdir -p docs
-              sudo apt-get install tree
-              echo "Current docs contents:"
-              tree docs
-              mkdir $(Build.ArtifactStagingDirectory)/old_docs
-              cp -r docs $(Build.ArtifactStagingDirectory)/old_docs
-          displayName: 'Save current docs version'
+
+              # make sure we have a docs directory
+              mkdir -p docs/docs-version
+
+              echo "Current documentation contents:"
+              ls docs/docs-version
+
+              # copy the current documentation versions to the staging area
+              cp -r docs/docs-version $(Build.ArtifactStagingDirectory)/docs-version.bak
+
+          displayName: 'Retrieve current documentation versions from github-pages'
 
         - task: Bash@3
           inputs:
@@ -635,18 +643,19 @@ stages:
             script: |
               set -eux
               eval "$(conda shell.bash hook)"
+
               cd $(System.DefaultWorkingDirectory)/$(project_root)
               echo "Checking out $(branchName)"
               git checkout $(branchName)
-              git status
-              export PYTHONPATH=$(System.DefaultWorkingDirectory)/$(project_root)/src/
-              conda env create -f environment.yml
+
+              conda env create
               conda activate $(project_name)-develop
-              cd $(System.DefaultWorkingDirectory)/$(project_root)/
+
+              export PYTHONPATH=$(System.DefaultWorkingDirectory)/$(project_root)/src/
+
               python sphinx/make.py html
-              echo "Current docs contents:"
-              tree docs
-          displayName: 'Build new docs version'
+
+          displayName: 'Build latest documentation'
 
         - task: Bash@3
           inputs:
@@ -654,20 +663,44 @@ stages:
             script: |
               set -eux
               eval "$(conda shell.bash hook)"
-              cp -r $(Build.ArtifactStagingDirectory)/old_docs/docs .
-              echo "Current docs contents:"
-              tree docs
-              mkdir -p $(System.DefaultWorkingDirectory)/$(project_root)/sphinx/build/
-              cp -R docs/docs-version $(System.DefaultWorkingDirectory)/$(project_root)/sphinx/build/
-              echo "Building sphinx docs"
-              conda activate $(project_name)-develop
+
+              # install the tree utility
+              sudo apt-get install tree
+
               cd $(System.DefaultWorkingDirectory)/$(project_root)
+
+              echo "Restoring previous documentation to the docs directory"
+              mkdir -p docs
+              mv $(Build.ArtifactStagingDirectory)/docs-version.bak docs/docs-version
+              ls docs/docs-version
+
+              mkdir -p $(System.DefaultWorkingDirectory)/$(project_root)/sphinx/build/
+
+              conda activate $(project_name)-develop
               python sphinx/make.py prepare_docs_deployment
+
               echo "Current docs contents:"
               tree docs
-              mkdir $(Build.ArtifactStagingDirectory)/new_docs
-              mv docs $(Build.ArtifactStagingDirectory)/new_docs
-          displayName: 'Update saved docs'
+              mv docs $(Build.ArtifactStagingDirectory)/docs.new
+          displayName: 'Merge previous and latest docs'
+
+        - task: ArchiveFiles@2
+          inputs:
+            rootFolderOrFile: $(Build.ArtifactStagingDirectory)/docs.new
+            includeRootFolder: false
+            archiveType: 'zip' # Options: zip, 7z, tar, wim
+            archiveFile: $(Build.ArtifactStagingDirectory)/docs.zip
+            replaceExistingArchive: true
+            verbose: false
+            quiet: false
+
+        - task: PublishBuildArtifacts@1
+          inputs:
+            pathtoPublish: $(Build.ArtifactStagingDirectory)/docs.zip
+            artifactName: $(project_name)_docs
+            publishLocation: Container
+
+          displayName: 'Publish docs artifact'
 
         - task: Bash@3
           condition: eq(variables['source_is_release_branch'], 'True')
@@ -676,17 +709,19 @@ stages:
             script: |
               set -eux
               cd $(System.DefaultWorkingDirectory)/$(project_root)
+
               echo "Adjusting git credentials"
               git config --global user.name "Azure Pipelines"
               git config --global user.email "azuredevops@microsoft.com"
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout github-pages
-              cp -r $(Build.ArtifactStagingDirectory)/new_docs/docs .
-              git status
+
+              mv $(Build.ArtifactStagingDirectory)/docs.new docs
               git add docs
-              echo "Staged docs HTML build"
+
               git status
               git commit -m "Publish GitHub Pages [skip ci]"
-              echo "Committed to local branch github-pages"
+
               git push --set-upstream origin github-pages
-          displayName: 'Publish docs'
+
+          displayName: 'Publish docs to branch github-pages'

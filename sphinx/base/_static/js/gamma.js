@@ -7,7 +7,8 @@ $(document).ready(function() {
 
 const buildVersionSelector = function() {
 
-    const versionSelector = $('<select/>');
+    const versionDropdown = $('<div class="navbar-end-item"><select/></div>');
+    const versionSelector = versionDropdown.children()
 
     versionSelector.change(function() {
         navigateToDocsVersion($(this).val());
@@ -15,16 +16,16 @@ const buildVersionSelector = function() {
 
     const activeDocsVersion = getActiveDocsVersion()
 
-    DOCS_VERSIONS.non_rc.forEach(function(docsVersion) {
+    DOCS_VERSIONS.all.forEach(function(docsVersion) {
         versionSelector
             .append($('<option/>')
                 .html("Version: " + docsVersion)
                 .attr("value", docsVersion)
-                .attr("selected", docsVersion === activeDocsVersion)
+                .attr("selected", docsVersion.startsWith(activeDocsVersion))
             );
     });
 
-    $("#navbar-menu").append(versionSelector);
+    $("#navbar-end").append(versionDropdown);
 }
 
 const getActiveDocsVersion = function() {
@@ -32,7 +33,7 @@ const getActiveDocsVersion = function() {
     if (currentLocation.indexOf("docs-version") === -1) {
         return DOCS_VERSIONS.current;
     } else {
-        const rExp = /.*docs-version\/(\d-\d-\d.*)\/.*/g;
+        const rExp = /.*docs-version\/(\d-\d.*)\/.*/g;
         const matches = rExp.exec(currentLocation);
         if (matches && matches.length > 1) {
             // convert back from URL to real version string
@@ -45,15 +46,12 @@ const getActiveDocsVersion = function() {
 
 const navigateToDocsVersion = function(targetVersion) {
     const currentLocation = window.location + "";
-    let newLocation = currentLocation;
+    const subUrl = "docs-version/" + targetVersion.split(".").slice(0, 2).join("-") + "/index.html";
 
-    const subUrl = "docs-version/" + targetVersion.split(".").join("-") + "/index.html";
     if (currentLocation.indexOf("docs-version/") > 0) {
         const startIndex = currentLocation.indexOf("docs-version/")
-        newLocation = currentLocation.substring(0, startIndex) + subUrl
+        window.location = currentLocation.substring(0, startIndex) + subUrl
     } else {
-        newLocation = subUrl
+        window.location = subUrl
     }
-
-    window.location = newLocation;
 }

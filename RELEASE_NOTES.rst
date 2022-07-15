@@ -7,6 +7,21 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with :mod:`mypy`.
 
+2.0.1
+~~~~~
+
+- FIX: in class :class:`.AllTracker`, do not attempt to update forward references in
+  imported objects
+- BUILD: update build scripts to support the stricter dependency resolver introduced by
+  *pip 20.3*, and to fix a compatibility issue with recent updates to nbsphinx
+- BUILD: enable local sphinx builds in other FACET packages
+- DOC: simplify how the docs build manages existing documentation of previous versions
+  in the Azure pipeline and the associated commands in `make.py`:
+  under the new approach, documentation is only preserved for the latest patch of each
+  minor version, reducing the amount of near-similar documentation
+- DOC: use pydata sphinx theme v0.9 (but disable dark mode)
+
+
 2.0.0
 ~~~~~
 

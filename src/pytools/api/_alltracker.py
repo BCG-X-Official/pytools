@@ -154,15 +154,6 @@ class AllTracker:
                 f"expected:\n__all__ = {all_expected}"
             )
 
-        def _qualname(_obj: Any) -> str:
-            try:
-                return _obj.__qualname__
-            except AttributeError:
-                try:
-                    return _obj.__name__
-                except AttributeError:
-                    return repr(_obj)
-
         module = self._module
         public_module = self.public_module
         allow_global_constants = self.allow_global_constants
@@ -303,11 +294,17 @@ def update_forward_references(
     :param globals_: a global namespace to search the referenced classes in
     """
 
+    try:
+        my_module = obj.__module__
+    except AttributeError:
+        # the object cannot be a type or function; no action required
+        return
+
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()
 
     def _update(_obj: Any, local_ns: Optional[Dict[str, Any]] = None) -> None:
-        if isinstance(_obj, type):
+        if isinstance(_obj, type) and _obj.__module__ == my_module:
             if _obj not in visited:
                 visited.add(_obj)
                 local_ns = dict(_obj.__dict__)
@@ -315,7 +312,7 @@ def update_forward_references(
                     _update(member, local_ns=local_ns)
                 _update_annotations(_obj, local_ns)
 
-        elif isinstance(_obj, FunctionType):
+        elif isinstance(_obj, FunctionType) and _obj.__module__ == my_module:
             _update_annotations(_obj, local_ns)
 
     def _update_annotations(_obj: Any, local_ns: Optional[Dict[str, Any]]):
@@ -329,3 +326,18 @@ def update_forward_references(
 
 
 __tracker.validate()
+
+
+#
+# Auxiliary functions
+#
+
+
+def _qualname(_obj: Any) -> str:
+    try:
+        return _obj.__qualname__
+    except AttributeError:
+        try:
+            return _obj.__name__
+        except AttributeError:
+            return repr(_obj)
