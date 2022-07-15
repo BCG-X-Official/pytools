@@ -1,0 +1,38 @@
+pytools.expression.base.BracketPair
+===================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: BracketPair
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~BracketPair.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~BracketPair.ANGLED
+      ~BracketPair.CURLY
+      ~BracketPair.ROUND
+      ~BracketPair.SQUARE
+      ~BracketPair.opening
+      ~BracketPair.closing
+   
+   
+
+   .. rubric:: Definitions

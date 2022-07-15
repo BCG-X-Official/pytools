@@ -1,0 +1,34 @@
+pytools.sphinx.ResolveGenericClassParameters
+============================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: ResolveGenericClassParameters
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ResolveGenericClassParameters.connect
+      ~ResolveGenericClassParameters.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ResolveGenericClassParameters.event
+   
+   
+
+   .. rubric:: Definitions

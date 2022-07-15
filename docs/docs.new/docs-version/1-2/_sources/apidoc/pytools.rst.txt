@@ -1,0 +1,47 @@
+pytools
+=======
+
+.. automodule:: pytools
+   :no-imported-members:
+
+   
+   .. include:: ../_templates/api_landing.rst
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+
+==========
+Submodules
+==========
+.. autosummary::
+   :toctree: pytools
+   :template: custom-module-template.rst
+   :recursive:
+
+   pytools.api
+   pytools.data
+   pytools.expression
+   pytools.fit
+   pytools.meta
+   pytools.parallelization
+   pytools.sphinx
+   pytools.text
+   pytools.viz
+

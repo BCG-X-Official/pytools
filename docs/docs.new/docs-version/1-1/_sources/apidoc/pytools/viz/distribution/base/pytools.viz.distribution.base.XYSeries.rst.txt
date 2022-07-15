@@ -1,0 +1,20 @@
+pytools.viz.distribution.base.XYSeries
+======================================
+
+.. currentmodule:: pytools.viz.distribution.base
+
+.. autoclass:: XYSeries
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

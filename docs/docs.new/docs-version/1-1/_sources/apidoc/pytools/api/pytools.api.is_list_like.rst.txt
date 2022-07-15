@@ -1,0 +1,6 @@
+pytools.api.is\_list\_like
+==========================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: is_list_like

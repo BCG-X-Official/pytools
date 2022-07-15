@@ -1,0 +1,505 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.sphinx._sphinx_py37 &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/gamma.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../index.html">
+    
+      <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../apidoc/pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../release_notes.html">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for pytools.sphinx._sphinx_py37</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Implementation of sphinx module.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getattr_static</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">get_type_hints</span>
+
+<span class="kn">import</span> <span class="nn">typing_inspect</span>
+
+<span class="kn">from</span> <span class="nn">._sphinx</span> <span class="kn">import</span> <span class="n">AutodocBeforeProcessSignature</span>
+<span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">get_generic_bases</span><span class="p">,</span> <span class="n">inheritdoc</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Exported names</span>
+<span class="c1">#</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ResolveGenericClassParameters&quot;</span><span class="p">]</span>
+
+
+<span class="c1">#: Mock type declaration: Sphinx application object</span>
+<span class="n">Sphinx</span> <span class="o">=</span> <span class="n">Any</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Constants</span>
+<span class="c1">#</span>
+
+<span class="n">METHOD_TYPE_DYNAMIC</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">METHOD_TYPE_STATIC</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">METHOD_TYPE_CLASS</span> <span class="o">=</span> <span class="mi">2</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Ensure all symbols introduced below are included in __all__</span>
+<span class="c1">#</span>
+
+<span class="n">__tracker</span> <span class="o">=</span> <span class="n">AllTracker</span><span class="p">(</span><span class="nb">globals</span><span class="p">())</span>
+
+
+<span class="c1">#</span>
+<span class="c1"># Classes</span>
+<span class="c1">#</span>
+
+
+<span class="k">class</span> <span class="nc">_TypeVarBindings</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_class</span> <span class="o">=</span> <span class="n">current_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_bindings</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="o">=</span><span class="n">current_class</span><span class="p">,</span> <span class="n">subclass_bindings</span><span class="o">=</span><span class="p">{}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">resolve_parameter</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">defining_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">TypeVar</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resolve a type parameter, substituting it with an actual type if the parameter</span>
+<span class="sd">        is bound to a type argument in the context of the current class;</span>
+<span class="sd">        otherwise return the parameter unchanged.</span>
+
+<span class="sd">        :param defining_class: the class that introduced the type parameter; this is</span>
+<span class="sd">            the the current class itself, or a base class of the current class</span>
+<span class="sd">        :param parameter: the type variable</span>
+<span class="sd">        :return: the resolved parameter if bound to a type argument; else the original</span>
+<span class="sd">            parameter as a type variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">parameter</span><span class="p">,</span> <span class="n">parameter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_parameter_bindings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+        <span class="n">subclass_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]]]:</span>
+        <span class="c1"># get type variable bindings for all generic types defined in the class</span>
+        <span class="c1"># hierarchy of the given parent class, applying the given bindings derived from</span>
+        <span class="c1"># child classes</span>
+
+        <span class="c1"># if arg cls has generic type parameters, it will have a corresponding</span>
+        <span class="n">cls_origin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+            <span class="n">cls_origin</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cls_origin</span><span class="p">:</span>
+            <span class="n">class_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">param</span><span class="p">:</span> <span class="n">subclass_bindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">if</span> <span class="n">subclass_bindings</span> <span class="k">else</span> <span class="n">arg</span>
+                <span class="k">for</span> <span class="n">param</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">cls_origin</span><span class="p">),</span>
+                    <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">}</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">cls_origin</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this class has no generic parameters of itself, so we adopt the existing</span>
+            <span class="c1"># parameter bindings from the subclass(es)</span>
+            <span class="n">class_bindings</span> <span class="o">=</span> <span class="n">subclass_bindings</span>
+
+        <span class="n">superclass_bindings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">superclass</span><span class="p">:</span> <span class="n">bindings</span>
+            <span class="k">for</span> <span class="n">generic_superclass</span> <span class="ow">in</span> <span class="n">get_generic_bases</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">superclass</span><span class="p">,</span> <span class="n">bindings</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_bindings</span><span class="p">(</span>
+                    <span class="bp">cls</span><span class="o">=</span><span class="n">generic_superclass</span><span class="p">,</span> <span class="n">subclass_bindings</span><span class="o">=</span><span class="n">class_bindings</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">bindings</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">cls_origin</span><span class="p">:</span>
+            <span class="c1"># we have generic type parameters in this class, so we remember the</span>
+            <span class="c1"># associated bindings</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">cls_origin</span><span class="p">:</span> <span class="n">class_bindings</span><span class="p">,</span> <span class="o">**</span><span class="n">superclass_bindings</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># we have no generic type parameters in this class, so we return the</span>
+            <span class="c1"># parameter bindings of the superclasses</span>
+            <span class="k">return</span> <span class="n">superclass_bindings</span>
+
+
+<div class="viewcode-block" id="ResolveGenericClassParameters"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.ResolveGenericClassParameters.html#pytools.sphinx.ResolveGenericClassParameters">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ResolveGenericClassParameters</span><span class="p">(</span><span class="n">AutodocBeforeProcessSignature</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolve type variables that can be inferred through generic class parameters.</span>
+
+<span class="sd">    For example, the Sphinx documentation for the inherited method ``B.f`` in the</span>
+<span class="sd">    following example will be rendered with the signature ``(int) -&gt; int``:</span>
+
+<span class="sd">    .. codeblock: python</span>
+
+<span class="sd">        T = TypeVar(&quot;T&quot;)</span>
+
+<span class="sd">        class A(Generic[T]):</span>
+<span class="sd">            def f(x: T) -&gt; T:</span>
+<span class="sd">                return x</span>
+
+<span class="sd">        class B(A[int]):</span>
+<span class="sd">            pass</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">original_signatures</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]]]</span>
+
+    <span class="n">_current_class_bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_signatures</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_resolve_signature</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># get the class in which the method has been defined</span>
+        <span class="n">defining_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">defining_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># no or unknown defining class: nothing to resolve in the signature</span>
+            <span class="k">return</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;function </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2"> was defined in </span><span class="si">{</span><span class="n">defining_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get the original signature and convert it to a list of (name, type) tuples</span>
+        <span class="n">signature_original_items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_original_signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+        <span class="k">def</span> <span class="nf">_get_self_or_cls_type_substitution</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span>
+            <span class="n">Optional</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span>
+        <span class="p">]:</span>
+
+            <span class="k">if</span> <span class="n">signature_original_items</span><span class="p">:</span>
+
+                <span class="n">method_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_method_type</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">method_type</span> <span class="ow">is</span> <span class="n">METHOD_TYPE_DYNAMIC</span><span class="p">:</span>
+                    <span class="c1"># special case: we substitute type vars bound to the class</span>
+                    <span class="c1"># when assigned to the &#39;self&#39; or &#39;cls&#39; parameters of methods</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">arg_0_type</span> <span class="o">=</span> <span class="n">signature_original_items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">is_typevar</span><span class="p">(</span><span class="n">arg_0_type</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">arg_0_type</span><span class="p">,</span> <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span>
+
+                <span class="k">elif</span> <span class="n">method_type</span> <span class="ow">is</span> <span class="n">METHOD_TYPE_CLASS</span><span class="p">:</span>
+                    <span class="c1"># special case: we substitute type vars bound to the class</span>
+                    <span class="c1"># when assigned to the &#39;self&#39; or &#39;cls&#39; parameters of methods</span>
+                    <span class="n">_</span><span class="p">,</span> <span class="n">arg_0_type</span> <span class="o">=</span> <span class="n">signature_original_items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">typing_inspect</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="n">arg_0_type</span><span class="p">)</span>
+                        <span class="ow">and</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">arg_0_type</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">type</span>
+                    <span class="p">):</span>
+                        <span class="n">arg_0_type_args</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">arg_0_type</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arg_0_type_args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">is_typevar</span><span class="p">(</span>
+                            <span class="n">arg_0_type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="p">):</span>
+                            <span class="k">return</span> <span class="n">arg_0_type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span>
+
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+        <span class="n">arg_0_type_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">]</span>
+        <span class="n">arg_0_substitute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">]</span>
+
+        <span class="n">arg_0_type_var</span><span class="p">,</span> <span class="n">arg_0_substitute</span> <span class="o">=</span> <span class="n">_get_self_or_cls_type_substitution</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_substitute_type_vars_in_type_expression</span><span class="p">(</span>
+            <span class="n">type_expression</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="c1"># recursively substitute type vars with their resolutions</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_expression</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">type_expression</span> <span class="o">==</span> <span class="n">arg_0_type_var</span><span class="p">:</span>
+                    <span class="c1"># special case: substitute a type variable introduced by the</span>
+                    <span class="c1"># initial self/cls argument of a dynamic or class method</span>
+                    <span class="k">return</span> <span class="n">arg_0_substitute</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># resolve type variables defined by Generic[] in the</span>
+                    <span class="c1"># class hierarchy</span>
+                    <span class="k">return</span> <span class="n">bindings</span><span class="o">.</span><span class="n">resolve_parameter</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="n">type_expression</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># dynamically resolve type variables inside nested type expressions</span>
+                <span class="n">args</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">type_expression</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+                    <span class="c1"># noinspection PyUnresolvedReferences</span>
+                    <span class="k">return</span> <span class="n">type_expression</span><span class="o">.</span><span class="n">copy_with</span><span class="p">(</span>
+                        <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_substitute_type_vars_in_type_expression</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">type_expression</span>
+
+        <span class="c1"># get the actual signature object that we will modify</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__annotations__</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">signature</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">signature_original_items</span><span class="p">:</span>
+            <span class="n">signature</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_substitute_type_vars_in_type_expression</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_defining_class</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
+        <span class="c1"># get the class that defined the callable</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;find class for method </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">container_sep</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">container_sep</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">method_container</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">[:</span><span class="n">container_sep</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="n">method_container</span><span class="p">,</span> <span class="n">method</span><span class="o">.</span><span class="vm">__globals__</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+            <span class="c1"># we could not find the container of the given method in the method&#39;s global</span>
+            <span class="c1"># namespace: ignore it</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;failed to look up container </span><span class="si">{</span><span class="n">method_container</span><span class="si">!r}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;of method </span><span class="si">{</span><span class="n">method</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_method_type</span><span class="p">(</span><span class="n">defining_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="c1"># do we have a static or class method?</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">raw_func</span> <span class="o">=</span> <span class="n">getattr_static</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_func</span><span class="p">,</span> <span class="nb">staticmethod</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">METHOD_TYPE_STATIC</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_func</span><span class="p">,</span> <span class="nb">classmethod</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">METHOD_TYPE_CLASS</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># this should not happen, but we try to handle this gracefully</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;failed to look up method </span><span class="si">{</span><span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="si">!r}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;in class </span><span class="si">{</span><span class="n">defining_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">METHOD_TYPE_DYNAMIC</span>
+
+    <span class="k">def</span> <span class="nf">_get_original_signature</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]]:</span>
+        <span class="c1"># get the original signature as defined in the code</span>
+        <span class="n">signature_original</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">]]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">signature_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_signatures</span><span class="p">[</span><span class="n">func</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">signature_original</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">original_signatures</span><span class="p">[</span><span class="n">func</span><span class="p">]</span> <span class="o">=</span> <span class="n">signature_original</span>
+        <span class="k">return</span> <span class="n">signature_original</span>
+
+<div class="viewcode-block" id="ResolveGenericClassParameters.process"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.ResolveGenericClassParameters.html#pytools.sphinx.ResolveGenericClassParameters.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bound_method</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="c1"># we are starting to process a new class, remember it so we can</span>
+            <span class="c1"># attribute unbound methods to it</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span> <span class="o">==</span> <span class="s2">&quot;__init__&quot;</span><span class="p">:</span>
+                <span class="c1"># we are starting to process a new class, remember it so we can</span>
+                <span class="c1"># attribute unbound methods to it</span>
+                <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
+
+            <span class="c1"># instance method definitions are unbound, so we need to remember</span>
+            <span class="c1"># the class we are currently in</span>
+            <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="p">),</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">):</span>
+            <span class="c1"># class method definitions are bound, so we can infer the current class</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">),</span> <span class="s2">&quot;methods are class methods&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_signature</span><span class="p">(</span>
+                <span class="n">bindings</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">),</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="vm">__func__</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;updated signature: </span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s1">&#39;__annotations__&#39;</span><span class="p">,</span><span class="s1">&#39;&lt;undefined&gt;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_current_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_TypeVarBindings</span><span class="p">:</span>
+        <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
+        <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span><span class="p">:</span>
+            <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="o">=</span> <span class="n">_TypeVarBindings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">bindings</span></div>
+
+
+<span class="c1">#</span>
+<span class="c1"># helper functions</span>
+<span class="c1">#</span>
+
+
+<span class="n">__tracker</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+</pre></div>
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2022, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

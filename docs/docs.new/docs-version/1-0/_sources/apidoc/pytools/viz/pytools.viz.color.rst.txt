@@ -1,0 +1,50 @@
+pytools.viz.color
+=================
+
+.. automodule:: pytools.viz.color
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: color
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      ColorScheme
+      FacetDarkColorScheme
+      FacetLightColorScheme
+      MatplotColorScheme
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: color
+      :nosignatures:
+   
+      text_contrast_color
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

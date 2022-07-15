@@ -1,0 +1,44 @@
+pytools.expression.composite.base.KeywordArgument
+=================================================
+
+.. currentmodule:: pytools.expression.composite.base
+
+.. autoclass:: KeywordArgument
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~KeywordArgument.and_
+      ~KeywordArgument.eq_
+      ~KeywordArgument.hash_
+      ~KeywordArgument.not_
+      ~KeywordArgument.or_
+      ~KeywordArgument.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~KeywordArgument.body_
+      ~KeywordArgument.name_
+      ~KeywordArgument.precedence_
+      ~KeywordArgument.prefix_
+      ~KeywordArgument.separator_
+      ~KeywordArgument.subexpressions_
+      ~KeywordArgument.value_
+   
+   
+
+   .. rubric:: Definitions

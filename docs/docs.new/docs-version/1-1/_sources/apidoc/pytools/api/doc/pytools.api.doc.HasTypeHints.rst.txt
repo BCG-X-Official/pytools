@@ -1,0 +1,27 @@
+pytools.api.doc.HasTypeHints
+============================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: HasTypeHints
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HasTypeHints.test
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,47 @@
+pytools.sphinx
+==============
+
+.. automodule:: pytools.sphinx
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: sphinx
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      AddInheritance
+      AutodocBeforeProcessSignature
+      AutodocProcessDocstring
+      AutodocProcessSignature
+      AutodocSkipMember
+      CollapseModulePaths
+      CollapseModulePathsInDocstring
+      CollapseModulePathsInSignature
+      Replace3rdPartyDoc
+      SkipIndirectImports
+      SphinxCallback
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

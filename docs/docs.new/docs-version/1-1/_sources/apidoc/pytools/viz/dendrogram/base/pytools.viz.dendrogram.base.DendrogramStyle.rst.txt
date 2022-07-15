@@ -1,0 +1,33 @@
+pytools.viz.dendrogram.base.DendrogramStyle
+===========================================
+
+.. currentmodule:: pytools.viz.dendrogram.base
+
+.. autoclass:: DendrogramStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DendrogramStyle.draw_leaf_names
+      ~DendrogramStyle.draw_link_connector
+      ~DendrogramStyle.draw_link_leg
+      ~DendrogramStyle.finalize_drawing
+      ~DendrogramStyle.get_default_style_name
+      ~DendrogramStyle.get_named_styles
+      ~DendrogramStyle.start_drawing
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,348 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.sphinx.CollapseModulePaths &#8212; pytools  documentation</title>
+    
+  <link rel="stylesheet" href="../../../_static/css/index.f658d18f9b420779cfdf24aa0a7e2d77.css">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../../../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../../../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
+    
+  <link rel="preload" as="script" href="../../../_static/js/index.d3f166471bb80abb5163.js">
+
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/gamma.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="pytools.sphinx.CollapseModulePathsInDocstring" href="pytools.sphinx.CollapseModulePathsInDocstring.html" />
+    <link rel="prev" title="pytools.sphinx.AutodocSkipMember" href="pytools.sphinx.AutodocSkipMember.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main">
+<div class="container-xl">
+
+    <a class="navbar-brand" href="../../../index.html">
+    
+      <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo" />
+    
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-menu" aria-controls="navbar-menu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="navbar-menu" class="col-lg-9 collapse navbar-collapse">
+      <ul id="navbar-main-elements" class="navbar-nav mr-auto">
+        
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../getting_started/getting_started.html">Getting started</a>
+        </li>
+        
+        <li class="nav-item active">
+            <a class="nav-link" href="../../pytools.html">API reference</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../contribution_guide.html">Development Guidelines</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../faqs.html">FAQ</a>
+        </li>
+        
+        <li class="nav-item ">
+            <a class="nav-link" href="../../../release_notes.html">Release Notes</a>
+        </li>
+        
+        
+      </ul>
+
+
+      
+
+      <ul class="navbar-nav">
+        
+        
+      </ul>
+    </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+          <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+
+    <div class="bd-toc-item active">
+    
+  
+    <ul class="nav bd-sidenav">
+        
+        
+        
+        
+          
+            
+                <li class="">
+                    <a href="../pytools.api.html">pytools.api</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.data.html">pytools.data</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.expression.html">pytools.expression</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.fit.html">pytools.fit</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.meta.html">pytools.meta</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.parallelization.html">pytools.parallelization</a>
+                </li>
+            
+          
+            
+  
+                <li class="active">
+                    <a href="../pytools.sphinx.html">pytools.sphinx</a>
+                    <ul>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AddInheritance.html">pytools.sphinx.AddInheritance</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AutodocBeforeProcessSignature.html">pytools.sphinx.AutodocBeforeProcessSignature</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AutodocProcessBases.html">pytools.sphinx.AutodocProcessBases</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AutodocProcessDocstring.html">pytools.sphinx.AutodocProcessDocstring</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AutodocProcessSignature.html">pytools.sphinx.AutodocProcessSignature</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.AutodocSkipMember.html">pytools.sphinx.AutodocSkipMember</a>
+                        </li>
+                    
+                        <li class="active">
+                            <a href="">pytools.sphinx.CollapseModulePaths</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.CollapseModulePathsInDocstring.html">pytools.sphinx.CollapseModulePathsInDocstring</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.CollapseModulePathsInSignature.html">pytools.sphinx.CollapseModulePathsInSignature</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.Replace3rdPartyDoc.html">pytools.sphinx.Replace3rdPartyDoc</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.ResolveGenericClassParameters.html">pytools.sphinx.ResolveGenericClassParameters</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.SkipIndirectImports.html">pytools.sphinx.SkipIndirectImports</a>
+                        </li>
+                    
+                        <li class="">
+                            <a href="pytools.sphinx.SphinxCallback.html">pytools.sphinx.SphinxCallback</a>
+                        </li>
+                    
+                    </ul>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.text.html">pytools.text</a>
+                </li>
+            
+          
+            
+                <li class="">
+                    <a href="../pytools.viz.html">pytools.viz</a>
+                </li>
+            
+          
+        
+        
+        
+        
+        
+        
+        
+        
+      </ul>
+  
+  </nav>
+          </div>
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+              
+
+<nav id="bd-toc-nav">
+    <ul class="nav section-nav flex-column">
+    
+    </ul>
+</nav>
+
+
+              
+          </div>
+          
+
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="pytools-sphinx-collapsemodulepaths">
+<h1>pytools.sphinx.CollapseModulePaths<a class="headerlink" href="#pytools-sphinx-collapsemodulepaths" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pytools.sphinx.CollapseModulePaths">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pytools.sphinx.</span></code><code class="sig-name descname"><span class="pre">CollapseModulePaths</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collapsible_submodules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collapse_private_modules</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/sphinx/_sphinx.html#CollapseModulePaths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.sphinx.CollapseModulePaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace private module paths with their public prefix so that object references
+can be matched by <em>intersphinx</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Metaclasses</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.6/library/abc.html#abc.ABCMeta" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>collapsible_submodules</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Mapping" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – mapping from module paths to their public
+prefix, e.g., <code class="docutils literal notranslate"><span class="pre">{&quot;pandas.core.frame&quot;:</span> <span class="pre">&quot;pandas&quot;}</span></code></p></li>
+<li><p><strong>collapse_private_modules</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/functions.html#bool" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, collapse module sub-paths
+consisting of one or more protected modules (i.e. the module name starts
+with an underscore)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Method summary</p>
+<table class="longtable table autosummary">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.CollapseModulePaths.collapse_module_paths" title="pytools.sphinx.CollapseModulePaths.collapse_module_paths"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collapse_module_paths</span></code></a></p></td>
+<td><p>In the given line, replace all module paths with their collapsed version.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Definitions</p>
+<dl class="py method">
+<dt id="pytools.sphinx.CollapseModulePaths.collapse_module_paths">
+<code class="sig-name descname"><span class="pre">collapse_module_paths</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/sphinx/_sphinx.html#CollapseModulePaths.collapse_module_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.sphinx.CollapseModulePaths.collapse_module_paths" title="Permalink to this definition">¶</a></dt>
+<dd><p>In the given line, replace all module paths with their collapsed version.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>line</strong> (<a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – the line in which to collapse module paths</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.6/library/typing.html#typing.Optional" title="(in Python v3.6)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.6/library/stdtypes.html#str" title="(in Python v3.6)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the resulting line with collapsed module paths</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="pytools.sphinx.AutodocSkipMember.html" title="previous page">pytools.sphinx.AutodocSkipMember</a>
+    <a class='right-next' id="next-link" href="pytools.sphinx.CollapseModulePathsInDocstring.html" title="next page">pytools.sphinx.CollapseModulePathsInDocstring</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+
+    
+  <script src="../../../_static/js/index.d3f166471bb80abb5163.js"></script>
+
+
+    <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    <p>
+          &copy; Copyright 2022, Boston Consulting Group (BCG).<br/>
+        Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

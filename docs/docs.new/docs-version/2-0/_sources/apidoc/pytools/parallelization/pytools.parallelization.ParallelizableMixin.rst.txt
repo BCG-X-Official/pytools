@@ -1,0 +1,29 @@
+pytools.parallelization.ParallelizableMixin
+===========================================
+
+.. currentmodule:: pytools.parallelization
+
+.. autoclass:: ParallelizableMixin
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ParallelizableMixin.n_jobs
+      ~ParallelizableMixin.shared_memory
+      ~ParallelizableMixin.pre_dispatch
+      ~ParallelizableMixin.verbose
+   
+   
+
+   .. rubric:: Definitions
