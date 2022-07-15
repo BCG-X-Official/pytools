@@ -681,12 +681,12 @@ stages:
 
               echo "Current docs contents:"
               tree docs
-              mv docs $(Build.ArtifactStagingDirectory)/docs.new
+              mv docs $(Build.ArtifactStagingDirectory)/docs
           displayName: 'Merge previous and latest docs'
 
         - task: ArchiveFiles@2
           inputs:
-            rootFolderOrFile: $(Build.ArtifactStagingDirectory)/docs.new
+            rootFolderOrFile: $(Build.ArtifactStagingDirectory)/docs
             includeRootFolder: false
             archiveType: 'zip' # Options: zip, 7z, tar, wim
             archiveFile: $(Build.ArtifactStagingDirectory)/docs.zip
@@ -716,7 +716,8 @@ stages:
               git config --global url.ssh://git@github.com/.insteadOf https://github.com/
               git checkout github-pages
 
-              mv $(Build.ArtifactStagingDirectory)/docs.new docs
+              rm -rf docs
+              mv $(Build.ArtifactStagingDirectory)/docs .
               git add docs
 
               git status
