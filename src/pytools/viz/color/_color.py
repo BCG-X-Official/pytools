@@ -261,7 +261,7 @@ class ColorScheme(HasExpressionRepr):
             raise ValueError(f"arg fill_color={fill_color!r} must be an RGB(A) color")
 
         def _luminance(c: Union[RgbColor, RgbaColor]) -> float:
-            return sum(c[:3])
+            return cast(float, sum(c[:3]))
 
         # find the color that maximises contrast
         fill_luminance = _luminance(fill_color)
