@@ -7,6 +7,12 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with :mod:`mypy`.
 
+2.0.2
+~~~~~
+
+- REFACTOR: run *mypy* type checks in *strict* mode
+
+
 2.0.1
 ~~~~~
 
