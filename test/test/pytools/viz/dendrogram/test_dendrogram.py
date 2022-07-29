@@ -6,6 +6,7 @@ import logging
 from io import StringIO
 
 import numpy as np
+import numpy.typing as npt
 import pytest
 import scipy.cluster.hierarchy as hc
 
@@ -15,15 +16,16 @@ from pytools.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle
 log = logging.getLogger(__name__)
 
 
-@pytest.fixture
-def linkage_matrix() -> np.ndarray:
+@pytest.fixture  # type: ignore
+def linkage_matrix() -> npt.NDArray[np.int_]:
     """Create a linkage matrix."""
     x = np.array([[i] for i in [2, 8, 0, 4, 1, 9, 9, 0]])
-    return hc.linkage(x)
+    linkage: npt.NDArray[np.int_] = hc.linkage(x)
+    return linkage
 
 
-@pytest.fixture
-def linkage_tree(linkage_matrix: np.ndarray) -> LinkageTree:
+@pytest.fixture  # type: ignore
+def linkage_tree(linkage_matrix: npt.NDArray[np.float_]) -> LinkageTree:
     """Create a linkage tree for drawing tests."""
     return LinkageTree(
         scipy_linkage_matrix=linkage_matrix,
@@ -32,7 +34,7 @@ def linkage_tree(linkage_matrix: np.ndarray) -> LinkageTree:
     )
 
 
-def test_dendrogram_drawer_text(linkage_matrix: np.ndarray) -> None:
+def test_dendrogram_drawer_text(linkage_matrix: npt.NDArray[np.float_]) -> None:
     leaf_names = list("ABCDEFGH")
     leaf_weights = [(w + 1) / 36 for w in range(8)]
 

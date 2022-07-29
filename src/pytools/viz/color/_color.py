@@ -4,7 +4,6 @@ Core implementation of :mod:`pytools.viz.color`
 from __future__ import annotations
 
 import logging
-from abc import ABCMeta
 from types import FunctionType
 from typing import Callable, Set, TypeVar, Union, cast
 
@@ -15,7 +14,7 @@ from ._rgb import RgbaColor, RgbColor
 from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
 from pytools.expression import Expression, HasExpressionRepr
 from pytools.expression.atomic import Id
-from pytools.meta import SingletonMeta
+from pytools.meta import SingletonABCMeta
 
 log = logging.getLogger(__name__)
 
@@ -369,7 +368,7 @@ class MatplotColorScheme(ColorScheme):
         return Id(type(self))(**self._colors, colormap=self.colormap)
 
 
-class _FacetColorSchemeMeta(SingletonMeta, ABCMeta):
+class _FacetColorSchemeMeta(SingletonABCMeta):
     pass
 
 

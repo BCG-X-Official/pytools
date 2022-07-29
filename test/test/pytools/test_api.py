@@ -107,13 +107,13 @@ def test_collection_conversions() -> None:
         to_collection(1, element_type=str)
 
     with pytest.raises(TypeError):
-        to_set(["a", 1], element_type=str)  # type: ignore
+        to_set(["a", 1], element_type=str)
     with pytest.raises(TypeError):
-        to_list(["a", 1], element_type=str)  # type: ignore
+        to_list(["a", 1], element_type=str)
     with pytest.raises(TypeError):
-        to_tuple(["a", 1], element_type=str)  # type: ignore
+        to_tuple(["a", 1], element_type=str)
     with pytest.raises(TypeError):
-        to_collection(["a", 1], element_type=str)  # type: ignore
+        to_collection(["a", 1], element_type=str)
 
     validate_element_types([1, 2, 3], expected_type=int)
     with pytest.raises(TypeError, match=r"^xyz "):

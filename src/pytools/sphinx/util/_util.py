@@ -41,9 +41,32 @@ try:
     from sphinx.application import Sphinx
 except ImportError:
     # ... otherwise mock them up
-    Sphinx = type  # type: ignore
-    Element = type  # type: ignore
-    Text = type  # type: ignore
+
+    # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection
+    class _Element:
+
+        children: List[Element]
+        attributes: Dict[str, Any]
+
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise TypeError("docutils package is not installed")
+
+        def replace(self, old: Element, new: Element) -> None:
+            ...
+
+    # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
+    class _Text(_Element):
+
+        rawsource: str
+
+        # noinspection SpellCheckingInspection
+        def astext(self) -> str:
+            ...
+
+    Sphinx = type
+    Element = _Element
+    Text = _Text
+
 
 log = logging.getLogger(__name__)
 
@@ -130,7 +153,7 @@ class AddInheritance(AutodocProcessDocstring):
                 # ignore this to prevent adding the same content at two places
                 return
         except KeyError:
-            # we are seeing a class for the first time; store its content so we can
+            # we are seeing a class for the first time; store its content, so we can
             # detect and allow repeat visits
             self._visited[class_] = _current_lines
 
@@ -172,7 +195,7 @@ class AddInheritance(AutodocProcessDocstring):
             lines[pos:pos] = bases_lines
 
     def _class_module(self, cls: type) -> str:
-        module_name = _class_attr(
+        module_name: str = _class_attr(
             cls=cls,
             attr="__publicmodule__",
             default=lambda: _class_attr(cls=cls, attr="__module__", default=lambda: ""),
@@ -287,11 +310,13 @@ class CollapseModulePaths(metaclass=ABCMeta):
             for old, new in collapsible_submodules.items()
         ]
 
-        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern, str]] = col
+        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern[str], str]] = col
         self._collapse_private_modules = collapse_private_modules
 
     @abstractmethod
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         # create the regex substitution rule given a raw match and replacement patterns
         pass
 
@@ -361,7 +386,9 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
         for i, line in enumerate(lines):
             lines[i] = self.collapse_module_paths(line)
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(f"(`~?){old}"), f"\\1{new}"
 
 
@@ -395,7 +422,9 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
 
         return None
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -415,7 +444,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
         if domain == "py" and objtype == "class":
             self._process_children(contentnode)
 
-    def _process_children(self, parent_node: Element):
+    def _process_children(self, parent_node: Element) -> None:
         self._process_child(parent_node)
         try:
             children: Iterable[Element] = parent_node.children
@@ -425,7 +454,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
         for child_node in children:
             self._process_children(child_node)
 
-    def _process_child(self, content_node: Element):
+    def _process_child(self, content_node: Element) -> None:
         if type(content_node).__name__ == "pending_xref" and tuple(
             type(c).__name__ for c in content_node.children
         ) == ("Text",):
@@ -443,7 +472,9 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
                     ),
                 )
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -614,11 +645,13 @@ def _get_minimal_bases(class_: type) -> List[type]:
 
 
 def _class_name(cls: type) -> str:
-    return _class_attr(cls=cls, attr="__qualname__", default=lambda: str(cls))
+    return cast(
+        str, _class_attr(cls=cls, attr="__qualname__", default=lambda: cls.__name__)
+    )
 
 
-def _class_attr(cls: type, attr: str, default: Callable[[], str]) -> str:
-    def _get_attr(_cls: type) -> str:
+def _class_attr(cls: type, attr: str, default: Callable[[], Any]) -> Any:
+    def _get_attr(_cls: type) -> Any:
         try:
             # we try to get the class attribute
             return getattr(_cls, attr)

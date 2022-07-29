@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import logging
 from copy import copy
-from typing import Any, Iterable, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Generic, Iterable, List, Optional, Tuple, Type, TypeVar, Union
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
@@ -23,19 +24,13 @@ log = logging.getLogger(__name__)
 
 __all__ = ["Matrix"]
 
-#
-# Type Aliases
-#
-
-Number = Union[float, int]
-
 
 #
 # Type Variables
 #
 
-T_Matrix = TypeVar("T_Matrix", bound="Matrix")
-
+T_Matrix = TypeVar("T_Matrix", bound="Matrix[Any]")
+T_Number = TypeVar("T_Number", bound="np.number[npt.NBitBase]")
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -50,19 +45,19 @@ __tracker = AllTracker(globals())
 
 
 @inheritdoc(match="[see superclass]")
-class Matrix(HasExpressionRepr):
+class Matrix(HasExpressionRepr, Generic[T_Number]):
     """
     A 2D matrix with optional names and weights for rows and columns.
     """
 
     #: the values of the matrix cells, as a 2d array
-    values: np.ndarray
+    values: npt.NDArray[T_Number]
 
     #: the names of the rows and columns
-    names: Tuple[Optional[np.ndarray], Optional[np.ndarray]]
+    names: Tuple[Optional[npt.NDArray[Any]], Optional[npt.NDArray[Any]]]
 
     #: the weights of the rows and columns
-    weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]]
+    weights: Tuple[Optional[npt.NDArray[np.float_]], Optional[npt.NDArray[np.float_]]]
 
     #: the labels for the row and column axes
     name_labels: Tuple[Optional[str], Optional[str]]
@@ -75,11 +70,11 @@ class Matrix(HasExpressionRepr):
 
     def __init__(
         self,
-        values: np.ndarray,
+        values: npt.NDArray[T_Number],
         *,
         names: Optional[Tuple[Optional[Iterable[Any]], Optional[Iterable[Any]]]] = None,
         weights: Optional[
-            Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
+            Tuple[Optional[Iterable[float]], Optional[Iterable[float]]]
         ] = None,
         value_label: Optional[str] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
@@ -128,8 +123,8 @@ class Matrix(HasExpressionRepr):
                 )
 
         def _arg_to_array(
-            axis: int, axis_arg: Optional[Iterable[Number]], arg_name_: str
-        ) -> Optional[np.ndarray]:
+            axis: int, axis_arg: Optional[Iterable[Any]], arg_name_: str
+        ) -> Optional[npt.NDArray[Any]]:
             if axis_arg is None:
                 return None
             else:
@@ -160,8 +155,8 @@ class Matrix(HasExpressionRepr):
         else:
 
             def _ensure_positive(
-                w: Optional[np.ndarray], axis: int
-            ) -> Optional[np.ndarray]:
+                w: Optional[npt.NDArray[np.float_]], axis: int
+            ) -> Optional[npt.NDArray[np.float_]]:
                 if w is not None and (w < 0).any():
                     raise ValueError(
                         f"arg weights[{axis}] should be all positive, "
@@ -197,7 +192,7 @@ class Matrix(HasExpressionRepr):
         frame: pd.DataFrame,
         *,
         weights: Optional[
-            Tuple[Optional[Iterable[Number]], Optional[Iterable[Number]]]
+            Tuple[Optional[Iterable[float]], Optional[Iterable[float]]]
         ] = None,
         name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
         value_label: Optional[str] = None,
@@ -236,7 +231,7 @@ class Matrix(HasExpressionRepr):
         size: Union[
             int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
         ],
-    ) -> Matrix:
+    ) -> Matrix[T_Number]:
         r"""
         Create a version of this matrix with fewer rows and/or columns.
 
@@ -361,10 +356,10 @@ def _validate_resize_arg(
 
 
 def _top_items_mask(
-    weights: Optional[np.ndarray],
+    weights: Optional[npt.NDArray[np.float_]],
     current_size: int,
     target_size: Tuple[Optional[int], Optional[float]],
-) -> np.ndarray:
+) -> npt.NDArray[np.bool_]:
     target_n, target_ratio = target_size
 
     if target_n:
@@ -388,12 +383,13 @@ def _top_items_mask(
         mask[ix_weights_descending_stable[:target_n]] = True
 
     else:
-        # in descending order of item weight, pick the minimum set of items whose
-        # total weight is equal to or greater than the target weight
+        # In descending order of item weight, pick the minimum set of items whose
+        # total weight is equal to or greater than the target weight.
         #
-        # target weight is expressed as a ratio of total weight (0 < target_ratio <= 1)
+        # THe target weight is expressed as a ratio of total weight
+        # (0 < target_ratio <= 1).
 
-        weights_sorted_cumsum: np.ndarray = weights[
+        weights_sorted_cumsum: npt.NDArray[np.float_] = weights[
             ix_weights_descending_stable
         ].cumsum()
         mask[
@@ -408,12 +404,14 @@ def _top_items_mask(
 
 
 def _resize_rows(
-    values: np.ndarray,
-    weights: Optional[np.ndarray],
-    names: Optional[np.ndarray],
+    values: npt.NDArray[T_Number],
+    weights: Optional[npt.NDArray[np.float_]],
+    names: Optional[npt.NDArray[Any]],
     current_size: int,
     target_size: Tuple[Optional[int], Optional[float]],
-) -> Tuple[np.ndarray, Optional[np.ndarray], Optional[np.ndarray]]:
+) -> Tuple[
+    npt.NDArray[T_Number], Optional[npt.NDArray[np.float_]], Optional[npt.NDArray[Any]]
+]:
     mask = _top_items_mask(
         weights=weights, current_size=current_size, target_size=target_size
     )
@@ -425,7 +423,9 @@ def _resize_rows(
     )
 
 
-def _arrays_equal_or_none(a: Optional[np.ndarray], b: Optional[np.ndarray]) -> bool:
+def _arrays_equal_or_none(
+    a: Optional[npt.NDArray[T_Number]], b: Optional[npt.NDArray[T_Number]]
+) -> bool:
     if a is None:
         return b is None
     elif b is None:

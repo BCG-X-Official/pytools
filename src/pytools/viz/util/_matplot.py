@@ -3,7 +3,7 @@ Utilities related to matplotlib.
 """
 
 import logging
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 from matplotlib.backend_bases import RendererBase
 from matplotlib.text import Text
@@ -37,7 +37,10 @@ __tracker = AllTracker(globals())
 #
 
 
-class PercentageFormatter(Formatter, metaclass=SingletonMeta):
+class PercentageFormatter(
+    Formatter,  # type: ignore
+    metaclass=SingletonMeta,
+):
     """
     Formats floats as a percentages with 3 digits precision, omitting trailing zeros.
 
@@ -57,14 +60,16 @@ class PercentageFormatter(Formatter, metaclass=SingletonMeta):
     - ``1555`` is formatted as ``1.6e+05%``
     """
 
-    def __call__(self, x, pos=None) -> str:
+    def __call__(self, x: float, pos: Optional[int] = None) -> str:
         if x < 1.0:
             return f"{x * 100.0:.3g}%"
         else:
             return f"{round(x * 100.0):.5g}%"
 
 
-class FittedText(Text):
+class FittedText(
+    Text,  # type: ignore
+):
     """
     Handle storing and drawing of text in window or data coordinates;
     only render text that does not exceed the given width and height in data

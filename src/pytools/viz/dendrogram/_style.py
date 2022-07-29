@@ -6,6 +6,7 @@ import logging
 from typing import Any, Iterable, Optional, Sequence, TextIO, Union, cast
 
 import numpy as np
+import numpy.typing as npt
 from matplotlib.axes import Axes
 from matplotlib.colors import LogNorm
 
@@ -219,7 +220,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         y_axis.set_ticks(ticks=list(self._get_ytick_locations(weights=weights)))
         y_axis.set_ticklabels(ticklabels=names)
 
-    def _get_ytick_locations(self, *, weights: Sequence[float]) -> np.ndarray:
+    def _get_ytick_locations(
+        self, *, weights: Sequence[float]
+    ) -> npt.NDArray[np.float_]:
         """
         Get the tick locations for the y axis.
 
@@ -228,11 +231,12 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         """
         weights_array = np.array(weights)
         # noinspection PyTypeChecker
-        return -(
+        ytick_locations: npt.NDArray[np.float_] = -(
             np.arange(len(weights)) * self.padding
             + weights_array.cumsum()
             - weights_array / 2
         )
+        return ytick_locations
 
     def _draw_hline(
         self, x0: float, x1: float, y: float, weight: float, max_height: float
@@ -340,7 +344,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
 
     def __init__(
         self,
-        out: TextIO = None,
+        out: Optional[TextIO] = None,
         width: int = 80,
         max_label_width: Optional[int] = None,
         max_height: int = 100,

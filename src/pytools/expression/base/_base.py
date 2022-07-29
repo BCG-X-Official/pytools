@@ -93,8 +93,9 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
         """[see superclass]"""
         return BinaryOperator.MAX_PRECEDENCE
 
-    def _eq_same_type(self, other: AtomicExpression) -> bool:
-        return self.value_ == other.value_
+    def _eq_same_type(self, other: AtomicExpression[Any]) -> bool:
+        # mypy considers the type of this expression Any, not bool
+        return self.value_ == other.value_  # type: ignore
 
     def hash_(self) -> int:
         """[see superclass]"""
@@ -121,7 +122,7 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
     @property
     def subexpressions_(self) -> Tuple[Expression, ...]:
         """
-        A tuple with the this expression's subexpression as its only element.
+        A tuple with this expression's subexpression as its only element.
         """
         return (self.subexpression_,)
 

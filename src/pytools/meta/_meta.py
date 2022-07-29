@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta
-from typing import Any, Optional, TypeVar
-from weakref import ref
+from typing import Any, Optional
+from weakref import ReferenceType
 
 from ..api import AllTracker
 
@@ -21,12 +21,6 @@ __all__ = [
     "SingletonABCMeta",
     "SingletonMeta",
 ]
-
-#
-# Type variables
-#
-
-T_SingletonMeta = TypeVar("T_SingletonMeta", bound="SingletonMeta")
 
 
 #
@@ -49,16 +43,18 @@ class SingletonMeta(type):
     Singleton classes must not accept any parameters upon instantiation.
     """
 
-    def __init__(cls, *args: Any, **kwargs: Any) -> None:
+    __instance_ref: "Optional[ReferenceType[Any]]"
+
+    def __init__(cls: SingletonMeta, *args: Any, **kwargs: Any) -> None:
         """
         :param args: arguments to be passed on to the initializer of the base metaclass
         :param kwargs: keyword arguments to be passed on to the initializer of the
             base metaclass
         """
         super().__init__(*args, **kwargs)
-        cls.__instance_ref: Optional[ref] = None
+        cls.__instance_ref = None
 
-    def __call__(cls: T_SingletonMeta, *args, **kwargs: Any) -> T_SingletonMeta:
+    def __call__(cls: SingletonMeta, *args: Any, **kwargs: Any) -> Any:
         """
         Return the existing singleton instance, or create a new one if none exists yet.
 
@@ -74,12 +70,12 @@ class SingletonMeta(type):
             raise ValueError("singleton classes may not take any arguments")
 
         if cls.__instance_ref:
-            obj = cls.__instance_ref()
+            obj: Optional[Any] = cls.__instance_ref()
             if obj is not None:
                 return obj
 
-        instance = super(SingletonMeta, cls).__call__()
-        cls.__instance_ref = ref(instance)
+        instance: Any = super(SingletonMeta, cls).__call__()
+        cls.__instance_ref = ReferenceType(instance)
         return instance
 
 

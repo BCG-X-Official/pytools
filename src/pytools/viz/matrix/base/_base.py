@@ -7,6 +7,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Optional, Tuple
 
 import numpy as np
+import numpy.typing as npt
 
 from pytools.api import AllTracker
 from pytools.viz import DrawingStyle
@@ -59,10 +60,16 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
     @abstractmethod
     def draw_matrix(
         self,
-        data: np.ndarray,
+        data: npt.NDArray[Any],
         *,
-        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
-        weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
+        names: Tuple[
+            Optional[npt.NDArray[Any]],
+            Optional[npt.NDArray[Any]],
+        ],
+        weights: Tuple[
+            Optional[npt.NDArray[np.float_]],
+            Optional[npt.NDArray[np.float_]],
+        ],
     ) -> None:
         """
         Draw the matrix.
@@ -75,7 +82,7 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
 
     def finalize_drawing(
         self,
-        name_labels: Tuple[Optional[str], Optional[str]] = None,
+        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
         weight_label: Optional[str] = None,
         **kwargs: Any,
     ) -> None:

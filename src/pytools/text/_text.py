@@ -2,9 +2,9 @@
 Utilities for rendering text.
 """
 import logging
-from typing import Any, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple, Union
 
-import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from pytools.api import AllTracker
@@ -119,7 +119,7 @@ class CharacterMatrix:
     def __len__(self) -> int:
         return self.n_rows
 
-    def __getitem__(self, key: _TextCoordinates):
+    def __getitem__(self, key: _TextCoordinates) -> str:
         rows, columns = self.__key_as_slices(key)
         return "\n".join("".join(line[columns]) for line in self._matrix[rows])
 
@@ -142,7 +142,7 @@ _ALIGNMENT_OPTIONS = ["<", "^", ">"]
 
 def format_table(
     headings: Sequence[str],
-    data: Union[pd.DataFrame, np.ndarray, Sequence[Sequence[Any]]],
+    data: Union[pd.DataFrame, npt.NDArray[Any], Sequence[Sequence[Any]]],
     formats: Optional[Sequence[Optional[str]]] = None,
     alignment: Optional[Sequence[Optional[str]]] = None,
 ) -> str:
@@ -188,13 +188,13 @@ def format_table(
         else:
             return f"{item:{format_string}}"
 
-    def _iterate_row_data() -> Iterable[Sequence]:
+    def _iterate_row_data() -> Iterable[Sequence[Any]]:
         if isinstance(data, pd.DataFrame):
             return (row for _, row in data.iterrows())
         else:
             return iter(data)
 
-    def _make_row(items: Sequence):
+    def _make_row(items: Sequence[Any]) -> List[str]:
         if len(items) != n_columns:
             raise ValueError(
                 "rows in data matrix must have the same length as arg headings"
@@ -204,7 +204,7 @@ def format_table(
             for item, format_string in zip(items, formats_seq)
         ]
 
-    body_rows = [_make_row(items) for items in _iterate_row_data()]
+    body_rows: List[List[str]] = [_make_row(items) for items in _iterate_row_data()]
 
     column_widths: List[int] = [
         max(column_lengths)
@@ -221,7 +221,7 @@ def format_table(
 
     dividers = ["=" * column_width for column_width in column_widths]
 
-    def _format_rows(rows: List[Sequence[str]], align: bool):
+    def _format_rows(rows: Sequence[Sequence[str]], align: bool) -> Iterator[str]:
         return (
             "  ".join(
                 (

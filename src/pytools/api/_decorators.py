@@ -4,7 +4,7 @@ Core implementation of decorators in :mod:`pytools.api`.
 
 import logging
 import re
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from pytools.api._alltracker import AllTracker
 
@@ -16,6 +16,7 @@ log = logging.getLogger(__name__)
 #
 
 T = TypeVar("T")
+T_Type = TypeVar("T_Type", bound=Type[Any])
 
 
 __all__ = ["inheritdoc", "subsdoc"]
@@ -27,7 +28,7 @@ __all__ = ["inheritdoc", "subsdoc"]
 __tracker = AllTracker(globals())
 
 
-def inheritdoc(*, match: str) -> Callable[[type], type]:
+def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
     """
     Class decorator to inherit docstrings of overridden methods.
 
@@ -59,7 +60,7 @@ def inheritdoc(*, match: str) -> Callable[[type], type]:
     :return: the parameterized decorator
     """
 
-    def _inheritdoc_inner(_cls: type) -> type:
+    def _inheritdoc_inner(_cls: T_Type) -> T_Type:
         if not type(_cls):
             raise TypeError(
                 f"@{inheritdoc.__name__} can only decorate classes, "
@@ -134,10 +135,14 @@ __tracker.validate()
 def _get_docstring(obj: Any) -> str:
     # get the docstring of the given object
 
+    docstring: str
+
     try:
-        return obj.__func__.__doc__
+        docstring = obj.__func__.__doc__
     except AttributeError:
-        return obj.__doc__
+        docstring = obj.__doc__
+
+    return docstring
 
 
 def _set_docstring(obj: Any, docstring: Optional[str]) -> None:

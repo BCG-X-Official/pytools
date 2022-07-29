@@ -18,6 +18,7 @@ from typing import (
 )
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from matplotlib import __version__ as __matplotlib_version__
 from matplotlib.axes import Axes
@@ -112,7 +113,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         cell_format: Union[str, Formatter, Callable[..., str], None] = None,
         # todo: change to Callable[[Any], str] once sphinx "unhashable type" bug is
         #       fixed
-        nan_substitute: float = None,
+        nan_substitute: Optional[float] = None,
     ) -> None:
         """
         :param cell_format: format for annotating each matrix cell with
@@ -160,15 +161,23 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
     def draw_matrix(
         self,
-        data: np.ndarray,
+        data: npt.NDArray[Any],
         *,
-        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
-        weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
+        names: Tuple[
+            Optional[npt.NDArray[Any]],
+            Optional[npt.NDArray[Any]],
+        ],
+        weights: Tuple[
+            Optional[npt.NDArray[np.float_]],
+            Optional[npt.NDArray[np.float_]],
+        ],
     ) -> None:
         """[see superclass]"""
         ax: Axes = self.ax
         colors = self.colors
 
+        weights_rows: npt.NDArray[np.float_]
+        weights_columns: npt.NDArray[np.float_]
         # replace undefined weights with all ones
         weights_rows, weights_columns = tuple(
             np.ones(n) if w is None else w for w, n in zip(weights, data.shape)
@@ -176,8 +185,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
         # calculate the horizontal and vertical matrix cell bounds based on the
         # cumulative sums of the axis weights; default all weights to 1 if not defined
-        column_bounds: np.ndarray
-        row_bounds: np.ndarray
+        column_bounds: npt.NDArray[np.float_]
+        row_bounds: npt.NDArray[np.float_]
 
         row_bounds = -np.array([0, *weights_rows]).cumsum()
         column_bounds = np.array([0, *weights_columns]).cumsum()
@@ -204,7 +213,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # draw the matrix cells
         for c, (x0, x1) in enumerate(zip(column_bounds, column_bounds[1:])):
             for r, (y1, y0) in enumerate(zip(row_bounds, row_bounds[1:])):
-                color: np.ndarray = cell_colors[r, c]
+                color: npt.NDArray[np.float_] = cell_colors[r, c]
                 ax.add_patch(
                     Rectangle(
                         (
@@ -228,11 +237,11 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         y_tick_locations = (row_bounds[:-1] + row_bounds[1:]) / 2
 
         def _set_ticks(
-            tick_locations: np.ndarray,
-            tick_labels: np.ndarray,
+            tick_locations: npt.NDArray[np.float_],
+            tick_labels: npt.NDArray[Any],
             axis: Axis,
             tick_params: Dict[str, Any],
-        ):
+        ) -> None:
             # set the ticks for the given axis
 
             if tick_labels is None:
@@ -389,7 +398,7 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
         colors: Optional[MatplotColorScheme] = None,
         font_family: Optional[Union[str, Iterable[str]]] = None,
         colormap_normalize: Optional[Normalize] = None,
-        nan_substitute: float = None,
+        nan_substitute: Optional[float] = None,
     ) -> None:
         """
         :param nan_substitute: the value to look up in the colormap for undefined matrix
@@ -458,17 +467,24 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
 
     def draw_matrix(
         self,
-        data: np.ndarray,
+        data: npt.NDArray[Any],
         *,
-        names: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
-        weights: Tuple[Optional[np.ndarray], Optional[np.ndarray]],
+        names: Tuple[
+            Optional[npt.NDArray[Any]],
+            Optional[npt.NDArray[Any]],
+        ],
+        weights: Tuple[
+            Optional[npt.NDArray[np.float_]],
+            Optional[npt.NDArray[np.float_]],
+        ],
     ) -> None:
         """[see superclass]"""
 
         def _axis_marks(
-            axis_names: Optional[np.ndarray], axis_weights: Optional[np.ndarray]
-        ) -> Optional[Iterable]:
-            axis_names_iter: Iterable
+            axis_names: Optional[npt.NDArray[Any]],
+            axis_weights: Optional[npt.NDArray[np.float_]],
+        ) -> Optional[Iterable[str]]:
+            axis_names_iter: Iterable[Any]
 
             if axis_names is None:
                 if axis_weights is None:
@@ -501,7 +517,7 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
+class MatrixDrawer(Drawer[Matrix[Any], MatrixStyle]):
     """
     Drawer for matrices of numerical values.
 
@@ -532,7 +548,7 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
             MatrixReportStyle,
         ]
 
-    def get_style_kwargs(self, data: Matrix) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: Matrix[Any]) -> Dict[str, Any]:
         """[see superclass]"""
         return dict(
             name_labels=data.name_labels,
@@ -540,7 +556,7 @@ class MatrixDrawer(Drawer[Matrix, MatrixStyle]):
             **super().get_style_kwargs(data=data),
         )
 
-    def _draw(self, data: Matrix) -> None:
+    def _draw(self, data: Matrix[Any]) -> None:
         # draw the matrix
         self.style.draw_matrix(data.values, names=data.names, weights=data.weights)
 
