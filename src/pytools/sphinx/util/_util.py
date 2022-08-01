@@ -45,13 +45,13 @@ except ImportError:
     # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection
     class _Element:
 
-        children: List[Element]
+        children: List["Element"]
         attributes: Dict[str, Any]
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise TypeError("docutils package is not installed")
 
-        def replace(self, old: Element, new: Element) -> None:
+        def replace(self, old: "Element", new: "Element") -> None:
             ...
 
     # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
