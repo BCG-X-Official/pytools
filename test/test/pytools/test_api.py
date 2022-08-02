@@ -272,7 +272,7 @@ def test_all_tracker() -> None:
     ):
         tracker.validate()
 
-    # test with foreign imports allowed
+    # test with imported definitions allowed
 
     mock_globals = dict(
         __all__=["A", "B"],
