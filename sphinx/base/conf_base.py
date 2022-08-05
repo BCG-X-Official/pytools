@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, Type, cast
 
 from sphinx.application import Sphinx
 
@@ -194,6 +194,8 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
+    from pytools.meta import SingletonABCMeta
+    from pytools.sphinx import AutodocProcessSignature
     from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
@@ -203,6 +205,43 @@ def setup(app: Sphinx) -> None:
         ResolveTypeVariables,
         SkipIndirectImports,
     )
+
+    # todo: move this class to package pytools.sphinx.util once we release pytools 2.1
+    class TrackCurrentDoc(
+        AutodocProcessSignature,  # type: ignore
+        metaclass=SingletonABCMeta,
+    ):
+        """
+        Keep track of the class currently being processed by autodoc.
+
+        This is required to attribute unbound methods to the correct class, e.g.,
+        in class :class:`.ResolveTypeVariables`.
+        """
+
+        def __init__(self) -> None:
+            self.current_class: Optional[Type[Any]] = None
+            self.rtv = ResolveTypeVariables()
+
+        def process(
+            self,
+            app: Sphinx,
+            what: str,
+            name: str,
+            obj: object,
+            options: object,
+            signature: Optional[str],
+            return_annotation: Optional[str],
+        ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+            if what == "class":
+                cls = cast(type, obj)
+                self.current_class = cls
+                self.rtv._update_current_class(cls)
+
+            return None
+
+        def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
+            self.rtv.connect(app, priority)
+            return cast(int, super().connect(app, priority))
 
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
         app=app
@@ -220,11 +259,11 @@ def setup(app: Sphinx) -> None:
 
     Replace3rdPartyDoc().connect(app=app)
 
-    ResolveTypeVariables().connect(app=app)
+    TrackCurrentDoc().connect(app=app)
 
     CollapseModulePathsInXRef(
         collapsible_submodules=intersphinx_collapsible_submodules
-    ).connect(app)
+    ).connect(app=app)
 
     _add_custom_css_and_js(app=app)
 

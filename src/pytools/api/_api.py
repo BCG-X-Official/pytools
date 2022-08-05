@@ -78,7 +78,7 @@ def is_list_like(obj: Any) -> bool:
 
     - :class:`str`
     - :class:`bytes`
-    - :class:`pandas.DataFrame`: inconsistent behaviour of the sequence interface;
+    - :class:`~pandas.DataFrame`: inconsistent behaviour of the sequence interface;
       iterating a data frame yields the values of the column index, while the length
       of a data frame is its number of rows
     - :class:`numpy.ndarray` instances with 0 dimensions

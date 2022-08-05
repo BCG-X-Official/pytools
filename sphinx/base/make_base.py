@@ -125,7 +125,9 @@ class Command(metaclass=CommandMeta):
         return dependencies_extended
 
     def run(self) -> None:
-        log(f"{'=' * 80}\nRunning command {self.name} – {self.get_description()}\n")
+        command_message = f"Running command {self.name} – {self.get_description()}"
+        separator = "=" * len(command_message)
+        log("\n".join([separator, command_message, separator]))
         self._run()
 
     @abstractmethod
