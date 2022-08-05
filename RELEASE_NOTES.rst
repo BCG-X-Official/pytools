@@ -11,6 +11,10 @@ and is now subject to static type checking with :mod:`mypy`.
 ~~~~~
 
 - REFACTOR: run *mypy* type checks in *strict* mode
+- FIX: more reliably determine the class when resolving type variables for Sphinx API
+  documentation
+- FIX: no longer raise an exception when attempting to get the class name for
+  :obj:`~typing.Union` and other “special” types
 
 
 2.0.1
