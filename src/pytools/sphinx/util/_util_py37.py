@@ -168,7 +168,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         # get the class in which the method has been defined
         defining_class_opt: Optional[Type[Any]] = self._get_defining_class(func)
         if defining_class_opt is None:
-            # no or unknown defining class: nothing to resolve in the signature
+            # missing or unknown defining class: nothing to resolve in the signature
             return
         defining_class: type = defining_class_opt
 
@@ -347,7 +347,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         """[see superclass]"""
 
         if isinstance(obj, type):
-            # we are starting to process a new class, remember it so we can
+            # we are starting to process a new class; remember it, so we can
             # attribute unbound methods to it
             self._update_current_class(obj)
 
