@@ -9,7 +9,6 @@ from abc import ABCMeta, abstractmethod
 from types import FunctionType, MethodType
 from typing import (
     Any,
-    Callable,
     Dict,
     ForwardRef,
     Generator,
@@ -194,36 +193,45 @@ class AddInheritance(AutodocProcessDocstring):
             pos = _insert_position()
             lines[pos:pos] = bases_lines
 
-    def _class_module(self, cls: type) -> str:
-        module_name: str = _class_attr(
-            cls=cls,
-            attr="__publicmodule__",
-            default=lambda: _class_attr(cls=cls, attr="__module__", default=lambda: ""),
-        )
+    def _class_module(self, cls: Any) -> str:
+        module_name: str = _class_attr(cls, attr=["__publicmodule__", "__module__"])
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    def _full_name(self, cls: type) -> str:
+    def _full_name(self, cls: Any) -> str:
         # get the full name of the class, including the module prefix
-        return f"{self._class_module(cls=cls)}.{_class_name(cls=cls)}"
+        return f"{self._class_module(cls)}.{_class_name(cls)}"
 
     def _class_name_with_generics(self, cls: Any) -> str:
-        def _class_tag(_name: Any) -> str:
-            return f":class:`{str(_name)}`"
+        def _class_tag(
+            name: str,
+            *,
+            is_class: bool = True,
+            is_local: bool = False,
+            is_short: bool = False,
+        ) -> str:
+            if is_local:
+                name = f".{name}"
+            if is_short:
+                name = f"~{name}"
+            if is_class:
+                return f":class:`{name}`"
+            else:
+                return f":obj:`{name}`"
 
         if isinstance(cls, TypeVar):
-            return _class_tag(cls)
+            return str(cls)
 
         if isinstance(cls, ForwardRef):
             if cls.__forward_evaluated__:
                 cls = cls.__forward_value__
             else:
-                return _class_tag(f".{cls.__forward_arg__}")
+                return _class_tag(cls.__forward_arg__, is_local=True)
 
         if not hasattr(cls, "__module__"):
-            return _class_tag(cls)
+            return _class_tag(str(cls))
 
         if cls.__module__ in ("__builtin__", "builtins"):
             return _class_tag(cls.__name__)
@@ -234,9 +242,14 @@ class AddInheritance(AutodocProcessDocstring):
                 for arg in typing_inspect.get_args(cls, evaluate=True)
             ]
 
-            generic_arg_str = f' [{", ".join(generic_args)}]' if generic_args else ""
+            generic_arg_str = f" [{', '.join(generic_args)}]" if generic_args else ""
 
-            return f":class:`~{self._full_name(cls)}`{generic_arg_str}"
+            return (
+                _class_tag(
+                    self._full_name(cls), is_class=isinstance(cls, type), is_short=True
+                )
+                + generic_arg_str
+            )
 
     def _typevar_name(self, cls: TypeVar) -> str:
         if isinstance(cls, TypeVar):
@@ -644,27 +657,29 @@ def _get_minimal_bases(class_: type) -> List[type]:
     ]
 
 
-def _class_name(cls: type) -> str:
-    return cast(
-        str, _class_attr(cls=cls, attr="__qualname__", default=lambda: cls.__name__)
-    )
+def _class_name(cls: Any) -> str:
+    return cast(str, _class_attr(cls=cls, attr=["__qualname__", "__name__", "_name"]))
 
 
-def _class_attr(cls: type, attr: str, default: Callable[[], Any]) -> Any:
+def _class_attr(cls: Any, attr: List[str]) -> Any:
     def _get_attr(_cls: type) -> Any:
-        try:
-            # we try to get the class attribute
-            return getattr(_cls, attr)
-        except AttributeError:
-            # if the attribute is not defined, this class is likely to have generic
-            # arguments, so we re-try recursively with the origin (unless the origin
-            # is the class itself to avoid infinite recursion)
-            cls_origin = typing_inspect.get_origin(cls)
-            if cls_origin != _cls:
-                return _get_attr(_cls=cls_origin)
-            else:
-                # as a last resort, we create the default value
-                return default()
+        # we try to get the class attribute
+        for attr_name in attr:
+            attr_value = getattr(_cls, attr_name, None)
+            if attr_value is not None:
+                return attr_value
+
+        # if the attribute is not defined, this class is likely to have generic
+        # arguments, so we re-try recursively with the origin (unless the origin
+        # is the class itself to avoid infinite recursion)
+        cls_origin = typing_inspect.get_origin(_cls)
+        if cls_origin is not None and cls_origin != _cls:
+            return _get_attr(cls_origin)
+        else:
+            # as a last resort, we create the default value
+            raise AttributeError(
+                f"none of the attributes not found in class {cls}: {', '.join(attr)}"
+            )
 
     return _get_attr(_cls=cls)
 
