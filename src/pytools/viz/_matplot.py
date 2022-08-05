@@ -8,6 +8,7 @@ from typing import Any, Iterable, List, Optional, Union, cast, overload
 
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import RendererBase
@@ -271,13 +272,13 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         pass
 
     @overload
-    def color_for_value(self, z: np.ndarray) -> np.ndarray:
+    def color_for_value(self, z: npt.NDArray[np.float_]) -> npt.NDArray[np.float_]:
         """[overload]"""
         pass
 
     def color_for_value(
-        self, z: Union[int, float, np.ndarray]
-    ) -> Union[RgbaColor, np.ndarray]:
+        self, z: Union[int, float, npt.NDArray[np.float_]]
+    ) -> Union[RgbaColor, npt.NDArray[np.float_]]:
         """
         Get the color(s) associated with the given value(s), based on the color map and
         normalization defined for this style.

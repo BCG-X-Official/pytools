@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 from collections import defaultdict
 from glob import glob
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
-from weakref import ref
+from weakref import ReferenceType
 
 from make_util import get_package_version as _get_package_version
 from packaging import version as pkg_version
@@ -69,9 +69,9 @@ class CommandMeta(ABCMeta):
 
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        cls.__instance_ref: Optional[ref] = None
+        cls.__instance_ref: Optional[ReferenceType[Command]] = None
 
-    def __call__(cls, *args, **kwargs: Any) -> CommandMeta:
+    def __call__(cls, *args: Any, **kwargs: Any) -> Command:
         """
         Return the existing command instance, or create a new one if none exists yet.
 
@@ -85,8 +85,8 @@ class CommandMeta(ABCMeta):
             if obj is not None:
                 return obj
 
-        instance = super(CommandMeta, cls).__call__()
-        cls.__instance_ref = ref(instance)
+        instance: Command = super(CommandMeta, cls).__call__()
+        cls.__instance_ref = ReferenceType(instance)
         return instance
 
 

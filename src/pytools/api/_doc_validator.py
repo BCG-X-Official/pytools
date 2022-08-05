@@ -49,7 +49,7 @@ __all__ = ["DocValidator"]
 #
 
 T_NamedElementDefinition = TypeVar(
-    "T_NamedElementDefinition", bound=NamedElementDefinition
+    "T_NamedElementDefinition", bound=NamedElementDefinition[Any]
 )
 
 #
@@ -82,7 +82,7 @@ class DocValidator:
 
     #: Names of modules for which parameter documentation and type hints should not be
     #: validated.
-    exclude_from_parameter_validation: Optional[Pattern]
+    exclude_from_parameter_validation: Optional[Pattern[str]]
 
     #: A dictionary mapping definitions to lists of errors identified during validation.
     validation_errors: Dict[str, List[str]]
@@ -106,7 +106,7 @@ class DocValidator:
         *,
         root_dir: str,
         validate_protected: Optional[Iterable[str]] = None,
-        exclude_from_parameter_validation: Optional[Union[str, Pattern]] = None,
+        exclude_from_parameter_validation: Optional[Union[str, Pattern[str]]] = None,
         additional_tests: Optional[Iterable[DocTest]] = None,
     ) -> None:
         """
@@ -215,7 +215,7 @@ class DocValidator:
             else:
                 return definitions
 
-        classes: List[NamedElementDefinition] = list(
+        classes: List[NamedElementDefinition[Type[Any]]] = list(
             _filter_excluded(kind=type, definition_type=NamedElementDefinition)
         )
         functions: Iterable[FunctionDefinition] = _filter_excluded(

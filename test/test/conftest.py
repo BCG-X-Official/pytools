@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-@pytest.fixture
+@pytest.fixture  # type:ignore
 def jobs() -> List[Job[int]]:
     # generate jobs using a class
 
@@ -23,7 +23,10 @@ def jobs() -> List[Job[int]]:
     return [TestJob(i) for i in range(8)]
 
 
-@pytest.fixture
+@pytest.fixture  # type:ignore
 def jobs_delayed() -> List[Job[int]]:
     # generate jobs using class function Job.delayed
-    return [Job.delayed(lambda x: x + 2)(i) for i in range(4)]
+    def plus_2(x: int) -> int:
+        return x + 2
+
+    return [Job.delayed(plus_2)(i) for i in range(4)]

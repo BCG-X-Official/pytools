@@ -49,10 +49,10 @@ __all__ = [
 #
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", list, set, tuple)
-T_Iterable = TypeVar("T_Iterable", bound=Iterable)
-T_Type = TypeVar("T_Type", bound=type)
-
+T_Collection = TypeVar("T_Collection", List[Any], Set[Any], Tuple[Any, ...])
+T_Iterable = TypeVar("T_Iterable", bound=Iterable[Any])
+T_Type = TypeVar("T_Type", bound=Type[Any])
+T_Callable = TypeVar("T_Callable", bound=Callable[..., Any])
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -289,7 +289,7 @@ def to_collection(
     return _to_collection(
         values=values,
         collection_type=None,
-        new_collection_type=tuple,
+        new_collection_type=cast(Type[Tuple[Any, ...]], tuple),
         element_type=element_type,
         optional=optional,
         arg_name=arg_name,
@@ -299,7 +299,7 @@ def to_collection(
 def _to_collection(
     values: Union[Iterable[T], T, None],
     *,
-    collection_type: Optional[Type[Collection]],
+    collection_type: Optional[Type[Collection[Any]]],
     new_collection_type: Type[T_Collection],
     element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
     optional: bool,
@@ -464,7 +464,7 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
     :param class_: class to get the generic bases for
     :return: the generic base classes of the given class
     """
-    bases = typing_inspect.get_generic_bases(class_)
+    bases: Tuple[type, ...] = typing_inspect.get_generic_bases(class_)
     if bases is typing_inspect.get_generic_bases(super(class_, class_)):
         return ()
     else:
@@ -476,9 +476,21 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
 #
 
 
+@overload
+def deprecated(function: T_Callable) -> T_Callable:
+    """[overload]"""
+    pass
+
+
+@overload
+def deprecated(*, message: str) -> Callable[[T_Callable], T_Callable]:
+    """[overload]"""
+    pass
+
+
 def deprecated(
-    function: Optional[Callable] = None, *, message: Optional[str] = None
-) -> Callable:
+    function: Optional[T_Callable] = None, *, message: Optional[str] = None
+) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
     """
     Decorator to mark a function as deprecated.
 
@@ -503,15 +515,15 @@ def deprecated(
         decorated function
     """
 
-    def _validate_function(func: Callable):
+    def _validate_function(func: T_Callable) -> None:
         if not callable(func):
             raise ValueError("Deprecated object must be callable")
 
-    def _deprecated_inner(func: Callable) -> Callable:
+    def _deprecated_inner(func: T_Callable) -> T_Callable:
         _validate_function(func)
 
         @wraps(func)
-        def new_func(*args, **kwargs: Any) -> Any:
+        def new_func(*args: Any, **kwargs: Any) -> Any:
             """
             Function wrapper
             """
@@ -526,7 +538,7 @@ def deprecated(
                 )
             return func(*args, **kwargs)
 
-        return new_func
+        return cast(T_Callable, new_func)
 
     if function is None:
         return _deprecated_inner

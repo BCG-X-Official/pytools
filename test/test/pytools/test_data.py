@@ -98,7 +98,7 @@ def test_matrix_from_frame() -> None:
     columns = list("abcde")
 
     frame = pd.DataFrame(values, index=rows, columns=columns)
-    matrix_from_frame = Matrix.from_frame(frame)
+    matrix_from_frame: Matrix[np.int_] = Matrix.from_frame(frame)
     matrix_expected = Matrix(values, names=(rows, columns))
     assert matrix_from_frame == matrix_expected
 
@@ -107,7 +107,7 @@ def test_matrix_from_frame() -> None:
 
 def test_matrix_resize() -> None:
 
-    m: Matrix = Matrix(
+    m: Matrix[np.int_] = Matrix(
         np.arange(20).reshape((4, 5)),
         names=(list("ABCD"), list("abcde")),
         weights=([2, 4, 2, 4], [1, 5, 4, 1, 5]),

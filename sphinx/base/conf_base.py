@@ -229,7 +229,7 @@ def setup(app: Sphinx) -> None:
     _add_custom_css_and_js(app=app)
 
 
-def _add_custom_css_and_js(app: Sphinx):
+def _add_custom_css_and_js(app: Sphinx) -> None:
     # add custom css and js files, and copy them to the build/html/_static folder
     css_rel_paths = [os.path.join("css", "gamma.css")]
     js_rel_paths = [os.path.join("js", "gamma.js"), os.path.join("js", "versions.js")]

@@ -67,8 +67,8 @@ class _TypeVarBindings:
         )
 
     def resolve_parameter(
-        self, defining_class: type, parameter: TypeVar
-    ) -> Union[Type, TypeVar]:
+        self, defining_class: Type[Any], parameter: TypeVar
+    ) -> Union[Type[Any], TypeVar]:
         """
         Resolve a type parameter, substituting it with an actual type if the parameter
         is bound to a type argument in the context of the current class;
@@ -84,19 +84,19 @@ class _TypeVarBindings:
 
     def _get_parameter_bindings(
         self,
-        cls: type,
-        subclass_bindings: Dict[TypeVar, Union[Type, TypeVar]],
-    ) -> Dict[Type, Dict[TypeVar, Union[Type, TypeVar]]]:
+        cls: Type[Any],
+        subclass_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]],
+    ) -> Dict[Type[Any], Dict[TypeVar, Union[Type[Any], TypeVar]]]:
         # get type variable bindings for all generic types defined in the class
         # hierarchy of the given parent class, applying the given bindings derived from
         # child classes
 
         # if arg cls has generic type parameters, it will have a corresponding
-        cls_origin: Optional[type] = None
+        cls_origin: Optional[Type[Any]] = None
         if typing_inspect.is_generic_type(cls):
             cls_origin = typing_inspect.get_origin(cls)
 
-        class_bindings: Dict[TypeVar, Union[type, TypeVar]]
+        class_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]]
         if cls_origin:
             class_bindings = {
                 param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
@@ -154,7 +154,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 
     """
 
-    original_signatures: Dict[Any, Dict[str, Union[Type, TypeVar]]]
+    original_signatures: Dict[Any, Dict[str, Union[Type[Any], TypeVar]]]
 
     _current_class_bindings: Optional[_TypeVarBindings]
 
@@ -166,19 +166,17 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         self, bindings: _TypeVarBindings, func: FunctionType
     ) -> None:
         # get the class in which the method has been defined
-        defining_class_opt: Optional[type] = self._get_defining_class(func)
+        defining_class_opt: Optional[Type[Any]] = self._get_defining_class(func)
         if defining_class_opt is None:
             # no or unknown defining class: nothing to resolve in the signature
             return
         defining_class: type = defining_class_opt
 
-        log.debug(f"function {func} was defined in {defining_class}")
-
         # get the original signature and convert it to a list of (name, type) tuples
         signature_original_items = list(self._get_original_signature(func).items())
 
         def _get_self_or_cls_type_substitution() -> Union[
-            Tuple[TypeVar, Type], Tuple[None, None]
+            Tuple[TypeVar, Type[Any]], Tuple[None, None]
         ]:
 
             if signature_original_items:
@@ -209,13 +207,13 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             return None, None
 
         arg_0_type_var: Optional[TypeVar]
-        arg_0_substitute: Optional[Type]
+        arg_0_substitute: Optional[Type[Any]]
 
         arg_0_type_var, arg_0_substitute = _get_self_or_cls_type_substitution()
 
         def _substitute_type_vars_in_type_expression(
-            type_expression: Union[Type, TypeVar]
-        ) -> Union[Type, TypeVar]:
+            type_expression: Union[Type[Any], TypeVar]
+        ) -> Union[Type[Any], TypeVar]:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 if type_expression == arg_0_type_var:
@@ -232,11 +230,10 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                 args = typing_inspect.get_args(type_expression)
                 if args:
                     # noinspection PyUnresolvedReferences
-                    return type_expression.copy_with(
+                    type_expression = type_expression.copy_with(
                         tuple(map(_substitute_type_vars_in_type_expression, args))
                     )
-                else:
-                    return type_expression
+                return type_expression
 
         # get the actual signature object that we will modify
         signature = func.__annotations__
@@ -246,13 +243,13 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
         for name, tp in signature_original_items:
             signature[name] = _substitute_type_vars_in_type_expression(tp)
 
-    def _resolve_attribute_signatures(self, cls: Type) -> None:
+    def _resolve_attribute_signatures(self, cls: Type[Any]) -> None:
         assert self._current_class_bindings is not None
         bindings: _TypeVarBindings = self._current_class_bindings
 
         def _substitute_type_vars_in_type_expression(
-            type_expression: Union[Type, TypeVar]
-        ) -> Union[Type, TypeVar]:
+            type_expression: Union[Type[Any], TypeVar]
+        ) -> Union[Type[Any], TypeVar]:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 # resolve type variables defined by Generic[] in the
@@ -265,17 +262,18 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                     # unpack callable args, since copy_with() expects a flat tuple
                     # (arg_1, arg_2, ..., arg_n, return)
                     # instead of ([arg_1, arg_2, ..., arg_n], return)
-                    if typing_inspect.get_origin(
-                        type_expression
-                    ) is collections.abc.Callable and isinstance(args[0], list):
+                    if (
+                        typing_inspect.get_origin(type_expression)
+                        is collections.abc.Callable
+                    ) and isinstance(args[0], list):
                         args = (*args[0], *args[1:])
 
                     # noinspection PyUnresolvedReferences
-                    return type_expression.copy_with(
+                    type_expression = type_expression.copy_with(
                         tuple(map(_substitute_type_vars_in_type_expression, args))
                     )
-                else:
-                    return type_expression
+
+                return type_expression
 
         annotations = getattr(cls, "__annotations__", None)
         if annotations:
@@ -285,7 +283,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             }
 
     @staticmethod
-    def _get_defining_class(method: FunctionType) -> Optional[type]:
+    def _get_defining_class(method: FunctionType) -> Optional[Type[Any]]:
         # get the class that defined the callable
 
         if "." not in method.__qualname__:
@@ -299,8 +297,12 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             method_container = method.__qualname__[: method.__qualname__.rfind(".")]
 
         try:
-            return eval(
-                method_container, importlib.import_module(method.__module__).__dict__
+            return cast(
+                Type[Any],
+                eval(
+                    method_container,
+                    importlib.import_module(method.__module__).__dict__,
+                ),
             )
         except NameError:
             # we could not find the container of the given method in the method's global
@@ -313,7 +315,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             return None
 
     @staticmethod
-    def _get_method_type(defining_class: type, func: FunctionType) -> int:
+    def _get_method_type(defining_class: Type[Any], func: FunctionType) -> int:
         # do we have a static or class method?
         try:
             raw_func = getattr_static(defining_class, func.__name__)
@@ -331,9 +333,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 
     def _get_original_signature(
         self, func: FunctionType
-    ) -> Dict[str, Union[type, TypeVar]]:
+    ) -> Dict[str, Union[Type[Any], TypeVar]]:
         # get the original signature as defined in the code
-        signature_original: Dict[str, Union[type, TypeVar]]
+        signature_original: Dict[str, Union[Type[Any], TypeVar]]
         try:
             signature_original = self.original_signatures[func]
         except KeyError:
@@ -366,7 +368,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
             assert current_class is not None
             self._resolve_function_signature(bindings=current_class, func=obj.__func__)
 
-    def _update_current_class(self, cls: Optional[type]) -> Optional[_TypeVarBindings]:
+    def _update_current_class(
+        self, cls: Optional[Type[Any]]
+    ) -> Optional[_TypeVarBindings]:
         if cls is None:
             return None
 

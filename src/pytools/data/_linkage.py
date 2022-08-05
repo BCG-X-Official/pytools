@@ -12,6 +12,7 @@ from copy import copy
 from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
 
 import numpy as np
+import numpy.typing as npt
 
 from ..api import AllTracker, inheritdoc
 from ..expression import Expression, HasExpressionRepr
@@ -23,6 +24,13 @@ from .linkage import LeafNode, LinkageNode, Node
 #
 
 __all__ = ["LinkageTree"]
+
+
+#
+# Type variables
+#
+
+LinkageMatrix = npt.NDArray[np.float_]
 
 
 #
@@ -65,7 +73,7 @@ class LinkageTree(HasExpressionRepr):
     #: <number of descendant nodes>)`,
     #: where the descendant nodes include the nodes from the entire sub-tree,
     #: from direct children down to leaf nodes.
-    scipy_linkage_matrix: np.ndarray
+    scipy_linkage_matrix: LinkageMatrix
 
     #: The maximum possible distance in the linkage tree; this determines the height of
     #: the tree to be drawn.
@@ -86,7 +94,7 @@ class LinkageTree(HasExpressionRepr):
     def __init__(
         self,
         *,
-        scipy_linkage_matrix: np.ndarray,
+        scipy_linkage_matrix: LinkageMatrix,
         leaf_names: Iterable[str],
         leaf_weights: Iterable[float],
         max_distance: Optional[float] = None,
@@ -114,7 +122,7 @@ class LinkageTree(HasExpressionRepr):
         n_branches = len(scipy_linkage_matrix)
         n_leaves = n_branches + 1
 
-        def _validate_leaves(var: Sequence[Any], var_name: str):
+        def _validate_leaves(var: Sequence[Any], var_name: str) -> None:
             if len(var) != n_leaves:
                 raise ValueError(f"expected {n_leaves} values for arg {var_name}")
 
@@ -210,7 +218,7 @@ class LinkageTree(HasExpressionRepr):
         :return: a copy of this linkage tree with sorting applied
         """
 
-        linkage: np.ndarray = self.scipy_linkage_matrix.copy()
+        linkage: LinkageMatrix = self.scipy_linkage_matrix.copy()
 
         def _sort_node(n: Node) -> Tuple[float, int]:
             # sort a linkage node and return its total weight and leaf count

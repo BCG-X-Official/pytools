@@ -6,7 +6,7 @@ from __future__ import annotations
 import logging
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import List, NamedTuple, Tuple
+from typing import Any, List, NamedTuple, Tuple
 
 from .. import Expression, ExpressionAlias, ExpressionFormatter
 from ..base import (
@@ -238,7 +238,7 @@ class AtomicForm(TextualForm):
     A textual representation of an atomic expression.
     """
 
-    def __init__(self, expression: AtomicExpression) -> None:
+    def __init__(self, expression: AtomicExpression[Any]) -> None:
         self.text = expression.text_
 
     def to_lines(
