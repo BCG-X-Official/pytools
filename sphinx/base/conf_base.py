@@ -168,10 +168,12 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "navigation_depth": 4,
-    # Omit the `theme-switcher` since we don't support dark mode:
+    # Omit the `theme-switcher` since we don't support dark mode
+    # (as of pydata theme 0.9):
     "navbar_end": ["navbar-icon-links"],
 }
 
+# Set the default mode to "light" instead of "auto" (as of pydata theme 0.9):
 html_context = {"default_mode": "light"}
 
 
