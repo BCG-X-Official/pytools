@@ -127,7 +127,7 @@ class Command(metaclass=CommandMeta):
     def run(self) -> None:
         command_message = f"Running command {self.name} – {self.get_description()}"
         separator = "=" * len(command_message)
-        log("\n".join([separator, command_message, separator]))
+        log("\n".join(["", separator, command_message, separator]))
         self._run()
 
     @abstractmethod

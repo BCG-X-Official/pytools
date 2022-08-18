@@ -49,11 +49,11 @@ testing = [
     "isort ~= 5.5",
 ]
 docs = [
-    "sphinx ~= 4.2",
-    "sphinx-autodoc-typehints ~= 1.12",
-    "pydata-sphinx-theme ~= 0.7",
+    "sphinx ~= 4.5",
+    "sphinx-autodoc-typehints ~= 1.19",
+    "pydata-sphinx-theme ~= 0.8.1",
     "jinja2 ~= 2.11",
-    "nbsphinx ~= 0.7.1",
+    "nbsphinx ~= 0.8.9",
     "jupyter == 1",
     "docutils ~= 0.17",
     "xlrd ~= 1.2",
