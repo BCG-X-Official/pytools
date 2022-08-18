@@ -62,7 +62,7 @@ PACKAGE_VERSION = _get_package_version(package_path=DIR_PACKAGE_ROOT)
 
 class CommandMeta(ABCMeta):
     """
-    Meta-class for command classes.
+    Metaclass for command classes.
 
     Subsequent instantiations of a command class return the identical object.
     """
@@ -127,7 +127,7 @@ class Command(metaclass=CommandMeta):
     def run(self) -> None:
         command_message = f"Running command {self.name} – {self.get_description()}"
         separator = "=" * len(command_message)
-        log("\n".join([separator, command_message, separator]))
+        log("\n".join(["", separator, command_message, separator]))
         self._run()
 
     @abstractmethod
@@ -219,7 +219,7 @@ class GettingStartedDoc(Command):
         with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
             readme_data = file.read()
 
-        # modify links (step back needed as build will add sub directory to paths)
+        # modify links (step back needed as build will add subdirectory to paths)
         readme_data = readme_data.replace("sphinx/source/", "../")
         readme_data = readme_data.replace("sphinx/auxiliary/", "../")
         readme_data = re.sub(
@@ -293,7 +293,8 @@ class PrepareDocsDeployment(Command):
 
         self._tidy_up_docs_root()
 
-    def _copy_new_documentation(self) -> None:
+    @staticmethod
+    def _copy_new_documentation() -> None:
         log("Adding new documentation to documentation version history")
 
         os.makedirs(DIR_DOCS_VERSION, exist_ok=True)
@@ -310,7 +311,8 @@ class PrepareDocsDeployment(Command):
         # copy new docs version to deployment path
         shutil.copytree(src=DIR_SPHINX_BUILD_HTML, dst=dir_docs_current_version)
 
-    def _update_historic_docs(self) -> None:
+    @staticmethod
+    def _update_historic_docs() -> None:
         # Replace all docs version lists with the most up-to-date to have all versions
         # accessible also from older versions
         new_versions_js = os.path.join(
@@ -330,7 +332,7 @@ class PrepareDocsDeployment(Command):
 
     @staticmethod
     def _copy_latest_to_docs_root() -> None:
-        # copy latest version to root
+        # copy the latest version to root
 
         dir_latest_version = os.path.join(
             DIR_DOCS_VERSION, version_string_to_url(get_versions().latest_version)
