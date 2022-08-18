@@ -7,6 +7,16 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with :mod:`mypy`.
 
+2.0.2
+~~~~~
+
+- REFACTOR: run *mypy* type checks in *strict* mode
+- FIX: more reliably determine the class when resolving type variables for Sphinx API
+  documentation
+- FIX: no longer raise an exception when attempting to get the class name for
+  :obj:`~typing.Union` and other “special” types
+
+
 2.0.1
 ~~~~~
 

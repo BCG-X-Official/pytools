@@ -176,12 +176,16 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         cls: Type[T_Style],
     ) -> Dict[str, Callable[..., T_Style]]:
         """[see superclass]"""
-        named_styles = cast(Type[T_Style], super()).get_named_styles()
+        named_styles: Dict[str, Callable[..., T_Style]] = cast(
+            Type[T_Style], super()
+        ).get_named_styles()
+
         return {
             **named_styles,
             **{
-                f"{name}_dark": lambda style=style: style(
-                    colors=ColorScheme.DEFAULT_DARK
+                f"{name}_dark": cast(
+                    Callable[..., T_Style],
+                    lambda s=style: s(colors=ColorScheme.DEFAULT_DARK),
                 )
                 for name, style in named_styles.items()
                 if isinstance(style, type)
@@ -227,7 +231,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
         """
 
-        def _get_style_factory(_style_name) -> Callable[..., T_Style]:
+        def _get_style_factory(_style_name: str) -> Callable[..., T_Style]:
             # get the named style from the style dict
             try:
                 return self.get_named_styles()[_style_name]

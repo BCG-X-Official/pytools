@@ -151,7 +151,7 @@ class Job(Generic[T_Job_Result], metaclass=ABCMeta):
         """
 
         @wraps(function)
-        def _delayed_function(*args, **kwargs: Any) -> Job[T_Job_Result]:
+        def _delayed_function(*args: Any, **kwargs: Any) -> Job[T_Job_Result]:
             @inheritdoc(match="""[see superclass]""")
             class _Job(Job[T_Job_Result]):
                 def run(self) -> T_Job_Result:
@@ -256,7 +256,7 @@ class JobRunner(ParallelizableMixin):
         :return: the results of all jobs
         """
         with self._parallel() as parallel:
-            return parallel((job.run, (), {}) for job in jobs)
+            return cast(List[T_Job_Result], parallel((job.run, (), {}) for job in jobs))
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """

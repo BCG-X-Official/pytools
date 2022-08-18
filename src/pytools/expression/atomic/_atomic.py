@@ -70,7 +70,7 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 class _IdentifierMeta(ABCMeta):
 
-    _identifiers: MutableMapping[str, Id] = WeakValueDictionary()  # type: ignore
+    _identifiers: MutableMapping[str, Id] = WeakValueDictionary()
 
     def __getattr__(self, name: str) -> Id:
         if name.startswith("_") or name.endswith("_") or name == "Id":
@@ -104,6 +104,9 @@ class Id(AtomicExpression[str], metaclass=_IdentifierMeta):
     For compatibility reasons, attribute access does not work for the ``Id`` name.
     Evaluating ``Id.Id`` will raise an :class:`AttributeError`.
     """
+
+    # the name of this identifier
+    _name: str
 
     def __init__(self, name: Any) -> None:
         """

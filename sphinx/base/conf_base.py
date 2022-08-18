@@ -16,7 +16,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple, Type, cast
 
 from sphinx.application import Sphinx
 
@@ -168,10 +168,12 @@ html_theme = "pydata_sphinx_theme"
 
 html_theme_options = {
     "navigation_depth": 4,
-    # Omit the `theme-switcher` since we don't support dark mode:
+    # Omit the `theme-switcher` since we don't support dark mode
+    # (as of pydata theme 0.9):
     "navbar_end": ["navbar-icon-links"],
 }
 
+# Set the default mode to "light" instead of "auto" (as of pydata theme 0.9):
 html_context = {"default_mode": "light"}
 
 
@@ -194,6 +196,8 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
+    from pytools.meta import SingletonABCMeta
+    from pytools.sphinx import AutodocProcessSignature
     from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
@@ -203,6 +207,43 @@ def setup(app: Sphinx) -> None:
         ResolveTypeVariables,
         SkipIndirectImports,
     )
+
+    # todo: move this class to package pytools.sphinx.util once we release pytools 2.1
+    class TrackCurrentDoc(
+        AutodocProcessSignature,  # type: ignore
+        metaclass=SingletonABCMeta,
+    ):
+        """
+        Keep track of the class currently being processed by autodoc.
+
+        This is required to attribute unbound methods to the correct class, e.g.,
+        in class :class:`.ResolveTypeVariables`.
+        """
+
+        def __init__(self) -> None:
+            self.current_class: Optional[Type[Any]] = None
+            self.rtv = ResolveTypeVariables()
+
+        def process(
+            self,
+            app: Sphinx,
+            what: str,
+            name: str,
+            obj: object,
+            options: object,
+            signature: Optional[str],
+            return_annotation: Optional[str],
+        ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+            if what == "class":
+                cls = cast(type, obj)
+                self.current_class = cls
+                self.rtv._update_current_class(cls)
+
+            return None
+
+        def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
+            self.rtv.connect(app, priority)
+            return cast(int, super().connect(app, priority))
 
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
         app=app
@@ -220,16 +261,16 @@ def setup(app: Sphinx) -> None:
 
     Replace3rdPartyDoc().connect(app=app)
 
-    ResolveTypeVariables().connect(app=app)
+    TrackCurrentDoc().connect(app=app)
 
     CollapseModulePathsInXRef(
         collapsible_submodules=intersphinx_collapsible_submodules
-    ).connect(app)
+    ).connect(app=app)
 
     _add_custom_css_and_js(app=app)
 
 
-def _add_custom_css_and_js(app: Sphinx):
+def _add_custom_css_and_js(app: Sphinx) -> None:
     # add custom css and js files, and copy them to the build/html/_static folder
     css_rel_paths = [os.path.join("css", "gamma.css")]
     js_rel_paths = [os.path.join("js", "gamma.js"), os.path.join("js", "versions.js")]

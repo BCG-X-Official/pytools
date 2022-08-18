@@ -33,9 +33,9 @@ __all__ = [
 #
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", bound=Collection)
-T_Callable = TypeVar("T_Callable", bound=Callable)
-T_Iterable = TypeVar("T_Iterable", bound=Iterable)
+T_Collection = TypeVar("T_Collection", bound=Collection[Any])
+T_Callable = TypeVar("T_Callable", bound=Callable[..., Any])
+T_Iterable = TypeVar("T_Iterable", bound=Iterable[Any])
 T_Type = TypeVar("T_Type", bound=type)
 
 
@@ -315,7 +315,7 @@ def update_forward_references(
         elif isinstance(_obj, FunctionType) and _obj.__module__ == my_module:
             _update_annotations(_obj, local_ns)
 
-    def _update_annotations(_obj: Any, local_ns: Optional[Dict[str, Any]]):
+    def _update_annotations(_obj: Any, local_ns: Optional[Dict[str, Any]]) -> None:
         annotations = get_type_hints(
             _obj, globalns=getattr(_obj, "__globals__", globals_), localns=local_ns
         )
@@ -334,10 +334,14 @@ __tracker.validate()
 
 
 def _qualname(_obj: Any) -> str:
+    name: str
+
     try:
-        return _obj.__qualname__
+        name = _obj.__qualname__
     except AttributeError:
         try:
-            return _obj.__name__
+            name = _obj.__name__
         except AttributeError:
-            return repr(_obj)
+            name = repr(_obj)
+
+    return name

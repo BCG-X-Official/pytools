@@ -8,6 +8,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Any, Optional, Tuple, TypeVar
 
 import numpy as np
+import numpy.typing as npt
 
 from ..api import AllTracker, inheritdoc, to_list
 from .operator import BinaryOperator, UnaryOperator
@@ -161,7 +162,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return UnaryOperation(UnaryOperator.NOT, self)
 
-    def eq_(self, other: Any) -> bool:
+    def eq_(self, other: Expression) -> bool:
         """
         Compare this expression with another for equality.
 
@@ -237,7 +238,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return BinaryOperation(BinaryOperator.MOD, self, other)
 
-    def __pow__(self, power: Any, modulo=None) -> Expression:
+    def __pow__(self, power: Any, modulo: Any = None) -> Expression:
         if modulo is not None:
             return NotImplemented
         from .composite import BinaryOperation
@@ -304,7 +305,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
         return BinaryOperation(BinaryOperator.MOD, other, self)
 
-    def __rpow__(self, power: Any, modulo=None) -> Expression:
+    def __rpow__(self, power: Any, modulo: Any = None) -> Expression:
         if modulo is not None:
             return NotImplemented
         from .composite import BinaryOperation
@@ -516,15 +517,16 @@ def make_expression(value: Any) -> Expression:
         from .atomic import Id
         from .composite import ListLiteral
 
-        def _ndarray_to_expression(array: np.ndarray) -> Expression:
-            if array.ndim == 0:
-                return array[()]
+        def _ndarray_to_expression(array: npt.NDArray[Any]) -> Expression:
             if array.ndim == 1:
                 return ListLiteral(*array)
             else:
                 return ListLiteral(*map(_ndarray_to_expression, array))
 
-        return Id.array(_ndarray_to_expression(value))
+        if value.ndim == 0:
+            return Id.array(value[()])
+        else:
+            return Id.array(_ndarray_to_expression(value))
 
     elif isinstance(value, slice):
         from .atomic import Epsilon

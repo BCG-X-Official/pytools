@@ -12,19 +12,15 @@ dependencies:
   - scipy ~= 1.8
   - typing_inspect ~= 0.7
   # build/test
-  - black ~= 22.3
   - conda-build ~= 3.21
   - conda-verify ~= 3.1
   - docutils ~= 0.17
   - flit ~= 3.0
-  - isort ~= 5.10
   - jinja2 ~= 2.11
   - markupsafe < 2.1  # markupsafe 2.1 breaks support for jinja2
   - m2r ~= 0.2
-  - mypy ~= 0.931
   - pluggy ~= 0.13
-  - pre-commit ~= 2.17
-  - pytest ~= 5.4
+  - pytest ~= 7.1
   - pytest-cov ~= 2.12
   - pyyaml ~= 5.4
   - toml ~= 0.10
@@ -32,9 +28,9 @@ dependencies:
   - yaml ~= 0.2
   # sphinx
   - sphinx ~= 4.5
-  - sphinx-autodoc-typehints ~= 1.12
+  - sphinx-autodoc-typehints ~= 1.19
   - nbsphinx ~= 0.8.9
-  - pydata-sphinx-theme ~= 0.9
+  - pydata-sphinx-theme ~= 0.8.1
   # notebooks
   - jupyterlab ~= 3.2
   - openpyxl ~= 3.0

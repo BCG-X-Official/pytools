@@ -1,15 +1,16 @@
 """
 Implementation of sphinx utility callbacks specific to building Gamma documentation.
 """
+import collections.abc
 import importlib
 import itertools
 import logging
 import re
 from abc import ABCMeta, abstractmethod
+from inspect import getattr_static
 from types import FunctionType, MethodType
 from typing import (
     Any,
-    Callable,
     Dict,
     ForwardRef,
     Generator,
@@ -21,14 +22,18 @@ from typing import (
     Pattern,
     Set,
     Tuple,
+    Type,
     TypeVar,
+    Union,
     cast,
+    get_type_hints,
 )
 
 import typing_inspect
 
 from ...api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
 from .. import (
+    AutodocBeforeProcessSignature,
     AutodocProcessDocstring,
     AutodocProcessSignature,
     AutodocSkipMember,
@@ -41,9 +46,32 @@ try:
     from sphinx.application import Sphinx
 except ImportError:
     # ... otherwise mock them up
-    Sphinx = type  # type: ignore
-    Element = type  # type: ignore
-    Text = type  # type: ignore
+
+    # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection
+    class _Element:
+
+        children: List["Element"]
+        attributes: Dict[str, Any]
+
+        def __init__(self, *args: Any, **kwargs: Any) -> None:
+            raise TypeError("docutils package is not installed")
+
+        def replace(self, old: "Element", new: "Element") -> None:
+            ...
+
+    # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
+    class _Text(_Element):
+
+        rawsource: str
+
+        # noinspection SpellCheckingInspection
+        def astext(self) -> str:
+            ...
+
+    Sphinx = type
+    Element = _Element
+    Text = _Text
+
 
 log = logging.getLogger(__name__)
 
@@ -59,6 +87,7 @@ __all__ = [
     "CollapseModulePathsInSignature",
     "CollapseModulePathsInXRef",
     "Replace3rdPartyDoc",
+    "ResolveTypeVariables",
     "SkipIndirectImports",
 ]
 
@@ -68,6 +97,16 @@ __all__ = [
 
 method_descriptor = type(str.__dict__["startswith"])
 wrapper_descriptor = type(str.__dict__["__add__"])
+
+
+#
+# Constants
+#
+
+METHOD_TYPE_DYNAMIC = 0
+METHOD_TYPE_STATIC = 1
+METHOD_TYPE_CLASS = 2
+
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -130,7 +169,7 @@ class AddInheritance(AutodocProcessDocstring):
                 # ignore this to prevent adding the same content at two places
                 return
         except KeyError:
-            # we are seeing a class for the first time; store its content so we can
+            # we are seeing a class for the first time; store its content, so we can
             # detect and allow repeat visits
             self._visited[class_] = _current_lines
 
@@ -171,36 +210,45 @@ class AddInheritance(AutodocProcessDocstring):
             pos = _insert_position()
             lines[pos:pos] = bases_lines
 
-    def _class_module(self, cls: type) -> str:
-        module_name = _class_attr(
-            cls=cls,
-            attr="__publicmodule__",
-            default=lambda: _class_attr(cls=cls, attr="__module__", default=lambda: ""),
-        )
+    def _class_module(self, cls: Any) -> str:
+        module_name: str = _class_attr(cls, attr=["__publicmodule__", "__module__"])
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    def _full_name(self, cls: type) -> str:
+    def _full_name(self, cls: Any) -> str:
         # get the full name of the class, including the module prefix
-        return f"{self._class_module(cls=cls)}.{_class_name(cls=cls)}"
+        return f"{self._class_module(cls)}.{_class_name(cls)}"
 
     def _class_name_with_generics(self, cls: Any) -> str:
-        def _class_tag(_name: Any) -> str:
-            return f":class:`{str(_name)}`"
+        def _class_tag(
+            name: str,
+            *,
+            is_class: bool = True,
+            is_local: bool = False,
+            is_short: bool = False,
+        ) -> str:
+            if is_local:
+                name = f".{name}"
+            if is_short:
+                name = f"~{name}"
+            if is_class:
+                return f":class:`{name}`"
+            else:
+                return f":obj:`{name}`"
 
         if isinstance(cls, TypeVar):
-            return _class_tag(cls)
+            return str(cls)
 
         if isinstance(cls, ForwardRef):
             if cls.__forward_evaluated__:
                 cls = cls.__forward_value__
             else:
-                return _class_tag(f".{cls.__forward_arg__}")
+                return _class_tag(cls.__forward_arg__, is_local=True)
 
         if not hasattr(cls, "__module__"):
-            return _class_tag(cls)
+            return _class_tag(str(cls))
 
         if cls.__module__ in ("__builtin__", "builtins"):
             return _class_tag(cls.__name__)
@@ -211,9 +259,14 @@ class AddInheritance(AutodocProcessDocstring):
                 for arg in typing_inspect.get_args(cls, evaluate=True)
             ]
 
-            generic_arg_str = f' [{", ".join(generic_args)}]' if generic_args else ""
+            generic_arg_str = f" [{', '.join(generic_args)}]" if generic_args else ""
 
-            return f":class:`~{self._full_name(cls)}`{generic_arg_str}"
+            return (
+                _class_tag(
+                    self._full_name(cls), is_class=isinstance(cls, type), is_short=True
+                )
+                + generic_arg_str
+            )
 
     def _typevar_name(self, cls: TypeVar) -> str:
         if isinstance(cls, TypeVar):
@@ -287,11 +340,13 @@ class CollapseModulePaths(metaclass=ABCMeta):
             for old, new in collapsible_submodules.items()
         ]
 
-        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern, str]] = col
+        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern[str], str]] = col
         self._collapse_private_modules = collapse_private_modules
 
     @abstractmethod
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         # create the regex substitution rule given a raw match and replacement patterns
         pass
 
@@ -361,7 +416,9 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
         for i, line in enumerate(lines):
             lines[i] = self.collapse_module_paths(line)
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(f"(`~?){old}"), f"\\1{new}"
 
 
@@ -395,7 +452,9 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
 
         return None
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -415,7 +474,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
         if domain == "py" and objtype == "class":
             self._process_children(contentnode)
 
-    def _process_children(self, parent_node: Element):
+    def _process_children(self, parent_node: Element) -> None:
         self._process_child(parent_node)
         try:
             children: Iterable[Element] = parent_node.children
@@ -425,11 +484,11 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
         for child_node in children:
             self._process_children(child_node)
 
-    def _process_child(self, content_node: Element):
+    def _process_child(self, content_node: Element) -> None:
         if type(content_node).__name__ == "pending_xref" and tuple(
             type(c).__name__ for c in content_node.children
         ) == ("Text",):
-            text_node: Text = content_node.children[0]
+            text_node: Text = cast(Text, content_node.children[0])
             text = text_node.astext()
             text_collapsed: str = self.collapse_module_paths(text)
             if text_collapsed != text:
@@ -443,7 +502,9 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
                     ),
                 )
 
-    def _make_substitution_pattern(self, old: str, new: str) -> Tuple[Pattern, str]:
+    def _make_substitution_pattern(
+        self, old: str, new: str
+    ) -> Tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -613,27 +674,361 @@ def _get_minimal_bases(class_: type) -> List[type]:
     ]
 
 
-def _class_name(cls: type) -> str:
-    return _class_attr(cls=cls, attr="__qualname__", default=lambda: str(cls))
+def _class_name(cls: Any) -> str:
+    return cast(str, _class_attr(cls=cls, attr=["__qualname__", "__name__", "_name"]))
 
 
-def _class_attr(cls: type, attr: str, default: Callable[[], str]) -> str:
-    def _get_attr(_cls: type) -> str:
-        try:
-            # we try to get the class attribute
-            return getattr(_cls, attr)
-        except AttributeError:
-            # if the attribute is not defined, this class is likely to have generic
-            # arguments, so we re-try recursively with the origin (unless the origin
-            # is the class itself to avoid infinite recursion)
-            cls_origin = typing_inspect.get_origin(cls)
-            if cls_origin != _cls:
-                return _get_attr(_cls=cls_origin)
-            else:
-                # as a last resort, we create the default value
-                return default()
+def _class_attr(cls: Any, attr: List[str]) -> Any:
+    def _get_attr(_cls: type) -> Any:
+        # we try to get the class attribute
+        for attr_name in attr:
+            attr_value = getattr(_cls, attr_name, None)
+            if attr_value is not None:
+                return attr_value
+
+        # if the attribute is not defined, this class is likely to have generic
+        # arguments, so we re-try recursively with the origin (unless the origin
+        # is the class itself to avoid infinite recursion)
+        cls_origin = typing_inspect.get_origin(_cls)
+        if cls_origin is not None and cls_origin != _cls:
+            return _get_attr(cls_origin)
+        else:
+            # as a last resort, we create the default value
+            raise AttributeError(
+                f"none of the attributes not found in class {cls}: {', '.join(attr)}"
+            )
 
     return _get_attr(_cls=cls)
+
+
+class _TypeVarBindings:
+    def __init__(self, current_class: type) -> None:
+        self.current_class = current_class
+        self._bindings = self._get_parameter_bindings(
+            cls=current_class, subclass_bindings={}
+        )
+
+    def resolve_parameter(
+        self, defining_class: Type[Any], parameter: TypeVar
+    ) -> Union[Type[Any], TypeVar]:
+        """
+        Resolve a type parameter, substituting it with an actual type if the parameter
+        is bound to a type argument in the context of the current class;
+        otherwise return the parameter unchanged.
+
+        :param defining_class: the class that introduced the type parameter; this is
+            the the current class itself, or a base class of the current class
+        :param parameter: the type variable
+        :return: the resolved parameter if bound to a type argument; else the original
+            parameter as a type variable
+        """
+        return self._bindings.get(defining_class, {}).get(parameter, parameter)
+
+    def _get_parameter_bindings(
+        self,
+        cls: Type[Any],
+        subclass_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]],
+    ) -> Dict[Type[Any], Dict[TypeVar, Union[Type[Any], TypeVar]]]:
+        # get type variable bindings for all generic types defined in the class
+        # hierarchy of the given parent class, applying the given bindings derived from
+        # child classes
+
+        # if arg cls has generic type parameters, it will have a corresponding
+        cls_origin: Optional[Type[Any]] = None
+        if typing_inspect.is_generic_type(cls):
+            cls_origin = typing_inspect.get_origin(cls)
+
+        class_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]]
+        if cls_origin:
+            class_bindings = {
+                param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
+                for param, arg in zip(
+                    typing_inspect.get_parameters(cls_origin),
+                    typing_inspect.get_args(cls),
+                )
+            }
+            cls = cls_origin
+        else:
+            # this class has no generic parameters of itself, so we adopt the existing
+            # parameter bindings from the subclass(es)
+            class_bindings = subclass_bindings
+
+        superclass_bindings = {
+            superclass: bindings
+            for generic_superclass in get_generic_bases(cls)
+            for superclass, bindings in (
+                self._get_parameter_bindings(
+                    cls=generic_superclass, subclass_bindings=class_bindings
+                ).items()
+            )
+            if bindings
+        }
+
+        if cls_origin:
+            # we have generic type parameters in this class, so we remember the
+            # associated bindings
+            return {cls_origin: class_bindings, **superclass_bindings}
+        else:
+            # we have no generic type parameters in this class, so we return the
+            # parameter bindings of the superclasses
+            return superclass_bindings
+
+
+@inheritdoc(match="""[see superclass]""")
+class ResolveTypeVariables(AutodocBeforeProcessSignature):
+    """
+    Resolve type variables that can be inferred through generic class parameters or
+    ``self``/``cls`` special arguments.
+
+    For example, the Sphinx documentation for the inherited method ``B.f`` in the
+    following example will be rendered with the signature ``(int) -> int``:
+
+    .. code-block:: python
+
+        T = TypeVar("T")
+
+        class A(Generic[T]):
+            def f(x: T) -> T:
+                return x
+
+        class B(A[int]):
+            pass
+
+    """
+
+    original_signatures: Dict[Any, Dict[str, Union[Type[Any], TypeVar]]]
+
+    _current_class_bindings: Optional[_TypeVarBindings]
+
+    def __init__(self) -> None:
+        self.original_signatures = {}
+        self._current_class_bindings = None
+
+    def _resolve_function_signature(
+        self, bindings: _TypeVarBindings, func: FunctionType
+    ) -> None:
+        # get the class in which the method has been defined
+        defining_class_opt: Optional[Type[Any]] = self._get_defining_class(func)
+        if defining_class_opt is None:
+            # missing or unknown defining class: nothing to resolve in the signature
+            return
+        defining_class: type = defining_class_opt
+
+        # get the original signature and convert it to a list of (name, type) tuples
+        signature_original_items = list(self._get_original_signature(func).items())
+
+        def _get_self_or_cls_type_substitution() -> Union[
+            Tuple[TypeVar, Type[Any]], Tuple[None, None]
+        ]:
+
+            if signature_original_items:
+
+                method_type = self._get_method_type(defining_class, func)
+
+                if method_type is METHOD_TYPE_DYNAMIC:
+                    # special case: we substitute type vars bound to the class
+                    # when assigned to the 'self' or 'cls' parameters of methods
+                    _, arg_0_type = signature_original_items[0]
+                    if typing_inspect.is_typevar(arg_0_type):
+                        return cast(TypeVar, arg_0_type), bindings.current_class
+
+                elif method_type is METHOD_TYPE_CLASS:
+                    # special case: we substitute type vars bound to the class
+                    # when assigned to the 'self' or 'cls' parameters of methods
+                    _, arg_0_type = signature_original_items[0]
+                    if (
+                        typing_inspect.is_generic_type(arg_0_type)
+                        and typing_inspect.get_origin(arg_0_type) is type
+                    ):
+                        arg_0_type_args = typing_inspect.get_args(arg_0_type)
+                        if len(arg_0_type_args) == 1 and typing_inspect.is_typevar(
+                            arg_0_type_args[0]
+                        ):
+                            return arg_0_type_args[0], bindings.current_class
+
+            return None, None
+
+        arg_0_type_var: Optional[TypeVar]
+        arg_0_substitute: Optional[Type[Any]]
+
+        arg_0_type_var, arg_0_substitute = _get_self_or_cls_type_substitution()
+
+        def _substitute_type_vars_in_type_expression(
+            type_expression: Union[Type[Any], TypeVar]
+        ) -> Union[Type[Any], TypeVar]:
+            # recursively substitute type vars with their resolutions
+            if isinstance(type_expression, TypeVar):
+                if type_expression == arg_0_type_var:
+                    # special case: substitute a type variable introduced by the
+                    # initial self/cls argument of a dynamic or class method
+                    assert arg_0_substitute is not None
+                    return arg_0_substitute
+                else:
+                    # resolve type variables defined by Generic[] in the
+                    # class hierarchy
+                    return bindings.resolve_parameter(defining_class, type_expression)
+            else:
+                # dynamically resolve type variables inside nested type expressions
+                args = typing_inspect.get_args(type_expression)
+                if args:
+                    # noinspection PyUnresolvedReferences
+                    type_expression = type_expression.copy_with(
+                        tuple(map(_substitute_type_vars_in_type_expression, args))
+                    )
+                return type_expression
+
+        # get the actual signature object that we will modify
+        signature = func.__annotations__
+        if not signature:
+            return
+
+        for name, tp in signature_original_items:
+            signature[name] = _substitute_type_vars_in_type_expression(tp)
+
+    def _resolve_attribute_signatures(self, cls: Type[Any]) -> None:
+        assert self._current_class_bindings is not None
+        bindings: _TypeVarBindings = self._current_class_bindings
+
+        def _substitute_type_vars_in_type_expression(
+            type_expression: Union[Type[Any], TypeVar]
+        ) -> Union[Type[Any], TypeVar]:
+            # recursively substitute type vars with their resolutions
+            if isinstance(type_expression, TypeVar):
+                # resolve type variables defined by Generic[] in the
+                # class hierarchy
+                return bindings.resolve_parameter(cls, type_expression)
+            else:
+                # dynamically resolve type variables inside nested type expressions
+                args = typing_inspect.get_args(type_expression)
+                if args:
+                    # unpack callable args, since copy_with() expects a flat tuple
+                    # (arg_1, arg_2, ..., arg_n, return)
+                    # instead of ([arg_1, arg_2, ..., arg_n], return)
+                    if (
+                        typing_inspect.get_origin(type_expression)
+                        is collections.abc.Callable
+                    ) and isinstance(args[0], list):
+                        args = (*args[0], *args[1:])
+
+                    # noinspection PyUnresolvedReferences
+                    type_expression = type_expression.copy_with(
+                        tuple(map(_substitute_type_vars_in_type_expression, args))
+                    )
+
+                return type_expression
+
+        annotations = getattr(cls, "__annotations__", None)
+        if annotations:
+            cls.__annotations__ = {
+                attr: _substitute_type_vars_in_type_expression(annotation)
+                for attr, annotation in annotations.items()
+            }
+
+    @staticmethod
+    def _get_defining_class(method: FunctionType) -> Optional[Type[Any]]:
+        # get the class that defined the callable
+
+        if "." not in method.__qualname__:
+            # this is a function, not a method
+            return None
+
+        method_container: str
+        if method.__qualname__.endswith(f".{method.__name__}"):
+            method_container = method.__qualname__[: -len(method.__name__) - 1]
+        else:
+            method_container = method.__qualname__[: method.__qualname__.rfind(".")]
+
+        try:
+            return cast(
+                Type[Any],
+                eval(
+                    method_container,
+                    importlib.import_module(method.__module__).__dict__,
+                ),
+            )
+        except NameError:
+            # we could not find the container of the given method in the method's global
+            # namespace - this is likely an inherited method where the parent class
+            # sits in a different module
+            log.debug(
+                f"failed to find container '{method.__module__}.{method_container}' "
+                f"of method '{method.__name__}'"
+            )
+            return None
+
+    @staticmethod
+    def _get_method_type(defining_class: Type[Any], func: FunctionType) -> int:
+        # do we have a static or class method?
+        try:
+            raw_func = getattr_static(defining_class, func.__name__)
+            if isinstance(raw_func, staticmethod):
+                return METHOD_TYPE_STATIC
+            elif isinstance(raw_func, classmethod):
+                return METHOD_TYPE_CLASS
+        except AttributeError:
+            # this should not happen, but we try to handle this gracefully
+            log.warning(
+                f"failed to look up method {func.__name__!r} "
+                f"in class {defining_class.__name__}"
+            )
+        return METHOD_TYPE_DYNAMIC
+
+    def _get_original_signature(
+        self, func: FunctionType
+    ) -> Dict[str, Union[Type[Any], TypeVar]]:
+        # get the original signature as defined in the code
+        signature_original: Dict[str, Union[Type[Any], TypeVar]]
+        try:
+            signature_original = self.original_signatures[func]
+        except KeyError:
+            signature_original = get_type_hints(func)
+            self.original_signatures[func] = signature_original
+        return signature_original
+
+    def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
+        """[see superclass]"""
+
+        if isinstance(obj, type):
+            # we are starting to process a new class; remember it, so we can
+            # attribute unbound methods to it
+            self._update_current_class(obj)
+
+        elif isinstance(obj, FunctionType):
+            bindings = self._update_current_class(self._get_defining_class(obj))
+
+            # instance method definitions are unbound, so we need to remember
+            # the class we are currently in
+            if bindings is not None:
+                self._resolve_function_signature(bindings=bindings, func=obj)
+
+        elif isinstance(obj, MethodType):
+            # class method definitions are bound, so we can infer the current class
+            cls = obj.__self__
+            assert isinstance(cls, type), "methods are class methods"
+
+            current_class: Optional[_TypeVarBindings] = self._update_current_class(cls)
+            assert current_class is not None
+            # noinspection PyTypeChecker
+            self._resolve_function_signature(bindings=current_class, func=obj.__func__)
+
+    def _update_current_class(
+        self, cls: Optional[Type[Any]]
+    ) -> Optional[_TypeVarBindings]:
+        if cls is None:
+            return None
+
+        bindings: Optional[_TypeVarBindings] = self._current_class_bindings
+        assert isinstance(cls, type), f"{cls} is a class"
+        if bindings is None or not issubclass(bindings.current_class, cls):
+            # we're visiting the class for the first time
+
+            # create a TypeVar bindings object for this class
+            bindings = self._current_class_bindings = _TypeVarBindings(cls)
+
+            # and resolve type variables in type annotations for class attributes
+            self._resolve_attribute_signatures(cls=cls)
+
+        return bindings
 
 
 #

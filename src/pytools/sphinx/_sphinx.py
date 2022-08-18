@@ -76,10 +76,17 @@ class SphinxCallback(metaclass=ABCMeta):
         :return: a listener ID that can be used as an argument to
             :meth:`~sphinx.application.Sphinx.disconnect`.
         """
+
+        listener_id: int
+
         if priority is None:
-            return app.connect(event=self.event, callback=self)
+            listener_id = app.connect(event=self.event, callback=self)
         else:
-            return app.connect(event=self.event, callback=self, priority=priority)
+            listener_id = app.connect(
+                event=self.event, callback=self, priority=priority
+            )
+
+        return listener_id
 
 
 # noinspection SpellCheckingInspection
