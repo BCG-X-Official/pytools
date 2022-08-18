@@ -28,9 +28,9 @@ dependencies:
   - yaml ~= 0.2
   # sphinx
   - sphinx ~= 4.5
-  - sphinx-autodoc-typehints ~= 1.12
+  - sphinx-autodoc-typehints ~= 1.19
   - nbsphinx ~= 0.8.9
-  - pydata-sphinx-theme ~= 0.9
+  - pydata-sphinx-theme ~= 0.8.1
   # notebooks
   - jupyterlab ~= 3.2
   - openpyxl ~= 3.0
