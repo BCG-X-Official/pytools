@@ -7,16 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>pytools.viz.util.PercentageFormatter &#8212; pytools  documentation</title>
-<script>
-  document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
-  document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"
-</script>
-
+    
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../../_static/styles/theme.css?digest=92025949c220c2e29695" rel="stylesheet">
-<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=92025949c220c2e29695" rel="stylesheet">
+  <link href="../../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
 
-
+    
   <link rel="stylesheet"
     href="../../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
   <link rel="preload" as="font" type="font/woff2" crossorigin
@@ -26,9 +22,9 @@
 
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/gamma.css" />
-
+    
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695">
+  <link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
 
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
@@ -41,41 +37,34 @@
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="Development Guidelines" href="../../../../contribution_guide.html" />
     <link rel="prev" title="pytools.viz.util.FittedText" href="pytools.viz.util.FittedText.html" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="docsearch:language" content="None">
-  </head>
-  
-  
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="light">
-    <div class="bd-header-announcement container-fluid" id="banner">
-      
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
 
-    </div>
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
 
     
-    <nav class="bd-header navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="bd-header__inner container-xl">
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
 
   <div id="navbar-start">
     
     
-  
 
-
-<a class="navbar-brand logo" href="../../../../index.html">
-  
-  
-  
-  
-    <img src="../../../../_static/gamma_pytools_logo.png" class="logo__image only-light" alt="Logo image">
-    <img src="../../../../_static/gamma_pytools_logo.png" class="logo__image only-dark" alt="Logo image">
-  
-  
+<a class="navbar-brand" href="../../../../index.html">
+  <img src="../../../../_static/gamma_pytools_logo.png" class="logo" alt="logo">
 </a>
+
+
     
   </div>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="fas fa-bars"></span>
+    <span class="navbar-toggler-icon"></span>
   </button>
 
   
@@ -133,13 +122,13 @@
     </nav>
     
 
-    <div class="bd-container container-xl">
-      <div class="bd-container__inner row">
+    <div class="container-xl">
+      <div class="row">
           
-
-<!-- Only show if we have sidebars configured, else just a small margin  -->
-<div class="bd-sidebar-primary col-12 col-md-3 bd-sidebar">
-  <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
   <i class="icon fas fa-search"></i>
   <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
 </form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
@@ -1081,45 +1070,46 @@
 
   </div>
 </nav>
-  </div>
-  <div class="sidebar-end-items">
-  </div>
-</div>
-
-
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
           
 
-
-<div class="bd-sidebar-secondary d-none d-xl-block col-xl-2 bd-toc">
-  
-    
-    <div class="toc-item">
-      
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
 
 <nav id="bd-toc-nav">
     
 </nav>
-    </div>
-    
-    <div class="toc-item">
-      
-    </div>
-    
-  
-</div>
-
-
-          
-          
-          <div class="bd-content col-12 col-md-9 col-xl-7">
+              </div>
               
-              <article class="bd-article" role="main">
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
                 
   <section id="pytools-viz-util-percentageformatter">
 <h1>pytools.viz.util.PercentageFormatter<a class="headerlink" href="#pytools-viz-util-percentageformatter" title="Permalink to this headline">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.viz.util.</span></span><span class="sig-name descname"><span class="pre">PercentageFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/util/_matplot.html#PercentageFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.util.PercentageFormatter" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.viz.util.</span></span><span class="sig-name descname"><span class="pre">PercentageFormatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/util/_matplot.html#PercentageFormatter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.util.PercentageFormatter" title="Permalink to this definition">#</a></dt>
 <dd><p>Formats floats as a percentages with 3 digits precision, omitting trailing zeros.</p>
 <p>For percentages above 100%, formats percentages as the nearest whole number.</p>
 <p>Formatting examples:</p>
@@ -1137,7 +1127,7 @@
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Bases</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter" title="(in Matplotlib v3.5.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter" title="(in Matplotlib v3.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Formatter</span></code></a></p>
 </dd>
 <dt class="field-even">Metaclasses</dt>
 <dd class="field-even"><p><a class="reference internal" href="../../meta/pytools.meta.SingletonMeta.html#pytools.meta.SingletonMeta" title="pytools.meta.SingletonMeta"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingletonMeta</span></code></a></p>
@@ -1151,37 +1141,37 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_dummy_axis</span></code></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.create_dummy_axis" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.create_dummy_axis()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.create_dummy_axis" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.create_dummy_axis()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.fix_minus" title="pytools.viz.util.PercentageFormatter.fix_minus"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_minus</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.fix_minus" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.fix_minus()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.fix_minus" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.fix_minus()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.format_data" title="pytools.viz.util.PercentageFormatter.format_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_data</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.format_data_short" title="pytools.viz.util.PercentageFormatter.format_data_short"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_data_short</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data_short" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data_short()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data_short" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data_short()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.format_ticks" title="pytools.viz.util.PercentageFormatter.format_ticks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">format_ticks</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_ticks" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_ticks()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_ticks" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_ticks()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_offset</span></code></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.get_offset" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.get_offset()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.get_offset" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.get_offset()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_axis</span></code></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_axis" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_axis()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_axis" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_axis()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.set_bounds" title="pytools.viz.util.PercentageFormatter.set_bounds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bounds</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_bounds" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_bounds()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_bounds" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_bounds()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.set_data_interval" title="pytools.viz.util.PercentageFormatter.set_data_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_data_interval</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_data_interval" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_data_interval()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_data_interval" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_data_interval()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.set_locs" title="pytools.viz.util.PercentageFormatter.set_locs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_locs</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.set_locs" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.set_locs()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.set_locs" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.set_locs()</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.util.PercentageFormatter.set_view_interval" title="pytools.viz.util.PercentageFormatter.set_view_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_view_interval</span></code></a></p></td>
-<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_view_interval" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_view_interval()</span></code></a></p></td>
+<td><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_view_interval" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_view_interval()</span></code></a></p></td>
 </tr>
 </tbody>
 </table>
@@ -1216,49 +1206,49 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.fix_minus">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fix_minus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.fix_minus" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.fix_minus" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.fix_minus()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.fix_minus" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.fix_minus()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.format_data">
 <span class="sig-name descname"><span class="pre">format_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.format_data" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.format_data_short">
 <span class="sig-name descname"><span class="pre">format_data_short</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.format_data_short" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data_short" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data_short()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_data_short" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_data_short()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.format_ticks">
 <span class="sig-name descname"><span class="pre">format_ticks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.format_ticks" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_ticks" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_ticks()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.format_ticks" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.format_ticks()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.set_bounds">
 <span class="sig-name descname"><span class="pre">set_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.set_bounds" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_bounds" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_bounds()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_bounds" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_bounds()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.set_data_interval">
 <span class="sig-name descname"><span class="pre">set_data_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.set_data_interval" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_data_interval" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_data_interval()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_data_interval" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_data_interval()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.set_locs">
 <span class="sig-name descname"><span class="pre">set_locs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">locs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.set_locs" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.set_locs" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.set_locs()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.Formatter.set_locs" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.Formatter.set_locs()</span></code></a></p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.util.PercentageFormatter.set_view_interval">
 <span class="sig-name descname"><span class="pre">set_view_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.util.PercentageFormatter.set_view_interval" title="Permalink to this definition">#</a></dt>
-<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_view_interval" title="(in Matplotlib v3.5.2)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_view_interval()</span></code></a></p>
+<dd><p>See <a class="reference external" href="https://matplotlib.org/stable/api/ticker_api.html#matplotlib.ticker.TickHelper.set_view_interval" title="(in Matplotlib v3.5.3)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.ticker.TickHelper.set_view_interval()</span></code></a></p>
 </dd></dl>
 
 </dd></dl>
@@ -1266,55 +1256,51 @@
 </section>
 
 
-              </article>
+              </div>
               
-
               
-              <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+              <!-- Previous / next buttons -->
 <div class='prev-next-area'>
-  <a class='left-prev' id="prev-link" href="pytools.viz.util.FittedText.html" title="previous page">
-      <i class="fas fa-angle-left"></i>
-      <div class="prev-next-info">
-          <p class="prev-next-subtitle">previous</p>
-          <p class="prev-next-title">pytools.viz.util.FittedText</p>
-      </div>
-  </a>
-  <a class='right-next' id="next-link" href="../../../../contribution_guide.html" title="next page">
-  <div class="prev-next-info">
-      <p class="prev-next-subtitle">next</p>
-      <p class="prev-next-title">Development Guidelines</p>
-  </div>
-  <i class="fas fa-angle-right"></i>
-  </a>
+    <a class='left-prev' id="prev-link" href="pytools.viz.util.FittedText.html" title="previous page">
+        <i class="fas fa-angle-left"></i>
+        <div class="prev-next-info">
+            <p class="prev-next-subtitle">previous</p>
+            <p class="prev-next-title">pytools.viz.util.FittedText</p>
+        </div>
+    </a>
+    <a class='right-next' id="next-link" href="../../../../contribution_guide.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Development Guidelines</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-              </footer>
               
-          </div>
+          </main>
           
+
       </div>
     </div>
-
-  
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=92025949c220c2e29695"></script>
-
-<footer class="bd-footer"><div class="bd-footer__inner container">
-  
-  <div class="footer-item">
-    <p class="copyright">
+  <script src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
     &copy; Copyright 2022, Boston Consulting Group (BCG).<br>
 </p>
-  </div>
-  
-  <div class="footer-item">
-    <p class="sphinx-version">
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
 Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
 </p>
+    </div>
+    
   </div>
-  
-</div>
 </footer>
   </body>
 </html>
