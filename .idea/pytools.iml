@@ -16,7 +16,7 @@
       <excludeFolder url="file://$MODULE_DIR$/docs" />
       <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
     </content>
-    <orderEntry type="jdk" jdkName="facet-develop" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="pytools-develop" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="PackageRequirementsSettings">
