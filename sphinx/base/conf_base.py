@@ -35,6 +35,7 @@ def set_config(
     *,
     project: str,
     html_logo: Optional[str] = None,
+    intersphinx_mapping: Optional[Dict[str, Tuple[str, Optional[str]]]] = None,
 ) -> None:
     """
     Add required modules to the python path, and set custom configuration options
@@ -51,6 +52,9 @@ def set_config(
         globals_["html_logo"] = html_logo
         globals_["latex_logo"] = html_logo
 
+    if intersphinx_mapping:
+        _update_intersphinx_mapping(intersphinx_mapping)
+
     module_path = _dir_src
     if module_path not in sys.path:
         # noinspection PyUnboundLocalVariable
@@ -61,6 +65,11 @@ def set_config(
     globals_.update(
         (k, v) for k, v in globals().items() if not (k.startswith("_") or k in globals_)
     )
+
+
+def _update_intersphinx_mapping(mapping: Dict[str, Tuple[str, Optional[str]]]) -> None:
+    global intersphinx_mapping
+    intersphinx_mapping.update(mapping)
 
 
 _log.info(f"sys.path = {sys.path}")
@@ -110,22 +119,17 @@ autodoc_default_options = {
 nbsphinx_allow_errors = True
 
 # add intersphinx mapping
-intersphinx_mapping = {
+intersphinx_mapping: Dict[str, Tuple[str, Optional[str]]] = {
+    "joblib": ("https://joblib.readthedocs.io/en/latest", None),
+    "matplotlib": ("https://matplotlib.org/stable", None),
+    "mypy": ("https://mypy.readthedocs.io/en/latest/", None),
+    "np": ("https://numpy.org/doc/stable", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "pd": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "matplotlib": ("https://matplotlib.org/stable", None),
-    "numpy": ("https://numpy.org/doc/stable", None),
-    "np": ("https://numpy.org/doc/stable", None),
     "python": ("https://docs.python.org/3.7", None),
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
-    "sklearn": ("https://scikit-learn.org/stable", None),
-    "shap": ("https://shap.readthedocs.io/en/stable", None),
-    "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master", None),
-    "lightgbm": ("https://lightgbm.readthedocs.io/en/latest/", None),
-    "pytools": ("https://bcg-gamma.github.io/pytools/", None),
-    "sklearndf": ("https://bcg-gamma.github.io/sklearndf/", None),
-    "facet": ("https://bcg-gamma.github.io/facet/", None),
 }
 
 intersphinx_collapsible_submodules = {
