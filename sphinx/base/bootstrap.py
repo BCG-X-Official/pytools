@@ -1,4 +1,4 @@
-def run_make(branch: str) -> None:
+def run_make(*, branch: str, working_directory: str) -> None:
     from typing import List, Tuple
 
     class Bootstrapper:
@@ -48,7 +48,7 @@ def run_make(branch: str) -> None:
             import time
             from urllib import request
 
-            target_path = os.path.join(*path)
+            target_path = os.path.join(working_directory, *path)
             target_file = os.path.join(target_path, filename)
             if (
                 os.path.exists(target_file)
