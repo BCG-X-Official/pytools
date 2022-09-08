@@ -16,6 +16,7 @@ and is now subject to static type checking with |mypy|.
   recognizes it as a positional-only argument, and that subclasses can change its
   name without breaking the API
 - FIX: make :class:`.ResolveTypeVariables` compatible with Python 3.9
+- FIX: recognise private (positional-only) arguments in :class:`.DocValidator`
 
 
 2.0.2
