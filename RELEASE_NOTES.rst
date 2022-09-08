@@ -9,6 +9,14 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with |mypy|.
 
+2.0.3
+~~~~~
+
+- REFACTOR: rename arg of :meth:`.FittableMixin.fit` to ``__x``, so that |mypy|
+  recognizes it as a positional-only argument, and that subclasses can change its
+  name without breaking the API
+
+
 2.0.2
 ~~~~~
 
