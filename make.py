@@ -218,7 +218,7 @@ class Builder(metaclass=ABCMeta):
                 raise AssertionError(
                     f"Release of major or minor version {new_version} "
                     f"requires at least one release candidate, e.g., "
-                    f"{new_version.release[0]}.{new_version.release[1]}.rc0"
+                    f"{new_version.release[0]}.{new_version.release[1]}rc0"
                 )
 
             log(
