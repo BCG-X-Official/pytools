@@ -15,6 +15,7 @@ and is now subject to static type checking with |mypy|.
 - REFACTOR: rename arg of :meth:`.FittableMixin.fit` to ``__x``, so that |mypy|
   recognizes it as a positional-only argument, and that subclasses can change its
   name without breaking the API
+- FIX: make :class:`.ResolveTypeVariables` compatible with Python 3.9
 
 
 2.0.2
