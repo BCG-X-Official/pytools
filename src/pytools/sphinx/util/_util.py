@@ -70,7 +70,7 @@ except ImportError:
         def astext(self) -> str:
             ...
 
-    Sphinx = type
+    Sphinx = type("Sphinx", (object,), {})
     Element = _Element
     Text = _Text
 
@@ -1068,21 +1068,24 @@ def _copy_generic_type_with_arguments(
     origin = typing.get_origin(type_expression)
     assert origin is not None
 
-    if _PYTHON_3_9_OR_LATER:
-        from types import GenericAlias
-
-        return cast(Union[Type[Any], TypeVar], GenericAlias(origin, new_arguments))
-
-    else:
-        # unpack callable args, since copy_with() expects a flat tuple
-        # (arg_1, arg_2, ..., arg_n, return)
-        # instead of ([arg_1, arg_2, ..., arg_n], return)
-        if (origin is collections.abc.Callable) and isinstance(new_arguments[0], list):
-            new_arguments = (*new_arguments[0], *new_arguments[1:])
-
-        return cast(
+    try:
+        copy_with: typing.Callable[
+            [
+                Tuple[
+                    Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]],
+                    ...,
+                ]
+            ],
             Union[Type[Any], TypeVar],
-            type_expression.copy_with(  # type: ignore
-                new_arguments,
-            ),
-        )
+        ] = type_expression.copy_with  # type: ignore
+    except AttributeError:
+        # this is a generic type that does not support copying
+        return cast(Type[Any], origin[new_arguments])
+
+    # unpack callable args, since copy_with() expects a flat tuple
+    # (arg_1, arg_2, ..., arg_n, return)
+    # instead of ([arg_1, arg_2, ..., arg_n], return)
+    if (origin is collections.abc.Callable) and isinstance(new_arguments[0], list):
+        new_arguments = (*new_arguments[0], *new_arguments[1:])
+
+    return copy_with(new_arguments)
