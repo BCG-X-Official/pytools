@@ -1,11 +1,13 @@
 Release Notes
 =============
 
+.. |mypy| replace:: :external+mypy:doc:`mypy <index>`
+
 *pytools* 2.0
 -------------
 
 *pytools* 2 features enhanced visualisations together with additional API improvements,
-and is now subject to static type checking with :mod:`mypy`.
+and is now subject to static type checking with |mypy|.
 
 2.0.2
 ~~~~~
