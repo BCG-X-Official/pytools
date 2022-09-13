@@ -4,14 +4,6 @@ Configuration file for the Sphinx documentation builder.
 For a full list of options see the documentation:
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
-
-# -- Path setup --------------------------------------------------------------
-
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.realpath to make it absolute, like shown here.
-#
-
 import logging
 import os
 import shutil
@@ -200,8 +192,10 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
+    from types import FunctionType
+
     from pytools.meta import SingletonABCMeta
-    from pytools.sphinx import AutodocProcessSignature
+    from pytools.sphinx import AutodocBeforeProcessSignature, AutodocProcessSignature
     from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
@@ -249,6 +243,72 @@ def setup(app: Sphinx) -> None:
             self.rtv.connect(app, priority)
             return cast(int, super().connect(app, priority))
 
+    class RenamePrivateArguments(
+        AutodocBeforeProcessSignature,  # type: ignore
+        metaclass=SingletonABCMeta,
+    ):
+        """
+        Rename private argument names to their original names given in the source code.
+
+        For example, arg ``__x`` of method ``f`` in
+
+        .. code-block:: python
+
+            class A:
+                def f(self, __x: int) -> None:
+                    ...
+
+        will be renamed from its internal, private name ``_A__x`` back to ``__x``.
+        """
+
+        def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
+            if not (bound_method or isinstance(obj, FunctionType)):
+                return
+
+            # get the name of the module or class that the function is a member of
+            try:
+                containers = obj.__qualname__.split(".")
+            except AttributeError:
+                return
+
+            if len(containers) < 2:
+                return
+
+            private_prefix = f"_{containers[-2]}__"
+
+            def get_public_name(name: str) -> str:
+                if name.startswith(private_prefix):
+                    return name[len(private_prefix) - 2 :]
+                else:
+                    return name
+
+            # get the original signature
+            try:
+                annotations: Dict[str, Any] = obj.__annotations__
+            except AttributeError:
+                annotations = {}
+
+            annotations_original = list(annotations.items())
+            for name, annotation in annotations_original:
+                public_name = get_public_name(name)
+                if public_name is not name:
+                    del annotations[name]
+                    annotations[public_name] = annotation
+
+            try:
+                code = obj.__code__
+                arg_and_variable_names = code.co_varnames
+                if any(
+                    name.startswith(private_prefix) for name in arg_and_variable_names
+                ):
+                    obj.__code__ = code.replace(
+                        co_varnames=tuple(
+                            get_public_name(name) for name in arg_and_variable_names
+                        ),
+                    )
+            except AttributeError:
+                pass
+
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
         app=app
     )
@@ -270,6 +330,8 @@ def setup(app: Sphinx) -> None:
     CollapseModulePathsInXRef(
         collapsible_submodules=intersphinx_collapsible_submodules
     ).connect(app=app)
+
+    RenamePrivateArguments().connect(app=app)
 
     _add_custom_css_and_js(app=app)
 
