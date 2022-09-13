@@ -13,6 +13,7 @@ from inspect import getattr_static
 from types import FunctionType, MethodType
 from typing import (
     Any,
+    Callable,
     Dict,
     ForwardRef,
     Generator,
@@ -1069,7 +1070,7 @@ def _copy_generic_type_with_arguments(
     assert origin is not None
 
     try:
-        copy_with: typing.Callable[
+        copy_with: Callable[
             [
                 Tuple[
                     Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]],
