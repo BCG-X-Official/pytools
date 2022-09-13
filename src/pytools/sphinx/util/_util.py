@@ -1065,7 +1065,7 @@ def _copy_generic_type_with_arguments(
     # create a copy of the given type expression, replacing its type arguments with
     # the given new arguments
 
-    origin = typing.get_origin(type_expression)
+    origin = typing_inspect.get_origin(type_expression)
     assert origin is not None
 
     try:
