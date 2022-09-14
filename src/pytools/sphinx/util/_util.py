@@ -6,11 +6,14 @@ import importlib
 import itertools
 import logging
 import re
+import sys
+import typing
 from abc import ABCMeta, abstractmethod
 from inspect import getattr_static
 from types import FunctionType, MethodType
 from typing import (
     Any,
+    Callable,
     Dict,
     ForwardRef,
     Generator,
@@ -68,9 +71,16 @@ except ImportError:
         def astext(self) -> str:
             ...
 
-    Sphinx = type
+    Sphinx = type("Sphinx", (object,), {})
     Element = _Element
     Text = _Text
+
+
+#
+# Constants
+#
+
+_PYTHON_3_9_OR_LATER = sys.version_info >= (3, 9)
 
 
 log = logging.getLogger(__name__)
@@ -460,6 +470,7 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
 
 @inheritdoc(match="""[see superclass]""")
 class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths):
+    # noinspection GrazieInspection
     """
     Replace private module paths in documentation cross-references with their public
     prefix so that object references can be matched by *intersphinx*, and module
@@ -717,7 +728,7 @@ class _TypeVarBindings:
         otherwise return the parameter unchanged.
 
         :param defining_class: the class that introduced the type parameter; this is
-            the the current class itself, or a base class of the current class
+            the current class itself, or a base class of the current class
         :param parameter: the type variable
         :return: the resolved parameter if bound to a type argument; else the original
             parameter as a type variable
@@ -869,13 +880,10 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                     return bindings.resolve_parameter(defining_class, type_expression)
             else:
                 # dynamically resolve type variables inside nested type expressions
-                args = typing_inspect.get_args(type_expression)
-                if args:
-                    # noinspection PyUnresolvedReferences
-                    type_expression = type_expression.copy_with(
-                        tuple(map(_substitute_type_vars_in_type_expression, args))
-                    )
-                return type_expression
+                return _substitute_generic_type_arguments(
+                    type_expression=type_expression,
+                    fn_substitute_type_vars=_substitute_type_vars_in_type_expression,
+                )
 
         # get the actual signature object that we will modify
         signature = func.__annotations__
@@ -898,24 +906,10 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
                 # class hierarchy
                 return bindings.resolve_parameter(cls, type_expression)
             else:
-                # dynamically resolve type variables inside nested type expressions
-                args = typing_inspect.get_args(type_expression)
-                if args:
-                    # unpack callable args, since copy_with() expects a flat tuple
-                    # (arg_1, arg_2, ..., arg_n, return)
-                    # instead of ([arg_1, arg_2, ..., arg_n], return)
-                    if (
-                        typing_inspect.get_origin(type_expression)
-                        is collections.abc.Callable
-                    ) and isinstance(args[0], list):
-                        args = (*args[0], *args[1:])
-
-                    # noinspection PyUnresolvedReferences
-                    type_expression = type_expression.copy_with(
-                        tuple(map(_substitute_type_vars_in_type_expression, args))
-                    )
-
-                return type_expression
+                return _substitute_generic_type_arguments(
+                    type_expression=type_expression,
+                    fn_substitute_type_vars=_substitute_type_vars_in_type_expression,
+                )
 
         annotations = getattr(cls, "__annotations__", None)
         if annotations:
@@ -1036,3 +1030,63 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature):
 #
 
 __tracker.validate()
+
+
+def _substitute_generic_type_arguments(
+    type_expression: Union[Type[Any], TypeVar],
+    fn_substitute_type_vars: typing.Callable[
+        [Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]
+    ],
+) -> Union[Type[Any], TypeVar]:
+    # dynamically resolve type variables inside nested type expressions
+    type_args: Tuple[
+        Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]], ...
+    ] = typing_inspect.get_args(type_expression)
+
+    if type_args:
+        return _copy_generic_type_with_arguments(
+            type_expression=type_expression,
+            new_arguments=tuple(
+                list(map(fn_substitute_type_vars, arg))
+                if isinstance(arg, list)
+                else fn_substitute_type_vars(arg)
+                for arg in type_args
+            ),
+        )
+    else:
+        return type_expression
+
+
+def _copy_generic_type_with_arguments(
+    type_expression: Union[Type[Any], TypeVar],
+    new_arguments: Tuple[
+        Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]], ...
+    ],
+) -> Union[Type[Any], TypeVar]:
+    # create a copy of the given type expression, replacing its type arguments with
+    # the given new arguments
+
+    origin = typing_inspect.get_origin(type_expression)
+    assert origin is not None
+
+    try:
+        copy_with: Callable[
+            [
+                Tuple[
+                    Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]],
+                    ...,
+                ]
+            ],
+            Union[Type[Any], TypeVar],
+        ] = type_expression.copy_with  # type: ignore
+    except AttributeError:
+        # this is a generic type that does not support copying
+        return cast(Type[Any], origin[new_arguments])
+
+    # unpack callable args, since copy_with() expects a flat tuple
+    # (arg_1, arg_2, ..., arg_n, return)
+    # instead of ([arg_1, arg_2, ..., arg_n], return)
+    if (origin is collections.abc.Callable) and isinstance(new_arguments[0], list):
+        new_arguments = (*new_arguments[0], *new_arguments[1:])
+
+    return copy_with(new_arguments)

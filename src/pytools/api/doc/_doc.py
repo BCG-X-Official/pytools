@@ -214,19 +214,33 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
     # defined in superclass, repeated here for Sphinx
     element: FunctionType
 
-    def list_actual_parameters(self, include_return: bool) -> List[str]:
+    def list_actual_parameters(
+        self, include_return: bool, convert_private: bool
+    ) -> List[str]:
         """
         Extract all parameter names from the function signature
 
-        :param include_return: include ``return`` as final parameter
+        :param include_return: if ``True``, include ``return`` as final parameter
             if there is a type hint for a return parameter
+        :param convert_private: if ``True``, convert private parameters (with two
+            leading underscores in their names) back to their original names stated in
+            the source code
         :return: list of parameter names
         """
 
         signature: Signature = inspect.signature(self.element)
 
+        if convert_private:
+            element_prefix = (
+                f"_{self.element.__qualname__.rsplit('.',1)[0].replace('.','__')}__"
+            )
+        else:
+            element_prefix = None
+
         actual_parameters = [
-            parameter
+            parameter[len(element_prefix) - 2 :]
+            if element_prefix is not None and parameter.startswith(element_prefix)
+            else parameter
             for i, parameter in enumerate(signature.parameters.keys())
             if i > 0 or parameter not in {"self", "cls"}
         ]
@@ -292,7 +306,9 @@ class HasMatchingParameterDoc(DocTest):
         if not isinstance(definition, FunctionDefinition):
             return None
 
-        actual_parameters = definition.list_actual_parameters(include_return=True)
+        actual_parameters = definition.list_actual_parameters(
+            include_return=True, convert_private=True
+        )
         documented_parameters = definition.list_documented_parameters()
 
         if (
@@ -364,7 +380,9 @@ class HasTypeHints(DocTest):
 
         parameters_without_annotations = {
             parameter
-            for parameter in definition.list_actual_parameters(include_return=False)
+            for parameter in definition.list_actual_parameters(
+                include_return=False, convert_private=False
+            )
             if parameter not in annotations
         }
 

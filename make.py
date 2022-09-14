@@ -209,7 +209,8 @@ class Builder(metaclass=ABCMeta):
                 for released_version in released_versions
                 if (
                     released_version.is_prerelease
-                    and released_version.release == new_version.release
+                    and released_version.major == new_version.major
+                    and released_version.minor == new_version.minor
                 )
             ]
 
@@ -217,7 +218,7 @@ class Builder(metaclass=ABCMeta):
                 raise AssertionError(
                     f"Release of major or minor version {new_version} "
                     f"requires at least one release candidate, e.g., "
-                    f"{new_version.release[0]}.{new_version.release[1]}.rc0"
+                    f"{new_version.release[0]}.{new_version.release[1]}rc0"
                 )
 
             log(

@@ -23,21 +23,38 @@ utilities for reuse, including:
 Installation
 ------------
 
-
-*pytools*  supports both PyPI and Anaconda
+*pytools*  supports both PyPI and Anaconda.
+We recommend to install *pytools* into a dedicated environment.
 
 Anaconda
 ~~~~~~~~
 
-.. code-block:: RST
+.. code-block:: sh
 
-    conda install gamma-pytools -c bcg_gamma -c conda-forge
+    conda create -n pytools
+    conda activate pytools
+    conda install -c bcg_gamma -c conda-forge gamma-pytools
+
 
 Pip
 ~~~
 
-.. code-block:: RST
+macOS and Linux:
+^^^^^^^^^^^^^^^^
 
+.. code-block:: sh
+
+    python -m venv pytools
+    source pytools/bin/activate
+    pip install gamma-pytools
+
+Windows:
+^^^^^^^^
+
+.. code-block:: dosbatch
+
+    python -m venv pytools
+    pytools\Scripts\activate.bat
     pip install gamma-pytools
 
 

@@ -8,7 +8,7 @@ dependencies:
   - matplotlib ~= 3.5
   - numpy ~= 1.22
   - pandas ~= 1.4
-  - python ~= 3.8.12
+  - python ~= 3.9
   - scipy ~= 1.8
   - typing_inspect ~= 0.7
   # build/test
@@ -17,9 +17,10 @@ dependencies:
   - docutils ~= 0.17
   - flit ~= 3.0
   - jinja2 ~= 2.11
-  - markupsafe < 2.1  # markupsafe 2.1 breaks support for jinja2
+  - markupsafe ~= 2.0.1  # markupsafe 2.1 breaks support for jinja2
   - m2r ~= 0.2
   - pluggy ~= 0.13
+  - pre-commit ~= 2.20
   - pytest ~= 7.1
   - pytest-cov ~= 2.12
   - pyyaml ~= 5.4
