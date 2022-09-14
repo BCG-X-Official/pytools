@@ -169,6 +169,18 @@
     <a class="reference internal nav-link" href="#pip">
      Pip
     </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#macos-and-linux">
+       macOS and Linux:
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#windows">
+       Windows:
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -231,18 +243,34 @@ utilities for reuse, including:</p>
 </ul>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">#</a></h2>
-<p><em>pytools</em>  supports both PyPI and Anaconda</p>
+<p><em>pytools</em>  supports both PyPI and Anaconda.
+We recommend to install <em>pytools</em> into a dedicated environment.</p>
 <section id="anaconda">
 <h3>Anaconda<a class="headerlink" href="#anaconda" title="Permalink to this headline">#</a></h3>
-<div class="highlight-RST notranslate"><div class="highlight"><pre><span></span>conda install gamma-pytools -c bcg_gamma -c conda-forge
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda create -n pytools
+conda activate pytools
+conda install -c bcg_gamma -c conda-forge gamma-pytools
 </pre></div>
 </div>
 </section>
 <section id="pip">
 <h3>Pip<a class="headerlink" href="#pip" title="Permalink to this headline">#</a></h3>
-<div class="highlight-RST notranslate"><div class="highlight"><pre><span></span>pip install gamma-pytools
+<section id="macos-and-linux">
+<h4>macOS and Linux:<a class="headerlink" href="#macos-and-linux" title="Permalink to this headline">#</a></h4>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python -m venv pytools
+<span class="nb">source</span> pytools/bin/activate
+pip install gamma-pytools
 </pre></div>
 </div>
+</section>
+<section id="windows">
+<h4>Windows:<a class="headerlink" href="#windows" title="Permalink to this headline">#</a></h4>
+<div class="highlight-dosbatch notranslate"><div class="highlight"><pre><span></span>python -m venv pytools
+pytools\Scripts\activate.bat
+pip install gamma-pytools
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 <section id="documentation">

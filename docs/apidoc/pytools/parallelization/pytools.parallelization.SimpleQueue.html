@@ -1133,7 +1133,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.parallelization.SimpleQueue.aggregate" title="pytools.parallelization.SimpleQueue.aggregate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aggregate</span></code></a></p></td>
-<td><p>Called by <code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run()</span></code> to aggregate the results of all jobs once they have all been run.</p></td>
+<td><p>Called by <a class="reference internal" href="pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queue" title="pytools.parallelization.JobRunner.run_queue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queue()</span></code></a> to aggregate the results of all jobs once they have all been run.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#pytools.parallelization.SimpleQueue.jobs" title="pytools.parallelization.SimpleQueue.jobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jobs</span></code></a></p></td>
 <td><p>Iterate the jobs in this queue.</p></td>
@@ -1159,8 +1159,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.parallelization.SimpleQueue.aggregate">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">aggregate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_results</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.parallelization.SimpleQueue.aggregate" title="Permalink to this definition">#</a></dt>
-<dd><p>Called by <code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run()</span></code> to aggregate the results of all jobs once they
-have all been run.</p>
+<dd><p>Called by <a class="reference internal" href="pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queue" title="pytools.parallelization.JobRunner.run_queue"><code class="xref py py-meth docutils literal notranslate"><span class="pre">JobRunner.run_queue()</span></code></a> to aggregate the results of all jobs once
+they have all been run.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>job_results</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]) – list of job results, ordered corresponding to the sequence

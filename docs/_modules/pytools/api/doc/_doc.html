@@ -371,19 +371,33 @@
     <span class="c1"># defined in superclass, repeated here for Sphinx</span>
     <span class="n">element</span><span class="p">:</span> <span class="n">FunctionType</span>
 
-<div class="viewcode-block" id="FunctionDefinition.list_actual_parameters"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.FunctionDefinition.html#pytools.api.doc.FunctionDefinition.list_actual_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">list_actual_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_return</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="FunctionDefinition.list_actual_parameters"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.FunctionDefinition.html#pytools.api.doc.FunctionDefinition.list_actual_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">list_actual_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">include_return</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">convert_private</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract all parameter names from the function signature</span>
 
-<span class="sd">        :param include_return: include ``return`` as final parameter</span>
+<span class="sd">        :param include_return: if ``True``, include ``return`` as final parameter</span>
 <span class="sd">            if there is a type hint for a return parameter</span>
+<span class="sd">        :param convert_private: if ``True``, convert private parameters (with two</span>
+<span class="sd">            leading underscores in their names) back to their original names stated in</span>
+<span class="sd">            the source code</span>
 <span class="sd">        :return: list of parameter names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">signature</span><span class="p">:</span> <span class="n">Signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="n">convert_private</span><span class="p">:</span>
+            <span class="n">element_prefix</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="s1">&#39;__&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">__&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">element_prefix</span> <span class="o">=</span> <span class="kc">None</span>
+
         <span class="n">actual_parameters</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">parameter</span>
+            <span class="n">parameter</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">element_prefix</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="p">:]</span>
+            <span class="k">if</span> <span class="n">element_prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parameter</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">element_prefix</span><span class="p">)</span>
+            <span class="k">else</span> <span class="n">parameter</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;self&quot;</span><span class="p">,</span> <span class="s2">&quot;cls&quot;</span><span class="p">}</span>
         <span class="p">]</span>
@@ -449,7 +463,9 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">FunctionDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">actual_parameters</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">list_actual_parameters</span><span class="p">(</span><span class="n">include_return</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">actual_parameters</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">list_actual_parameters</span><span class="p">(</span>
+            <span class="n">include_return</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_private</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
         <span class="n">documented_parameters</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">list_documented_parameters</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="p">(</span>
@@ -521,7 +537,9 @@
 
         <span class="n">parameters_without_annotations</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">parameter</span>
-            <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">definition</span><span class="o">.</span><span class="n">list_actual_parameters</span><span class="p">(</span><span class="n">include_return</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">definition</span><span class="o">.</span><span class="n">list_actual_parameters</span><span class="p">(</span>
+                <span class="n">include_return</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">convert_private</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">parameter</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">annotations</span>
         <span class="p">}</span>
 
