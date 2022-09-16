@@ -11,6 +11,12 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with |mypy|.
 
+2.0.4
+~~~~~
+
+- FIX: make :meth:`.MatplotStyle.get_renderer()` compatible with :mod:`matplotlib` 3.6
+
+
 2.0.3
 ~~~~~
 

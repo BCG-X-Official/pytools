@@ -161,19 +161,18 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
-<span class="kn">from</span> <span class="nn">matplotlib.backend_bases</span> <span class="kn">import</span> <span class="n">RendererBase</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backend_bases</span> <span class="kn">import</span> <span class="n">FigureCanvasBase</span><span class="p">,</span> <span class="n">RendererBase</span>
 <span class="kn">from</span> <span class="nn">matplotlib.colorbar</span> <span class="kn">import</span> <span class="n">ColorbarBase</span><span class="p">,</span> <span class="n">make_axes</span>
 <span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Normalize</span>
 <span class="kn">from</span> <span class="nn">matplotlib.legend</span> <span class="kn">import</span> <span class="n">Legend</span>
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">Formatter</span>
-<span class="kn">from</span> <span class="nn">matplotlib.tight_layout</span> <span class="kn">import</span> <span class="n">get_renderer</span>
 
 <span class="kn">from</span> <span class="nn">..api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">to_list</span>
 <span class="kn">from</span> <span class="nn">._viz</span> <span class="kn">import</span> <span class="n">ColoredStyle</span>
@@ -211,6 +210,7 @@
 
     <span class="n">_TEXT_PADDING_RATIO</span> <span class="o">=</span> <span class="mf">0.1</span>
     <span class="n">_DEFAULT_FONT_FAMILY</span> <span class="o">=</span> <span class="s2">&quot;font.monospace&quot;</span>
+    <span class="c1"># noinspection SpellCheckingInspection</span>
     <span class="n">_DEFAULT_FONT</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;.SF NS Mono&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Lucida Console&quot;</span><span class="p">,</span>
@@ -279,7 +279,21 @@
 
 <span class="sd">        :return: the renderer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">get_renderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span></div>
+
+        <span class="n">cached_renderer</span><span class="p">:</span> <span class="n">RendererBase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_renderer_cache</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cached_renderer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cached_renderer</span>
+
+        <span class="n">canvas</span><span class="p">:</span> <span class="n">FigureCanvasBase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># noinspection PyUnresolvedReferences</span>
+            <span class="n">canvas_get_renderer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">RendererBase</span><span class="p">]</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;get_renderer() is not supported &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;for canvas type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">canvas</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">canvas_get_renderer</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MatplotStyle.start_drawing"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.start_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">start_drawing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -307,7 +321,7 @@
 
         <span class="c1"># set the figure background color</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1"># does the axes background color conflict with the figure background color?</span>
+            <span class="c1"># does the axes&#39; background color conflict with the figure background color?</span>
             <span class="k">if</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">__pytools_viz_background</span> <span class="o">!=</span> <span class="n">bg_color</span><span class="p">:</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;subplots have conflicting color schemes; setting background color &quot;</span>
