@@ -4,19 +4,18 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Iterable, List, Optional, Union, cast, overload
+from typing import Any, Callable, Iterable, List, Optional, Union, cast, overload
 
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 from matplotlib import rcParams
 from matplotlib.axes import Axes
-from matplotlib.backend_bases import RendererBase
+from matplotlib.backend_bases import FigureCanvasBase, RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import Normalize
 from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
-from matplotlib.tight_layout import get_renderer
 
 from ..api import AllTracker, inheritdoc, to_list
 from ._viz import ColoredStyle
@@ -54,6 +53,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
     _TEXT_PADDING_RATIO = 0.1
     _DEFAULT_FONT_FAMILY = "font.monospace"
+    # noinspection SpellCheckingInspection
     _DEFAULT_FONT = [
         ".SF NS Mono",
         "Lucida Console",
@@ -122,7 +122,21 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         :return: the renderer
         """
-        return get_renderer(self.ax.figure)
+
+        cached_renderer: RendererBase = self.ax.get_renderer_cache()
+        if cached_renderer is not None:
+            return cached_renderer
+
+        canvas: FigureCanvasBase = self.ax.figure.canvas
+        try:
+            # noinspection PyUnresolvedReferences
+            canvas_get_renderer: Callable[[], RendererBase] = canvas.get_renderer
+        except AttributeError:
+            raise TypeError(
+                "get_renderer() is not supported "
+                f"for canvas type {type(canvas).__name__}"
+            )
+        return canvas_get_renderer()
 
     def start_drawing(self, *, title: str, **kwargs: Any) -> None:
         """
@@ -150,7 +164,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         # set the figure background color
         try:
-            # does the axes background color conflict with the figure background color?
+            # does the axes' background color conflict with the figure background color?
             if ax.figure.__pytools_viz_background != bg_color:
                 log.warning(
                     "subplots have conflicting color schemes; setting background color "
