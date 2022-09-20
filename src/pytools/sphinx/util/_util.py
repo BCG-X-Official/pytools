@@ -8,7 +8,7 @@ import logging
 import re
 import sys
 import typing
-from abc import ABCMeta, abstractmethod
+from abc import abstractmethod
 from inspect import getattr_static
 from types import FunctionType, MethodType
 from typing import (
@@ -316,7 +316,7 @@ class AddInheritance(AutodocProcessDocstring):
         ]
 
 
-class CollapseModulePaths(metaclass=ABCMeta):
+class CollapseModulePaths(metaclass=SingletonABCMeta):
     """
     Replace private module paths with their public prefix so that object references
     can be matched by *intersphinx*.
@@ -523,7 +523,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
 
 
 @inheritdoc(match="""[see superclass]""")
-class SkipIndirectImports(AutodocSkipMember):
+class SkipIndirectImports(AutodocSkipMember, metaclass=SingletonABCMeta):
     """
     Skip members imported by a private package.
     """
@@ -546,7 +546,7 @@ class SkipIndirectImports(AutodocSkipMember):
 
 
 @inheritdoc(match="""[see superclass]""")
-class Replace3rdPartyDoc(AutodocProcessDocstring):
+class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
     """
     Replace 3rd party docstrings with a reference to the 3rd party documentation.
 
@@ -789,7 +789,7 @@ class _TypeVarBindings:
 
 
 @inheritdoc(match="""[see superclass]""")
-class ResolveTypeVariables(AutodocBeforeProcessSignature):
+class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABCMeta):
     """
     Resolve type variables that can be inferred through generic class parameters or
     ``self``/``cls`` special arguments.
