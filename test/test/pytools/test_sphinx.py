@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Dict, Generic, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, Generic, Optional, Type, TypeVar
 
 from pytools.viz import Drawer
 from pytools.viz.distribution import ECDFDrawer
@@ -35,11 +35,25 @@ class C(B[str, T]):
 
 # noinspection PyUnresolvedReferences
 def test_resolve_generic_class_parameters() -> None:
-    from pytools.sphinx.util import ResolveTypeVariables
+    from pytools.sphinx.util import ResolveTypeVariables, TrackCurrentClass
 
     sphinx = type("Sphinx", (object,), {})()
 
+    track_current_class = TrackCurrentClass()
     resolve_type_variables = ResolveTypeVariables()
+
+    def _set_current_class(cls: Type[Any]) -> None:
+        track_current_class.process(
+            app=sphinx,
+            what="class",
+            name=cls.__name__,
+            obj=cls,
+            options={},
+            signature="",
+            return_annotation="",
+        )
+
+    _set_current_class(ECDFDrawer)
 
     resolve_type_variables.process(app=sphinx, obj=Drawer, bound_method=False)
 
@@ -53,6 +67,8 @@ def test_resolve_generic_class_parameters() -> None:
         "return": Dict[str, Callable[..., ECDFStyle]]
     }
 
+    _set_current_class(A)
+
     resolve_type_variables.process(app=sphinx, obj=A, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=A.f, bound_method=False)
     assert A.f.__annotations__ == {"self": A, "x": Type[T], "return": U}
@@ -61,6 +77,8 @@ def test_resolve_generic_class_parameters() -> None:
 
     resolve_type_variables.process(app=sphinx, obj=A.h, bound_method=False)
     assert A.h.__annotations__ == {"cls": Type[A], "return": A}
+
+    _set_current_class(B)
 
     resolve_type_variables.process(app=sphinx, obj=B, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=B.f, bound_method=False)
@@ -72,6 +90,8 @@ def test_resolve_generic_class_parameters() -> None:
     resolve_type_variables.process(app=sphinx, obj=B.h, bound_method=False)
     assert B.h is not A.h
     assert B.h.__annotations__ == {"cls": Type[B], "return": B}
+
+    _set_current_class(C)
 
     resolve_type_variables.process(app=sphinx, obj=C, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=C.f, bound_method=False)

@@ -208,7 +208,7 @@ def _connect_callbacks(app: Sphinx) -> None:
         Replace3rdPartyDoc,
         ResolveTypeVariables,
         SkipIndirectImports,
-        TrackCurrentDoc,
+        TrackCurrentClass,
     )
 
     AddInheritance(collapsible_submodules=intersphinx_collapsible_submodules).connect(
@@ -227,7 +227,7 @@ def _connect_callbacks(app: Sphinx) -> None:
 
     Replace3rdPartyDoc().connect(app=app)
 
-    TrackCurrentDoc().connect(app=app)
+    TrackCurrentClass().connect(app=app)
 
     ResolveTypeVariables().connect(app=app)
 

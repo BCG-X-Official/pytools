@@ -103,7 +103,7 @@ __all__ = [
     "Replace3rdPartyDoc",
     "ResolveTypeVariables",
     "SkipIndirectImports",
-    "TrackCurrentDoc",
+    "TrackCurrentClass",
 ]
 
 #
@@ -828,7 +828,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
     _current_class: Optional[Type[Any]]
     _current_class_bindings: Optional[_TypeVarBindings]
-    _track_current_class: "TrackCurrentDoc"
+    _track_current_class: "TrackCurrentClass"
 
     def __init__(self) -> None:
         super().__init__()
@@ -836,14 +836,14 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         self.original_signatures = {}
         self._current_class = None
         self._current_class_bindings = None
-        self._track_current_class = TrackCurrentDoc()
+        self._track_current_class = TrackCurrentClass()
 
     def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
         """[see superclass]"""
 
-        if TrackCurrentDoc().app is not app:
+        if TrackCurrentClass().app is not app:
             raise RuntimeError(
-                f"connect {TrackCurrentDoc.__name__}() to the same app "
+                f"connect {TrackCurrentClass.__name__}() to the same app "
                 f"before connecting {ResolveTypeVariables.__name__}()"
             )
 
@@ -1091,7 +1091,8 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         return bindings
 
 
-class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
+@inheritdoc(match="""[see superclass]""")
+class TrackCurrentClass(AutodocProcessSignature, metaclass=SingletonABCMeta):
     """
     Keep track of the class currently being processed by autodoc.
 
@@ -1126,6 +1127,7 @@ class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
         return None
 
 
+@inheritdoc(match="""[see superclass]""")
 class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonABCMeta):
     """
     Rename private argument names to their original names given in the source code.
@@ -1142,6 +1144,8 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
     """
 
     def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
+        """[see superclass]"""
+
         if not (bound_method or isinstance(obj, FunctionType)):
             return
 
