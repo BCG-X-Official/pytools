@@ -52,6 +52,18 @@ class SphinxCallback(metaclass=ABCMeta):
     event.
     """
 
+    #: The Sphinx application instance of this callback; ``None`` if not connected.
+    _app: Optional[Sphinx]
+
+    #: The listener ID of this callback; ``None`` if not connected.
+    _listener_id: Optional[int]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+
+        self._app = None
+        self._listener_id = None
+
     @property
     @abstractmethod
     def event(self) -> str:
@@ -63,6 +75,24 @@ class SphinxCallback(metaclass=ABCMeta):
         :return: name of the event
         """
         pass
+
+    @property
+    def app(self) -> Optional[Sphinx]:
+        """
+        The Sphinx application this callback is connected to.
+
+        :return: the Sphinx application, or ``None`` if not connected.
+        """
+        return self._app
+
+    @property
+    def listener_id(self) -> Optional[int]:
+        """
+        The listener ID of this callback.
+
+        :return: the listener ID, or ``None`` if not connected.
+        """
+        return self._listener_id
 
     def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
         """
@@ -77,6 +107,9 @@ class SphinxCallback(metaclass=ABCMeta):
             :meth:`~sphinx.application.Sphinx.disconnect`.
         """
 
+        if self._app is not None:
+            raise RuntimeError("already connected to a Sphinx application")
+
         listener_id: int
 
         if priority is None:
@@ -86,7 +119,22 @@ class SphinxCallback(metaclass=ABCMeta):
                 event=self.event, callback=self, priority=priority
             )
 
+        self._app = app
+        self._listener_id = listener_id
+
         return listener_id
+
+    def disconnect(self) -> None:
+        """
+        Disconnect this callback from its Sphinx application.
+        """
+
+        if self._app is None:
+            raise RuntimeError("not connected to a Sphinx application")
+
+        self._app.disconnect(self._listener_id)
+        self._app = None
+        self._listener_id = None
 
 
 # noinspection SpellCheckingInspection
