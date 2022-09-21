@@ -5,10 +5,21 @@ Release Notes
 .. |nbsp| unicode:: 0xA0
    :trim:
 
+*pytools* 2.1
+-------------
+
+2.1.0
+~~~~~
+
+- APP: new decorator :obj:`.fitted_only` to mark methods that may only be
+  called after their associated object has been fitted using :meth:`.FittableMixin.fit`.
+- API: remove method ``ensure_fitted`` from :class:`.FittableMixin`
+
+
 *pytools* 2.0
 -------------
 
-*pytools* 2 features enhanced visualisations together with additional API improvements,
+*pytools* 2.0 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with |mypy|.
 
 2.0.4
