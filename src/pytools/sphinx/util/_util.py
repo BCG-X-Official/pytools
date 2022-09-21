@@ -1,6 +1,8 @@
 """
 Implementation of sphinx utility callbacks specific to building Gamma documentation.
 """
+from __future__ import annotations
+
 import collections.abc
 import importlib
 import itertools
@@ -829,8 +831,23 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
     _track_current_class: "TrackCurrentDoc"
 
     def __init__(self) -> None:
+        super().__init__()
+
         self.original_signatures = {}
+        self._current_class = None
         self._current_class_bindings = None
+        self._track_current_class = TrackCurrentDoc()
+
+    def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
+        """[see superclass]"""
+
+        if TrackCurrentDoc().app is not app:
+            raise RuntimeError(
+                f"connect {TrackCurrentDoc.__name__}() to the same app "
+                f"before connecting {ResolveTypeVariables.__name__}()"
+            )
+
+        return super().connect(app, priority)
 
     def _resolve_function_signature(
         self, bindings: _TypeVarBindings, func: FunctionType
@@ -999,28 +1016,59 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
     def process(self, app: Sphinx, obj: Any, bound_method: bool) -> None:
         """[see superclass]"""
 
-        if isinstance(obj, type):
-            # we are starting to process a new class; remember it, so we can
-            # attribute unbound methods to it
-            self._update_current_class(obj)
+        self._update_current_class(self._track_current_class.current_class)
 
-        elif isinstance(obj, FunctionType):
-            bindings = self._update_current_class(self._get_defining_class(obj))
+        if isinstance(obj, FunctionType):
+            # instance method definitions are unbound, so we need to determine
+            # the class we are currently in from context
 
-            # instance method definitions are unbound, so we need to remember
-            # the class we are currently in
-            if bindings is not None:
-                self._resolve_function_signature(bindings=bindings, func=obj)
+            bindings: Optional[_TypeVarBindings]
+            if obj.__name__ == obj.__qualname__:
+                # this is a function, not a method
+                return
+            elif obj.__name__ in [
+                "__init__",
+                "__init_subclass__",
+                "__new__",
+                "__call__",
+            ]:
+                # special case of class initializer, this usually means that we are
+                # starting to document a new class, or refer to a special method
+                # of a metaclass
+                bindings = self._update_current_class(self._get_defining_class(obj))
+            else:
+                bindings = self._current_class_bindings
+
+            assert (
+                bindings is not None
+            ), f"bindings are in place for function {obj.__qualname__}"
+            defining_class = self._get_defining_class(obj)
+            assert (
+                defining_class is not None
+            ), f"function {obj.__qualname__} has a defining class"
+            assert issubclass(bindings.current_class, defining_class), (
+                f"current class {bindings.current_class.__name__} "
+                f"is a subclass of the class of unbound method {obj.__qualname__}, "
+                f"class={defining_class}"
+            )
+
+            self._resolve_function_signature(bindings=bindings, func=obj)
 
         elif isinstance(obj, MethodType):
             # class method definitions are bound, so we can infer the current class
             cls = obj.__self__
             assert isinstance(cls, type), "methods are class methods"
 
-            current_class: Optional[_TypeVarBindings] = self._update_current_class(cls)
-            assert current_class is not None
+            bindings = self._current_class_bindings
+            assert (
+                bindings is not None
+            ), "bindings expected to be in place when processing a bound method"
+            assert (
+                bindings.current_class is cls
+            ), "bindings expected to be for the correct class"
+
             # noinspection PyTypeChecker
-            self._resolve_function_signature(bindings=current_class, func=obj.__func__)
+            self._resolve_function_signature(bindings=bindings, func=obj.__func__)
 
     def _update_current_class(
         self, cls: Optional[Type[Any]]
@@ -1029,9 +1077,10 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
             return None
 
         bindings: Optional[_TypeVarBindings] = self._current_class_bindings
-        assert isinstance(cls, type), f"{cls} is a class"
-        if bindings is None or not issubclass(bindings.current_class, cls):
-            # we're visiting the class for the first time
+
+        if bindings is None or bindings.current_class is not cls:
+            # we're visiting a new class
+            log.debug(f"visiting new class {cls.__name__}")
 
             # create a TypeVar bindings object for this class
             bindings = self._current_class_bindings = _TypeVarBindings(cls)
@@ -1054,8 +1103,9 @@ class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
     current_class: Optional[Type[Any]]
 
     def __init__(self) -> None:
-        self.current_class: Optional[Type[Any]] = None
-        self.rtv = ResolveTypeVariables()
+        super().__init__()
+
+        self.current_class = None
 
     def process(
         self,
@@ -1072,13 +1122,8 @@ class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
         if what == "class":
             cls = cast(type, obj)
             self.current_class = cls
-            self.rtv._update_current_class(cls)
 
         return None
-
-    def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
-        self.rtv.connect(app, priority)
-        return super().connect(app, priority)
 
 
 class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonABCMeta):

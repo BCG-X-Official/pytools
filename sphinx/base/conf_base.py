@@ -192,6 +192,13 @@ def setup(app: Sphinx) -> None:
     :param app: the Sphinx application object
     """
 
+    _connect_callbacks(app=app)
+
+    _add_custom_css_and_js(app=app)
+
+
+def _connect_callbacks(app: Sphinx) -> None:
+
     from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,
@@ -199,6 +206,7 @@ def setup(app: Sphinx) -> None:
         CollapseModulePathsInXRef,
         RenamePrivateArguments,
         Replace3rdPartyDoc,
+        ResolveTypeVariables,
         SkipIndirectImports,
         TrackCurrentDoc,
     )
@@ -221,13 +229,13 @@ def setup(app: Sphinx) -> None:
 
     TrackCurrentDoc().connect(app=app)
 
+    ResolveTypeVariables().connect(app=app)
+
     CollapseModulePathsInXRef(
         collapsible_submodules=intersphinx_collapsible_submodules
     ).connect(app=app)
 
     RenamePrivateArguments().connect(app=app)
-
-    _add_custom_css_and_js(app=app)
 
 
 def _add_custom_css_and_js(app: Sphinx) -> None:
