@@ -716,7 +716,19 @@ def _class_attr(cls: Any, attr: List[str]) -> Any:
 
 
 class _TypeVarBindings:
-    def __init__(self, current_class: type) -> None:
+
+    current_class: Type[Any]
+    _bindings: Dict[
+        Type[Any],
+        Dict[
+            TypeVar,
+            Union[Type[Any], TypeVar],
+        ],
+    ]
+
+    def __init__(self, current_class: Type[Any]) -> None:
+        super().__init__()
+
         self.current_class = current_class
         self._bindings = self._get_parameter_bindings(
             cls=current_class, subclass_bindings={}
@@ -812,7 +824,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
     original_signatures: Dict[Any, Dict[str, Union[Type[Any], TypeVar]]]
 
+    _current_class: Optional[Type[Any]]
     _current_class_bindings: Optional[_TypeVarBindings]
+    _track_current_class: "TrackCurrentDoc"
 
     def __init__(self) -> None:
         self.original_signatures = {}
@@ -1036,6 +1050,9 @@ class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
     in class :class:`.ResolveTypeVariables`.
     """
 
+    #: The class currently being processed by autodoc.
+    current_class: Optional[Type[Any]]
+
     def __init__(self) -> None:
         self.current_class: Optional[Type[Any]] = None
         self.rtv = ResolveTypeVariables()
@@ -1050,6 +1067,8 @@ class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
         signature: Optional[str],
         return_annotation: Optional[str],
     ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        """[see superclass]"""
+
         if what == "class":
             cls = cast(type, obj)
             self.current_class = cls
