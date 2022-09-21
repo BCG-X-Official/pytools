@@ -1026,26 +1026,25 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
             if obj.__name__ == obj.__qualname__:
                 # this is a function, not a method
                 return
-            elif obj.__name__ in [
-                "__init__",
-                "__init_subclass__",
-                "__new__",
-                "__call__",
-            ]:
+
+            defining_class = self._get_defining_class(obj)
+            assert (
+                defining_class is not None
+            ), f"function {obj.__qualname__} has a defining class"
+
+            if obj.__name__ in ["__init__", "__init_subclass__", "__new__"] or (
+                obj.__name__ == "__call__" and issubclass(defining_class, type)
+            ):
                 # special case of class initializer, this usually means that we are
                 # starting to document a new class, or refer to a special method
                 # of a metaclass
-                bindings = self._update_current_class(self._get_defining_class(obj))
+                bindings = self._update_current_class(defining_class)
             else:
                 bindings = self._current_class_bindings
 
             assert (
                 bindings is not None
             ), f"bindings are in place for function {obj.__qualname__}"
-            defining_class = self._get_defining_class(obj)
-            assert (
-                defining_class is not None
-            ), f"function {obj.__qualname__} has a defining class"
             assert issubclass(bindings.current_class, defining_class), (
                 f"current class {bindings.current_class.__name__} "
                 f"is a subclass of the class of unbound method {obj.__qualname__}, "
