@@ -8,7 +8,7 @@ import logging
 import re
 import sys
 import typing
-from abc import abstractmethod
+from abc import ABCMeta, abstractmethod
 from inspect import getattr_static
 from types import FunctionType, MethodType
 from typing import (
@@ -316,7 +316,7 @@ class AddInheritance(AutodocProcessDocstring):
         ]
 
 
-class CollapseModulePaths(metaclass=SingletonABCMeta):
+class CollapseModulePaths(metaclass=ABCMeta):
     """
     Replace private module paths with their public prefix so that object references
     can be matched by *intersphinx*.
