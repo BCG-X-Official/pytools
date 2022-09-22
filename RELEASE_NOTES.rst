@@ -11,9 +11,10 @@ Release Notes
 2.1.0
 ~~~~~
 
-- APP: new decorator :obj:`.fitted_only` to mark methods that may only be
+- API: new decorator :obj:`.fitted_only` to mark methods that may only be
   called after their associated object has been fitted using :meth:`.FittableMixin.fit`.
-- API: remove method ``ensure_fitted`` from :class:`.FittableMixin`
+- API: remove method ``ensure_fitted`` from :class:`.FittableMixin`, which is no longer
+  needed due to the new decorator :obj:`.fitted_only`.
 
 
 *pytools* 2.0

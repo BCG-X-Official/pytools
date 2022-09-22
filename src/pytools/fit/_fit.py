@@ -55,12 +55,41 @@ __tracker = AllTracker(globals())
 class NotFittedError(Exception):
     """
     Raised when a fittable object was expected to be fitted but was not fitted.
+
+    See also :class:`FittableMixin` and the :obj:`fitted_only` decorator.
     """
 
 
 class FittableMixin(Generic[T_Data], metaclass=ABCMeta):
+    # noinspection GrazieInspection
     """
     Mix-in class that supports fitting the object to data.
+
+    See also the :obj:`fitted_only` decorator.
+
+    Usage:
+
+    .. code-block:: python
+
+        class MyFittable(FittableMixin[MyData]):
+            def fit(self, data: MyData) -> "MyFittable":
+                # fit object to data
+                ...
+
+                return self
+
+            def is_fitted(self) -> bool:
+                # Return True if the object is fitted, False otherwise
+                ...
+
+            @fitted_only
+            def some_method(self, ...) -> ...:
+                # This method may only be called if the object is fitted
+                ...
+
+    .. note::
+        This class is not meant to be instantiated directly. Instead, it is
+        meant to be used as a mix-in class for other classes.
     """
 
     @abstractmethod
