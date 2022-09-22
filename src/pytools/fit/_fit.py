@@ -120,7 +120,7 @@ def fitted_only(__method: T_Callable) -> T_Callable:
 @overload
 def fitted_only(
     *,
-    not_fitted_error: Type[Exception],
+    not_fitted_error: Type[Exception] = NotFittedError,
 ) -> Callable[[T_Callable], T_Callable]:
     """[overloaded]"""
 
