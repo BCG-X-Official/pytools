@@ -15,6 +15,12 @@ Release Notes
   called after their associated object has been fitted using :meth:`.FittableMixin.fit`.
 - API: remove method ``ensure_fitted`` from :class:`.FittableMixin`, which is no longer
   needed due to the new decorator :obj:`.fitted_only`.
+- API: new Sphinx callback :class:`.TrackCurrentClass` to keep track of the current
+  class being processed by *autodoc*.
+- API: new Sphinx callback :class:`.RenamePrivateArguments` to rename private
+  “positional-only” arguments in a function's signature (with two leading underscores)
+  back to their original names in the source code, so that *autodoc* can pick them up
+  correctly.
 
 
 *pytools* 2.0
