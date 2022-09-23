@@ -110,7 +110,7 @@ or have a look at
 .. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/2.0.x
+.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/2.1.x
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
 .. |python_versions| image:: https://img.shields.io/badge/python-3.7|3.8|3.9-blue.svg
