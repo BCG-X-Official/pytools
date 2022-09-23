@@ -1,0 +1,37 @@
+pytools.sphinx.AutodocProcessSignature
+======================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: AutodocProcessSignature
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AutodocProcessSignature.connect
+      ~AutodocProcessSignature.disconnect
+      ~AutodocProcessSignature.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AutodocProcessSignature.app
+      ~AutodocProcessSignature.event
+      ~AutodocProcessSignature.listener_id
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,37 @@
+pytools.sphinx.AutodocProcessBases
+==================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: AutodocProcessBases
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AutodocProcessBases.connect
+      ~AutodocProcessBases.disconnect
+      ~AutodocProcessBases.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AutodocProcessBases.app
+      ~AutodocProcessBases.event
+      ~AutodocProcessBases.listener_id
+   
+   
+
+   .. rubric:: Definitions

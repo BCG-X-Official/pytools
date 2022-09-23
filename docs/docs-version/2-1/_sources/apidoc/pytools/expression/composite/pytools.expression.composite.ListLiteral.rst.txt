@@ -1,0 +1,42 @@
+pytools.expression.composite.ListLiteral
+========================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: ListLiteral
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ListLiteral.and_
+      ~ListLiteral.eq_
+      ~ListLiteral.hash_
+      ~ListLiteral.not_
+      ~ListLiteral.or_
+      ~ListLiteral.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ListLiteral.brackets_
+      ~ListLiteral.elements_
+      ~ListLiteral.precedence_
+      ~ListLiteral.subexpression_
+      ~ListLiteral.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

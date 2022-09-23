@@ -1,0 +1,36 @@
+pytools.sphinx.SphinxCallback
+=============================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: SphinxCallback
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SphinxCallback.connect
+      ~SphinxCallback.disconnect
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~SphinxCallback.app
+      ~SphinxCallback.event
+      ~SphinxCallback.listener_id
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,46 @@
+pytools.sphinx.util
+===================
+
+.. automodule:: pytools.sphinx.util
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: util
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      AddInheritance
+      CollapseModulePaths
+      CollapseModulePathsInDocstring
+      CollapseModulePathsInSignature
+      CollapseModulePathsInXRef
+      RenamePrivateArguments
+      Replace3rdPartyDoc
+      ResolveTypeVariables
+      SkipIndirectImports
+      TrackCurrentClass
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

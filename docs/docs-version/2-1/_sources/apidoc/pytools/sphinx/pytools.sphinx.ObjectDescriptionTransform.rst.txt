@@ -1,0 +1,37 @@
+pytools.sphinx.ObjectDescriptionTransform
+=========================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: ObjectDescriptionTransform
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ObjectDescriptionTransform.connect
+      ~ObjectDescriptionTransform.disconnect
+      ~ObjectDescriptionTransform.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ObjectDescriptionTransform.app
+      ~ObjectDescriptionTransform.event
+      ~ObjectDescriptionTransform.listener_id
+   
+   
+
+   .. rubric:: Definitions
