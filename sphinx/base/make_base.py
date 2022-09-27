@@ -32,8 +32,15 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 DIR_SPHINX_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.dirname(DIR_SPHINX_ROOT)
 DIR_REPO_PARENT = os.path.dirname(DIR_REPO_ROOT)
-PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
+# get all subdirectories of DIR_PACKAGE_SRC
+PACKAGE_NAMES = [
+    package
+    for package in os.listdir(DIR_PACKAGE_SRC)
+    if os.path.isdir(os.path.join(DIR_PACKAGE_SRC, package))
+]
+assert len(PACKAGE_NAMES) == 1, "only one package per Sphinx build is supported"
+PROJECT_NAME = PACKAGE_NAMES[0]
 DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_DOCS_VERSION = os.path.join(DIR_DOCS, "docs-version")
 DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
