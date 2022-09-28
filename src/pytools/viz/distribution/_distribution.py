@@ -91,7 +91,7 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
 
 @inheritdoc(match="[see superclass]")
-class ECDFDrawer(Drawer[Union[Sequence[float], ArrayLike], ECDFStyle]):
+class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
     """
     Drawer for empirical cumulative density functions (ECDFs), highlighting
     outliers using Tukey's outlier test.
@@ -159,9 +159,7 @@ class ECDFDrawer(Drawer[Union[Sequence[float], ArrayLike], ECDFStyle]):
 
     __init__.__doc__ = cast(str, Drawer.__init__.__doc__) + cast(str, __init__.__doc__)
 
-    def draw(
-        self, data: Union[Sequence[float], ArrayLike], *, title: Optional[str] = None
-    ) -> None:
+    def draw(self, data: ArrayLike, *, title: Optional[str] = None) -> None:
         """
         Draw the ECDF.
 
