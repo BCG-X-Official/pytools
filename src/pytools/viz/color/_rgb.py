@@ -7,6 +7,7 @@ import logging
 from typing import Any, Dict, Optional, Tuple, cast, overload
 
 from matplotlib.colors import to_rgb
+from typing_extensions import TypeAlias
 
 from pytools.api import AllTracker
 
@@ -31,9 +32,9 @@ __all__ = [
 
 
 #
-# Type Aliases
+# Type aliases
 #
-TupleRgb = Tuple[float, float, float]
+TupleRgb: TypeAlias = Tuple[float, float, float]
 
 #
 # Ensure all symbols introduced below are included in __all__

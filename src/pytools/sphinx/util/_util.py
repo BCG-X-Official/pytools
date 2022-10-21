@@ -102,11 +102,11 @@ __all__ = [
 ]
 
 #
-# Type aliases
+# Type variables
 #
 
-method_descriptor = type(str.__dict__["startswith"])
-wrapper_descriptor = type(str.__dict__["__add__"])
+method_descriptor: Type[Any] = type(str.startswith)
+wrapper_descriptor: Type[Any] = type(str.__add__)
 
 
 #
