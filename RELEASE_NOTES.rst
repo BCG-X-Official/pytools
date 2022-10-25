@@ -11,6 +11,12 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with |mypy|.
 
+2.0.5
+~~~~~
+
+- API: de-dent docstrings before processing them with the :obj:``.subsdoc`` decorator.
+
+
 2.0.4
 ~~~~~
 
