@@ -11,6 +11,14 @@ Release Notes
 *pytools* 2 features enhanced visualisations together with additional API improvements,
 and is now subject to static type checking with |mypy|.
 
+2.0.5
+~~~~~
+
+- API: de-dent docstrings before processing them with the :obj:``.subsdoc`` decorator
+- FIX: in method :meth:`.AllTracker.resolve_forward_references`, unwrap functions before
+  accessing their ``__globals__`` attribute
+
+
 2.0.4
 ~~~~~
 
