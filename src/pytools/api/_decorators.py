@@ -4,6 +4,7 @@ Core implementation of decorators in :mod:`pytools.api`.
 
 import logging
 import re
+import textwrap
 from typing import Any, Callable, Optional, Type, TypeVar
 
 from pytools.api._alltracker import AllTracker
@@ -41,7 +42,7 @@ def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
           \"""Some documentation\"""
           # …
 
-      @inheritdoc(match="[see superclass]")
+      @inheritdoc(match=\"""[see superclass]\""")
       class B(A):
           def my_function(self) -> None:
           \"""[see superclass]\"""
@@ -55,8 +56,8 @@ def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
     docstring of the overridden function of the same name, or with ``None`` if no
     overridden function exists, or if that function has no docstring.
 
-    :param match: the parent docstring will be inherited if the current docstring
-        is equal to match
+    :param match: the exact text a docstring has to match in order to be replaced
+        by the parent's docstring
     :return: the parameterized decorator
     """
 
@@ -99,6 +100,11 @@ def subsdoc(
     Matches the given pattern in the docstring, and substitutes it with the given
     replacement string (analogous to :func:`re.sub`).
 
+    Prior to matching, the docstring is *de-dented*, i.e. the indentation of the
+    first line is removed from all lines. This ensures that docstrings that are
+    indented to align with the opening triple quotes are matched correctly, regardless
+    of the indentation level.
+
     :param pattern: a regular expression for the pattern to match
     :param replacement: the replacement for substrings matching the pattern
     :param using: get the docstring from the given object as the basis for the
@@ -113,11 +119,12 @@ def subsdoc(
             raise ValueError(
                 f"docstring of {origin!r} is not a string: {docstring_original!r}"
             )
-        docstring_substituted, n = re.subn(pattern, replacement, docstring_original)
+        docstring_dedented = textwrap.dedent(docstring_original)
+        docstring_substituted, n = re.subn(pattern, replacement, docstring_dedented)
         if not n:
             raise ValueError(
                 f"subsdoc: pattern {pattern!r} "
-                f"not found in docstring {docstring_original!r}"
+                f"not found in docstring {docstring_dedented!r}"
             )
         _set_docstring(_obj, docstring_substituted)
         return _obj
