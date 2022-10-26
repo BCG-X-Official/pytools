@@ -1128,6 +1128,10 @@
 <dd><p>Decorator for substituting parts of an object’s docstring.</p>
 <p>Matches the given pattern in the docstring, and substitutes it with the given
 replacement string (analogous to <a class="reference external" href="https://docs.python.org/3.7/library/re.html#re.sub" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">re.sub()</span></code></a>).</p>
+<p>Prior to matching, the docstring is <em>de-dented</em>, i.e. the indentation of the
+first line is removed from all lines. This ensures that docstrings that are
+indented to align with the opening triple quotes are matched correctly, regardless
+of the indentation level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
