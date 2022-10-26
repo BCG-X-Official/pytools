@@ -303,7 +303,9 @@ def update_forward_references(
     # keep track of classes we already visited to prevent infinite recursion
     visited: Set[type] = set()
 
-    def _update(_obj: Any, local_ns: Optional[Dict[str, Any]] = None) -> None:
+    def _update(
+        _obj: Union[type, FunctionType], local_ns: Optional[Dict[str, Any]] = None
+    ) -> None:
         if isinstance(_obj, type) and _obj.__module__ == my_module:
             if _obj not in visited:
                 visited.add(_obj)
@@ -315,7 +317,15 @@ def update_forward_references(
         elif isinstance(_obj, FunctionType) and _obj.__module__ == my_module:
             _update_annotations(_obj, local_ns)
 
-    def _update_annotations(_obj: Any, local_ns: Optional[Dict[str, Any]]) -> None:
+    def _update_annotations(
+        _obj: Union[type, FunctionType], local_ns: Optional[Dict[str, Any]]
+    ) -> None:
+        # unwrap the object to get the underlying function, if applicable
+        while isinstance(_obj, FunctionType):
+            try:
+                _obj = _obj.__wrapped__  # type: ignore
+            except AttributeError:
+                break
         annotations = get_type_hints(
             _obj, globalns=getattr(_obj, "__globals__", globals_), localns=local_ns
         )
