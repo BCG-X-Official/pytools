@@ -68,7 +68,7 @@ except ImportError:
         rawsource: str
 
         # noinspection SpellCheckingInspection
-        def astext(self) -> str:
+        def astext(self) -> str:  # type: ignore
             ...
 
     Sphinx = type("Sphinx", (object,), {})
