@@ -128,7 +128,7 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
             if axis_arg is None:
                 return None
             else:
-                arr = np.array(axis_arg)
+                arr = np.asarray(axis_arg)
                 if arr.ndim != 1:
                     raise ValueError(
                         f"arg {arg_name_}[{axis}] must be a 1d array, but has "

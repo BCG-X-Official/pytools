@@ -16,8 +16,8 @@ license = "Apache Software License v2.0"
 requires = [
     "joblib            >=0.14,<2a",
     "matplotlib        ~=3.0",
-    "numpy             >=1.21,<2a",
-    "pandas            >=0.24,<2a",
+    "numpy             >=1.21,<2a",  # cannot use ~= due to conda bug
+    "pandas            >=1",
     "scipy             ~=1.2",
     "typing_inspect    ~=0.4",
     "typing_extensions ~=4.0",
@@ -44,10 +44,7 @@ classifiers = [
 [tool.flit.metadata.requires-extra]
 testing = [
     "pytest ~= 7.1",
-    "pytest-cov ~= 2.8",
-    "flake8 ~= 3.8",
-    "flake8-comprehensions ~= 3.2",
-    "isort ~= 5.5",
+    "pytest-cov ~= 2.12",
 ]
 docs = [
     "sphinx ~= 4.5",
@@ -74,8 +71,8 @@ no-binary.min = ["matplotlib"]
 joblib            = "~=0.14.0"
 matplotlib        = "~=3.0.3"
 numpy             = "==1.21.6"  # cannot use ~= due to conda bug
-pandas            = "~=0.24.2"
-python            = "==3.7.12"  # cannot use ~= due to conda bug
+pandas            = "~=1.0.5"
+python            = ">=3.7.12,<3.8a"    # cannot use ~= due to conda bug
 scipy             = "~=1.2.1"
 typing_inspect    = "~=0.4.0"
 typing_extensions = "~=4.0.0"
@@ -84,8 +81,8 @@ typing_extensions = "~=4.0.0"
 # maximum requirements of gamma-pytools
 joblib            = "~=1.1"
 matplotlib        = "~=3.5"
-numpy             = ">=1.23,<2a"  # cannot use ~= due to conda bug
-pandas            = "~=1.4"
+numpy             = ">=1.24,<2a"  # cannot use ~= due to conda bug
+pandas            = "~=2.0"
 python            = ">=3.9,<4a"   # cannot use ~= due to conda bug
 scipy             = "~=1.8"
 typing_inspect    = "~=0.7"
