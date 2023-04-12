@@ -17,7 +17,7 @@ requires = [
     "joblib         >=0.14,<2a",
     "matplotlib     ~=3.0",
     "numpy          >=1.21,<2a",  # cannot use ~= due to conda bug
-    "pandas         >=0.24,<2a",
+    "pandas         >=0.24",
     "scipy          ~=1.2",
     "typing_inspect ~=0.4",
 ]
