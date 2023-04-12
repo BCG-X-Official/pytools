@@ -207,10 +207,7 @@ def setup(app: Sphinx) -> None:
     )
 
     # todo: move this class to package pytools.sphinx.util once we release pytools 2.1
-    class TrackCurrentDoc(
-        AutodocProcessSignature,  # type: ignore
-        metaclass=SingletonABCMeta,
-    ):
+    class TrackCurrentDoc(AutodocProcessSignature, metaclass=SingletonABCMeta):
         """
         Keep track of the class currently being processed by autodoc.
 
@@ -241,11 +238,10 @@ def setup(app: Sphinx) -> None:
 
         def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
             self.rtv.connect(app, priority)
-            return cast(int, super().connect(app, priority))
+            return super().connect(app, priority)
 
     class RenamePrivateArguments(
-        AutodocBeforeProcessSignature,  # type: ignore
-        metaclass=SingletonABCMeta,
+        AutodocBeforeProcessSignature, metaclass=SingletonABCMeta
     ):
         """
         Rename private argument names to their original names given in the source code.

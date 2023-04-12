@@ -32,8 +32,15 @@ CMD_SPHINX_AUTOGEN = "sphinx-autogen"
 DIR_SPHINX_BASE = os.path.dirname(os.path.realpath(__file__))
 DIR_REPO_ROOT = os.path.dirname(DIR_SPHINX_ROOT)
 DIR_REPO_PARENT = os.path.dirname(DIR_REPO_ROOT)
-PROJECT_NAME = os.path.split(os.path.realpath(DIR_REPO_ROOT))[1]
 DIR_PACKAGE_SRC = os.path.join(DIR_REPO_ROOT, "src")
+# get all subdirectories of DIR_PACKAGE_SRC
+PACKAGE_NAMES = [
+    package
+    for package in os.listdir(DIR_PACKAGE_SRC)
+    if os.path.isdir(os.path.join(DIR_PACKAGE_SRC, package))
+]
+assert len(PACKAGE_NAMES) == 1, "only one package per Sphinx build is supported"
+PROJECT_NAME = PACKAGE_NAMES[0]
 DIR_DOCS = os.path.join(DIR_REPO_ROOT, "docs")
 DIR_DOCS_VERSION = os.path.join(DIR_DOCS, "docs-version")
 DIR_SPHINX_SOURCE = os.path.join(DIR_SPHINX_ROOT, "source")
@@ -267,7 +274,7 @@ class FetchPkgVersions(Command):
         with open(FILE_JS_VERSIONS, "wt") as f:
             f.write(version_data_as_js)
 
-        log(f"Version data written to: {FILE_JS_VERSIONS}")
+        log(f"Version data written to: {FILE_JS_VERSIONS!r}")
 
 
 class PrepareDocsDeployment(Command):
@@ -294,14 +301,17 @@ class PrepareDocsDeployment(Command):
 
     @staticmethod
     def _copy_new_documentation() -> None:
-        log("Adding new documentation to documentation version history")
-
-        os.makedirs(DIR_DOCS_VERSION, exist_ok=True)
-
         dir_docs_current_version = os.path.join(
             DIR_DOCS_VERSION,
             version_string_to_url(PACKAGE_VERSION),
         )
+
+        log(
+            f"Copying new documentation from {DIR_SPHINX_BUILD_HTML!r} "
+            f"to documentation version history at {dir_docs_current_version!r}"
+        )
+
+        os.makedirs(DIR_DOCS_VERSION, exist_ok=True)
 
         if os.path.exists(dir_docs_current_version):
             # remove a previous version of the same documentation if it exists
@@ -324,8 +334,8 @@ class PrepareDocsDeployment(Command):
             old_versions_js = os.path.join(d, FILE_JS_VERSIONS_RELATIVE)
             if old_versions_js != new_versions_js:
                 log(
-                    "Copying versions.js file from "
-                    f"'{new_versions_js}' to '{old_versions_js}'"
+                    "Copying 'versions.js' file from "
+                    f"{new_versions_js!r} to {old_versions_js!r}"
                 )
                 shutil.copyfile(src=new_versions_js, dst=old_versions_js)
 
@@ -336,6 +346,12 @@ class PrepareDocsDeployment(Command):
         dir_latest_version = os.path.join(
             DIR_DOCS_VERSION, version_string_to_url(get_versions().latest_version)
         )
+
+        log(
+            f"Copying latest documentation from {dir_latest_version!r} "
+            f"to documentation root at {DIR_DOCS!r}"
+        )
+
         shutil.copytree(src=dir_latest_version, dst=DIR_DOCS, dirs_exist_ok=True)
 
     @staticmethod
@@ -343,11 +359,14 @@ class PrepareDocsDeployment(Command):
         # remove .buildinfo which interferes with GitHub Pages build
         file_build_info = os.path.join(DIR_DOCS, ".buildinfo")
         if os.path.exists(file_build_info):
+            log(f"Removing file {file_build_info!r}")
             os.remove(file_build_info)
 
         # create empty file to signal that no GitHub auto-rendering is required
         # noinspection SpellCheckingInspection
-        open(os.path.join(DIR_DOCS, ".nojekyll"), "a").close()
+        file_no_jekyll = os.path.join(DIR_DOCS, ".nojekyll")
+        log(f"Creating empty file {file_no_jekyll!r}")
+        open(file_no_jekyll, "a").close()
 
 
 class Html(Command):
