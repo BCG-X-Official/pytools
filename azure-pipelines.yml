@@ -153,10 +153,15 @@ stages:
               targetType: 'inline'
               script: |
                 set -eux
-                eval "$(conda shell.bash hook)"
 
-                conda env create
-                conda activate $(project_name)-develop
+                # install micromamba
+                curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+                export MAMBA_ROOT_PREFIX=~/micromamba
+                eval "$(./bin/micromamba shell hook -s posix)"
+
+                # install the develop environment
+                micromamba env create --yes --file environment.yml
+                micromamba activate $(project_name)-develop
 
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/src/
                 export RUN_PACKAGE_VERSION_TEST=$(project_name)
@@ -642,14 +647,18 @@ stages:
               targetType: 'inline'
               script: |
                 set -eux
-                eval "$(conda shell.bash hook)"
 
                 cd $(System.DefaultWorkingDirectory)/$(project_root)
                 echo "Checking out $(branchName)"
                 git checkout $(branchName)
 
-                conda env create
-                conda activate $(project_name)-develop
+                # install micromamba
+                curl -Ls https://micro.mamba.pm/api/micromamba/linux-64/latest | tar -xvj bin/micromamba
+                export MAMBA_ROOT_PREFIX=~/micromamba
+                eval "$(./bin/micromamba shell hook -s posix)"
+                # install the develop environment
+                micromamba env create --yes --file environment.yml
+                micromamba activate $(project_name)-develop
 
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/$(project_root)/src/
 
@@ -662,7 +671,7 @@ stages:
               targetType: 'inline'
               script: |
                 set -eux
-                eval "$(conda shell.bash hook)"
+                eval "$(./bin/micromamba shell hook -s posix)"
 
                 # install the tree utility
                 sudo apt-get install tree
@@ -676,7 +685,7 @@ stages:
 
                 mkdir -p $(System.DefaultWorkingDirectory)/$(project_root)/sphinx/build/
 
-                conda activate $(project_name)-develop
+                micromamba activate $(project_name)-develop
                 python sphinx/make.py prepare_docs_deployment
 
                 echo "Current docs contents:"
