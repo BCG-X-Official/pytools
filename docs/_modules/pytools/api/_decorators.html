@@ -161,6 +161,7 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span> <span class="nn">pytools.api._alltracker</span> <span class="kn">import</span> <span class="n">AllTracker</span>
@@ -186,7 +187,7 @@
 
 
 <div class="viewcode-block" id="inheritdoc"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.inheritdoc.html#pytools.api.inheritdoc">[docs]</a><span class="k">def</span> <span class="nf">inheritdoc</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">match</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T_Type</span><span class="p">],</span> <span class="n">T_Type</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class decorator to inherit docstrings of overridden methods.</span>
 
 <span class="sd">    Usage:</span>
@@ -198,7 +199,7 @@
 <span class="sd">          \&quot;&quot;&quot;</span><span class="n">Some</span> <span class="n">documentation</span>\<span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">          # …</span>
 
-<span class="s2">      @inheritdoc(match=&quot;[see superclass]&quot;)</span>
+<span class="s2">      @inheritdoc(match=</span><span class="se">\&quot;</span><span class="s2">&quot;&quot;[see superclass]</span><span class="se">\&quot;</span><span class="s2">&quot;&quot;)</span>
 <span class="s2">      class B(A):</span>
 <span class="s2">          def my_function(self) -&gt; None:</span>
 <span class="s2">          </span><span class="se">\&quot;</span><span class="s2">&quot;&quot;[see superclass]</span><span class="se">\&quot;</span><span class="s2">&quot;&quot;</span>
@@ -212,8 +213,8 @@
 <span class="s2">    docstring of the overridden function of the same name, or with ``None`` if no</span>
 <span class="s2">    overridden function exists, or if that function has no docstring.</span>
 
-<span class="s2">    :param match: the parent docstring will be inherited if the current docstring</span>
-<span class="s2">        is equal to match</span>
+<span class="s2">    :param match: the exact text a docstring has to match in order to be replaced</span>
+<span class="s2">        by the parent&#39;s docstring</span>
 <span class="s2">    :return: the parameterized decorator</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
@@ -250,11 +251,16 @@
 <div class="viewcode-block" id="subsdoc"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.subsdoc.html#pytools.api.subsdoc">[docs]</a><span class="k">def</span> <span class="nf">subsdoc</span><span class="p">(</span>
     <span class="o">*</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">replacement</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">using</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="n">T</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decorator for substituting parts of an object&#39;s docstring.</span>
 
 <span class="sd">    Matches the given pattern in the docstring, and substitutes it with the given</span>
 <span class="sd">    replacement string (analogous to :func:`re.sub`).</span>
+
+<span class="sd">    Prior to matching, the docstring is *de-dented*, i.e. the indentation of the</span>
+<span class="sd">    first line is removed from all lines. This ensures that docstrings that are</span>
+<span class="sd">    indented to align with the opening triple quotes are matched correctly, regardless</span>
+<span class="sd">    of the indentation level.</span>
 
 <span class="sd">    :param pattern: a regular expression for the pattern to match</span>
 <span class="sd">    :param replacement: the replacement for substrings matching the pattern</span>
@@ -270,11 +276,12 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;docstring of </span><span class="si">{</span><span class="n">origin</span><span class="si">!r}</span><span class="s2"> is not a string: </span><span class="si">{</span><span class="n">docstring_original</span><span class="si">!r}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
-        <span class="n">docstring_substituted</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">docstring_original</span><span class="p">)</span>
+        <span class="n">docstring_dedented</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">docstring_original</span><span class="p">)</span>
+        <span class="n">docstring_substituted</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">docstring_dedented</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;subsdoc: pattern </span><span class="si">{</span><span class="n">pattern</span><span class="si">!r}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;not found in docstring </span><span class="si">{</span><span class="n">docstring_original</span><span class="si">!r}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;not found in docstring </span><span class="si">{</span><span class="n">docstring_dedented</span><span class="si">!r}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="n">_set_docstring</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">docstring_substituted</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_obj</span>

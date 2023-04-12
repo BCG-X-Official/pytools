@@ -236,7 +236,7 @@
 
 <div class="viewcode-block" id="MatrixMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixMatplotStyle.html#pytools.viz.matrix.MatrixMatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatrixMatplotStyle</span><span class="p">(</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="n">ColorbarMatplotStyle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matplot style for matrices.</span>
 
 <span class="sd">    Numerical values of matrix cells are rendered as colors from a color map,</span>
@@ -272,7 +272,7 @@
         <span class="c1">#       fixed</span>
         <span class="n">nan_substitute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param cell_format: format for annotating each matrix cell with</span>
 <span class="sd">            its value if sufficient space is available (optional – do not annotate</span>
 <span class="sd">            cells if omitted);</span>
@@ -287,7 +287,7 @@
             <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">cell_format</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cell_format</span><span class="p">,</span> <span class="n">Formatter</span><span class="p">):</span>
             <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">cell_format</span>
-        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">cell_format</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">callable</span><span class="p">(</span><span class="n">cell_format</span><span class="p">):</span>
             <span class="n">cell_formatter</span> <span class="o">=</span> <span class="n">FuncFormatter</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">cell_format</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -329,7 +329,7 @@
             <span class="n">Optional</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]],</span>
         <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
         <span class="n">colors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colors</span>
 
@@ -507,7 +507,7 @@
         <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">name_labels</span><span class="o">=</span><span class="n">name_labels</span><span class="p">,</span>
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="PercentageMatrixMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.PercentageMatrixMatplotStyle.html#pytools.viz.matrix.PercentageMatrixMatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PercentageMatrixMatplotStyle</span><span class="p">(</span><span class="n">MatrixMatplotStyle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A matrix plot where all values are percentages.</span>
 
 <span class="sd">    Annotates matrix cells with percentage values.</span>
@@ -557,7 +557,7 @@
         <span class="n">colormap_normalize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Normalize</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">nan_substitute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param nan_substitute: the value to look up in the colormap for undefined matrix</span>
 <span class="sd">            cells (default: 0.0)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -574,7 +574,7 @@
             <span class="n">colorbar_major_formatter</span><span class="o">=</span><span class="n">PercentageFormatter</span><span class="p">(),</span>
             <span class="n">colorbar_minor_formatter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">cell_format</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0995</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.0995</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">),</span>
         <span class="p">)</span>
 
@@ -586,13 +586,13 @@
 
 <div class="viewcode-block" id="PercentageMatrixMatplotStyle.get_default_style_name"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.PercentageMatrixMatplotStyle.html#pytools.viz.matrix.PercentageMatrixMatplotStyle.get_default_style_name">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_default_style_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_default_style_name</span><span class="p">()</span><span class="si">}</span><span class="s2">%&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="MatrixReportStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixReportStyle.html#pytools.viz.matrix.MatrixReportStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatrixReportStyle</span><span class="p">(</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="n">TextStyle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Text report style for matrices.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -610,7 +610,7 @@
         <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">name_labels</span><span class="o">=</span><span class="n">name_labels</span><span class="p">,</span> <span class="n">weight_label</span><span class="o">=</span><span class="n">weight_label</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
@@ -635,7 +635,7 @@
             <span class="n">Optional</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]],</span>
         <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_axis_marks</span><span class="p">(</span>
             <span class="n">axis_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span>
@@ -675,7 +675,7 @@
 
 <div class="viewcode-block" id="MatrixDrawer"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatrixDrawer</span><span class="p">(</span><span class="n">Drawer</span><span class="p">[</span><span class="n">Matrix</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">MatrixStyle</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drawer for matrices of numerical values.</span>
 
 <span class="sd">    Supports the following pre-defined styles:</span>
@@ -691,14 +691,14 @@
     <span class="n">style</span><span class="p">:</span> <span class="n">MatrixStyle</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">MatrixStyle</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param style: the style to be used for drawing (default: ``&quot;matplot&quot;``)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MatrixDrawer.get_style_classes"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer.get_style_classes">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_style_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">MatrixStyle</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">MatrixMatplotStyle</span><span class="p">,</span>
             <span class="n">PercentageMatrixMatplotStyle</span><span class="p">,</span>
@@ -706,7 +706,7 @@
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="MatrixDrawer.get_style_kwargs"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/matrix/pytools.viz.matrix.MatrixDrawer.html#pytools.viz.matrix.MatrixDrawer.get_style_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_style_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Matrix</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">name_labels</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name_labels</span><span class="p">,</span>
             <span class="n">weight_label</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">value_label</span><span class="p">,</span>

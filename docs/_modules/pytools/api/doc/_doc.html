@@ -213,21 +213,21 @@
 
 
 <div class="viewcode-block" id="APIDefinition"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.APIDefinition.html#pytools.api.doc.APIDefinition">[docs]</a><span class="k">class</span> <span class="nc">APIDefinition</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A reference to the definition of an API element, e.g., a module, class, or function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this API element.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">public_module</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The public module that exposes the API definition.</span>
 <span class="sd">        This may not necessarily be the same as the module in which the element</span>
 <span class="sd">        is actually defined.</span>
@@ -236,7 +236,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The full name of this API element, including the full module name and containing</span>
 <span class="sd">        element names.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -244,12 +244,12 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The docstring of this API element; ``None`` if the docstring is undefined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="APIDefinition.list_documented_parameters"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.APIDefinition.html#pytools.api.doc.APIDefinition.list_documented_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">list_documented_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract all documented parameter names from the docstring, including</span>
 <span class="sd">        ``&quot;return&quot;`` if the return parameter is documented.</span>
 
@@ -275,7 +275,7 @@
 
 <div class="viewcode-block" id="ModuleDefinition"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.ModuleDefinition.html#pytools.api.doc.ModuleDefinition">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ModuleDefinition</span><span class="p">(</span><span class="n">APIDefinition</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A reference to a Python module definition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -283,39 +283,39 @@
     <span class="n">module</span><span class="p">:</span> <span class="n">ModuleType</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param module: the module</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">module</span> <span class="o">=</span> <span class="n">module</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="vm">__name__</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">public_module</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="o">.</span><span class="vm">__doc__</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">module</span><span class="si">!r}</span><span class="s2">)&quot;</span></div>
 
 
 <div class="viewcode-block" id="NamedElementDefinition"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.NamedElementDefinition.html#pytools.api.doc.NamedElementDefinition">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">NamedElementDefinition</span><span class="p">(</span><span class="n">APIDefinition</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_Type</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A reference to a Python class or function definition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -323,7 +323,7 @@
     <span class="n">element</span><span class="p">:</span> <span class="n">T_Type</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="n">T_Type</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">public_module</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param element: the API element</span>
 <span class="sd">        :param public_module: the public module exposing the element; this can be</span>
 <span class="sd">            different from a private module containing the actual definition of the</span>
@@ -334,23 +334,23 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="vm">__name__</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">public_module</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_public_module</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="n">element</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_public_module</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">element</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">docstring</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">element</span><span class="o">.</span><span class="vm">__doc__</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -361,7 +361,7 @@
 
 
 <div class="viewcode-block" id="FunctionDefinition"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.FunctionDefinition.html#pytools.api.doc.FunctionDefinition">[docs]</a><span class="k">class</span> <span class="nc">FunctionDefinition</span><span class="p">(</span><span class="n">NamedElementDefinition</span><span class="p">[</span><span class="n">FunctionType</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A reference to a Python function definition.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -374,7 +374,7 @@
 <div class="viewcode-block" id="FunctionDefinition.list_actual_parameters"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.FunctionDefinition.html#pytools.api.doc.FunctionDefinition.list_actual_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">list_actual_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">include_return</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">convert_private</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract all parameter names from the function signature</span>
 
 <span class="sd">        :param include_return: if ``True``, include ``return`` as final parameter</span>
@@ -415,14 +415,14 @@
 
 
 <div class="viewcode-block" id="DocTest"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest">[docs]</a><span class="k">class</span> <span class="nc">DocTest</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A test to be run on the documentation of all API elements, including docstrings and</span>
 <span class="sd">    type hints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DocTest.test"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest.test">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">APIDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test the given definition.</span>
 
 <span class="sd">        :param definition: the definition to test</span>
@@ -437,12 +437,12 @@
 
 <div class="viewcode-block" id="HasDocstring"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasDocstring.html#pytools.api.doc.HasDocstring">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">HasDocstring</span><span class="p">(</span><span class="n">DocTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Test that the definition&#39;s docstring exists and is not empty.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HasDocstring.test"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasDocstring.html#pytools.api.doc.HasDocstring.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">APIDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">doc</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">docstring</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">doc</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="ow">and</span> <span class="n">definition</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s2">&quot;__init__&quot;</span><span class="p">:</span>
@@ -453,12 +453,12 @@
 
 <div class="viewcode-block" id="HasMatchingParameterDoc"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasMatchingParameterDoc.html#pytools.api.doc.HasMatchingParameterDoc">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">HasMatchingParameterDoc</span><span class="p">(</span><span class="n">DocTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if parameters match between a callable&#39;s signature and its docstring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HasMatchingParameterDoc.test"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasMatchingParameterDoc.html#pytools.api.doc.HasMatchingParameterDoc.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">APIDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">FunctionDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -482,12 +482,12 @@
 
 <div class="viewcode-block" id="HasWellFormedDocstring"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasWellFormedDocstring.html#pytools.api.doc.HasWellFormedDocstring">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">HasWellFormedDocstring</span><span class="p">(</span><span class="n">DocTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the given element has a well-formed docstring.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HasWellFormedDocstring.test"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasWellFormedDocstring.html#pytools.api.doc.HasWellFormedDocstring.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">APIDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="n">docstring</span> <span class="o">=</span> <span class="n">definition</span><span class="o">.</span><span class="n">docstring</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">docstring</span><span class="p">:</span>
@@ -521,12 +521,12 @@
 
 <div class="viewcode-block" id="HasTypeHints"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasTypeHints.html#pytools.api.doc.HasTypeHints">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">HasTypeHints</span><span class="p">(</span><span class="n">DocTest</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the given function is fully type hinted.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="HasTypeHints.test"><a class="viewcode-back" href="../../../../apidoc/pytools/api/doc/pytools.api.doc.HasTypeHints.html#pytools.api.doc.HasTypeHints.test">[docs]</a>    <span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">APIDefinition</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">definition</span><span class="p">,</span> <span class="n">FunctionDefinition</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>

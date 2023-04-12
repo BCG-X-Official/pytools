@@ -204,7 +204,7 @@
 
 <div class="viewcode-block" id="MatplotStyle"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatplotStyle</span><span class="p">(</span><span class="n">ColoredStyle</span><span class="p">[</span><span class="n">MatplotColorScheme</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class of drawing styles using `matplotlib`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -229,7 +229,7 @@
         <span class="n">colors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MatplotColorScheme</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">font_family</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param ax: optional axes object to draw on; create a new figure if not specified</span>
 <span class="sd">        %%COLORS%%</span>
 <span class="sd">        :param font_family: name of one or more fonts to use for all text, in descending</span>
@@ -259,12 +259,12 @@
 
 <div class="viewcode-block" id="MatplotStyle.get_default_style_name"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.get_default_style_name">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_default_style_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;matplot&quot;</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ax</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The matplotlib :class:`~matplotlib.axes.Axes` object on which to draw.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span>
@@ -273,7 +273,7 @@
         <span class="k">return</span> <span class="n">ax</span>
 
 <div class="viewcode-block" id="MatplotStyle.get_renderer"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.get_renderer">[docs]</a>    <span class="k">def</span> <span class="nf">get_renderer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RendererBase</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the renderer used by this style&#39;s :class:`~matplotlib.axes.Axes` object</span>
 <span class="sd">        (see :attr:`.ax`).</span>
 
@@ -296,7 +296,7 @@
         <span class="k">return</span> <span class="n">canvas_get_renderer</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="MatplotStyle.start_drawing"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.start_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">start_drawing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the title of the matplot chart to the given title, and set the p</span>
 <span class="sd">        and background color according to the color scheme.</span>
 
@@ -334,7 +334,7 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">__pytools_viz_background</span> <span class="o">=</span> <span class="n">bg_color</span></div>
 
 <div class="viewcode-block" id="MatplotStyle.finalize_drawing"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.finalize_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_drawing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># set legend color</span>
@@ -357,7 +357,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">finalize_drawing</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="MatplotStyle.apply_color_scheme"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle.apply_color_scheme">[docs]</a>    <span class="k">def</span> <span class="nf">apply_color_scheme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Apply this style&#39;s color scheme to the given :class:`~matplotlib.axes.Axes`.</span>
 
 <span class="sd">        Style implementations can use this to apply the color scheme to sub-axes.</span>
@@ -385,7 +385,7 @@
 
 
 <div class="viewcode-block" id="ColorbarMatplotStyle"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.ColorbarMatplotStyle.html#pytools.viz.ColorbarMatplotStyle">[docs]</a><span class="k">class</span> <span class="nc">ColorbarMatplotStyle</span><span class="p">(</span><span class="n">MatplotStyle</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    `matplotlib` style with added support for a color bar.</span>
 
 <span class="sd">    The plot uses a color map to indicate a scalar value,</span>
@@ -409,7 +409,7 @@
         <span class="n">colorbar_major_formatter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Formatter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">colorbar_minor_formatter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Formatter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object</span>
 <span class="sd">            that maps values to color indices; unless otherwise specified, use a plain</span>
 <span class="sd">            :class:`~matplotlib.colors.Normalize` object with linear autoscaling</span>
@@ -439,18 +439,18 @@
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">color_for_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">RgbaColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[overload]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[overload]&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@overload</span>
     <span class="k">def</span> <span class="nf">color_for_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[overload]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[overload]&quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="ColorbarMatplotStyle.color_for_value"><a class="viewcode-back" href="../../../apidoc/pytools/viz/pytools.viz.ColorbarMatplotStyle.html#pytools.viz.ColorbarMatplotStyle.color_for_value">[docs]</a>    <span class="k">def</span> <span class="nf">color_for_value</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RgbaColor</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the color(s) associated with the given value(s), based on the color map and</span>
 <span class="sd">        normalization defined for this style.</span>
 
@@ -471,7 +471,7 @@
         <span class="n">colorbar_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add the color bar to the chart.</span>
 
 <span class="sd">        :param title: the chart title</span>

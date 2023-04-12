@@ -215,7 +215,7 @@
 
 <div class="viewcode-block" id="AtomicExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.AtomicExpression.html#pytools.expression.base.AtomicExpression">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AtomicExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An atomic expression.</span>
 
 <span class="sd">    Atomic expressions include literals and identifiers, and have no subexpressions.</span>
@@ -223,7 +223,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpressions_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subexpressions of this expression</span>
 <span class="sd">        (an empty tuple, as this expression is atomic).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -232,7 +232,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">text_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The text representing this atomic expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
@@ -240,14 +240,14 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">value_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The underlying value of this atomic expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">BinaryOperator</span><span class="o">.</span><span class="n">MAX_PRECEDENCE</span>
 
     <span class="k">def</span> <span class="nf">_eq_same_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">AtomicExpression</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -255,7 +255,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">value_</span>  <span class="c1"># type: ignore</span>
 
 <div class="viewcode-block" id="AtomicExpression.hash_"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.AtomicExpression.html#pytools.expression.base.AtomicExpression.hash_">[docs]</a>    <span class="k">def</span> <span class="nf">hash_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">value_</span><span class="p">))</span></div></div>
 
 
@@ -265,20 +265,20 @@
 
 
 <div class="viewcode-block" id="SingletonExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.SingletonExpression.html#pytools.expression.base.SingletonExpression">[docs]</a><span class="k">class</span> <span class="nc">SingletonExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression with a single subexpression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">subexpression_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subexpression of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpressions_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A tuple with this expression&#39;s subexpression as its only element.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subexpression_</span><span class="p">,)</span></div>
@@ -291,7 +291,7 @@
 
 <div class="viewcode-block" id="BracketPair"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.BracketPair.html#pytools.expression.base.BracketPair">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BracketPair</span><span class="p">(</span><span class="n">HasExpressionRepr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A pair of brackets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -310,7 +310,7 @@
     <span class="n">closing</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opening</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">closing</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param opening: the opening bracket</span>
 <span class="sd">        :param closing: the closing bracket</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -318,7 +318,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">closing</span> <span class="o">=</span> <span class="n">closing</span>
 
 <div class="viewcode-block" id="BracketPair.to_expression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.BracketPair.html#pytools.expression.base.BracketPair.to_expression">[docs]</a>    <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..atomic</span> <span class="kn">import</span> <span class="n">Id</span>
 
         <span class="k">return</span> <span class="n">Id</span><span class="p">(</span><span class="n">BracketPair</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)(</span><span class="n">opening</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">opening</span><span class="p">,</span> <span class="n">closing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">closing</span><span class="p">)</span></div></div>
@@ -332,12 +332,12 @@
 
 <div class="viewcode-block" id="BracketedExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.BracketedExpression.html#pytools.expression.base.BracketedExpression">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BracketedExpression</span><span class="p">(</span><span class="n">SingletonExpression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An expression surrounded by brackets.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brackets</span><span class="p">:</span> <span class="n">BracketPair</span><span class="p">,</span> <span class="n">subexpression</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param brackets: the brackets enclosing this expression&#39;s subexpressions</span>
 <span class="sd">        :param subexpression: the subexpression enclosed by brackets</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -347,25 +347,25 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">brackets_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BracketPair</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The brackets enclosing this expression&#39;s subexpressions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_brackets</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpression_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subexpression enclosed by the brackets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subexpression</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Operator</span><span class="o">.</span><span class="n">MAX_PRECEDENCE</span>
 
 <div class="viewcode-block" id="BracketedExpression.hash_"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.BracketedExpression.html#pytools.expression.base.BracketedExpression.hash_">[docs]</a>    <span class="k">def</span> <span class="nf">hash_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">((</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">brackets_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subexpression_</span><span class="o">.</span><span class="n">hash_</span><span class="p">()))</span></div>
 
     <span class="k">def</span> <span class="nf">_eq_same_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">BracketedExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -375,14 +375,14 @@
 
 
 <div class="viewcode-block" id="CollectionLiteral"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.CollectionLiteral.html#pytools.expression.base.CollectionLiteral">[docs]</a><span class="k">class</span> <span class="nc">CollectionLiteral</span><span class="p">(</span><span class="n">BracketedExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A collection literal, e.g., a list, set, tuple, or dictionary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_elements</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">brackets</span><span class="p">:</span> <span class="n">BracketPair</span><span class="p">,</span> <span class="n">elements</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param brackets: the brackets enclosing the collection</span>
 <span class="sd">        :param elements: the elements of the collection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -406,7 +406,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpression_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The subexpression representing the element(s) of this collection literal</span>
 
 <span class="sd">        - an :class:`.Epsilon` expression for an empty collection</span>
@@ -418,7 +418,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">elements_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The expression(s) representing the elements of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_elements</span></div>
@@ -431,19 +431,19 @@
 
 <div class="viewcode-block" id="Operation"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.Operation.html#pytools.expression.base.Operation">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="n">Expression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for operation expressions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpressions_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Expression&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">operands_</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">operator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Operator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The operator of this operation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
@@ -451,7 +451,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">operands_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The operands of this operation; same as :attr:`subexpressions_`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
@@ -464,7 +464,7 @@
 
 <div class="viewcode-block" id="PrefixExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.PrefixExpression.html#pytools.expression.base.PrefixExpression">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PrefixExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A prefix expression.</span>
 
 <span class="sd">    Combines a prefix and a subexpression, optionally separated by one or more</span>
@@ -474,14 +474,14 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">prefix_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The prefix of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        One or more characters separating the prefix and the subexpression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
@@ -489,14 +489,14 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">body_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The body of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">subexpressions_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        A tuple containing the prefix and the body of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_</span>
@@ -505,7 +505,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span><span class="o">.</span><span class="n">eq_</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">prefix_</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_</span><span class="o">.</span><span class="n">eq_</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">body_</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PrefixExpression.hash_"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.PrefixExpression.html#pytools.expression.base.PrefixExpression.hash_">[docs]</a>    <span class="k">def</span> <span class="nf">hash_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
             <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span><span class="o">.</span><span class="n">hash_</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_</span><span class="o">.</span><span class="n">hash_</span><span class="p">())</span>
         <span class="p">)</span></div></div>
@@ -513,12 +513,12 @@
 
 <div class="viewcode-block" id="SimplePrefixExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.SimplePrefixExpression.html#pytools.expression.base.SimplePrefixExpression">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SimplePrefixExpression</span><span class="p">(</span><span class="n">PrefixExpression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract base implementation of simple prefix expressions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param prefix: the prefix of the expression</span>
 <span class="sd">        :param body: the body of the expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -528,18 +528,18 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">prefix_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_body</span></div>
 
 
 <div class="viewcode-block" id="Invocation"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.Invocation.html#pytools.expression.base.Invocation">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Invocation</span><span class="p">(</span><span class="n">PrefixExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An invocation in the shape of ``&lt;expression&gt;(&lt;expression&gt;)`` or</span>
 <span class="sd">    ``&lt;expression&gt;[&lt;expression&gt;]``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -547,7 +547,7 @@
     <span class="n">_PRECEDENCE</span> <span class="o">=</span> <span class="n">BinaryOperator</span><span class="o">.</span><span class="n">DOT</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">brackets</span><span class="p">:</span> <span class="n">BracketPair</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param prefix: the expression representing the object being invoked</span>
 <span class="sd">        :param brackets: the brackets surrounding the invocation argument(s)</span>
 <span class="sd">        :param args: the invocation argument(s); can also be an empty iterable</span>
@@ -558,19 +558,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">prefix_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">body_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CollectionLiteral</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The expression representing the arguments enclosed by brackets.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_invocation</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Invocation</span><span class="o">.</span><span class="n">_PRECEDENCE</span></div>
 
 
@@ -581,20 +581,20 @@
 
 <div class="viewcode-block" id="InfixExpression"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.InfixExpression.html#pytools.expression.base.InfixExpression">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">InfixExpression</span><span class="p">(</span><span class="n">Expression</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An infix expression, separating any number of subexpressions with an infix symbol.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">infix_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BinaryOperator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The infix used to separate this expression&#39;s subexpressions.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="InfixExpression.hash_"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/base/pytools.expression.base.InfixExpression.html#pytools.expression.base.InfixExpression.hash_">[docs]</a>    <span class="k">def</span> <span class="nf">hash_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span>

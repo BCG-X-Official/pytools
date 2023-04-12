@@ -199,7 +199,7 @@
 
 <div class="viewcode-block" id="DendrogramDrawer"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramDrawer.html#pytools.viz.dendrogram.DendrogramDrawer">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DendrogramDrawer</span><span class="p">(</span><span class="n">Drawer</span><span class="p">[</span><span class="n">LinkageTree</span><span class="p">,</span> <span class="n">DendrogramStyle</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draws dendrogram representations of :class:`.LinkageTree` objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -207,19 +207,19 @@
     <span class="n">style</span><span class="p">:</span> <span class="n">DendrogramStyle</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">DendrogramStyle</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DendrogramDrawer.get_style_classes"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramDrawer.html#pytools.viz.dendrogram.DendrogramDrawer.get_style_classes">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_style_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">DendrogramStyle</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">DendrogramMatplotStyle</span><span class="p">,</span>
             <span class="n">DendrogramReportStyle</span><span class="p">,</span>
         <span class="p">]</span></div>
 
 <div class="viewcode-block" id="DendrogramDrawer.get_style_kwargs"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramDrawer.html#pytools.viz.dendrogram.DendrogramDrawer.get_style_kwargs">[docs]</a>    <span class="k">def</span> <span class="nf">get_style_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">LinkageTree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="n">leaf_label</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">leaf_label</span><span class="p">,</span>
             <span class="n">distance_label</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">distance_label</span><span class="p">,</span>

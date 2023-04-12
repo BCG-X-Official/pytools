@@ -225,7 +225,7 @@
         <span class="n">rawsource</span><span class="p">:</span> <span class="nb">str</span>
 
         <span class="c1"># noinspection SpellCheckingInspection</span>
-        <span class="k">def</span> <span class="nf">astext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">astext</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
             <span class="o">...</span>
 
     <span class="n">Sphinx</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="s2">&quot;Sphinx&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">object</span><span class="p">,),</span> <span class="p">{})</span>
@@ -259,11 +259,11 @@
 <span class="p">]</span>
 
 <span class="c1">#</span>
-<span class="c1"># Type aliases</span>
+<span class="c1"># Type variables</span>
 <span class="c1">#</span>
 
-<span class="n">method_descriptor</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;startswith&quot;</span><span class="p">])</span>
-<span class="n">wrapper_descriptor</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;__add__&quot;</span><span class="p">])</span>
+<span class="n">method_descriptor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">)</span>
+<span class="n">wrapper_descriptor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="fm">__add__</span><span class="p">)</span>
 
 
 <span class="c1">#</span>
@@ -284,14 +284,14 @@
 
 <div class="viewcode-block" id="AddInheritance"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.AddInheritance.html#pytools.sphinx.util.AddInheritance">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">AddInheritance</span><span class="p">(</span><span class="n">AutodocProcessDocstring</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add list of base classes as the first line of the docstring.</span>
 
 <span class="sd">    Ignore builtin classes and classes that have already been visited once before.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collapsible_submodules</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param collapsible_submodules: mapping of submodule paths to shorter</span>
 <span class="sd">            *(collapsed)* versions they should be replaced with</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -317,7 +317,7 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">what</span> <span class="o">!=</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
             <span class="k">return</span>
@@ -471,7 +471,7 @@
 
 
 <div class="viewcode-block" id="CollapseModulePaths"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePaths.html#pytools.sphinx.util.CollapseModulePaths">[docs]</a><span class="k">class</span> <span class="nc">CollapseModulePaths</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace private module paths with their public prefix so that object references</span>
 <span class="sd">    can be matched by *intersphinx*.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -492,7 +492,7 @@
         <span class="n">collapsible_submodules</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="n">collapse_private_modules</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param collapsible_submodules: mapping from module paths to their public</span>
 <span class="sd">            prefix, e.g., ``{&quot;pandas.core.frame&quot;: &quot;pandas&quot;}``</span>
 <span class="sd">        :param collapse_private_modules: if ``True``, collapse module sub-paths</span>
@@ -518,7 +518,7 @@
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="CollapseModulePaths.collapse_module_paths"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePaths.html#pytools.sphinx.util.CollapseModulePaths.collapse_module_paths">[docs]</a>    <span class="k">def</span> <span class="nf">collapse_module_paths</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In the given line, replace all module paths with their collapsed version.</span>
 
 <span class="sd">        :param line: the line in which to collapse module paths</span>
@@ -564,7 +564,7 @@
 
 <div class="viewcode-block" id="CollapseModulePathsInDocstring"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePathsInDocstring.html#pytools.sphinx.util.CollapseModulePathsInDocstring">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CollapseModulePathsInDocstring</span><span class="p">(</span><span class="n">CollapseModulePaths</span><span class="p">,</span> <span class="n">AutodocProcessDocstring</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace private module paths in docstrings with their public prefix so that object</span>
 <span class="sd">    references can be matched by *intersphinx*.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -578,7 +578,7 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
             <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">collapse_module_paths</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
@@ -591,7 +591,7 @@
 
 <div class="viewcode-block" id="CollapseModulePathsInSignature"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePathsInSignature.html#pytools.sphinx.util.CollapseModulePathsInSignature">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CollapseModulePathsInSignature</span><span class="p">(</span><span class="n">CollapseModulePaths</span><span class="p">,</span> <span class="n">AutodocProcessSignature</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace private module paths in signatures with their public prefix so that object</span>
 <span class="sd">    references can be matched by *intersphinx*.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -606,7 +606,7 @@
         <span class="n">signature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">return_annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">signature</span> <span class="ow">or</span> <span class="n">return_annotation</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">collapse_module_paths</span><span class="p">(</span><span class="n">signature</span><span class="p">)</span> <span class="k">if</span> <span class="n">signature</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -628,7 +628,7 @@
 <div class="viewcode-block" id="CollapseModulePathsInXRef"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePathsInXRef.html#pytools.sphinx.util.CollapseModulePathsInXRef">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">CollapseModulePathsInXRef</span><span class="p">(</span><span class="n">ObjectDescriptionTransform</span><span class="p">,</span> <span class="n">CollapseModulePaths</span><span class="p">):</span>
     <span class="c1"># noinspection GrazieInspection</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace private module paths in documentation cross-references with their public</span>
 <span class="sd">    prefix so that object references can be matched by *intersphinx*, and module</span>
 <span class="sd">    paths correspond to what users are expected to use in their code.</span>
@@ -638,7 +638,7 @@
 <div class="viewcode-block" id="CollapseModulePathsInXRef.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.CollapseModulePathsInXRef.html#pytools.sphinx.util.CollapseModulePathsInXRef.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">domain</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">objtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">contentnode</span><span class="p">:</span> <span class="n">Element</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">domain</span> <span class="o">==</span> <span class="s2">&quot;py&quot;</span> <span class="ow">and</span> <span class="n">objtype</span> <span class="o">==</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_children</span><span class="p">(</span><span class="n">contentnode</span><span class="p">)</span></div>
 
@@ -678,7 +678,7 @@
 
 <div class="viewcode-block" id="SkipIndirectImports"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.SkipIndirectImports.html#pytools.sphinx.util.SkipIndirectImports">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">SkipIndirectImports</span><span class="p">(</span><span class="n">AutodocSkipMember</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Skip members imported by a private package.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -691,7 +691,7 @@
         <span class="n">skip</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip</span> <span class="ow">and</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;skipping: </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -701,7 +701,7 @@
 
 <div class="viewcode-block" id="Replace3rdPartyDoc"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.Replace3rdPartyDoc.html#pytools.sphinx.util.Replace3rdPartyDoc">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Replace3rdPartyDoc</span><span class="p">(</span><span class="n">AutodocProcessDocstring</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace 3rd party docstrings with a reference to the 3rd party documentation.</span>
 
 <span class="sd">    This is necessary for methods and attributes inherited from 3rd party packages,</span>
@@ -729,7 +729,7 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;attribute&quot;</span><span class="p">:</span>
             <span class="c1"># we cannot determine docstrings for attributes, as the object represents</span>
@@ -879,7 +879,7 @@
     <span class="k">def</span> <span class="nf">resolve_parameter</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">defining_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">TypeVar</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resolve a type parameter, substituting it with an actual type if the parameter</span>
 <span class="sd">        is bound to a type argument in the context of the current class;</span>
 <span class="sd">        otherwise return the parameter unchanged.</span>
@@ -944,7 +944,7 @@
 
 <div class="viewcode-block" id="ResolveTypeVariables"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ResolveTypeVariables</span><span class="p">(</span><span class="n">AutodocBeforeProcessSignature</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resolve type variables that can be inferred through generic class parameters or</span>
 <span class="sd">    ``self``/``cls`` special arguments.</span>
 
@@ -1137,7 +1137,7 @@
         <span class="k">return</span> <span class="n">signature_original</span>
 
 <div class="viewcode-block" id="ResolveTypeVariables.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bound_method</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
             <span class="c1"># we are starting to process a new class; remember it, so we can</span>

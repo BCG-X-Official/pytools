@@ -194,19 +194,19 @@
 
 
 <div class="viewcode-block" id="NotFittedError"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.NotFittedError.html#pytools.fit.NotFittedError">[docs]</a><span class="k">class</span> <span class="nc">NotFittedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when a fittable object was expected to be fitted but was not fitted.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="FittableMixin"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin">[docs]</a><span class="k">class</span> <span class="nc">FittableMixin</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_Data</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mix-in class that supports fitting the object to data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FittableMixin.fit"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">T_Self</span><span class="p">,</span> <span class="n">__x</span><span class="p">:</span> <span class="n">T_Data</span><span class="p">,</span> <span class="o">**</span><span class="n">fit_params</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T_Self</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fit this object to the given data.</span>
 
 <span class="sd">        :param __x: the data to fit this object to</span>
@@ -218,13 +218,13 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``True`` if this object is fitted, ``False`` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="FittableMixin.ensure_fitted"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.ensure_fitted">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Ensure that this object is not fitted.</span>
 
 <span class="sd">        :raise pytools.fit.NotFittedError: this object is not fitted</span>

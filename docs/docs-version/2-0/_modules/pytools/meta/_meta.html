@@ -193,7 +193,7 @@
 
 
 <div class="viewcode-block" id="SingletonMeta"><a class="viewcode-back" href="../../../apidoc/pytools/meta/pytools.meta.SingletonMeta.html#pytools.meta.SingletonMeta">[docs]</a><span class="k">class</span> <span class="nc">SingletonMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metaclass for singleton classes.</span>
 
 <span class="sd">    Subsequent instantiations of a singleton class return the identical object.</span>
@@ -203,7 +203,7 @@
     <span class="n">__instance_ref</span><span class="p">:</span> <span class="s2">&quot;Optional[ReferenceType[Any]]&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">SingletonMeta</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param args: arguments to be passed on to the initializer of the base metaclass</span>
 <span class="sd">        :param kwargs: keyword arguments to be passed on to the initializer of the</span>
 <span class="sd">            base metaclass</span>
@@ -212,7 +212,7 @@
         <span class="bp">cls</span><span class="o">.</span><span class="n">__instance_ref</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SingletonMeta.__call__"><a class="viewcode-back" href="../../../apidoc/pytools/meta/pytools.meta.SingletonMeta.html#pytools.meta.SingletonMeta.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">SingletonMeta</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the existing singleton instance, or create a new one if none exists yet.</span>
 
 <span class="sd">        Behind the scenes, uses a weak reference so the singleton instance can be</span>
@@ -237,7 +237,7 @@
 
 
 <div class="viewcode-block" id="SingletonABCMeta"><a class="viewcode-back" href="../../../apidoc/pytools/meta/pytools.meta.SingletonABCMeta.html#pytools.meta.SingletonABCMeta">[docs]</a><span class="k">class</span> <span class="nc">SingletonABCMeta</span><span class="p">(</span><span class="n">SingletonMeta</span><span class="p">,</span> <span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convenience metaclass combining :class:`.SingletonMeta` and :class:`~abc.ABCMeta`.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 

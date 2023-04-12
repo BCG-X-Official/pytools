@@ -188,13 +188,13 @@
 
 
 <div class="viewcode-block" id="XYSeries"><a class="viewcode-back" href="../../../../../apidoc/pytools/viz/distribution/base/pytools.viz.distribution.base.XYSeries.html#pytools.viz.distribution.base.XYSeries">[docs]</a><span class="k">class</span> <span class="nc">XYSeries</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Series of `x` and `y` coordinates for plotting; `x` and `y` values are stored in two</span>
 <span class="sd">    separate sequences of the same length.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param x: series of all `x` coordinate values</span>
 <span class="sd">        :param y: series of all `y` coordinate values</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -210,7 +210,7 @@
 
 
 <div class="viewcode-block" id="ECDF"><a class="viewcode-back" href="../../../../../apidoc/pytools/viz/distribution/base/pytools.viz.distribution.base.ECDF.html#pytools.viz.distribution.base.ECDF">[docs]</a><span class="k">class</span> <span class="nc">ECDF</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Three sets of coordinates for plotting an ECDF: inliers, outliers, and far</span>
 <span class="sd">    outliers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -218,7 +218,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">inliers</span><span class="p">:</span> <span class="n">XYSeries</span><span class="p">,</span> <span class="n">outliers</span><span class="p">:</span> <span class="n">XYSeries</span><span class="p">,</span> <span class="n">far_outliers</span><span class="p">:</span> <span class="n">XYSeries</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param inliers: coordinates for inliers in the ECDF</span>
 <span class="sd">        :param outliers: coordinates for outliers in the ECDF</span>
 <span class="sd">        :param far_outliers: coordinates for far outliers in the ECDF</span>
@@ -229,28 +229,28 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inliers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XYSeries</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Coordinates for inliers in the ECDF.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inliers</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">outliers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XYSeries</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Coordinates for outliers in the ECDF.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outliers</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">far_outliers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">XYSeries</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Coordinates for far outliers in the ECDF.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_far_outliers</span></div>
 
 
 <div class="viewcode-block" id="ECDFStyle"><a class="viewcode-back" href="../../../../../apidoc/pytools/viz/distribution/base/pytools.viz.distribution.base.ECDFStyle.html#pytools.viz.distribution.base.ECDFStyle">[docs]</a><span class="k">class</span> <span class="nc">ECDFStyle</span><span class="p">(</span><span class="n">DrawingStyle</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base drawing style for ECDFs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

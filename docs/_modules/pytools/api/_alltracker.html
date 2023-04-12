@@ -202,7 +202,7 @@
 
 
 <div class="viewcode-block" id="AllTracker"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker">[docs]</a><span class="k">class</span> <span class="nc">AllTracker</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Track global, public items defined in a module and validate that all eligible items</span>
 <span class="sd">    have been included in the ``__all__`` variable.</span>
 
@@ -255,7 +255,7 @@
         <span class="n">allow_global_constants</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">allow_imported_definitions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param globals_: the dictionary of global variables obtained by calling</span>
 <span class="sd">            :meth:`.globals` in the current module scope</span>
 <span class="sd">        :param public_module: full name of the public module that will export the items</span>
@@ -294,7 +294,7 @@
     <span class="n">public_module</span><span class="p">:</span> <span class="nb">str</span>
 
 <div class="viewcode-block" id="AllTracker.validate"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Validate that all eligible items that were defined since the creation of this</span>
 <span class="sd">        tracker are listed in the ``__all__`` variable.</span>
 
@@ -348,7 +348,7 @@
                 <span class="n">update_forward_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">globals_</span><span class="o">=</span><span class="n">globals_</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="AllTracker.get_tracked"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.get_tracked">[docs]</a>    <span class="k">def</span> <span class="nf">get_tracked</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        List the names of all locally tracked, public items.</span>
 
 <span class="sd">        :return: the list of object names, sorted alphabetically</span>
@@ -356,7 +356,7 @@
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_is_eligible</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_globals</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="AllTracker.is_tracked"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.is_tracked">[docs]</a>    <span class="k">def</span> <span class="nf">is_tracked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the given item is tracked by this tracker under the given name.</span>
 
 <span class="sd">        :param name: the name of the item in the tracker&#39;s global namespace</span>
@@ -402,7 +402,7 @@
 
 
 <div class="viewcode-block" id="public_module_prefix"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.public_module_prefix.html#pytools.api.public_module_prefix">[docs]</a><span class="k">def</span> <span class="nf">public_module_prefix</span><span class="p">(</span><span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the public prefix of the given module name.</span>
 
 <span class="sd">    A module name is composed of one or more identifiers, separated by ``.`` operators.</span>
@@ -444,7 +444,7 @@
 <div class="viewcode-block" id="update_forward_references"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.update_forward_references.html#pytools.api.update_forward_references">[docs]</a><span class="k">def</span> <span class="nf">update_forward_references</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">],</span> <span class="o">*</span><span class="p">,</span> <span class="n">globals_</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace all forward references with their referenced classes.</span>
 
 <span class="sd">    :param obj: a function or class</span>
@@ -460,7 +460,9 @@
     <span class="c1"># keep track of classes we already visited to prevent infinite recursion</span>
     <span class="n">visited</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span>
+        <span class="n">_obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">],</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">my_module</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">_obj</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
                 <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">_obj</span><span class="p">)</span>
@@ -472,7 +474,15 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_obj</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="n">my_module</span><span class="p">:</span>
             <span class="n">_update_annotations</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_annotations</span><span class="p">(</span><span class="n">_obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_update_annotations</span><span class="p">(</span>
+        <span class="n">_obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">],</span> <span class="n">local_ns</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># unwrap the object to get the underlying function, if applicable</span>
+        <span class="k">while</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">_obj</span> <span class="o">=</span> <span class="n">_obj</span><span class="o">.</span><span class="n">__wrapped__</span>  <span class="c1"># type: ignore</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">break</span>
         <span class="n">annotations</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span>
             <span class="n">_obj</span><span class="p">,</span> <span class="n">globalns</span><span class="o">=</span><span class="nb">getattr</span><span class="p">(</span><span class="n">_obj</span><span class="p">,</span> <span class="s2">&quot;__globals__&quot;</span><span class="p">,</span> <span class="n">globals_</span><span class="p">),</span> <span class="n">localns</span><span class="o">=</span><span class="n">local_ns</span>
         <span class="p">)</span>

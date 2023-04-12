@@ -198,7 +198,7 @@
     <span class="n">Formatter</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
     <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonMeta</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats floats as a percentages with 3 digits precision, omitting trailing zeros.</span>
 
 <span class="sd">    For percentages above 100%, formats percentages as the nearest whole number.</span>
@@ -219,15 +219,15 @@
 
 <div class="viewcode-block" id="PercentageFormatter.__call__"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.PercentageFormatter.html#pytools.viz.util.PercentageFormatter.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="mf">1.0</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span> <span class="o">*</span> <span class="mf">100.0</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">%&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">%&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="mf">100.0</span><span class="p">)</span><span class="si">:</span><span class="s2">.5g</span><span class="si">}</span><span class="s2">%&quot;</span></div></div>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0</span><span class="p">)</span><span class="si">:</span><span class="s2">.5g</span><span class="si">}</span><span class="s2">%&quot;</span></div></div>
 
 
 <div class="viewcode-block" id="FittedText"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText">[docs]</a><span class="k">class</span> <span class="nc">FittedText</span><span class="p">(</span>
     <span class="n">Text</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Handle storing and drawing of text in window or data coordinates;</span>
 <span class="sd">    only render text that does not exceed the given width and height in data</span>
 <span class="sd">    coordinates.</span>
@@ -243,7 +243,7 @@
         <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param x: the `x` coordinate of the text</span>
 <span class="sd">        :param y: the `y` coordinate of the text</span>
 <span class="sd">        :param width: the maximum allowed width for this text, in data coordinates;</span>
@@ -259,7 +259,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">height</span>
 
 <div class="viewcode-block" id="FittedText.set_width"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.set_width">[docs]</a>    <span class="k">def</span> <span class="nf">set_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the maximum allowed width for this text, in data coordinates.</span>
 
 <span class="sd">        :param width: the maximum allowed width; ``None`` if width is unrestricted</span>
@@ -268,7 +268,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_width</span> <span class="o">=</span> <span class="n">width</span></div>
 
 <div class="viewcode-block" id="FittedText.get_width"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.get_width">[docs]</a>    <span class="k">def</span> <span class="nf">get_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the maximum allowed width for this text, in data coordinates.</span>
 
 <span class="sd">        :return: the maximum allowed width; ``None`` if width is unrestricted</span>
@@ -276,7 +276,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_width</span></div>
 
 <div class="viewcode-block" id="FittedText.set_height"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.set_height">[docs]</a>    <span class="k">def</span> <span class="nf">set_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the maximum allowed height for this text, in data coordinates.</span>
 
 <span class="sd">        :param height: the maximum allowed height; ``None`` if height is unrestricted</span>
@@ -285,7 +285,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_height</span> <span class="o">=</span> <span class="n">height</span></div>
 
 <div class="viewcode-block" id="FittedText.get_height"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.get_height">[docs]</a>    <span class="k">def</span> <span class="nf">get_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the maximum allowed height for this text, in data coordinates.</span>
 
 <span class="sd">        :return: the maximum allowed height; ``None`` if height is unrestricted</span>
@@ -293,7 +293,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_height</span></div>
 
 <div class="viewcode-block" id="FittedText.draw"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">renderer</span><span class="p">:</span> <span class="n">RendererBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw the text if it is visible, and if it does not exceed the maximum</span>
 <span class="sd">        width and height.</span>
 
@@ -317,7 +317,7 @@
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">renderer</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FittedText.set"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/util/pytools.viz.util.FittedText.html#pytools.viz.util.FittedText.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set multiple properties.</span>
 
 <span class="sd">        :param kwargs: the properties to set</span>

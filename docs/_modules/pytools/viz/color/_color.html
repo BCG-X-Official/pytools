@@ -268,7 +268,7 @@
 
 <div class="viewcode-block" id="ColorScheme"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.ColorScheme.html#pytools.viz.color.ColorScheme">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ColorScheme</span><span class="p">(</span><span class="n">HasExpressionRepr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A color scheme mapping semantic color designations to RGB colors,</span>
 <span class="sd">    allowing code to refer to colors by usage rather than specific RGB values.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -285,7 +285,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">foreground</span><span class="p">:</span> <span class="n">RgbColor</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="n">RgbColor</span><span class="p">,</span> <span class="o">**</span><span class="n">colors</span><span class="p">:</span> <span class="n">RgbColor</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param foreground: the p color</span>
 <span class="sd">        :param background: the background color</span>
 <span class="sd">        :param colors: additional colors as keyword arguments; one or more of %COLORS%</span>
@@ -304,21 +304,21 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">foreground</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The p color.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="n">ColorScheme</span><span class="o">.</span><span class="n">_COLOR_FOREGROUND</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">background</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The background color.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">[</span><span class="n">ColorScheme</span><span class="o">.</span><span class="n">_COLOR_BACKGROUND</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fill_1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The primary fill color.</span>
 
 <span class="sd">        Defaults to the halfway point between the foreground and background color</span>
@@ -330,7 +330,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fill_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The secondary fill color.</span>
 
 <span class="sd">        Defaults to the primary fill color if not defined explicitly.</span>
@@ -339,7 +339,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fill_3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The tertiary fill color.</span>
 
 <span class="sd">        Defaults to the primary fill color if not defined explicitly.</span>
@@ -348,7 +348,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accent_1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The primary accent color.</span>
 
 <span class="sd">        Defaults to the p color if not defined explicitly.</span>
@@ -357,7 +357,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accent_2</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The secondary accent color.</span>
 
 <span class="sd">        Defaults to the primary accent color if not defined explicitly.</span>
@@ -366,7 +366,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accent_3</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The tertiary accent color.</span>
 
 <span class="sd">        Defaults to the secondary accent color if not defined explicitly.</span>
@@ -375,7 +375,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">status_ok</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The traffic light color indicating &quot;ok&quot; status.</span>
 
 <span class="sd">        Defaults to the primary accent color if not defined explicitly.</span>
@@ -384,7 +384,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">status_warning</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The traffic light color indicating &quot;warning&quot; status.</span>
 
 <span class="sd">        Defaults to the secondary accent color if not defined explicitly.</span>
@@ -393,7 +393,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">status_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The traffic light color indicating &quot;critical&quot; status.</span>
 
 <span class="sd">        Defaults to the tertiary accent color if not defined explicitly.</span>
@@ -403,7 +403,7 @@
 <div class="viewcode-block" id="ColorScheme.contrast_color"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.ColorScheme.html#pytools.viz.color.ColorScheme.contrast_color">[docs]</a>    <span class="k">def</span> <span class="nf">contrast_color</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">fill_color</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RgbColor</span><span class="p">,</span> <span class="n">RgbaColor</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RgbColor</span><span class="p">,</span> <span class="n">RgbaColor</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the p color or background color of this color schema,</span>
 <span class="sd">        depending on which maximises contrast with the given fill color.</span>
 
@@ -438,7 +438,7 @@
             <span class="k">return</span> <span class="n">contrast_color</span></div>
 
 <div class="viewcode-block" id="ColorScheme.to_expression"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.ColorScheme.html#pytools.viz.color.ColorScheme.to_expression">[docs]</a>    <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Id</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">)</span></div>
 
     <span class="n">_COLOR_FOREGROUND</span> <span class="o">=</span> <span class="n">_get_property_name</span><span class="p">(</span><span class="n">foreground</span><span class="p">)</span>
@@ -478,7 +478,7 @@
 
 <div class="viewcode-block" id="MatplotColorScheme"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.MatplotColorScheme.html#pytools.viz.color.MatplotColorScheme">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">MatplotColorScheme</span><span class="p">(</span><span class="n">ColorScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A color scheme for use with `matplotlib`, based on *semantic* color designations</span>
 <span class="sd">    and a default color bar, preventing code from referring to colors.</span>
 
@@ -495,7 +495,7 @@
         <span class="n">colormap</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Colormap</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
         <span class="o">**</span><span class="n">colors</span><span class="p">:</span> <span class="n">RgbColor</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param colormap: the colormap for this style (see `Colormap reference</span>
 <span class="sd">            &lt;https://matplotlib.org/stable/gallery/color/colormap_reference.html&gt;`__)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -515,13 +515,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Colormap</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The default colormap to use for color gradients.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_colormap</span>
 
 <div class="viewcode-block" id="MatplotColorScheme.to_expression"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.MatplotColorScheme.html#pytools.viz.color.MatplotColorScheme.to_expression">[docs]</a>    <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Id</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_colors</span><span class="p">,</span> <span class="n">colormap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">colormap</span><span class="p">)</span></div></div>
 
 
@@ -550,12 +550,12 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Id</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))()</span>
 
 
 <div class="viewcode-block" id="FacetLightColorScheme"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.FacetLightColorScheme.html#pytools.viz.color.FacetLightColorScheme">[docs]</a><span class="k">class</span> <span class="nc">FacetLightColorScheme</span><span class="p">(</span><span class="n">_FacetColorScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The default FACET color scheme with a light background.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -564,7 +564,7 @@
 
 
 <div class="viewcode-block" id="FacetDarkColorScheme"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.FacetDarkColorScheme.html#pytools.viz.color.FacetDarkColorScheme">[docs]</a><span class="k">class</span> <span class="nc">FacetDarkColorScheme</span><span class="p">(</span><span class="n">_FacetColorScheme</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The default FACET color scheme with a dark background.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 

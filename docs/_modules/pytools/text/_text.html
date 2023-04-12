@@ -196,7 +196,7 @@
 
 
 <div class="viewcode-block" id="CharacterMatrix"><a class="viewcode-back" href="../../../apidoc/pytools/text/pytools.text.CharacterMatrix.html#pytools.text.CharacterMatrix">[docs]</a><span class="k">class</span> <span class="nc">CharacterMatrix</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A matrix of characters, indexed by rows and columns.</span>
 
 <span class="sd">    The matrix is initialised with space characters (`&quot; &quot;`).</span>
@@ -215,7 +215,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n_columns</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param n_rows: the matrix height</span>
 <span class="sd">        :param n_columns: the matrix width</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -228,7 +228,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_rows</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The height of this matrix.</span>
 
 <span class="sd">        Same as ``len(self)``.</span>
@@ -237,13 +237,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_columns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The width of this matrix.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_columns</span>
 
 <div class="viewcode-block" id="CharacterMatrix.lines"><a class="viewcode-back" href="../../../apidoc/pytools/text/pytools.text.CharacterMatrix.html#pytools.text.CharacterMatrix.lines">[docs]</a>    <span class="k">def</span> <span class="nf">lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get this character matrix as strings representing the matrix rows, stripping</span>
 <span class="sd">        trailing whitespace.</span>
 
@@ -303,7 +303,7 @@
     <span class="n">formats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">alignment</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Print a formatted text table.</span>
 
 <span class="sd">    :param headings: the table headings</span>
@@ -382,7 +382,7 @@
         <span class="k">return</span> <span class="p">(</span>
             <span class="s2">&quot;  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item</span><span class="si">:{</span><span class="n">align_char</span> <span class="k">if</span> <span class="n">align</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="si">}{</span><span class="n">column_width</span><span class="si">}</span><span class="s1">s</span><span class="si">}</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">item</span><span class="si">:{</span><span class="n">align_char</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">align</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="si">}{</span><span class="n">column_width</span><span class="si">}</span><span class="s1">s</span><span class="si">}</span><span class="s1">&#39;</span>
                     <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">align_char</span><span class="p">,</span> <span class="n">column_width</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
                         <span class="n">row</span><span class="p">,</span> <span class="n">alignment_seq</span><span class="p">,</span> <span class="n">column_widths</span>
                     <span class="p">)</span>

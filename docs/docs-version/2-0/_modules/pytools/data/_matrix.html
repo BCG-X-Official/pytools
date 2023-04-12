@@ -203,7 +203,7 @@
 
 <div class="viewcode-block" id="Matrix"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.Matrix.html#pytools.data.Matrix">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Matrix</span><span class="p">(</span><span class="n">HasExpressionRepr</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_Number</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A 2D matrix with optional names and weights for rows and columns.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -237,7 +237,7 @@
         <span class="n">name_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param values: the values of the matrix cells, as a 2d array</span>
 <span class="sd">        :param names: the names of the rows and columns as a pair of iterables</span>
 <span class="sd">            (each of which may be ``None`` if not applicable)</span>
@@ -285,7 +285,7 @@
             <span class="k">if</span> <span class="n">axis_arg</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">axis_arg</span><span class="p">)</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">axis_arg</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;arg </span><span class="si">{</span><span class="n">arg_name_</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">] must be a 1d array, but has &quot;</span>
@@ -354,7 +354,7 @@
         <span class="n">name_labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">value_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T_Matrix</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a :class:`.Matrix` from a data frame, using the indices</span>
 <span class="sd">        as the row and column names.</span>
 
@@ -373,7 +373,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Matrix.to_frame"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.Matrix.html#pytools.data.Matrix.to_frame">[docs]</a>    <span class="k">def</span> <span class="nf">to_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a data frame from this matrix, using the row and column names as the</span>
 <span class="sd">        row and column indices.</span>
 
@@ -389,7 +389,7 @@
             <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span> <span class="kc">None</span>
         <span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Matrix</span><span class="p">[</span><span class="n">T_Number</span><span class="p">]:</span>
-        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a version of this matrix with fewer rows and/or columns.</span>
 
 <span class="sd">        Keeps the rows and columns with the greatest weight, and prioritizes the topmost</span>
@@ -456,7 +456,7 @@
         <span class="k">return</span> <span class="n">resized</span></div>
 
 <div class="viewcode-block" id="Matrix.to_expression"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.Matrix.html#pytools.data.Matrix.to_expression">[docs]</a>    <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Id</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))(</span>
             <span class="n">values</span><span class="o">=</span><span class="n">Id</span><span class="p">(</span><span class="s2">&quot;…&quot;</span><span class="p">),</span>
             <span class="n">names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">names</span><span class="p">,</span>

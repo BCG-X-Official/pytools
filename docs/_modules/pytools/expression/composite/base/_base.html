@@ -195,14 +195,14 @@
 
 <div class="viewcode-block" id="KeywordArgument"><a class="viewcode-back" href="../../../../../apidoc/pytools/expression/composite/base/pytools.expression.composite.base.KeywordArgument.html#pytools.expression.composite.base.KeywordArgument">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">KeywordArgument</span><span class="p">(</span><span class="n">SimplePrefixExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A keyword argument, used by functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_PRECEDENCE</span> <span class="o">=</span> <span class="n">BinaryOperator</span><span class="o">.</span><span class="n">EQ</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param name: the name of the keyword</span>
 <span class="sd">        :param value: the value for the keyword</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -211,39 +211,39 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this keyword argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;=&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The name of this keyword argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_PRECEDENCE</span></div>
 
 
 <div class="viewcode-block" id="DictEntry"><a class="viewcode-back" href="../../../../../apidoc/pytools/expression/composite/base/pytools.expression.composite.base.DictEntry.html#pytools.expression.composite.base.DictEntry">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DictEntry</span><span class="p">(</span><span class="n">SimplePrefixExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Two expressions separated by a colon, used in dictionaries.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_PRECEDENCE</span> <span class="o">=</span> <span class="n">BinaryOperator</span><span class="o">.</span><span class="n">COLON</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param key: the key of the dictionary entry</span>
 <span class="sd">        :param value: the value of the dictionary entry</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -251,39 +251,39 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">key_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The key of this dictionary entry; identical with the expression prefix.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A ``:``, followed by a space.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A ``:``, followed by a space.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;: &quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The value of this dictionary entry; identical with the expression body.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">DictEntry</span><span class="o">.</span><span class="n">_PRECEDENCE</span></div>
 
 
 <div class="viewcode-block" id="LambdaDefinition"><a class="viewcode-back" href="../../../../../apidoc/pytools/expression/composite/base/pytools.expression.composite.base.LambdaDefinition.html#pytools.expression.composite.base.LambdaDefinition">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">LambdaDefinition</span><span class="p">(</span><span class="n">SimplePrefixExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function parameters and body separated by a colon, used inside lambda expressions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_PRECEDENCE</span> <span class="o">=</span> <span class="n">UnaryOperator</span><span class="o">.</span><span class="n">LAMBDA</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="n">Id</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param params: the parameters of the lambda expression</span>
 <span class="sd">        :param body: the body of the lambda expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -302,19 +302,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">params_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The parameters of the lambda expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;A ``:``, followed by a space.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;A ``:``, followed by a space.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;: &quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">LambdaDefinition</span><span class="o">.</span><span class="n">_PRECEDENCE</span></div>
 </pre></div>
 

@@ -211,7 +211,7 @@
 
 <div class="viewcode-block" id="LinkageTree"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.LinkageTree.html#pytools.data.LinkageTree">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">LinkageTree</span><span class="p">(</span><span class="n">HasExpressionRepr</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A traversable tree derived from a SciPy linkage matrix.</span>
 
 <span class="sd">    Supports :func:`len`, numerical indexing, and node iteration.</span>
@@ -259,7 +259,7 @@
         <span class="n">leaf_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weight_label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param scipy_linkage_matrix: linkage matrix calculated by function</span>
 <span class="sd">            :func:`scipy.cluster.hierarchy.linkage`</span>
 <span class="sd">        :param leaf_names: labels of the leaves</span>
@@ -329,13 +329,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The root node of the linkage tree.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 <div class="viewcode-block" id="LinkageTree.children"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.LinkageTree.html#pytools.data.LinkageTree.children">[docs]</a>    <span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="n">Node</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the children of the given node.</span>
 
 <span class="sd">        :param node: the node for which to get the children</span>
@@ -361,13 +361,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">n_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The number of leave nodes in this linkage tree.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scipy_linkage_matrix</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LinkageTree.sort_by_weight"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.LinkageTree.html#pytools.data.LinkageTree.sort_by_weight">[docs]</a>    <span class="k">def</span> <span class="nf">sort_by_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LinkageTree</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a copy of this linkage trees, switching the left and right nodes of</span>
 <span class="sd">        branches such that the mean leaf weight or any left node is always greater</span>
 <span class="sd">        than the mean leaf weight in the right node.</span>
@@ -406,7 +406,7 @@
         <span class="k">return</span> <span class="n">linkage_sorted</span></div>
 
 <div class="viewcode-block" id="LinkageTree.iter_nodes"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.LinkageTree.html#pytools.data.LinkageTree.iter_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">iter_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inner</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Traverse this linkage tree depth-first and return all nodes.</span>
 
 <span class="sd">        :param inner: if ``True``, iterate inner nodes; if ``False``, iterate</span>
@@ -435,7 +435,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nodes</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
 
 <div class="viewcode-block" id="LinkageTree.to_expression"><a class="viewcode-back" href="../../../apidoc/pytools/data/pytools.data.LinkageTree.html#pytools.data.LinkageTree.to_expression">[docs]</a>    <span class="k">def</span> <span class="nf">to_expression</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="nf">_expr</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">:</span>
