@@ -8,8 +8,15 @@ Release Notes
 *pytools* 2.0
 -------------
 
-*pytools* 2 features enhanced visualisations together with additional API improvements,
+*pytools* 2 introduces enhanced visualisations along with additional API improvements,
 and is now subject to static type checking with |mypy|.
+
+
+2.0.6
+~~~~~
+
+- BUILD: add support for :mod:`pandas` |nbsp| 2.0 and above
+
 
 2.0.5
 ~~~~~
