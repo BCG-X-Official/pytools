@@ -94,6 +94,34 @@ def test_expression_formatting() -> None:
     assert repr(expr_6) == "(lambda x, y: f((1 | 2) >> 'x' % x, abc=-5))(5, 6)"
 
 
+def test_expression_repr_html() -> None:
+
+    # create an expression
+    e = Call(Id.f, (1 | Lit(2)) >> Lit("x") % Id.x, abc=-Lit(5))
+    expr = e * (e + e + e - e * e)
+
+    # create the expected representations
+    expected_formatted_expression = """(
+    f((1 | 2) >> 'x' % x, abc=-5)
+    * (
+        f((1 | 2) >> 'x' % x, abc=-5)
+        + f((1 | 2) >> 'x' % x, abc=-5)
+        + f((1 | 2) >> 'x' % x, abc=-5)
+        - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
+    )
+)"""
+    expected_html_expression = f"<pre>{expected_formatted_expression}\n</pre>\n"
+
+    # test if the html representation is generated as expected
+    assert expr._repr_html_() == expected_html_expression
+
+    # test if the mimebundle representation is generated as expected
+    assert expr._repr_mimebundle_() == {
+        "text/html": expected_html_expression,
+        "text/plain": expected_formatted_expression,
+    }
+
+
 def test_expression() -> None:
     lit_5 = Lit(5)
     lit_abc = Lit("abc")
