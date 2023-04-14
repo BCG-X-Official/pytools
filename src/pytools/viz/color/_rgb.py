@@ -32,7 +32,7 @@ __all__ = [
 
 
 #
-# Type Aliases
+# Type aliases
 #
 TupleRgb: TypeAlias = Tuple[float, float, float]
 
