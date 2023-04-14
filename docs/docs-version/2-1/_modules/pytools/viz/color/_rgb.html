@@ -189,7 +189,7 @@
 
 
 <span class="c1">#</span>
-<span class="c1"># Type Aliases</span>
+<span class="c1"># Type aliases</span>
 <span class="c1">#</span>
 <span class="n">TupleRgb</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span>
 
@@ -208,21 +208,21 @@
 <span class="k">class</span> <span class="nc">_RgbBase</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">r</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The luminosity value for the *red* channel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The luminosity value for the *green* channel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">b</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The luminosity value for the *blue* channel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
@@ -245,7 +245,7 @@
 
 
 <div class="viewcode-block" id="RgbColor"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor">[docs]</a><span class="k">class</span> <span class="nc">RgbColor</span><span class="p">(</span><span class="n">_RgbBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    RGB color type for use in color schemas and colored drawing styles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -258,7 +258,7 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param r: the luminosity value for the *red* channel</span>
 <span class="sd">        :param g: the luminosity value for the *green* channel</span>
 <span class="sd">        :param b: the luminosity value for the *blue* channel</span>
@@ -279,7 +279,7 @@
 
 
 <div class="viewcode-block" id="RgbaColor"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/color/pytools.viz.color.RgbaColor.html#pytools.viz.color.RgbaColor">[docs]</a><span class="k">class</span> <span class="nc">RgbaColor</span><span class="p">(</span><span class="n">_RgbBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    RGB + Alpha color type for use in color schemas and colored drawing styles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -294,7 +294,7 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RgbaColor</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param r: the luminosity value for the *red* channel</span>
 <span class="sd">        :param g: the luminosity value for the *green* channel</span>
 <span class="sd">        :param b: the luminosity value for the *blue* channel</span>
@@ -313,7 +313,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">alpha</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The opacity value for the *alpha* channel.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span></div>

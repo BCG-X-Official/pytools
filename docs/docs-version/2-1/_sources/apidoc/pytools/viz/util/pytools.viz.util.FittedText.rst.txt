@@ -58,7 +58,6 @@ pytools.viz.util.FittedText
       ~FittedText.get_path_effects
       ~FittedText.get_picker
       ~FittedText.get_position
-      ~FittedText.get_prop_tup
       ~FittedText.get_rasterized
       ~FittedText.get_rotation
       ~FittedText.get_rotation_mode

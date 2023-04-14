@@ -202,7 +202,7 @@
 <div class="viewcode-block" id="DendrogramMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramMatplotStyle.html#pytools.viz.dendrogram.DendrogramMatplotStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DendrogramMatplotStyle</span><span class="p">(</span><span class="n">DendrogramStyle</span><span class="p">,</span> <span class="n">ColorbarMatplotStyle</span><span class="p">):</span>
 
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draws dendrograms as trees, using line color and thickness to indicate leaf/branch</span>
 <span class="sd">    weights.</span>
 
@@ -222,7 +222,7 @@
         <span class="n">min_weight</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
         <span class="n">padding</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param min_weight: the minimum weight on the logarithmic feature importance</span>
 <span class="sd">            color scale; must be greater than `0` and less than `1`</span>
 <span class="sd">            (default: `0.01`, i.e., 1%)</span>
@@ -261,7 +261,7 @@
         <span class="n">leaf_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">leaf_label</span><span class="o">=</span><span class="n">leaf_label</span><span class="p">,</span>
@@ -320,7 +320,7 @@
         <span class="n">weight_cumulative</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">tree_height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="n">padding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">weight_cumulative</span> <span class="o">+</span> <span class="n">leaf</span> <span class="o">*</span> <span class="n">padding</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_draw_hline</span><span class="p">(</span>
@@ -339,7 +339,7 @@
         <span class="n">weight_cumulative</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">tree_height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">lo</span> <span class="o">=</span> <span class="n">weight_cumulative</span> <span class="o">+</span> <span class="n">first_leaf</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span>
         <span class="n">hi</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="n">weight</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_leaves_left</span> <span class="o">+</span> <span class="n">n_leaves_right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">padding</span>
@@ -370,7 +370,7 @@
 <div class="viewcode-block" id="DendrogramMatplotStyle.draw_leaf_labels"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramMatplotStyle.html#pytools.viz.dendrogram.DendrogramMatplotStyle.draw_leaf_labels">[docs]</a>    <span class="k">def</span> <span class="nf">draw_leaf_labels</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">weights</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="c1"># set the tick locations and labels</span>
         <span class="n">y_axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span>
@@ -380,7 +380,7 @@
     <span class="k">def</span> <span class="nf">_get_ytick_locations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float_</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the tick locations for the y axis.</span>
 
 <span class="sd">        :param weights: weights of all leaves</span>
@@ -430,7 +430,7 @@
         <span class="n">h</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">fill_color</span><span class="p">:</span> <span class="n">RgbaColor</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot a weight label for a link leg.</span>
 
 <span class="sd">        :param weight: the weight to be shown in the label</span>
@@ -472,7 +472,7 @@
 
 <div class="viewcode-block" id="DendrogramReportStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">DendrogramReportStyle</span><span class="p">(</span><span class="n">DendrogramStyle</span><span class="p">,</span> <span class="n">TextStyle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Renders dendrograms as ASCII graphics for inclusion in plain-text reports.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -506,7 +506,7 @@
         <span class="n">max_label_width</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">max_height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param max_label_width: the maximum number of characters that will be allocated</span>
 <span class="sd">            for the label column, including the weight (optional; defaults to</span>
 <span class="sd">            %DEFAULT_MAX_LABEL_WIDTH% characters or half of arg ``width``,</span>
@@ -542,7 +542,7 @@
 <div class="viewcode-block" id="DendrogramReportStyle.draw_leaf_labels"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle.draw_leaf_labels">[docs]</a>    <span class="k">def</span> <span class="nf">draw_leaf_labels</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">weights</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_char_matrix</span>
         <span class="k">assert</span> <span class="p">(</span>
@@ -558,7 +558,7 @@
         <span class="n">label_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_label_width</span>
         <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">weight</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_labels</span><span class="p">),</span> <span class="n">names</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
             <span class="n">matrix</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="p">:</span><span class="n">name_width</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
-            <span class="n">matrix</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">name_width</span><span class="p">:</span><span class="n">label_width</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weight</span> <span class="o">*</span> <span class="mi">100</span><span class="si">:</span><span class="s2">3.0f</span><span class="si">}</span><span class="s2">%&quot;</span></div>
+            <span class="n">matrix</span><span class="p">[</span><span class="n">row</span><span class="p">,</span> <span class="n">name_width</span><span class="p">:</span><span class="n">label_width</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">weight</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="si">:</span><span class="s2">3.0f</span><span class="si">}</span><span class="s2">%&quot;</span></div>
 
 <div class="viewcode-block" id="DendrogramReportStyle.draw_link_leg"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle.draw_link_leg">[docs]</a>    <span class="k">def</span> <span class="nf">draw_link_leg</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -570,7 +570,7 @@
         <span class="n">weight_cumulative</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">tree_height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="c1"># determine the y coordinate in the character matrix</span>
         <span class="n">line_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">leaf</span><span class="p">)</span>
@@ -605,7 +605,7 @@
         <span class="n">weight_cumulative</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">tree_height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">draw_link_leg</span><span class="p">(</span>
             <span class="n">bottom</span><span class="o">=</span><span class="n">bottom</span><span class="p">,</span>
@@ -633,7 +633,7 @@
 <div class="viewcode-block" id="DendrogramReportStyle.start_drawing"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle.start_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">start_drawing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">leaf_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Prepare a new dendrogram for drawing, using the given title.</span>
 
 <span class="sd">        :param title: the title of the chart</span>
@@ -655,7 +655,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DendrogramReportStyle.finalize_drawing"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/dendrogram/pytools.viz.dendrogram.DendrogramReportStyle.html#pytools.viz.dendrogram.DendrogramReportStyle.finalize_drawing">[docs]</a>    <span class="k">def</span> <span class="nf">finalize_drawing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finalize the dendrogram, adding labels to the axes.</span>
 
 <span class="sd">        :param kwargs: additional drawer-specific arguments</span>

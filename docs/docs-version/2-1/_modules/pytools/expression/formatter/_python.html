@@ -187,21 +187,21 @@
 
 
 <span class="k">class</span> <span class="nc">FormattingConfig</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The parameters to use for formatting an expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">max_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span>
-    <span class="sd">&quot;&quot;&quot;maximum line width&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;maximum line width&quot;&quot;&quot;</span>
     <span class="n">indent_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
-    <span class="sd">&quot;&quot;&quot;number of spaces in one indentation&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;number of spaces in one indentation&quot;&quot;&quot;</span>
     <span class="n">single_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="sd">&quot;&quot;&quot;if ``True``, always produce a single line regardless of width&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;if ``True``, always produce a single line regardless of width&quot;&quot;&quot;</span>
 
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">IndentedLine</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An indented line of text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -211,7 +211,7 @@
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="k">def</span> <span class="nf">prepend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndentedLine</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add the given text to the start of this indented line.</span>
 
 <span class="sd">        :param text: the text to add</span>
@@ -220,7 +220,7 @@
         <span class="k">return</span> <span class="n">IndentedLine</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indent</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">text</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IndentedLine</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add the given text to the end of this indented line.</span>
 
 <span class="sd">        :param text: the text to add</span>
@@ -239,7 +239,7 @@
 
 
 <span class="k">class</span> <span class="nc">TextualForm</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A hierarchical textual representation of an expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -248,7 +248,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_expression</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextualForm</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a textual form for the given expression.</span>
 
 <span class="sd">        :param expression: the expression to be transformed</span>
@@ -274,14 +274,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">needs_multi_line_encapsulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If ``True``, this form should be encapsulated in brackets when rendered</span>
 <span class="sd">        across multiple lines.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">to_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">FormattingConfig</span> <span class="o">=</span> <span class="n">DEFAULT_FORMAT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Render this textual form as a string.</span>
 
 <span class="sd">        :param config: the formatting configuration to use</span>
@@ -310,7 +310,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a list of indented lines from this textual form.</span>
 
 <span class="sd">        :param config: the rendering configuration</span>
@@ -325,7 +325,7 @@
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert this representation to a single-line string.</span>
 
 <span class="sd">        :return: the resulting string</span>
@@ -335,7 +335,7 @@
     <span class="k">def</span> <span class="nf">encapsulate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">single_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextualForm</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return this form encapsulated in round parentheses.</span>
 
 <span class="sd">        :param condition: if ``False``, do not encapsulate this form</span>
@@ -360,7 +360,7 @@
 
 
 <span class="k">class</span> <span class="nc">EmptyForm</span><span class="p">(</span><span class="n">TextualForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An empty form representing the _epsilon_ expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -371,19 +371,19 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[]</span>
 
     <span class="n">to_lines</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">TextualForm</span><span class="o">.</span><span class="n">to_lines</span><span class="o">.</span><span class="vm">__doc__</span>
 
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;&quot;</span>
 
     <span class="n">to_single_line</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">TextualForm</span><span class="o">.</span><span class="n">to_single_line</span><span class="o">.</span><span class="vm">__doc__</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">0</span>
 
 
@@ -391,7 +391,7 @@
 
 
 <span class="k">class</span> <span class="nc">AtomicForm</span><span class="p">(</span><span class="n">TextualForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A textual representation of an atomic expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -405,14 +405,14 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">IndentedLine</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to_single_line</span><span class="p">())]</span>
 
     <span class="n">to_lines</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">TextualForm</span><span class="o">.</span><span class="n">to_lines</span><span class="o">.</span><span class="vm">__doc__</span>
 
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span>
 
@@ -424,12 +424,12 @@
 
 <span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ComplexForm</span><span class="p">(</span><span class="n">TextualForm</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class of non-atomic forms.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param length: the length of the single-line representation of this form</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -442,7 +442,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">leading_characters</span>
@@ -468,7 +468,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert this representation to multiple lines.</span>
 
 <span class="sd">        :param config: the formatting configuration to use</span>
@@ -485,14 +485,14 @@
 
 <span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BracketedForm</span><span class="p">(</span><span class="n">ComplexForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A hierarchical textual representation of a complex expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">brackets</span><span class="p">:</span> <span class="n">BracketPair</span><span class="p">,</span> <span class="n">subform</span><span class="p">:</span> <span class="n">TextualForm</span><span class="p">,</span> <span class="n">single_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param brackets: the brackets surrounding the subform(s)</span>
 <span class="sd">        :param subform: the subform to be bracketed</span>
 <span class="sd">        :param single_line: if ``False``, do not render the brackets in single-line</span>
@@ -512,7 +512,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_bracketed_expression</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">BracketedExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BracketedForm</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Make a bracketed from for the given bracketed expression.</span>
 
 <span class="sd">        :param expression: the bracketed expression to convert</span>
@@ -524,7 +524,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="n">subform_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subform</span><span class="o">.</span><span class="n">to_single_line</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_line</span><span class="p">:</span>
             <span class="c1"># render the brackets only when they are visible in single-line forms</span>
@@ -539,7 +539,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">IndentedLine</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="n">indent</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">brackets</span><span class="o">.</span><span class="n">opening</span><span class="p">),</span>
@@ -555,12 +555,12 @@
 
 <span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PrefixForm</span><span class="p">(</span><span class="n">ComplexForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A hierarchical textual representation of a complex expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">TextualForm</span><span class="p">,</span> <span class="n">separator</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">TextualForm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param prefix: the prefix form</span>
 <span class="sd">        :param separator: characters separating the prefix from the subform</span>
 <span class="sd">        :param body: the body form</span>
@@ -573,7 +573,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_prefix_expression</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">PrefixExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextualForm</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a prefixed form from the given prefix expression.</span>
 
 <span class="sd">        :param expression: the prefix expression for which to create a prefixed form</span>
@@ -603,11 +603,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">needs_multi_line_encapsulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">needs_multi_line_encapsulation</span>
 
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">to_single_line</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">separator</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">to_single_line</span><span class="p">()</span>
@@ -620,7 +620,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">prefix_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="o">.</span><span class="n">to_lines</span><span class="p">(</span>
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
@@ -649,7 +649,7 @@
 
 <span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">InfixForm</span><span class="p">(</span><span class="n">ComplexForm</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A hierarchical textual representation of a complex expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -665,7 +665,7 @@
         <span class="n">infix_padding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">PADDING_BOTH</span><span class="p">,</span>
         <span class="n">subforms</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TextualForm</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param infix: the infix operator separating the subforms</span>
 <span class="sd">        :param infix_padding: the padding mode for the infix operator</span>
 <span class="sd">        :param subforms: the subforms</span>
@@ -693,7 +693,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">from_infix_expression</span><span class="p">(</span><span class="n">expression</span><span class="p">:</span> <span class="n">InfixExpression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TextualForm</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a infix form from the given infix expression.</span>
 
 <span class="sd">        :param expression: the infix expression to render the text from</span>
@@ -746,11 +746,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">needs_multi_line_encapsulation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="nf">to_single_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">infix</span><span class="p">:</span>
             <span class="n">infix_padding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">infix_padding</span>
@@ -775,7 +775,7 @@
         <span class="n">leading_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">trailing_characters</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">IndentedLine</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">subforms</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">TextualForm</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subforms</span>
 
@@ -855,14 +855,14 @@
 
 <div class="viewcode-block" id="PythonExpressionFormatter"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/formatter/pytools.expression.formatter.PythonExpressionFormatter.html#pytools.expression.formatter.PythonExpressionFormatter">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">PythonExpressionFormatter</span><span class="p">(</span><span class="n">ExpressionFormatter</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Formats expression objects as Python expressions, in line with the `black` style.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">max_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">80</span><span class="p">,</span> <span class="n">indent_width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="n">single_line</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param max_width: the maximum line width (ignored when enforcing single-line</span>
 <span class="sd">            text (default: 80)</span>
 <span class="sd">        :param indent_width: the width of one indentation in spaces (default: 4)</span>
@@ -874,7 +874,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="PythonExpressionFormatter.to_text"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/formatter/pytools.expression.formatter.PythonExpressionFormatter.html#pytools.expression.formatter.PythonExpressionFormatter.to_text">[docs]</a>    <span class="k">def</span> <span class="nf">to_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expression</span><span class="p">:</span> <span class="n">Expression</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="n">form</span> <span class="o">=</span> <span class="n">TextualForm</span><span class="o">.</span><span class="n">from_expression</span><span class="p">(</span><span class="n">expression</span><span class="p">)</span>
 

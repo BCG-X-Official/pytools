@@ -202,7 +202,7 @@
 
 
 <div class="viewcode-block" id="SphinxCallback"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.SphinxCallback.html#pytools.sphinx.SphinxCallback">[docs]</a><span class="k">class</span> <span class="nc">SphinxCallback</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Abstract base class for autodoc processors.</span>
 
 <span class="sd">    Can be passed to :meth:`~sphinx.application.Sphinx.connect` as a callback for an</span>
@@ -224,7 +224,7 @@
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The event processed by this callback.</span>
 
 <span class="sd">        Used to connect this callback to sphinx in method :meth:`.connect`.</span>
@@ -235,7 +235,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">app</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sphinx</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The Sphinx application this callback is connected to.</span>
 
 <span class="sd">        :return: the Sphinx application, or ``None`` if not connected.</span>
@@ -244,7 +244,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">listener_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The listener ID of this callback.</span>
 
 <span class="sd">        :return: the listener ID, or ``None`` if not connected.</span>
@@ -252,7 +252,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listener_id</span>
 
 <div class="viewcode-block" id="SphinxCallback.connect"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.SphinxCallback.html#pytools.sphinx.SphinxCallback.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Register this callback to be called when :attr:`.event` is emitted.</span>
 
 <span class="sd">        Registered callbacks will be invoked on event in the order of priority and</span>
@@ -282,7 +282,7 @@
         <span class="k">return</span> <span class="n">listener_id</span></div>
 
 <div class="viewcode-block" id="SphinxCallback.disconnect"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.SphinxCallback.html#pytools.sphinx.SphinxCallback.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Disconnect this callback from its Sphinx application.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -296,14 +296,14 @@
 
 <span class="c1"># noinspection SpellCheckingInspection</span>
 <div class="viewcode-block" id="ObjectDescriptionTransform"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.ObjectDescriptionTransform.html#pytools.sphinx.ObjectDescriptionTransform">[docs]</a><span class="k">class</span> <span class="nc">ObjectDescriptionTransform</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Callback for low-level processing of objects in the document tree being built by</span>
 <span class="sd">    Sphinx.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``&quot;object-description-transform&quot;``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;object-description-transform&quot;</span>
@@ -316,7 +316,7 @@
         <span class="n">objtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">contentnode</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process content of objects after their object description directive has run.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>
@@ -343,13 +343,13 @@
 
 
 <div class="viewcode-block" id="AutodocProcessDocstring"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocProcessDocstring.html#pytools.sphinx.AutodocProcessDocstring">[docs]</a><span class="k">class</span> <span class="nc">AutodocProcessDocstring</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An *autodoc* processor for docstrings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``&quot;autodoc-process-docstring&quot;``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;autodoc-process-docstring&quot;</span>
@@ -364,7 +364,7 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process an event.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>
@@ -399,20 +399,20 @@
 
 
 <div class="viewcode-block" id="AutodocBeforeProcessSignature"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocBeforeProcessSignature.html#pytools.sphinx.AutodocBeforeProcessSignature">[docs]</a><span class="k">class</span> <span class="nc">AutodocBeforeProcessSignature</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An *autodoc* processor invoked before processing signatures.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``&quot;autodoc-before-process-signature&quot;``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;autodoc-before-process-signature&quot;</span>
 
 <div class="viewcode-block" id="AutodocBeforeProcessSignature.process"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocBeforeProcessSignature.html#pytools.sphinx.AutodocBeforeProcessSignature.process">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bound_method</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process an event.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>
@@ -432,13 +432,13 @@
 
 
 <div class="viewcode-block" id="AutodocProcessSignature"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocProcessSignature.html#pytools.sphinx.AutodocProcessSignature">[docs]</a><span class="k">class</span> <span class="nc">AutodocProcessSignature</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An *autodoc* processor for processing signatures.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``&quot;autodoc-process-signature&quot;``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;autodoc-process-signature&quot;</span>
@@ -454,7 +454,7 @@
         <span class="n">signature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">return_annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process an event.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>
@@ -501,13 +501,13 @@
 
 
 <div class="viewcode-block" id="AutodocSkipMember"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocSkipMember.html#pytools.sphinx.AutodocSkipMember">[docs]</a><span class="k">class</span> <span class="nc">AutodocSkipMember</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An *autodoc-skip-member* processor.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``&quot;autodoc-skip-member&quot;``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;autodoc-skip-member&quot;</span>
@@ -522,7 +522,7 @@
         <span class="n">skip</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decide whether a member should be included in the documentation.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>
@@ -563,13 +563,13 @@
 
 
 <div class="viewcode-block" id="AutodocProcessBases"><a class="viewcode-back" href="../../../apidoc/pytools/sphinx/pytools.sphinx.AutodocProcessBases.html#pytools.sphinx.AutodocProcessBases">[docs]</a><span class="k">class</span> <span class="nc">AutodocProcessBases</span><span class="p">(</span><span class="n">SphinxCallback</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An *autodoc-process-bases* processor.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``autodoc-process-bases``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="s2">&quot;autodoc-process-bases&quot;</span>
@@ -578,7 +578,7 @@
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Decide whether a member should be included in the documentation.</span>
 
 <span class="sd">        :param app: the Sphinx application object</span>

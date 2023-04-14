@@ -23,10 +23,7 @@ pytools.viz.util.PercentageFormatter
       ~PercentageFormatter.format_ticks
       ~PercentageFormatter.get_offset
       ~PercentageFormatter.set_axis
-      ~PercentageFormatter.set_bounds
-      ~PercentageFormatter.set_data_interval
       ~PercentageFormatter.set_locs
-      ~PercentageFormatter.set_view_interval
    
    
 

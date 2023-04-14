@@ -25,16 +25,43 @@ Release Notes
   correctly.
 
 
+*pytools* 2.1
+-------------
+
+2.1.0
+~~~~~
+
+- API: new decorator :obj:`.fitted_only` to mark methods that may only be
+  called after their associated object has been fitted using :meth:`.FittableMixin.fit`.
+- API: remove method ``ensure_fitted`` from :class:`.FittableMixin`, which is no longer
+  needed due to the new decorator :obj:`.fitted_only`.
+- API: new Sphinx callback :class:`.TrackCurrentClass` to keep track of the current
+  class being processed by *autodoc*.
+- API: new Sphinx callback :class:`.RenamePrivateArguments` to rename private
+  “positional-only” arguments in a function's signature (with two leading underscores)
+  back to their original names in the source code, so that *autodoc* can pick them up
+  correctly.
+- API: :class:`.Expression` objects support plain text and HTML output in Jupyter
+  notebooks
+
+
 *pytools* 2.0
 -------------
 
-*pytools* 2.0 features enhanced visualisations together with additional API improvements,
+*pytools* 2 introduces enhanced visualisations along with additional API improvements,
 and is now subject to static type checking with |mypy|.
+
+
+2.0.6
+~~~~~
+
+- BUILD: add support for :mod:`pandas` |nbsp| 2.0 and above
+
 
 2.0.5
 ~~~~~
 
-- API: de-dent docstrings before processing them with the :obj:``.subsdoc`` decorator
+- API: de-dent docstrings before processing them with the :obj:`.subsdoc` decorator
 - FIX: in method :meth:`.AllTracker.resolve_forward_references`, unwrap functions before
   accessing their ``__globals__`` attribute
 

@@ -225,48 +225,48 @@
 
 
 <div class="viewcode-block" id="ListLiteral"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.ListLiteral.html#pytools.expression.composite.ListLiteral">[docs]</a><span class="k">class</span> <span class="nc">ListLiteral</span><span class="p">(</span><span class="n">CollectionLiteral</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A list expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">elements</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param elements: the list elements</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">brackets</span><span class="o">=</span><span class="n">BracketPair</span><span class="o">.</span><span class="n">SQUARE</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TupleLiteral"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.TupleLiteral.html#pytools.expression.composite.TupleLiteral">[docs]</a><span class="k">class</span> <span class="nc">TupleLiteral</span><span class="p">(</span><span class="n">CollectionLiteral</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A tuple expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">elements</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param elements: the tuple elements</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">brackets</span><span class="o">=</span><span class="n">BracketPair</span><span class="o">.</span><span class="n">ROUND</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SetLiteral"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.SetLiteral.html#pytools.expression.composite.SetLiteral">[docs]</a><span class="k">class</span> <span class="nc">SetLiteral</span><span class="p">(</span><span class="n">CollectionLiteral</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A set expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">elements</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param elements: the set elements</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">brackets</span><span class="o">=</span><span class="n">BracketPair</span><span class="o">.</span><span class="n">CURLY</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DictLiteral"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.DictLiteral.html#pytools.expression.composite.DictLiteral">[docs]</a><span class="k">class</span> <span class="nc">DictLiteral</span><span class="p">(</span><span class="n">CollectionLiteral</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A dictionary expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param args: dictionary entries as tuples ``(key, value)``</span>
 <span class="sd">        :param kwargs: dictionary entries as keyword arguments</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -286,12 +286,12 @@
 
 <div class="viewcode-block" id="UnaryOperation"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.UnaryOperation.html#pytools.expression.composite.UnaryOperation">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">UnaryOperation</span><span class="p">(</span><span class="n">SimplePrefixExpression</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A unary operation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">UnaryOperator</span><span class="p">,</span> <span class="n">operand</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param operator: the unary operator</span>
 <span class="sd">        :param operand: the operand</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -300,33 +300,33 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">symbol</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">operator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnaryOperator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">operands_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subexpressions_</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span><span class="o">.</span><span class="n">precedence</span></div>
 
 
 <div class="viewcode-block" id="BinaryOperation"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.BinaryOperation.html#pytools.expression.composite.BinaryOperation">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">BinaryOperation</span><span class="p">(</span><span class="n">InfixExpression</span><span class="p">,</span> <span class="n">Operation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A operation with two or more operands.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operator</span><span class="p">:</span> <span class="n">BinaryOperator</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param operator: the binary operator applied by this operation</span>
 <span class="sd">        :param operands: the operands applied to the binary operator</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -356,22 +356,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">operator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BinaryOperator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">operands_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operands</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">infix_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BinaryOperator</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_operator</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infix_</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="nf">_flattened_operands</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Expression</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
@@ -406,12 +406,12 @@
 
 
 <div class="viewcode-block" id="Call"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.Call.html#pytools.expression.composite.Call">[docs]</a><span class="k">class</span> <span class="nc">Call</span><span class="p">(</span><span class="n">Invocation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A call expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callee</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param callee: the expression representing the object being called</span>
 <span class="sd">        :param args: the positional argument(s) of the call</span>
 <span class="sd">        :param kwargs: the keyword arguments of the call</span>
@@ -427,19 +427,19 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">callee_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The expression being called; identical with the prefix of this expression.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span></div>
 
 
 <div class="viewcode-block" id="Index"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.Index.html#pytools.expression.composite.Index">[docs]</a><span class="k">class</span> <span class="nc">Index</span><span class="p">(</span><span class="n">Invocation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An indexing operation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">collection</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param collection: the collection to be indexed</span>
 <span class="sd">        :param key: the index key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -448,7 +448,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">collection_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Expression</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The collection to be indexed; same as :attr:`prefix_`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix_</span></div>
@@ -461,14 +461,14 @@
 
 <div class="viewcode-block" id="Lambda"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.Lambda.html#pytools.expression.composite.Lambda">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">Lambda</span><span class="p">(</span><span class="n">SimplePrefixExpression</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A lambda expression.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_PRECEDENCE</span> <span class="o">=</span> <span class="n">UnaryOperator</span><span class="o">.</span><span class="n">LAMBDA</span><span class="o">.</span><span class="n">precedence</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="n">Id</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param params: the parameters of the lambda expression</span>
 <span class="sd">        :param body: the body of the lambda expression</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -477,12 +477,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">precedence_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">Lambda</span><span class="o">.</span><span class="n">_PRECEDENCE</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">separator_</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_params</span><span class="p">:</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">UnaryOperator</span><span class="o">.</span><span class="n">LAMBDA</span><span class="o">.</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -495,12 +495,12 @@
 
 
 <div class="viewcode-block" id="Attr"><a class="viewcode-back" href="../../../../apidoc/pytools/expression/composite/pytools.expression.composite.Attr.html#pytools.expression.composite.Attr">[docs]</a><span class="k">class</span> <span class="nc">Attr</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The ``….…`` (&quot;dot&quot;) operation to reference an attribute of an object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">attribute</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Id</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param obj: the object whose attribute is referenced</span>
 <span class="sd">        :param attribute: the name of the attribute being referenced</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -200,7 +200,7 @@
 
 
 <div class="viewcode-block" id="ECDFMatplotStyle"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFMatplotStyle.html#pytools.viz.distribution.ECDFMatplotStyle">[docs]</a><span class="k">class</span> <span class="nc">ECDFMatplotStyle</span><span class="p">(</span><span class="n">ECDFStyle</span><span class="p">,</span> <span class="n">MatplotStyle</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Draws ECDF plots using `matplotlib`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -249,7 +249,7 @@
 
 <div class="viewcode-block" id="ECDFDrawer"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ECDFDrawer</span><span class="p">(</span><span class="n">Drawer</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">ECDFStyle</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drawer for empirical cumulative density functions (ECDFs), highlighting</span>
 <span class="sd">    outliers using Tukey&#39;s outlier test.</span>
 
@@ -287,7 +287,7 @@
         <span class="n">iqr_multiple_far</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">3.0</span><span class="p">,</span>
         <span class="n">hide_far_outliers</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param iqr_multiple: iqr multiple to determine outliers; if ``None``, then no</span>
 <span class="sd">            outliers and far outliers are computed.</span>
 <span class="sd">        :param iqr_multiple_far: iqr multiple to determine far outliers; if ``None``,</span>
@@ -317,7 +317,7 @@
     <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Drawer</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span> <span class="o">+</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ECDFDrawer.draw"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer.draw">[docs]</a>    <span class="k">def</span> <span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw the ECDF.</span>
 
 <span class="sd">        :param data: the data to draw</span>
@@ -335,7 +335,7 @@
 
 <div class="viewcode-block" id="ECDFDrawer.get_style_classes"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer.get_style_classes">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_style_classes</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">ECDFStyle</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">ECDFMatplotStyle</span><span class="p">,</span>
         <span class="p">]</span></div>
@@ -352,7 +352,7 @@
         <span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_ecdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">ECDF</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute ECDF for scalar values.</span>
 
 <span class="sd">        Return the x and y values of an empirical cumulative distribution plot of the</span>
