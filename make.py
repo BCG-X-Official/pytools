@@ -10,7 +10,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
@@ -467,6 +466,8 @@ class ToxBuilder(Builder):
     SUFFIX_TOX_INI = ".ini"
     # the name of the tox build file
     FILE_TOX_INI = f"tox{SUFFIX_TOX_INI}"
+    # the name of the tox build file
+    FILE_TOX_INI_TMP = f"tox_tmp{SUFFIX_TOX_INI}"
     # string to use for indented console output
     INDENT = "  "
 
@@ -561,15 +562,17 @@ class ToxBuilder(Builder):
         :return: the path to the resulting temporary tox.ini file
         """
 
+        tox_ini_dir = os.path.join(os.environ[FACET_PATH_ENV], self.project)
+
         # get the path to tox.ini
         tox_ini_path = os.path.abspath(
-            os.path.join(
-                os.environ[FACET_PATH_ENV], self.project, ToxBuilder.FILE_TOX_INI
-            )
+            os.path.join(tox_ini_dir, ToxBuilder.FILE_TOX_INI)
         )
 
         # create a temporary copy of tox.ini, with the prefix "tmp_" in the filename
-        tox_ini_tmp_path = tempfile.mktemp(suffix=ToxBuilder.SUFFIX_TOX_INI)
+        tox_ini_tmp_path = os.path.abspath(
+            os.path.join(tox_ini_dir, ToxBuilder.FILE_TOX_INI_TMP)
+        )
 
         # get the list of all environment variables starting with the facet prefix
         print(
