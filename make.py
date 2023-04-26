@@ -360,7 +360,7 @@ class Builder(metaclass=ABCMeta):
         # expose requirements as environment variables
 
         if self.dependency_type == DEP_DEFAULT:
-            requirements_to_expose = run_dependencies | default_dependencies
+            requirements_to_expose = {**run_dependencies, **default_dependencies}
         elif self.dependency_type == DEP_MIN:
             requirements_to_expose = min_dependencies
         elif self.dependency_type == DEP_MAX:
