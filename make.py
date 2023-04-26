@@ -319,20 +319,33 @@ class Builder(metaclass=ABCMeta):
         ][TOML_MATRIX]
 
         def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
+            dependencies: Dict[str, str] = build_matrix_definition.get(matrix_type, {})
+            if not dependencies:
+                return {}
             return {
                 name: self.adapt_version_requirement_syntax(
                     validate_pip_version_spec(
                         dependency_type=matrix_type, package=name, spec=version
                     )
                 )
-                for name, version in build_matrix_definition[matrix_type].items()
+                for name, version in dependencies.items()
             }
 
         min_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MIN)
+        default_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_DEFAULT)
         max_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MAX)
 
-        # check that the matrix dependencies cover all run dependencies
+        # check that the default dependencies do not overlap with the run dependencies
+        default_dependencies_overlapping_run_dependencies = (
+            default_dependencies.keys() & run_dependencies.keys()
+        )
+        if default_dependencies_overlapping_run_dependencies:
+            raise ValueError(
+                f"one or more default dependencies overlap with run dependencies: "
+                f"{default_dependencies_overlapping_run_dependencies}"
+            )
 
+        # check that the min and max dependencies supersede all default dependencies
         dependencies_not_covered_in_matrix: Set[str] = (
             run_dependencies.keys() - min_dependencies.keys()
         ) | (run_dependencies.keys() - max_dependencies.keys())
@@ -347,7 +360,7 @@ class Builder(metaclass=ABCMeta):
         # expose requirements as environment variables
 
         if self.dependency_type == DEP_DEFAULT:
-            requirements_to_expose = run_dependencies
+            requirements_to_expose = run_dependencies | default_dependencies
         elif self.dependency_type == DEP_MIN:
             requirements_to_expose = min_dependencies
         elif self.dependency_type == DEP_MAX:
