@@ -332,18 +332,7 @@ class Builder(metaclass=ABCMeta):
             }
 
         min_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MIN)
-        default_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_DEFAULT)
         max_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MAX)
-
-        # check that the default dependencies do not overlap with the run dependencies
-        default_dependencies_overlapping_run_dependencies = (
-            default_dependencies.keys() & run_dependencies.keys()
-        )
-        if default_dependencies_overlapping_run_dependencies:
-            raise ValueError(
-                f"one or more default dependencies overlap with run dependencies: "
-                f"{default_dependencies_overlapping_run_dependencies}"
-            )
 
         # check that the min and max dependencies supersede all default dependencies
         dependencies_not_covered_in_matrix: Set[str] = (
@@ -360,18 +349,16 @@ class Builder(metaclass=ABCMeta):
         # expose requirements as environment variables
 
         if self.dependency_type == DEP_DEFAULT:
-            requirements_to_expose = {**run_dependencies, **default_dependencies}
+            return run_dependencies
         elif self.dependency_type == DEP_MIN:
-            requirements_to_expose = min_dependencies
+            return min_dependencies
         elif self.dependency_type == DEP_MAX:
-            requirements_to_expose = max_dependencies
+            return max_dependencies
         else:
             raise ValueError(
                 f"unknown dependency type: {self.dependency_type!r}; "
                 f"expected one of: {DEP_DEFAULT}, {DEP_MIN}, {DEP_MAX}"
             )
-
-        return requirements_to_expose
 
     @abstractmethod
     def clean(self) -> None:
