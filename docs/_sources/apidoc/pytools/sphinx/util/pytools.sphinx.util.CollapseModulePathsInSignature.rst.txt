@@ -18,6 +18,7 @@ pytools.sphinx.util.CollapseModulePathsInSignature
    
       ~CollapseModulePathsInSignature.collapse_module_paths
       ~CollapseModulePathsInSignature.connect
+      ~CollapseModulePathsInSignature.disconnect
       ~CollapseModulePathsInSignature.process
    
    
@@ -28,7 +29,9 @@ pytools.sphinx.util.CollapseModulePathsInSignature
 
    .. autosummary::
    
+      ~CollapseModulePathsInSignature.app
       ~CollapseModulePathsInSignature.event
+      ~CollapseModulePathsInSignature.listener_id
    
    
 

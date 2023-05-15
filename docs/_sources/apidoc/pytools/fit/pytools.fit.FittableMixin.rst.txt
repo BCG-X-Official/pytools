@@ -16,7 +16,6 @@ pytools.fit.FittableMixin
    .. autosummary::
       :nosignatures:
    
-      ~FittableMixin.ensure_fitted
       ~FittableMixin.fit
    
    

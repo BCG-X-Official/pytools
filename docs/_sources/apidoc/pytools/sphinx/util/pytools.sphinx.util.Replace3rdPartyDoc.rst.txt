@@ -17,6 +17,7 @@ pytools.sphinx.util.Replace3rdPartyDoc
       :nosignatures:
    
       ~Replace3rdPartyDoc.connect
+      ~Replace3rdPartyDoc.disconnect
       ~Replace3rdPartyDoc.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.util.Replace3rdPartyDoc
 
    .. autosummary::
    
+      ~Replace3rdPartyDoc.app
       ~Replace3rdPartyDoc.event
+      ~Replace3rdPartyDoc.listener_id
    
    
 

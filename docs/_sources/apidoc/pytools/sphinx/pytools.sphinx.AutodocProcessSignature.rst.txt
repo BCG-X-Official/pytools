@@ -17,6 +17,7 @@ pytools.sphinx.AutodocProcessSignature
       :nosignatures:
    
       ~AutodocProcessSignature.connect
+      ~AutodocProcessSignature.disconnect
       ~AutodocProcessSignature.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.AutodocProcessSignature
 
    .. autosummary::
    
+      ~AutodocProcessSignature.app
       ~AutodocProcessSignature.event
+      ~AutodocProcessSignature.listener_id
    
    
 

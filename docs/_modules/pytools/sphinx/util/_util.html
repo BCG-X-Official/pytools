@@ -158,6 +158,8 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Implementation of sphinx utility callbacks specific to building Gamma documentation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
 <span class="kn">import</span> <span class="nn">collections.abc</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
@@ -192,6 +194,7 @@
 <span class="kn">import</span> <span class="nn">typing_inspect</span>
 
 <span class="kn">from</span> <span class="nn">...api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">get_generic_bases</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">public_module_prefix</span>
+<span class="kn">from</span> <span class="nn">...meta</span> <span class="kn">import</span> <span class="n">SingletonABCMeta</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AutodocBeforeProcessSignature</span><span class="p">,</span>
     <span class="n">AutodocProcessDocstring</span><span class="p">,</span>
@@ -253,9 +256,11 @@
     <span class="s2">&quot;CollapseModulePathsInDocstring&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CollapseModulePathsInSignature&quot;</span><span class="p">,</span>
     <span class="s2">&quot;CollapseModulePathsInXRef&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RenamePrivateArguments&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Replace3rdPartyDoc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ResolveTypeVariables&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SkipIndirectImports&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TrackCurrentClass&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1">#</span>
@@ -677,7 +682,7 @@
 
 
 <div class="viewcode-block" id="SkipIndirectImports"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.SkipIndirectImports.html#pytools.sphinx.util.SkipIndirectImports">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">SkipIndirectImports</span><span class="p">(</span><span class="n">AutodocSkipMember</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SkipIndirectImports</span><span class="p">(</span><span class="n">AutodocSkipMember</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Skip members imported by a private package.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -700,7 +705,7 @@
 
 
 <div class="viewcode-block" id="Replace3rdPartyDoc"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.Replace3rdPartyDoc.html#pytools.sphinx.util.Replace3rdPartyDoc">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">Replace3rdPartyDoc</span><span class="p">(</span><span class="n">AutodocProcessDocstring</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">Replace3rdPartyDoc</span><span class="p">(</span><span class="n">AutodocProcessDocstring</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace 3rd party docstrings with a reference to the 3rd party documentation.</span>
 
@@ -870,7 +875,19 @@
 
 
 <span class="k">class</span> <span class="nc">_TypeVarBindings</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+    <span class="n">current_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+    <span class="n">_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
+        <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">Dict</span><span class="p">[</span>
+            <span class="n">TypeVar</span><span class="p">,</span>
+            <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">],</span>
+        <span class="p">],</span>
+    <span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">current_class</span> <span class="o">=</span> <span class="n">current_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_bindings</span><span class="p">(</span>
             <span class="bp">cls</span><span class="o">=</span><span class="n">current_class</span><span class="p">,</span> <span class="n">subclass_bindings</span><span class="o">=</span><span class="p">{}</span>
@@ -943,7 +960,7 @@
 
 
 <div class="viewcode-block" id="ResolveTypeVariables"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">ResolveTypeVariables</span><span class="p">(</span><span class="n">AutodocBeforeProcessSignature</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ResolveTypeVariables</span><span class="p">(</span><span class="n">AutodocBeforeProcessSignature</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resolve type variables that can be inferred through generic class parameters or</span>
 <span class="sd">    ``self``/``cls`` special arguments.</span>
@@ -966,11 +983,28 @@
 
     <span class="n">original_signatures</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]]</span>
 
+    <span class="n">_current_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
     <span class="n">_current_class_bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span>
+    <span class="n">_track_current_class</span><span class="p">:</span> <span class="s2">&quot;TrackCurrentClass&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">original_signatures</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_current_class</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_track_current_class</span> <span class="o">=</span> <span class="n">TrackCurrentClass</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ResolveTypeVariables.connect"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">TrackCurrentClass</span><span class="p">()</span><span class="o">.</span><span class="n">app</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">app</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;connect </span><span class="si">{</span><span class="n">TrackCurrentClass</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">() to the same app &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;before connecting </span><span class="si">{</span><span class="n">ResolveTypeVariables</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">()&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">priority</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_resolve_function_signature</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span>
@@ -1139,28 +1173,58 @@
 <div class="viewcode-block" id="ResolveTypeVariables.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bound_method</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
-            <span class="c1"># we are starting to process a new class; remember it, so we can</span>
-            <span class="c1"># attribute unbound methods to it</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_track_current_class</span><span class="o">.</span><span class="n">current_class</span><span class="p">)</span>
 
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
-            <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">):</span>
+            <span class="c1"># instance method definitions are unbound, so we need to determine</span>
+            <span class="c1"># the class we are currently in from context</span>
 
-            <span class="c1"># instance method definitions are unbound, so we need to remember</span>
-            <span class="c1"># the class we are currently in</span>
-            <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+            <span class="n">bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">:</span>
+                <span class="c1"># this is a function, not a method</span>
+                <span class="k">return</span>
+
+            <span class="n">defining_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">defining_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;function </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2"> has a defining class&quot;</span>
+
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;__init__&quot;</span><span class="p">,</span> <span class="s2">&quot;__init_subclass__&quot;</span><span class="p">,</span> <span class="s2">&quot;__new__&quot;</span><span class="p">]</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__call__&quot;</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># special case of class initializer, this usually means that we are</span>
+                <span class="c1"># starting to document a new class, or refer to a special method</span>
+                <span class="c1"># of a metaclass</span>
+                <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="n">defining_class</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
+
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">bindings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;bindings are in place for function </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span><span class="p">,</span> <span class="n">defining_class</span><span class="p">),</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;current class </span><span class="si">{</span><span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is a subclass of the class of unbound method </span><span class="si">{</span><span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;class=</span><span class="si">{</span><span class="n">defining_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">):</span>
             <span class="c1"># class method definitions are bound, so we can infer the current class</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__self__</span>
             <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">),</span> <span class="s2">&quot;methods are class methods&quot;</span>
 
-            <span class="n">current_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_update_current_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-            <span class="k">assert</span> <span class="n">current_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">bindings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span> <span class="s2">&quot;bindings expected to be in place when processing a bound method&quot;</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span> <span class="ow">is</span> <span class="bp">cls</span>
+            <span class="p">),</span> <span class="s2">&quot;bindings expected to be for the correct class&quot;</span>
+
             <span class="c1"># noinspection PyTypeChecker</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">current_class</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_update_current_class</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
@@ -1169,9 +1233,10 @@
             <span class="k">return</span> <span class="kc">None</span>
 
         <span class="n">bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
-        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">type</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> is a class&quot;</span>
-        <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
-            <span class="c1"># we&#39;re visiting the class for the first time</span>
+
+        <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">cls</span><span class="p">:</span>
+            <span class="c1"># we&#39;re visiting a new class</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;visiting new class </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="c1"># create a TypeVar bindings object for this class</span>
             <span class="n">bindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="o">=</span> <span class="n">_TypeVarBindings</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
@@ -1180,6 +1245,107 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_attribute_signatures</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">bindings</span></div>
+
+
+<div class="viewcode-block" id="TrackCurrentClass"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.TrackCurrentClass.html#pytools.sphinx.util.TrackCurrentClass">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">TrackCurrentClass</span><span class="p">(</span><span class="n">AutodocProcessSignature</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Keep track of the class currently being processed by autodoc.</span>
+
+<span class="sd">    This is required to attribute unbound methods to the correct class, e.g.,</span>
+<span class="sd">    in class :class:`.ResolveTypeVariables`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: The class currently being processed by autodoc.</span>
+    <span class="n">current_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_class</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="TrackCurrentClass.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.TrackCurrentClass.html#pytools.sphinx.util.TrackCurrentClass.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span>
+        <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">signature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">return_annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_class</span> <span class="o">=</span> <span class="bp">cls</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
+<div class="viewcode-block" id="RenamePrivateArguments"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.RenamePrivateArguments.html#pytools.sphinx.util.RenamePrivateArguments">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">RenamePrivateArguments</span><span class="p">(</span><span class="n">AutodocBeforeProcessSignature</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rename private argument names to their original names given in the source code.</span>
+
+<span class="sd">    For example, arg ``__x`` of method ``f`` in</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class A:</span>
+<span class="sd">            def f(self, __x: int) -&gt; None:</span>
+<span class="sd">                ...</span>
+
+<span class="sd">    will be renamed from its internal, private name ``_A__x`` back to ``__x``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="RenamePrivateArguments.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.RenamePrivateArguments.html#pytools.sphinx.util.RenamePrivateArguments.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">bound_method</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">bound_method</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">FunctionType</span><span class="p">)):</span>
+            <span class="k">return</span>
+
+        <span class="c1"># get the name of the module or class that the function is a member of</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">containers</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">containers</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">private_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">containers</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">__&quot;</span>
+
+        <span class="k">def</span> <span class="nf">get_public_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">private_prefix</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">name</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">private_prefix</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span> <span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">name</span>
+
+        <span class="c1"># get the original signature</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">annotations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__annotations__</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">annotations_original</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">annotations</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">annotations_original</span><span class="p">:</span>
+            <span class="n">public_name</span> <span class="o">=</span> <span class="n">get_public_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">public_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">annotations</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                <span class="n">annotations</span><span class="p">[</span><span class="n">public_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">annotation</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__code__</span>
+            <span class="n">arg_and_variable_names</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">co_varnames</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">private_prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">arg_and_variable_names</span><span class="p">):</span>
+                <span class="n">obj</span><span class="o">.</span><span class="vm">__code__</span> <span class="o">=</span> <span class="n">code</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="n">co_varnames</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
+                        <span class="n">get_public_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">arg_and_variable_names</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span></div></div>
 
 
 <span class="c1">#</span>

@@ -17,6 +17,7 @@ pytools.sphinx.util.AddInheritance
       :nosignatures:
    
       ~AddInheritance.connect
+      ~AddInheritance.disconnect
       ~AddInheritance.process
    
    
@@ -30,7 +31,9 @@ pytools.sphinx.util.AddInheritance
       ~AddInheritance.F_BASES
       ~AddInheritance.F_GENERICS
       ~AddInheritance.F_METACLASSES
+      ~AddInheritance.app
       ~AddInheritance.event
+      ~AddInheritance.listener_id
    
    
 

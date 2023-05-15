@@ -17,6 +17,7 @@ pytools.sphinx.AutodocSkipMember
       :nosignatures:
    
       ~AutodocSkipMember.connect
+      ~AutodocSkipMember.disconnect
       ~AutodocSkipMember.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.AutodocSkipMember
 
    .. autosummary::
    
+      ~AutodocSkipMember.app
       ~AutodocSkipMember.event
+      ~AutodocSkipMember.listener_id
    
    
 

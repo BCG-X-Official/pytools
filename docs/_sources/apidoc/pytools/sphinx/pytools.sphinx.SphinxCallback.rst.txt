@@ -17,6 +17,7 @@ pytools.sphinx.SphinxCallback
       :nosignatures:
    
       ~SphinxCallback.connect
+      ~SphinxCallback.disconnect
    
    
 
@@ -26,7 +27,9 @@ pytools.sphinx.SphinxCallback
 
    .. autosummary::
    
+      ~SphinxCallback.app
       ~SphinxCallback.event
+      ~SphinxCallback.listener_id
    
    
 

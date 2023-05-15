@@ -35,7 +35,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="pytools.fit.NotFittedError" href="pytools.fit.NotFittedError.html" />
+    <link rel="next" title="pytools.fit.fitted_only" href="pytools.fit.fitted_only.html" />
     <link rel="prev" title="pytools.fit" href="../pytools.fit.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -622,6 +622,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="pytools.fit.fitted_only.html">
+     pytools.fit.fitted_only
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="pytools.fit.NotFittedError.html">
      pytools.fit.NotFittedError
     </a>
@@ -773,6 +778,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.RenamePrivateArguments.html">
+       pytools.sphinx.util.RenamePrivateArguments
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.Replace3rdPartyDoc.html">
        pytools.sphinx.util.Replace3rdPartyDoc
       </a>
@@ -785,6 +795,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.SkipIndirectImports.html">
        pytools.sphinx.util.SkipIndirectImports
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="../sphinx/util/pytools.sphinx.util.TrackCurrentClass.html">
+       pytools.sphinx.util.TrackCurrentClass
       </a>
      </li>
     </ul>
@@ -1111,6 +1126,30 @@
 <dt class="sig sig-object py" id="pytools.fit.FittableMixin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytools.fit.</span></span><span class="sig-name descname"><span class="pre">FittableMixin</span></span><a class="reference internal" href="../../../_modules/pytools/fit/_fit.html#FittableMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.fit.FittableMixin" title="Permalink to this definition">#</a></dt>
 <dd><p>Mix-in class that supports fitting the object to data.</p>
+<p>See also the <a class="reference internal" href="pytools.fit.fitted_only.html#pytools.fit.fitted_only" title="pytools.fit.fitted_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fitted_only</span></code></a> decorator.</p>
+<p>Usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyFittable</span><span class="p">(</span><span class="n">FittableMixin</span><span class="p">[</span><span class="n">MyData</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">MyData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MyFittable&quot;</span><span class="p">:</span>
+        <span class="c1"># fit object to data</span>
+        <span class="o">...</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">is_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># Return True if the object is fitted, False otherwise</span>
+        <span class="o">...</span>
+
+    <span class="nd">@fitted_only</span>
+    <span class="k">def</span> <span class="nf">some_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
+        <span class="c1"># This method may only be called if the object is fitted</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This class is not meant to be instantiated directly. Instead, it is
+meant to be used as a mix-in class for other classes.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Generic types</dt>
 <dd class="field-odd"><p>~T_Data</p>
@@ -1126,10 +1165,7 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.fit.FittableMixin.ensure_fitted" title="pytools.fit.FittableMixin.ensure_fitted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ensure_fitted</span></code></a></p></td>
-<td><p>Ensure that this object is not fitted.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a></p></td>
 <td><p>Fit this object to the given data.</p></td>
 </tr>
 </tbody>
@@ -1147,20 +1183,6 @@
 </tbody>
 </table>
 <p class="rubric">Definitions</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pytools.fit.FittableMixin.ensure_fitted">
-<span class="sig-name descname"><span class="pre">ensure_fitted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/fit/_fit.html#FittableMixin.ensure_fitted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.fit.FittableMixin.ensure_fitted" title="Permalink to this definition">#</a></dt>
-<dd><p>Ensure that this object is not fitted.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference internal" href="pytools.fit.NotFittedError.html#pytools.fit.NotFittedError" title="pytools.fit.NotFittedError"><strong>pytools.fit.NotFittedError</strong></a> – this object is not fitted</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.fit.FittableMixin.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">__x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">fit_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/pytools/fit/_fit.html#FittableMixin.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.fit.FittableMixin.fit" title="Permalink to this definition">#</a></dt>
@@ -1209,10 +1231,10 @@
             <p class="prev-next-title">pytools.fit</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="pytools.fit.NotFittedError.html" title="next page">
+    <a class='right-next' id="next-link" href="pytools.fit.fitted_only.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">pytools.fit.NotFittedError</p>
+        <p class="prev-next-title">pytools.fit.fitted_only</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>

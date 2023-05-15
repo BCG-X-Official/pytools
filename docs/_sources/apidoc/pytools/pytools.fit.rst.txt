@@ -23,6 +23,16 @@ pytools.fit
 
    
    
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: fit
+      :nosignatures:
+   
+      fitted_only
+   
    
 
    

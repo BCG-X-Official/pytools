@@ -18,6 +18,7 @@ pytools.sphinx.util.CollapseModulePathsInDocstring
    
       ~CollapseModulePathsInDocstring.collapse_module_paths
       ~CollapseModulePathsInDocstring.connect
+      ~CollapseModulePathsInDocstring.disconnect
       ~CollapseModulePathsInDocstring.process
    
    
@@ -28,7 +29,9 @@ pytools.sphinx.util.CollapseModulePathsInDocstring
 
    .. autosummary::
    
+      ~CollapseModulePathsInDocstring.app
       ~CollapseModulePathsInDocstring.event
+      ~CollapseModulePathsInDocstring.listener_id
    
    
 

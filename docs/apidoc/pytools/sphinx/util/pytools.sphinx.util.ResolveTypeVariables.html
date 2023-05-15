@@ -622,6 +622,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../fit/pytools.fit.fitted_only.html">
+     pytools.fit.fitted_only
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../fit/pytools.fit.NotFittedError.html">
      pytools.fit.NotFittedError
     </a>
@@ -773,6 +778,11 @@
       </a>
      </li>
      <li class="toctree-l3">
+      <a class="reference internal" href="pytools.sphinx.util.RenamePrivateArguments.html">
+       pytools.sphinx.util.RenamePrivateArguments
+      </a>
+     </li>
+     <li class="toctree-l3">
       <a class="reference internal" href="pytools.sphinx.util.Replace3rdPartyDoc.html">
        pytools.sphinx.util.Replace3rdPartyDoc
       </a>
@@ -785,6 +795,11 @@
      <li class="toctree-l3">
       <a class="reference internal" href="pytools.sphinx.util.SkipIndirectImports.html">
        pytools.sphinx.util.SkipIndirectImports
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="pytools.sphinx.util.TrackCurrentClass.html">
+       pytools.sphinx.util.TrackCurrentClass
       </a>
      </li>
     </ul>
@@ -1129,7 +1144,7 @@ following example will be rendered with the signature <code class="docutils lite
 <dd class="field-odd"><p><a class="reference internal" href="../pytools.sphinx.AutodocBeforeProcessSignature.html#pytools.sphinx.AutodocBeforeProcessSignature" title="pytools.sphinx.AutodocBeforeProcessSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">AutodocBeforeProcessSignature</span></code></a></p>
 </dd>
 <dt class="field-even">Metaclasses</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/abc.html#abc.ABCMeta" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
+<dd class="field-even"><p><a class="reference internal" href="../../meta/pytools.meta.SingletonABCMeta.html#pytools.meta.SingletonABCMeta" title="pytools.meta.SingletonABCMeta"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingletonABCMeta</span></code></a>, <a class="reference internal" href="../../meta/pytools.meta.SingletonMeta.html#pytools.meta.SingletonMeta" title="pytools.meta.SingletonMeta"><code class="xref py py-class docutils literal notranslate"><span class="pre">SingletonMeta</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/abc.html#abc.ABCMeta" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
 </dd>
 </dl>
 <p class="rubric">Method summary</p>
@@ -1142,7 +1157,10 @@ following example will be rendered with the signature <code class="docutils lite
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.connect" title="pytools.sphinx.util.ResolveTypeVariables.connect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connect</span></code></a></p></td>
 <td><p>Register this callback to be called when <a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.event" title="pytools.sphinx.util.ResolveTypeVariables.event"><code class="xref py py-attr docutils literal notranslate"><span class="pre">event</span></code></a> is emitted.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.process" title="pytools.sphinx.util.ResolveTypeVariables.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.disconnect" title="pytools.sphinx.util.ResolveTypeVariables.disconnect"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disconnect</span></code></a></p></td>
+<td><p>Disconnect this callback from its Sphinx application.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.process" title="pytools.sphinx.util.ResolveTypeVariables.process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process</span></code></a></p></td>
 <td><p>Process an event.</p></td>
 </tr>
 </tbody>
@@ -1154,8 +1172,14 @@ following example will be rendered with the signature <code class="docutils lite
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.event" title="pytools.sphinx.util.ResolveTypeVariables.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.app" title="pytools.sphinx.util.ResolveTypeVariables.app"><code class="xref py py-obj docutils literal notranslate"><span class="pre">app</span></code></a></p></td>
+<td><p>The Sphinx application this callback is connected to.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.event" title="pytools.sphinx.util.ResolveTypeVariables.event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">event</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">&quot;autodoc-before-process-signature&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.listener_id" title="pytools.sphinx.util.ResolveTypeVariables.listener_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listener_id</span></code></a></p></td>
+<td><p>The listener ID of this callback.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">original_signatures</span></code></p></td>
 <td><p></p></td>
@@ -1176,14 +1200,14 @@ following example will be rendered with the signature <code class="docutils lite
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytools.sphinx.util.ResolveTypeVariables.connect">
-<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.connect" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/sphinx/util/_util.html#ResolveTypeVariables.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.connect" title="Permalink to this definition">#</a></dt>
 <dd><p>Register this callback to be called when <a class="reference internal" href="#pytools.sphinx.util.ResolveTypeVariables.event" title="pytools.sphinx.util.ResolveTypeVariables.event"><code class="xref py py-attr docutils literal notranslate"><span class="pre">event</span></code></a> is emitted.</p>
 <p>Registered callbacks will be invoked on event in the order of priority and
 registration. The priority is ascending order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – the Sphinx application to register this processor with</p></li>
+<li><p><strong>app</strong> (<a class="reference external" href="https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx" title="(in Sphinx v7.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sphinx</span></code></a>) – the Sphinx application to register this processor with</p></li>
 <li><p><strong>priority</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]) – the priority of this processor</p></li>
 </ul>
 </dd>
@@ -1192,7 +1216,18 @@ registration. The priority is ascending order.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>a listener ID that can be used as an argument to
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.disconnect" title="(in Sphinx v6.2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">disconnect()</span></code></a>.</p>
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx.disconnect" title="(in Sphinx v7.1.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">disconnect()</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.sphinx.util.ResolveTypeVariables.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.disconnect" title="Permalink to this definition">#</a></dt>
+<dd><p>Disconnect this callback from its Sphinx application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1204,7 +1239,7 @@ registration. The priority is ascending order.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> (<a class="reference external" href="https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx" title="(in Sphinx v6.2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sphinx</span></code></a>) – the Sphinx application object</p></li>
+<li><p><strong>app</strong> (<a class="reference external" href="https://www.sphinx-doc.org/en/master/extdev/appapi.html#sphinx.application.Sphinx" title="(in Sphinx v7.1.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sphinx</span></code></a>) – the Sphinx application object</p></li>
 <li><p><strong>obj</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>) – the object itself</p></li>
 <li><p><strong>bound_method</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – indicates an object is bound method or not</p></li>
 </ul>
@@ -1216,12 +1251,40 @@ registration. The priority is ascending order.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="pytools.sphinx.util.ResolveTypeVariables.app">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">app</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.app" title="Permalink to this definition">#</a></dt>
+<dd><p>The Sphinx application this callback is connected to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Any" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the Sphinx application, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not connected.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="pytools.sphinx.util.ResolveTypeVariables.event">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a></em><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.event" title="Permalink to this definition">#</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">&quot;autodoc-before-process-signature&quot;</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pytools.sphinx.util.ResolveTypeVariables.listener_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">listener_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.sphinx.util.ResolveTypeVariables.listener_id" title="Permalink to this definition">#</a></dt>
+<dd><p>The listener ID of this callback.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the listener ID, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not connected.</p>
 </dd>
 </dl>
 </dd></dl>

@@ -17,6 +17,7 @@ pytools.sphinx.util.ResolveTypeVariables
       :nosignatures:
    
       ~ResolveTypeVariables.connect
+      ~ResolveTypeVariables.disconnect
       ~ResolveTypeVariables.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.util.ResolveTypeVariables
 
    .. autosummary::
    
+      ~ResolveTypeVariables.app
       ~ResolveTypeVariables.event
+      ~ResolveTypeVariables.listener_id
       ~ResolveTypeVariables.original_signatures
    
    

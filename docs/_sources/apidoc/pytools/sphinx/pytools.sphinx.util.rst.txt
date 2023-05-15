@@ -22,9 +22,11 @@ pytools.sphinx.util
       CollapseModulePathsInDocstring
       CollapseModulePathsInSignature
       CollapseModulePathsInXRef
+      RenamePrivateArguments
       Replace3rdPartyDoc
       ResolveTypeVariables
       SkipIndirectImports
+      TrackCurrentClass
    
    
 

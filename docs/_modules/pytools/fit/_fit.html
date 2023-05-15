@@ -158,9 +158,20 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Core implementation of :mod:`pytools.fit`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generic</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">cast</span><span class="p">,</span>
+    <span class="n">overload</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">..api</span> <span class="kn">import</span> <span class="n">AllTracker</span>
 
@@ -170,7 +181,11 @@
 <span class="c1"># Exported names</span>
 <span class="c1">#</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;NotFittedError&quot;</span><span class="p">,</span> <span class="s2">&quot;FittableMixin&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;NotFittedError&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;FittableMixin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fitted_only&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 
 <span class="c1">#</span>
@@ -179,6 +194,7 @@
 
 <span class="n">T_Self</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_Self&quot;</span><span class="p">)</span>
 <span class="n">T_Data</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_Data&quot;</span><span class="p">)</span>
+<span class="n">T_Callable</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_Callable&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span>
 
 
 <span class="c1">#</span>
@@ -196,12 +212,41 @@
 <div class="viewcode-block" id="NotFittedError"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.NotFittedError.html#pytools.fit.NotFittedError">[docs]</a><span class="k">class</span> <span class="nc">NotFittedError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when a fittable object was expected to be fitted but was not fitted.</span>
+
+<span class="sd">    See also :class:`FittableMixin` and the :obj:`fitted_only` decorator.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="FittableMixin"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin">[docs]</a><span class="k">class</span> <span class="nc">FittableMixin</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_Data</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="c1"># noinspection GrazieInspection</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Mix-in class that supports fitting the object to data.</span>
+
+<span class="sd">    See also the :obj:`fitted_only` decorator.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class MyFittable(FittableMixin[MyData]):</span>
+<span class="sd">            def fit(self, data: MyData) -&gt; &quot;MyFittable&quot;:</span>
+<span class="sd">                # fit object to data</span>
+<span class="sd">                ...</span>
+
+<span class="sd">                return self</span>
+
+<span class="sd">            def is_fitted(self) -&gt; bool:</span>
+<span class="sd">                # Return True if the object is fitted, False otherwise</span>
+<span class="sd">                ...</span>
+
+<span class="sd">            @fitted_only</span>
+<span class="sd">            def some_method(self, ...) -&gt; ...:</span>
+<span class="sd">                # This method may only be called if the object is fitted</span>
+<span class="sd">                ...</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This class is not meant to be instantiated directly. Instead, it is</span>
+<span class="sd">        meant to be used as a mix-in class for other classes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="FittableMixin.fit"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit">[docs]</a>    <span class="nd">@abstractmethod</span>
@@ -221,16 +266,68 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        ``True`` if this object is fitted, ``False`` otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span>
+        <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="FittableMixin.ensure_fitted"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.ensure_fitted">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_fitted</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Ensure that this object is not fitted.</span>
 
-<span class="sd">        :raise pytools.fit.NotFittedError: this object is not fitted</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">fitted_only</span><span class="p">(</span><span class="n">__method</span><span class="p">:</span> <span class="n">T_Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T_Callable</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;[overloaded]&quot;&quot;&quot;</span>
+
+
+<span class="nd">@overload</span>
+<span class="k">def</span> <span class="nf">fitted_only</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">not_fitted_error</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">=</span> <span class="n">NotFittedError</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T_Callable</span><span class="p">],</span> <span class="n">T_Callable</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;[overloaded]&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="fitted_only"><a class="viewcode-back" href="../../../apidoc/pytools/fit/pytools.fit.fitted_only.html#pytools.fit.fitted_only">[docs]</a><span class="k">def</span> <span class="nf">fitted_only</span><span class="p">(</span>
+    <span class="n">__method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T_Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">not_fitted_error</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="ne">Exception</span><span class="p">]</span> <span class="o">=</span> <span class="n">NotFittedError</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">T_Callable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T_Callable</span><span class="p">],</span> <span class="n">T_Callable</span><span class="p">]]:</span>
+    <span class="c1"># noinspection GrazieInspection</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator that ensures that the decorated method is only called if the object is</span>
+<span class="sd">    fitted.</span>
+
+<span class="sd">    The decorated method must be a method of a class that inherits from</span>
+<span class="sd">    :class:`FittableMixin`, or implements a boolean property ``is_fitted``.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">      class MyFittable(FittableMixin):</span>
+<span class="sd">          def __init__(self) -&gt; None:</span>
+<span class="sd">              self._is_fitted = False</span>
+
+<span class="sd">          @fitted_only</span>
+<span class="sd">          def my_method(self) -&gt; None:</span>
+<span class="sd">              # this method may only be called if the object is fitted</span>
+<span class="sd">              ...</span>
+
+<span class="sd">          @property</span>
+<span class="sd">          def is_fitted(self) -&gt; bool:</span>
+<span class="sd">              return self._is_fitted</span>
+
+<span class="sd">    :param __method: the method to decorate</span>
+<span class="sd">    :param not_fitted_error: the type of exception to raise if the object is not fitted;</span>
+<span class="sd">        defaults to :class:`.NotFittedError`</span>
+<span class="sd">    :return: the decorated method</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">__method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fitted_only</span><span class="p">,</span> <span class="n">not_fitted_error</span><span class="o">=</span><span class="n">not_fitted_error</span><span class="p">)</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">T_Callable</span> <span class="o">=</span> <span class="n">__method</span>
+
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FittableMixin</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotFittedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not fitted&quot;</span><span class="p">)</span></div></div>
+            <span class="k">raise</span> <span class="n">not_fitted_error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not fitted&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T_Callable</span><span class="p">,</span> <span class="n">_wrapper</span><span class="p">)</span></div>
 
 
 <span class="n">__tracker</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>

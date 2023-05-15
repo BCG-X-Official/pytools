@@ -17,6 +17,7 @@ pytools.sphinx.AutodocProcessBases
       :nosignatures:
    
       ~AutodocProcessBases.connect
+      ~AutodocProcessBases.disconnect
       ~AutodocProcessBases.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.AutodocProcessBases
 
    .. autosummary::
    
+      ~AutodocProcessBases.app
       ~AutodocProcessBases.event
+      ~AutodocProcessBases.listener_id
    
    
 

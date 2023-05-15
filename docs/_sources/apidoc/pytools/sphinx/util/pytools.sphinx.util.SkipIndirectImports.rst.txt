@@ -17,6 +17,7 @@ pytools.sphinx.util.SkipIndirectImports
       :nosignatures:
    
       ~SkipIndirectImports.connect
+      ~SkipIndirectImports.disconnect
       ~SkipIndirectImports.process
    
    
@@ -27,7 +28,9 @@ pytools.sphinx.util.SkipIndirectImports
 
    .. autosummary::
    
+      ~SkipIndirectImports.app
       ~SkipIndirectImports.event
+      ~SkipIndirectImports.listener_id
    
    
 
