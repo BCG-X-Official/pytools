@@ -5,7 +5,6 @@ dependency definition of pyproject.toml as environment variables
 """
 from __future__ import annotations
 
-import itertools
 import os
 import re
 import shutil
@@ -15,7 +14,7 @@ import warnings
 from abc import ABCMeta, abstractmethod
 from glob import glob
 from traceback import print_exc
-from typing import Any, Dict, Iterator, List, Mapping, Set, cast
+from typing import Any, Collection, Dict, Iterator, List, Mapping, Set, cast
 from urllib import request
 from xml.etree import ElementTree
 
@@ -34,7 +33,10 @@ from make_util import get_package_version
 FACET_PATH_ENV = "FACET_PATH"
 FACET_PATH_URI_ENV = "FACET_PATH_URI"
 FACET_BUILD_PKG_VERSION_ENV = "FACET_BUILD_{project}_VERSION"
-FACET_DEPENDENCY_VERSION_ENV = "FACET_V_{package}"
+FACET_DEPENDENCY_VERSION_ENV_PREFIX = "FACET_V_"
+PATTERN_ENV_VERSION_REFERENCE = re.compile(
+    r"{env:(" + FACET_DEPENDENCY_VERSION_ENV_PREFIX + r"\w+):?}"
+)
 CONDA_BUILD_PATH_ENV = "CONDA_BLD_PATH"
 FACET_NO_BINARY_ENV = "FACET_NO_BINARY"
 
@@ -230,21 +232,28 @@ class Builder(metaclass=ABCMeta):
     def adapt_version_requirement_syntax(self, version: str) -> str:
         pass
 
-    def expose_package_dependencies(self) -> None:
+    def expose_package_dependencies(self) -> Mapping[str, str]:
         """
         Export package dependencies for builds as environment variables.
+
+        :return: package/version mapping of dependencies that were exposed
+            as environment variables
         """
 
         requirements_to_expose = self._get_requirements_to_expose()
 
-        for package, version in requirements_to_expose.items():
-            # bash ENV variables can not use dash, replace it to _
-            export_environment_variable(
-                name=FACET_DEPENDENCY_VERSION_ENV.format(
-                    package=re.sub(r"[^\w]", "_", package.upper())
-                ),
-                value=version,
-            )
+        environment_version_variables: Dict[str, str] = {
+            # replace non-word characters with '_' to make valid environment variable
+            # names
+            (
+                FACET_DEPENDENCY_VERSION_ENV_PREFIX
+                + re.sub(r"\W", "_", package.upper())
+            ): version
+            for package, version in requirements_to_expose.items()
+        }
+
+        for package, version in environment_version_variables.items():
+            export_environment_variable(name=package, value=version)
 
         # get packages to be built from source
         build_no_binaries: List[str] = (
@@ -272,6 +281,8 @@ class Builder(metaclass=ABCMeta):
         export_environment_variable(
             name=FACET_NO_BINARY_ENV, value=",".join(build_no_binaries)
         )
+
+        return environment_version_variables
 
     def _get_run_dependencies(self) -> Mapping[str, str]:
         # get the python version and run dependencies from the flit metadata
@@ -308,20 +319,22 @@ class Builder(metaclass=ABCMeta):
         ][TOML_MATRIX]
 
         def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
+            dependencies: Dict[str, str] = build_matrix_definition.get(matrix_type, {})
+            if not dependencies:
+                return {}
             return {
                 name: self.adapt_version_requirement_syntax(
                     validate_pip_version_spec(
                         dependency_type=matrix_type, package=name, spec=version
                     )
                 )
-                for name, version in build_matrix_definition[matrix_type].items()
+                for name, version in dependencies.items()
             }
 
         min_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MIN)
         max_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MAX)
 
-        # check that the matrix dependencies cover all run dependencies
-
+        # check that the min and max dependencies supersede all default dependencies
         dependencies_not_covered_in_matrix: Set[str] = (
             run_dependencies.keys() - min_dependencies.keys()
         ) | (run_dependencies.keys() - max_dependencies.keys())
@@ -336,22 +349,16 @@ class Builder(metaclass=ABCMeta):
         # expose requirements as environment variables
 
         if self.dependency_type == DEP_DEFAULT:
-            requirements_to_expose = run_dependencies
+            return run_dependencies
         elif self.dependency_type == DEP_MIN:
-            requirements_to_expose = min_dependencies
+            return min_dependencies
+        elif self.dependency_type == DEP_MAX:
+            return max_dependencies
         else:
-            assert self.dependency_type == DEP_MAX
-            requirements_to_expose = max_dependencies
-
-        # add packages that are only mentioned in the matrix requirements
-        requirements_to_expose.update(
-            {
-                package: ""
-                for package in itertools.chain(min_dependencies, max_dependencies)
-                if package not in requirements_to_expose
-            }
-        )
-        return requirements_to_expose
+            raise ValueError(
+                f"unknown dependency type: {self.dependency_type!r}; "
+                f"expected one of: {DEP_DEFAULT}, {DEP_MIN}, {DEP_MAX}"
+            )
 
     @abstractmethod
     def clean(self) -> None:
@@ -368,15 +375,19 @@ class Builder(metaclass=ABCMeta):
         log(f"{separator}\n{message}\n{separator}")
 
     @abstractmethod
-    def build(self) -> None:
-        pass
+    def build(self, exposed_package_dependencies: Mapping[str, str]) -> None:
+        """
+        Build the project.
+
+        :param exposed_package_dependencies: package/version mapping of the
+            dependencies that have been exposed as environment variables
+        """
 
     def run(self) -> None:
         self.print_build_info(stage="STARTING")
         self.validate_release_version()
         self.clean()
-        self.expose_package_dependencies()
-        self.build()
+        self.build(exposed_package_dependencies=self.expose_package_dependencies())
         self.print_build_info(stage="COMPLETED")
 
 
@@ -424,9 +435,12 @@ class CondaBuilder(Builder):
         # remove broken packages
         shutil.rmtree(os.path.join(build_path, "broken"), ignore_errors=True)
 
-    def build(self) -> None:
+    def build(self, exposed_package_dependencies: Mapping[str, str]) -> None:
         """
         Build a facet project using conda-build.
+
+        :param exposed_package_dependencies: package/version mapping of the
+            dependencies that have been exposed as environment variables
         """
 
         build_path = self.make_build_path()
@@ -447,6 +461,16 @@ class CondaBuilder(Builder):
 
 
 class ToxBuilder(Builder):
+
+    # the suffix of the tox build file
+    SUFFIX_TOX_INI = ".ini"
+    # the name of the tox build file
+    FILE_TOX_INI = f"tox{SUFFIX_TOX_INI}"
+    # the name of the tox build file
+    FILE_TOX_INI_TMP = f"tox_tmp{SUFFIX_TOX_INI}"
+    # string to use for indented console output
+    INDENT = "  "
+
     @property
     def build_system(self) -> str:
         return B_TOX
@@ -463,9 +487,12 @@ class ToxBuilder(Builder):
         # .tox is useful to keep
         pass
 
-    def build(self) -> None:
+    def build(self, exposed_package_dependencies: Mapping[str, str]) -> None:
         """
         Build a facet project using tox.
+
+        :param exposed_package_dependencies: package/version mapping of the
+            dependencies that have been exposed as environment variables
         """
         if self.dependency_type == DEP_DEFAULT:
             tox_env = "py3"
@@ -480,7 +507,12 @@ class ToxBuilder(Builder):
             os.makedirs(build_path, exist_ok=True)
             os.chdir(build_path)
 
-            build_cmd = f"tox -e {tox_env} -v"
+            # create a copy of tox.ini, removing all lines that reference
+            # dependencies that have not been exposed as environment variables
+            path_tox_ini = self._patch_tox_ini(exposed_package_dependencies.keys())
+
+            # run tox
+            build_cmd = f"tox -c '{path_tox_ini}' -e {tox_env} -v"
             log(f"Build Command: {build_cmd}")
             subprocess.run(args=build_cmd, shell=True, check=True)
             log("Tox build completed – creating local PyPi index")
@@ -519,6 +551,72 @@ class ToxBuilder(Builder):
 
         finally:
             os.chdir(original_dir)
+
+    def _patch_tox_ini(self, exposed_version_variables: Collection[str]) -> str:
+        """
+        Remove all lines from the tox.ini file that reference environment variables
+        that we have not exported.
+
+        :param exposed_version_variables: package names of the dependencies that have
+            been exposed as environment variables
+        :return: the path to the resulting temporary tox.ini file
+        """
+
+        tox_ini_dir = os.path.join(os.environ[FACET_PATH_ENV], self.project)
+
+        # get the path to tox.ini
+        tox_ini_path = os.path.abspath(
+            os.path.join(tox_ini_dir, ToxBuilder.FILE_TOX_INI)
+        )
+
+        # create a temporary copy of tox.ini, with the prefix "tmp_" in the filename
+        tox_ini_tmp_path = os.path.abspath(
+            os.path.join(tox_ini_dir, ToxBuilder.FILE_TOX_INI_TMP)
+        )
+
+        # get the list of all environment variables starting with the facet prefix
+        print(
+            "Exported version variables: "
+            + ", ".join(sorted(exposed_version_variables))
+        )
+
+        # read all lines from the original tox.ini file and write them to the temporary
+        # file, unless they reference a facet dependency environment variable which
+        # has not been exported
+
+        removed_lines: List[str] = []
+        with open(tox_ini_path, "rt") as f_in, open(tox_ini_tmp_path, "wt") as f_out:
+            for line in f_in.readlines():
+                # get all environment variables referenced in the line
+                # these use the tox.ini `{env:` syntax and start with the
+                # FACET_DEPENDENCY_VERSION_ENV_PREFIX
+                referenced_env_vars = re.findall(
+                    pattern=PATTERN_ENV_VERSION_REFERENCE, string=line
+                )
+                # if there are no such environment variables, or all of them have been
+                # exported, write the line to the temporary file
+                if not referenced_env_vars or all(
+                    env_var in exposed_version_variables
+                    for env_var in referenced_env_vars
+                ):
+                    f_out.write(line)
+                else:
+                    removed_lines.append(line.strip())
+
+        # if there were any lines removed, print a warning
+
+        if removed_lines:
+            log(
+                f"WARNING: The following lines were removed from {tox_ini_path} "
+                f"because they referenced environment variables that have not been "
+                f"exported: \n{self.INDENT}" + f"\n{self.INDENT}".join(removed_lines)
+            )
+
+        # log the path to the temporary tox.ini file
+        log(f"Temporary tox.ini file created at: {tox_ini_tmp_path}")
+
+        # return the path to the temporary tox.ini file
+        return tox_ini_tmp_path
 
 
 def get_projects_root_path() -> str:
