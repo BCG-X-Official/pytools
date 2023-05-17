@@ -248,7 +248,7 @@ stages:
               export MAMBA_ROOT_PREFIX=~/micromamba
               eval "$(./bin/micromamba shell hook -s posix)"
 
-              mamba install -y -c conda-forge boa~=0.14 toml~=0.10 flit~=3.6 packaging~=20.9
+              micromamba install -y -c conda-forge boa~=0.14 toml~=0.10 flit~=3.6 packaging~=20.9
             displayName: 'Install conda-build, flit, toml'
             condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
