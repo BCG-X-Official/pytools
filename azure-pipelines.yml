@@ -269,7 +269,10 @@ stages:
               targetType: 'inline'
               script: |
                 set -eux
-                if [ "$BUILD_SYSTEM" = "conda" ] ; then eval "$(conda shell.bash hook)" ; fi
+                if [ "$BUILD_SYSTEM" = "conda" ] ; then
+                  export MAMBA_ROOT_PREFIX=~/micromamba
+                  eval "$(./bin/micromamba shell hook -s posix)"
+                fi
                 export RUN_PACKAGE_VERSION_TEST=$(project_name)
 
                 cd $(Build.SourcesDirectory)/$(project_root)
