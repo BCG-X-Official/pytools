@@ -272,6 +272,7 @@ stages:
                 if [ "$BUILD_SYSTEM" = "conda" ] ; then
                   export MAMBA_ROOT_PREFIX=~/micromamba
                   eval "$(./bin/micromamba shell hook -s posix)"
+                  micromamba activate build
                 fi
                 export RUN_PACKAGE_VERSION_TEST=$(project_name)
 
