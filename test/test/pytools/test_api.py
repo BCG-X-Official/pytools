@@ -1,9 +1,10 @@
 """
 Basic test cases for the `pytools.api` module
 """
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 import pytest
+from typing_extensions import TypeAlias
 
 from pytools.api import (
     AllTracker,
@@ -18,6 +19,7 @@ from pytools.api import (
 )
 
 PKG_TEST_PYTOOLS_TEST_API = "test.pytools.test_api"
+MyTypeAlias: TypeAlias = Union["str", int]
 
 
 def test_deprecated() -> None:
@@ -190,7 +192,7 @@ def test_all_tracker() -> None:
     # test with defaults, no constant declaration
 
     mock_globals: Dict[str, Any] = dict(
-        __all__=["A", "B"],
+        __all__=["A", "B", "MyTypeAlias"],
         __name__=PKG_TEST_PYTOOLS_TEST_API,
     )
     tracker = AllTracker(mock_globals)
@@ -200,14 +202,16 @@ def test_all_tracker() -> None:
             A=A,
             B=B,
             _C=_C,
+            MyTypeAlias=MyTypeAlias,
         )
     )
     tracker.validate()
 
-    assert tracker.get_tracked() == ["A", "B"]
+    assert tracker.get_tracked() == ["A", "B", "MyTypeAlias"]
     assert tracker.is_tracked("A", A)
     assert tracker.is_tracked("B", B)
     assert not tracker.is_tracked("_C", _C)
+    assert mock_globals["MyTypeAlias"] == Union[str, int]
 
     # test with defaults, with constant declaration
 

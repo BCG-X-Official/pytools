@@ -16,8 +16,11 @@ from typing import (
     Set,
     TypeVar,
     Union,
+    get_args,
     get_type_hints,
 )
+
+from typing_inspect import is_forward_ref
 
 log = logging.getLogger(__name__)
 
@@ -162,6 +165,15 @@ class AllTracker:
         for name in all_expected:
             obj = globals_[name]
 
+            if self.update_forward_references:
+                if is_forward_ref(obj) or get_args(obj):
+                    # if the object is a forward reference or has type arguments,
+                    # we have a type alias and will substitute all forward references
+                    globals_[name] = obj = self._evaluate_type_alias(alias=obj)
+                else:
+                    # update forward references in annotations
+                    update_forward_references(obj, globals_=globals_)
+
             # check that the object was defined locally
             try:
                 obj_module = obj.__module__
@@ -185,10 +197,6 @@ class AllTracker:
             except AttributeError:
                 # objects without a __dict__ will not permit setting the public module
                 pass
-
-            if self.update_forward_references:
-                # update forward references in annotations
-                update_forward_references(obj, globals_=globals_)
 
     def get_tracked(self) -> List[str]:
         """
@@ -215,6 +223,24 @@ class AllTracker:
     def _is_eligible(self, name: str) -> bool:
         # check if the given item is eligible for tracking by this tracker
         return not (name.startswith("_") or name in self._imported)
+
+    def _evaluate_type_alias(self, alias: Any) -> Any:
+        # evaluate a type alias by creating a dummy class with a field annotation
+        # so we can use get_type_hints() to resolve the forward reference
+
+        # define the dummy name we'll use for the field we'll annotate
+        dummy_field = "x"
+        # create a dummy class with a field annotation
+        cls = type(
+            "ClassWithTypeAlias",
+            (),
+            dict(__annotations__={dummy_field: alias}),
+        )
+        # get the type hints for the class and return the evaluated type alias
+        # from the dummy field
+        alias_resolved = get_type_hints(cls, globalns=self._globals)[dummy_field]
+        alias_resolved.__module__ = self._module
+        return alias_resolved
 
     def __getitem__(self, name: str) -> Any:
         # get a tracked item by name
