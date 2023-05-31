@@ -188,7 +188,9 @@ class AllTracker:
             if forbid_imported_definitions and obj_module and obj_module != module:
                 raise AssertionError(
                     f"{_qualname(obj)} is exported by module {module} "
-                    f"but defined in module {obj_module}"
+                    f"but defined in module {obj_module}; "
+                    "remove it from __all__, or create the AllTracker with parameter "
+                    "allow_imported_definitions=True"
                 )
 
             # set public module field

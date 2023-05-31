@@ -271,7 +271,7 @@ def test_all_tracker() -> None:
         AssertionError,
         match=(
             r"A is exported by module test\.pytools\.test_api_other but defined in "
-            r"module test\.pytools\.test_api$"
+            r"module test\.pytools\.test_api"
         ),
     ):
         tracker.validate()
