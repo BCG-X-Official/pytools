@@ -43,7 +43,7 @@ class SingletonMeta(type):
     Singleton classes must not accept any parameters upon instantiation.
     """
 
-    __instance_ref: "Optional[ReferenceType[Any]]"
+    __instance_ref: Optional[ReferenceType]  # type: ignore
 
     def __init__(cls: SingletonMeta, *args: Any, **kwargs: Any) -> None:
         """

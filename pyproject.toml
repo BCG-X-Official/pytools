@@ -18,8 +18,8 @@ requires = [
     "matplotlib        ~=3.0",
     "numpy             >=1.21,<2a",  # cannot use ~= due to conda bug
     "pandas            >=1",
-    "scipy             ~=1.2",
-    "typing_inspect    ~=0.4",
+    "scipy             ~=1.6",
+    "typing_inspect    ~=0.7",
     "typing_extensions ~=4.0",
 ]
 
@@ -73,8 +73,8 @@ matplotlib        = "~=3.0.3"
 numpy             = "==1.21.6"  # cannot use ~= due to conda bug
 pandas            = "~=1.0.5"
 python            = ">=3.7.12,<3.8a"    # cannot use ~= due to conda bug
-scipy             = "~=1.2.1"
-typing_inspect    = "~=0.4.0"
+scipy             = "~=1.6.3"
+typing_inspect    = "~=0.7.1"
 typing_extensions = "~=4.0.0"
 
 [build.matrix.max]
@@ -84,7 +84,7 @@ matplotlib        = "~=3.5"
 numpy             = ">=1.24,<2a"  # cannot use ~= due to conda bug
 pandas            = "~=2.0"
 python            = ">=3.9,<4a"   # cannot use ~= due to conda bug
-scipy             = "~=1.8"
+scipy             = "~=1.10"
 typing_inspect    = "~=0.7"
 typing_extensions = "~=4.3"
 

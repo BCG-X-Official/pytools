@@ -92,16 +92,16 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
 
 @inheritdoc(match="[see superclass]")
 class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
-    """
+    r"""
     Drawer for empirical cumulative density functions (ECDFs), highlighting
     outliers using Tukey's outlier test.
 
     The drawer highlights samples as `outliers` or `far outliers`.
 
     A sample is considered an outlier if it is outside the range
-    :math:`[q_1 - m * \\mathit{iqr}, q_3 + m * \\mathit{iqr}]`
+    :math:`[q_1 - m \cdot \mathit{iqr}, q_3 + m \cdot \mathit{iqr}]`
     where :math:`q_1` and :math:`q_3` are the lower and upper quartiles,
-    :math:`\\mathit{iqr} = q3 - q1` is the `inter-quartile range (IQR)`, and
+    :math:`\mathit{iqr} = q3 - q1` is the `inter-quartile range (IQR)`, and
     :math:`m` is the `IQR multiple`.
 
     By convention, common values for :math:`m` are :math:`m = 1.5` for outliers,
