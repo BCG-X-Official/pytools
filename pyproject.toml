@@ -19,7 +19,7 @@ requires = [
     "numpy             >=1.21,<2a",  # cannot use ~= due to conda bug
     "pandas            >=1",
     "scipy             ~=1.2",
-    "typing_inspect    ~=0.4",
+    "typing_inspect    ~=0.7",
     "typing_extensions ~=4.0",
 ]
 
@@ -74,7 +74,7 @@ numpy             = "==1.21.6"  # cannot use ~= due to conda bug
 pandas            = "~=1.0.5"
 python            = ">=3.7.12,<3.8a"    # cannot use ~= due to conda bug
 scipy             = "~=1.2.1"
-typing_inspect    = "~=0.4.0"
+typing_inspect    = "~=0.7.1"
 typing_extensions = "~=4.0.0"
 
 [build.matrix.max]
