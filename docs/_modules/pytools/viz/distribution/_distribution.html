@@ -249,16 +249,16 @@
 
 <div class="viewcode-block" id="ECDFDrawer"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;[see superclass]&quot;</span><span class="p">)</span>
 <span class="k">class</span> <span class="nc">ECDFDrawer</span><span class="p">(</span><span class="n">Drawer</span><span class="p">[</span><span class="n">ArrayLike</span><span class="p">,</span> <span class="n">ECDFStyle</span><span class="p">]):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Drawer for empirical cumulative density functions (ECDFs), highlighting</span>
 <span class="sd">    outliers using Tukey&#39;s outlier test.</span>
 
 <span class="sd">    The drawer highlights samples as `outliers` or `far outliers`.</span>
 
 <span class="sd">    A sample is considered an outlier if it is outside the range</span>
-<span class="sd">    :math:`[q_1 - m * \\mathit{iqr}, q_3 + m * \\mathit{iqr}]`</span>
+<span class="sd">    :math:`[q_1 - m \cdot \mathit{iqr}, q_3 + m \cdot \mathit{iqr}]`</span>
 <span class="sd">    where :math:`q_1` and :math:`q_3` are the lower and upper quartiles,</span>
-<span class="sd">    :math:`\\mathit{iqr} = q3 - q1` is the `inter-quartile range (IQR)`, and</span>
+<span class="sd">    :math:`\mathit{iqr} = q3 - q1` is the `inter-quartile range (IQR)`, and</span>
 <span class="sd">    :math:`m` is the `IQR multiple`.</span>
 
 <span class="sd">    By convention, common values for :math:`m` are :math:`m = 1.5` for outliers,</span>

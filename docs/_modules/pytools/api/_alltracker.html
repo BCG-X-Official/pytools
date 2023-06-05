@@ -176,6 +176,8 @@
     <span class="n">get_type_hints</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">typing_inspect</span> <span class="kn">import</span> <span class="n">get_args</span><span class="p">,</span> <span class="n">is_forward_ref</span>
+
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -319,6 +321,15 @@
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">all_expected</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">=</span> <span class="n">globals_</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_forward_references</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">is_forward_ref</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="n">get_args</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                    <span class="c1"># if the object is a forward reference or has type arguments,</span>
+                    <span class="c1"># we have a type alias and will substitute all forward references</span>
+                    <span class="n">globals_</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluate_type_alias</span><span class="p">(</span><span class="n">alias</span><span class="o">=</span><span class="n">obj</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># update forward references in annotations</span>
+                    <span class="n">update_forward_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">globals_</span><span class="o">=</span><span class="n">globals_</span><span class="p">)</span>
+
             <span class="c1"># check that the object was defined locally</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">obj_module</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__module__</span>
@@ -333,7 +344,9 @@
             <span class="k">if</span> <span class="n">forbid_imported_definitions</span> <span class="ow">and</span> <span class="n">obj_module</span> <span class="ow">and</span> <span class="n">obj_module</span> <span class="o">!=</span> <span class="n">module</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">_qualname</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> is exported by module </span><span class="si">{</span><span class="n">module</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;but defined in module </span><span class="si">{</span><span class="n">obj_module</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;but defined in module </span><span class="si">{</span><span class="n">obj_module</span><span class="si">}</span><span class="s2">; &quot;</span>
+                    <span class="s2">&quot;remove it from __all__, or create the AllTracker with parameter &quot;</span>
+                    <span class="s2">&quot;allow_imported_definitions=True&quot;</span>
                 <span class="p">)</span>
 
             <span class="c1"># set public module field</span>
@@ -341,11 +354,7 @@
                 <span class="n">obj</span><span class="o">.</span><span class="n">__publicmodule__</span> <span class="o">=</span> <span class="n">public_module</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="c1"># objects without a __dict__ will not permit setting the public module</span>
-                <span class="k">pass</span>
-
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_forward_references</span><span class="p">:</span>
-                <span class="c1"># update forward references in annotations</span>
-                <span class="n">update_forward_references</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">globals_</span><span class="o">=</span><span class="n">globals_</span><span class="p">)</span></div>
+                <span class="k">pass</span></div>
 
 <div class="viewcode-block" id="AllTracker.get_tracked"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.AllTracker.html#pytools.api.AllTracker.get_tracked">[docs]</a>    <span class="k">def</span> <span class="nf">get_tracked</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -372,6 +381,24 @@
     <span class="k">def</span> <span class="nf">_is_eligible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="c1"># check if the given item is eligible for tracking by this tracker</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_imported</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate_type_alias</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alias</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="c1"># evaluate a type alias by creating a dummy class with a field annotation</span>
+        <span class="c1"># so we can use get_type_hints() to resolve the forward reference</span>
+
+        <span class="c1"># define the dummy name we&#39;ll use for the field we&#39;ll annotate</span>
+        <span class="n">dummy_field</span> <span class="o">=</span> <span class="s2">&quot;x&quot;</span>
+        <span class="c1"># create a dummy class with a field annotation</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+            <span class="s2">&quot;ClassWithTypeAlias&quot;</span><span class="p">,</span>
+            <span class="p">(),</span>
+            <span class="nb">dict</span><span class="p">(</span><span class="vm">__annotations__</span><span class="o">=</span><span class="p">{</span><span class="n">dummy_field</span><span class="p">:</span> <span class="n">alias</span><span class="p">}),</span>
+        <span class="p">)</span>
+        <span class="c1"># get the type hints for the class and return the evaluated type alias</span>
+        <span class="c1"># from the dummy field</span>
+        <span class="n">alias_resolved</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">globalns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_globals</span><span class="p">)[</span><span class="n">dummy_field</span><span class="p">]</span>
+        <span class="n">alias_resolved</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_module</span>
+        <span class="k">return</span> <span class="n">alias_resolved</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="c1"># get a tracked item by name</span>

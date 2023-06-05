@@ -200,7 +200,7 @@
 <span class="sd">    Singleton classes must not accept any parameters upon instantiation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__instance_ref</span><span class="p">:</span> <span class="s2">&quot;Optional[ReferenceType[Any]]&quot;</span>
+    <span class="n">__instance_ref</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ReferenceType</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">SingletonMeta</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
