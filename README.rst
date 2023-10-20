@@ -73,7 +73,7 @@ Contributing
 
 Contributions to *pytools* are welcome and appreciated.
 For any bug reports or feature requests/enhancements please use the appropriate
-`GitHub form <https://github.com/BCG-Gamma/pytools/issues>`_, and if you wish to do so,
+`GitHub form <https://github.com/BCG-X-Official/pytools/issues>`_, and if you wish to do so,
 please open a PR addressing the issue.
 
 We do ask that for any major changes please discuss these with us first via an issue or
@@ -87,7 +87,7 @@ License
 -------
 
 *pytools* is licensed under Apache 2.0 as described in the
-`LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
+`LICENSE <https://github.com/BCG-X-Official/pytools/blob/develop/LICENSE>`_ file.
 
 
 BCG GAMMA
@@ -107,7 +107,7 @@ or have a look at
 .. |pypi| image:: https://badge.fury.io/py/gamma-pytools.svg
     :target: https://pypi.org/project/gamma-pytools/
 
-.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
+.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-X-Official.pytools?branchName=develop
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
 .. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/2.0.x
