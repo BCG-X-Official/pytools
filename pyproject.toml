@@ -58,7 +58,7 @@ docs = [
 ]
 
 [tool.flit.metadata.urls]
-Documentation = "https://bcg-gamma.github.io/pytools/"
+Documentation = "https://bcg-x-official.github.io/pytools/"
 Repository = "https://github.com/BCG-X-Official/pytools"
 
 [build]

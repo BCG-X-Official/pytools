@@ -61,9 +61,9 @@ Windows:
 Documentation
 -------------
 
-For the *pytools* API reference see the `documentation <https://bcg-gamma.github.io/pytools/>`__.
+For the *pytools* API reference see the `documentation <https://bcg-x-official.github.io/pytools/>`__.
 
-Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__.
+Changes and additions to new versions are summarized in the `release notes <https://bcg-x-official.github.io/pytools/release_notes.html>`__.
 
 
 Contributing
@@ -80,7 +80,7 @@ We do ask that for any major changes please discuss these with us first via an i
 at our team email: FacetTeam@bcg.com.
 
 For further information on contributing please see our `contribution guide
-<https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
+<https://bcg-x-official.github.io/pytools/contribution_guide.html>`_.
 
 
 License
@@ -120,7 +120,7 @@ or have a look at
     :target: https://github.com/psf/black
 
 .. |made_with_sphinx_doc| image:: https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg
-    :target: https://bcg-gamma.github.io/pytools/index.html
+    :target: https://bcg-x-official.github.io/pytools/index.html
 
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0
