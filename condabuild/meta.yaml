@@ -51,5 +51,5 @@ about:
     A collection of generic Python extensions and tools, used across GAMMA's open-source
     libraries.
   dev_url: https://github.com/BCG-X-Official/pytools
-  doc_url: https://bcg-gamma.github.io/pytools/
+  doc_url: https://bcg-x-official.github.io/pytools/
   doc_source_url: https://github.com/BCG-X-Official/pytools/blob/develop/README.rst
