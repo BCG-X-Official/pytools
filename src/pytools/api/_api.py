@@ -305,7 +305,6 @@ def _to_collection(
     optional: bool,
     arg_name: Optional[str],
 ) -> T_Collection:
-
     elements: T_Collection
 
     if optional and values is None:
