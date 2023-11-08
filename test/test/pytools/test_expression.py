@@ -95,7 +95,6 @@ def test_expression_formatting() -> None:
 
 
 def test_expression_repr_html() -> None:
-
     # create an expression
     e = Call(Id.f, (1 | Lit(2)) >> Lit("x") % Id.x, abc=-Lit(5))
     expr = e * (e + e + e - e * e)
