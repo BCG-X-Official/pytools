@@ -475,7 +475,6 @@ class ToxBuilder(Builder):
         original_dir = os.getcwd()
 
         try:
-
             build_path = self.make_build_path()
             os.makedirs(build_path, exist_ok=True)
             os.chdir(build_path)
@@ -604,7 +603,6 @@ def run_make() -> None:
             ("build system", build_system, KNOWN_BUILD_SYSTEMS),
             ("dependency type", dependency_type, KNOWN_DEPENDENCY_TYPES),
         ):
-
             if arg_value not in valid_values:
                 log(
                     f"Wrong value for {arg_name} argument: "

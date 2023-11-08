@@ -69,7 +69,6 @@ class Lit(AtomicExpression[T_Literal], Generic[T_Literal]):
 
 
 class _IdentifierMeta(ABCMeta):
-
     _identifiers: MutableMapping[str, Id] = WeakValueDictionary()
 
     def __getattr__(self, name: str) -> Id:
