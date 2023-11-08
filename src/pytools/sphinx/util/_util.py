@@ -55,7 +55,6 @@ except ImportError:
 
     # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection
     class _Element:
-
         children: List["Element"]
         attributes: Dict[str, Any]
 
@@ -67,7 +66,6 @@ except ImportError:
 
     # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
     class _Text(_Element):
-
         rawsource: str
 
         # noinspection SpellCheckingInspection
@@ -659,7 +657,6 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
         # get the names of all base classes; go up the class hierarchy in case of
         # hidden classes
         for base in base_classes:
-
             # exclude object and Generic types
             if base is object or typing_inspect.get_origin(base) is Generic:
                 continue
@@ -718,7 +715,6 @@ def _class_attr(cls: Any, attr: List[str]) -> Any:
 
 
 class _TypeVarBindings:
-
     current_class: Type[Any]
     _bindings: Dict[
         Type[Any],
@@ -862,12 +858,10 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         # get the original signature and convert it to a list of (name, type) tuples
         signature_original_items = list(self._get_original_signature(func).items())
 
-        def _get_self_or_cls_type_substitution() -> Union[
-            Tuple[TypeVar, Type[Any]], Tuple[None, None]
-        ]:
-
+        def _get_self_or_cls_type_substitution() -> (
+            Union[Tuple[TypeVar, Type[Any]], Tuple[None, None]]
+        ):
             if signature_original_items:
-
                 method_type = self._get_method_type(defining_class, func)
 
                 if method_type is METHOD_TYPE_DYNAMIC:
