@@ -6,16 +6,18 @@ import logging
 from abc import ABCMeta
 from typing import Any, Callable, Iterable, List, Optional, Union, cast, overload
 
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from matplotlib import rcParams
 from matplotlib.axes import Axes
 from matplotlib.backend_bases import FigureCanvasBase, RendererBase
 from matplotlib.colorbar import ColorbarBase, make_axes
 from matplotlib.colors import Normalize
+from matplotlib.font_manager import fontManager
 from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
+from packaging.version import Version
 
 from ..api import AllTracker, inheritdoc, to_list
 from ._viz import ColoredStyle
@@ -32,6 +34,9 @@ __all__ = [
     "ColorbarMatplotStyle",
 ]
 
+
+__matplotlib_version__ = Version(matplotlib.__version__)
+__matplotlib_3_6__ = Version("3.6")
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -83,17 +88,22 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         self._ax = ax
 
         default_font_family: List[str] = (
-            MatplotStyle._DEFAULT_FONT + rcParams[MatplotStyle._DEFAULT_FONT_FAMILY]
+            MatplotStyle._DEFAULT_FONT
+            + matplotlib.rcParams[MatplotStyle._DEFAULT_FONT_FAMILY]
         )
 
         if font_family is not None:
-            self._font_family = (
+            font_family = (
                 to_list(font_family, element_type=str, arg_name="font")
                 + default_font_family
             )
         else:
-            self._font_family = default_font_family
+            font_family = default_font_family
 
+        # filter out fonts that are not available
+        existing_fonts = {f.name for f in fontManager.ttflist}
+
+        self._font_family = [f for f in font_family if f in existing_fonts]
         self._font_family_original = None
 
     __init__.__doc__ = cast(str, __init__.__doc__).replace(
@@ -123,9 +133,14 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         :return: the renderer
         """
 
-        cached_renderer: RendererBase = self.ax.get_renderer_cache()
-        if cached_renderer is not None:
-            return cached_renderer
+        renderer: Optional[RendererBase]
+        if __matplotlib_version__ < __matplotlib_3_6__:
+            renderer = self.ax.get_renderer_cache()
+        else:
+            renderer = self.ax.figure.canvas.get_renderer()
+
+        if renderer is not None:
+            return renderer
 
         canvas: FigureCanvasBase = self.ax.figure.canvas
         try:
@@ -149,8 +164,9 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         super().start_drawing(title=title, **kwargs)
 
-        self._font_family_original = rcParams["font.family"]
-        rcParams["font.family"] = self._font_family
+        if self._font_family:
+            self._font_family_original = matplotlib.rcParams["font.family"]
+            matplotlib.rcParams["font.family"] = self._font_family
 
         ax = self.ax
 
@@ -194,7 +210,8 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
                 for text in legend.get_texts():
                     text.set_color(fg_color)
 
-            rcParams["font.family"] = self._font_family_original
+            if self._font_family_original:
+                matplotlib.rcParams["font.family"] = self._font_family_original
 
         finally:
             super().finalize_drawing(**kwargs)
