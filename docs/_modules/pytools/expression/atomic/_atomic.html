@@ -226,7 +226,6 @@
 
 
 <span class="k">class</span> <span class="nc">_IdentifierMeta</span><span class="p">(</span><span class="n">ABCMeta</span><span class="p">):</span>
-
     <span class="n">_identifiers</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Id</span><span class="p">]</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Id</span><span class="p">:</span>

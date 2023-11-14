@@ -60,9 +60,9 @@ Windows:
 Documentation
 -------------
 
-For the *pytools* API reference see the `documentation <https://bcg-gamma.github.io/pytools/>`__.
+For the *pytools* API reference see the `documentation <https://bcg-x-official.github.io/pytools/>`__.
 
-Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__.
+Changes and additions to new versions are summarized in the `release notes <https://bcg-x-official.github.io/pytools/release_notes.html>`__.
 
 
 Contributing
@@ -72,21 +72,21 @@ Contributing
 
 Contributions to *pytools* are welcome and appreciated.
 For any bug reports or feature requests/enhancements please use the appropriate
-`GitHub form <https://github.com/BCG-Gamma/pytools/issues>`_, and if you wish to do so,
+`GitHub form <https://github.com/BCG-X-Official/pytools/issues>`_, and if you wish to do so,
 please open a PR addressing the issue.
 
 We do ask that for any major changes please discuss these with us first via an issue or
 at our team email: FacetTeam@bcg.com.
 
 For further information on contributing please see our `contribution guide
-<https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
+<https://bcg-x-official.github.io/pytools/contribution_guide.html>`_.
 
 
 License
 -------
 
 *pytools* is licensed under Apache 2.0 as described in the
-`LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
+`LICENSE <https://github.com/BCG-X-Official/pytools/blob/develop/LICENSE>`_ file.
 
 
 BCG GAMMA
