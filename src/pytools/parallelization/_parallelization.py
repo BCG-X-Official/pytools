@@ -268,7 +268,6 @@ class JobRunner(ParallelizableMixin):
         """
 
         with queue.lock:
-
             # notify the queue that we're about to run it
             queue.on_run()
 

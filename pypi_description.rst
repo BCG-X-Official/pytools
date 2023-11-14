@@ -18,7 +18,7 @@ License
 ---------------------------
 
 *pytools* is licensed under Apache 2.0 as described in the
-`LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
+`LICENSE <https://github.com/BCG-X-Official/pytools/blob/develop/LICENSE>`_ file.
 
 .. |conda| image:: https://anaconda.org/bcg_gamma/gamma-pytools/badges/version.svg
     :target: https://anaconda.org/BCG_Gamma/gamma-pytools
@@ -33,7 +33,7 @@ License
     :target: https://github.com/psf/black
 
 .. |made_with_sphinx_doc| image:: https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg
-    :target: https://bcg-gamma.github.io/pytools/index.html
+    :target: https://bcg-x-official.github.io/pytools/index.html
 
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0

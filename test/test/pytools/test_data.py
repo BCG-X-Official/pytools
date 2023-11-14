@@ -16,7 +16,6 @@ MSG_GOT_A_STR = r"got a str"
 
 
 def test_matrix_validation() -> None:
-
     with pytest.raises(ValueError, match=MSG_GOT_A_3D_ARRAY):
         Matrix(np.arange(20).reshape((4, 5, 1)))
 
@@ -106,7 +105,6 @@ def test_matrix_from_frame() -> None:
 
 
 def test_matrix_resize() -> None:
-
     m: Matrix[np.int_] = Matrix(
         np.arange(20).reshape((4, 5)),
         names=(list("ABCD"), list("abcde")),
