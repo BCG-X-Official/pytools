@@ -198,7 +198,6 @@ def setup(app: Sphinx) -> None:
 
 
 def _connect_callbacks(app: Sphinx) -> None:
-
     from pytools.sphinx.util import (
         AddInheritance,
         CollapseModulePathsInDocstring,

@@ -8,7 +8,7 @@ exclude = [".idea", "tmp", "dist", ".tox", ".pytest_cache"]
 [tool.flit.metadata]
 module = "pytools"
 author = "Boston Consulting Group (BCG)"
-home-page = "https://github.com/BCG-Gamma/pytools"
+home-page = "https://github.com/BCG-X-Official/pytools"
 description-file = "pypi_description.rst"
 dist-name = "gamma-pytools"
 license = "Apache Software License v2.0"
@@ -59,8 +59,8 @@ docs = [
 ]
 
 [tool.flit.metadata.urls]
-Documentation = "https://bcg-gamma.github.io/pytools/"
-Repository = "https://github.com/BCG-Gamma/pytools"
+Documentation = "https://bcg-x-official.github.io/pytools/"
+Repository = "https://github.com/BCG-X-Official/pytools"
 
 [build]
 # comma-separated list of packages to be built from source in pip min builds

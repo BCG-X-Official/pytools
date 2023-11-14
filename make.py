@@ -16,6 +16,7 @@ from glob import glob
 from traceback import print_exc
 from typing import Any, Collection, Dict, Iterator, List, Mapping, Set, cast
 from urllib import request
+from urllib.error import HTTPError
 from xml.etree import ElementTree
 
 import toml
@@ -183,21 +184,7 @@ class Builder(metaclass=ABCMeta):
 
         log(f"Testing package version: {package} {new_version}")
 
-        releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
-
-        log(f"Getting existing releases from {releases_uri}")
-        with request.urlopen(releases_uri) as response:
-            assert response.getcode() == 200, "Error getting releases from PyPi"
-            releases_xml = response.read()
-
-        tree = ElementTree.fromstring(releases_xml)
-        releases_nodes = tree.findall(path=".//channel//item//title")
-
-        released_versions: List[Version] = sorted(
-            Version(r) for r in [r.text for r in releases_nodes]
-        )
-
-        log(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
+        released_versions: List[Version] = self._get_existing_releases(package)
 
         if new_version in released_versions:
             raise AssertionError(
@@ -227,6 +214,33 @@ class Builder(metaclass=ABCMeta):
                 f"Pre-releases {pre_releases} exist; "
                 f"release of major/minor version {new_version} can go ahead"
             )
+
+    def _get_existing_releases(self, package: str) -> List[Version]:
+        releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
+        log(f"Getting existing releases from {releases_uri}")
+        try:
+            with request.urlopen(releases_uri) as response:
+                http_response = response.getcode()
+                if http_response != 200:
+                    raise RuntimeError(
+                        f"Error getting releases from PyPi ({http_response})"
+                    )
+                releases_xml = response.read()
+        except HTTPError as e:
+            if e.code == 404:
+                log("Package does not yet exist.")
+                return []
+
+        tree = ElementTree.fromstring(releases_xml)
+        releases_nodes = tree.findall(path=".//channel//item//title")
+
+        released_versions: List[Version] = sorted(
+            Version(r) for r in [r.text for r in releases_nodes]
+        )
+
+        log(f"Releases found on PyPi: {', '.join(map(str, released_versions))}")
+
+        return released_versions
 
     @abstractmethod
     def adapt_version_requirement_syntax(self, version: str) -> str:
@@ -461,7 +475,6 @@ class CondaBuilder(Builder):
 
 
 class ToxBuilder(Builder):
-
     # the suffix of the tox build file
     SUFFIX_TOX_INI = ".ini"
     # the name of the tox build file
@@ -502,7 +515,6 @@ class ToxBuilder(Builder):
         original_dir = os.getcwd()
 
         try:
-
             build_path = self.make_build_path()
             os.makedirs(build_path, exist_ok=True)
             os.chdir(build_path)
@@ -702,7 +714,6 @@ def run_make() -> None:
             ("build system", build_system, KNOWN_BUILD_SYSTEMS),
             ("dependency type", dependency_type, KNOWN_DEPENDENCY_TYPES),
         ):
-
             if arg_value not in valid_values:
                 log(
                     f"Wrong value for {arg_name} argument: "

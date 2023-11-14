@@ -343,7 +343,6 @@ class HasWellFormedDocstring(DocTest):
         errors: List[str] = []
 
         for line in lines:
-
             if not line:
                 previous_line_text_indent = -1
                 continue

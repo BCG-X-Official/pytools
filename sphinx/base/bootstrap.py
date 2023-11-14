@@ -3,7 +3,7 @@ def run_make(*, branch: str, working_directory: str) -> None:
 
     class Bootstrapper:
         # URI of pytools raw file storage on GitHub
-        GITHUB_ROOT_URL = "https://raw.githubusercontent.com/BCG-Gamma/pytools"
+        GITHUB_ROOT_URL = "https://raw.githubusercontent.com/BCG-X-Official/pytools"
 
         # paths relative to pytools/sphinx
         PATH_MAKE_BASE = ["base"]

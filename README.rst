@@ -61,9 +61,9 @@ Windows:
 Documentation
 -------------
 
-For the *pytools* API reference see the `documentation <https://bcg-gamma.github.io/pytools/>`__.
+For the *pytools* API reference see the `documentation <https://bcg-x-official.github.io/pytools/>`__.
 
-Changes and additions to new versions are summarized in the `release notes <https://bcg-gamma.github.io/pytools/release_notes.html>`__.
+Changes and additions to new versions are summarized in the `release notes <https://bcg-x-official.github.io/pytools/release_notes.html>`__.
 
 
 Contributing
@@ -73,21 +73,21 @@ Contributing
 
 Contributions to *pytools* are welcome and appreciated.
 For any bug reports or feature requests/enhancements please use the appropriate
-`GitHub form <https://github.com/BCG-Gamma/pytools/issues>`_, and if you wish to do so,
+`GitHub form <https://github.com/BCG-X-Official/pytools/issues>`_, and if you wish to do so,
 please open a PR addressing the issue.
 
 We do ask that for any major changes please discuss these with us first via an issue or
 at our team email: FacetTeam@bcg.com.
 
 For further information on contributing please see our `contribution guide
-<https://bcg-gamma.github.io/pytools/contribution_guide.html>`_.
+<https://bcg-x-official.github.io/pytools/contribution_guide.html>`_.
 
 
 License
 -------
 
 *pytools* is licensed under Apache 2.0 as described in the
-`LICENSE <https://github.com/BCG-Gamma/pytools/blob/develop/LICENSE>`_ file.
+`LICENSE <https://github.com/BCG-X-Official/pytools/blob/develop/LICENSE>`_ file.
 
 
 BCG GAMMA
@@ -107,7 +107,7 @@ or have a look at
 .. |pypi| image:: https://badge.fury.io/py/gamma-pytools.svg
     :target: https://pypi.org/project/gamma-pytools/
 
-.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-Gamma.pytools?branchName=develop
+.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-X-Official.pytools?branchName=develop
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
 .. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/2.1.x
@@ -120,7 +120,7 @@ or have a look at
     :target: https://github.com/psf/black
 
 .. |made_with_sphinx_doc| image:: https://img.shields.io/badge/Made%20with-Sphinx-1f425f.svg
-    :target: https://bcg-gamma.github.io/pytools/index.html
+    :target: https://bcg-x-official.github.io/pytools/index.html
 
 .. |license_badge| image:: https://img.shields.io/badge/License-Apache%202.0-olivegreen.svg
     :target: https://opensource.org/licenses/Apache-2.0

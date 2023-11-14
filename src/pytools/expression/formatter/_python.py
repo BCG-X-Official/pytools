@@ -132,7 +132,6 @@ class TextualForm:
         """
 
         if config.single_line:
-
             return self.to_single_line()
 
         else:
@@ -625,7 +624,6 @@ class InfixForm(ComplexForm):
         result: List[IndentedLine] = []
 
         if len(subforms) == 1:
-
             result.extend(
                 subforms[0].to_lines(
                     config=config,
@@ -636,7 +634,6 @@ class InfixForm(ComplexForm):
             )
 
         else:
-
             last_idx = len(subforms) - 1
             infix = self.infix
 

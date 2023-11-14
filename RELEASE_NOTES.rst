@@ -8,6 +8,12 @@ Release Notes
 *pytools* 2.1
 -------------
 
+2.1.2
+~~~~~
+
+This is a maintenance release to catch up with *pytools* |nbsp| 2.0.7.
+
+
 2.1.1
 ~~~~~
 
@@ -37,6 +43,11 @@ Release Notes
 
 *pytools* 2 introduces enhanced visualisations along with additional API improvements,
 and is now subject to static type checking with |mypy|.
+
+2.0.7
+~~~~~
+
+- FIX: prevent `matplot` warnings about missing fonts when rendering drawers using the :class:`.MatplotStyle`
 
 
 2.0.6
