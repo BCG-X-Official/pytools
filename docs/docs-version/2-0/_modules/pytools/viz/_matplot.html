@@ -163,16 +163,18 @@
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">overload</span>
 
+<span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">rcParams</span>
 <span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="kn">import</span> <span class="n">Axes</span>
 <span class="kn">from</span> <span class="nn">matplotlib.backend_bases</span> <span class="kn">import</span> <span class="n">FigureCanvasBase</span><span class="p">,</span> <span class="n">RendererBase</span>
 <span class="kn">from</span> <span class="nn">matplotlib.colorbar</span> <span class="kn">import</span> <span class="n">ColorbarBase</span><span class="p">,</span> <span class="n">make_axes</span>
 <span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">Normalize</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="kn">import</span> <span class="n">fontManager</span>
 <span class="kn">from</span> <span class="nn">matplotlib.legend</span> <span class="kn">import</span> <span class="n">Legend</span>
 <span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="kn">import</span> <span class="n">Formatter</span>
+<span class="kn">from</span> <span class="nn">packaging.version</span> <span class="kn">import</span> <span class="n">Version</span>
 
 <span class="kn">from</span> <span class="nn">..api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">to_list</span>
 <span class="kn">from</span> <span class="nn">._viz</span> <span class="kn">import</span> <span class="n">ColoredStyle</span>
@@ -189,6 +191,9 @@
     <span class="s2">&quot;ColorbarMatplotStyle&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+
+<span class="n">__matplotlib_version__</span> <span class="o">=</span> <span class="n">Version</span><span class="p">(</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="n">__matplotlib_3_6__</span> <span class="o">=</span> <span class="n">Version</span><span class="p">(</span><span class="s2">&quot;3.6&quot;</span><span class="p">)</span>
 
 <span class="c1">#</span>
 <span class="c1"># Ensure all symbols introduced below are included in __all__</span>
@@ -240,17 +245,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ax</span> <span class="o">=</span> <span class="n">ax</span>
 
         <span class="n">default_font_family</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">MatplotStyle</span><span class="o">.</span><span class="n">_DEFAULT_FONT</span> <span class="o">+</span> <span class="n">rcParams</span><span class="p">[</span><span class="n">MatplotStyle</span><span class="o">.</span><span class="n">_DEFAULT_FONT_FAMILY</span><span class="p">]</span>
+            <span class="n">MatplotStyle</span><span class="o">.</span><span class="n">_DEFAULT_FONT</span>
+            <span class="o">+</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="n">MatplotStyle</span><span class="o">.</span><span class="n">_DEFAULT_FONT_FAMILY</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">font_family</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">font_family</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">to_list</span><span class="p">(</span><span class="n">font_family</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;font&quot;</span><span class="p">)</span>
                 <span class="o">+</span> <span class="n">default_font_family</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span> <span class="o">=</span> <span class="n">default_font_family</span>
+            <span class="n">font_family</span> <span class="o">=</span> <span class="n">default_font_family</span>
 
+        <span class="c1"># filter out fonts that are not available</span>
+        <span class="n">existing_fonts</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fontManager</span><span class="o">.</span><span class="n">ttflist</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">font_family</span> <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">existing_fonts</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="fm">__init__</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
@@ -280,9 +290,14 @@
 <span class="sd">        :return: the renderer</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">cached_renderer</span><span class="p">:</span> <span class="n">RendererBase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_renderer_cache</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">cached_renderer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cached_renderer</span>
+        <span class="n">renderer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RendererBase</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">__matplotlib_version__</span> <span class="o">&lt;</span> <span class="n">__matplotlib_3_6__</span><span class="p">:</span>
+            <span class="n">renderer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_renderer_cache</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">renderer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">get_renderer</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">renderer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">renderer</span>
 
         <span class="n">canvas</span><span class="p">:</span> <span class="n">FigureCanvasBase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
         <span class="k">try</span><span class="p">:</span>
@@ -306,8 +321,9 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start_drawing</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span> <span class="o">=</span> <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span>
-        <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span>
+            <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family</span>
 
         <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
 
@@ -351,7 +367,8 @@
                 <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">legend</span><span class="o">.</span><span class="n">get_texts</span><span class="p">():</span>
                     <span class="n">text</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">fg_color</span><span class="p">)</span>
 
-            <span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span><span class="p">:</span>
+                <span class="n">matplotlib</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.family&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_font_family_original</span>
 
         <span class="k">finally</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">finalize_drawing</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>

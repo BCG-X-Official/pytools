@@ -26,6 +26,7 @@ pytools.viz.util.FittedText
       ~FittedText.get_agg_filter
       ~FittedText.get_alpha
       ~FittedText.get_animated
+      ~FittedText.get_antialiased
       ~FittedText.get_bbox_patch
       ~FittedText.get_c
       ~FittedText.get_children
@@ -95,6 +96,7 @@ pytools.viz.util.FittedText
       ~FittedText.set_agg_filter
       ~FittedText.set_alpha
       ~FittedText.set_animated
+      ~FittedText.set_antialiased
       ~FittedText.set_backgroundcolor
       ~FittedText.set_bbox
       ~FittedText.set_c
