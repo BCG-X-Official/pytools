@@ -303,13 +303,13 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         pass
 
     @overload
-    def color_for_value(self, z: npt.NDArray[np.float_]) -> npt.NDArray[np.float_]:
+    def color_for_value(self, z: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
         """[overload]"""
         pass
 
     def color_for_value(
-        self, z: Union[int, float, npt.NDArray[np.float_]]
-    ) -> Union[RgbaColor, npt.NDArray[np.float_]]:
+        self, z: Union[int, float, npt.NDArray[np.float64]]
+    ) -> Union[RgbaColor, npt.NDArray[np.float64]]:
         """
         Get the color(s) associated with the given value(s), based on the color map and
         normalization defined for this style.

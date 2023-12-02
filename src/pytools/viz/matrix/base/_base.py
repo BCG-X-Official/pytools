@@ -67,8 +67,8 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
             Optional[npt.NDArray[Any]],
         ],
         weights: Tuple[
-            Optional[npt.NDArray[np.float_]],
-            Optional[npt.NDArray[np.float_]],
+            Optional[npt.NDArray[np.float64]],
+            Optional[npt.NDArray[np.float64]],
         ],
     ) -> None:
         """

@@ -25,7 +25,7 @@ def linkage_matrix() -> npt.NDArray[np.int_]:
 
 
 @pytest.fixture  # type: ignore
-def linkage_tree(linkage_matrix: npt.NDArray[np.float_]) -> LinkageTree:
+def linkage_tree(linkage_matrix: npt.NDArray[np.float64]) -> LinkageTree:
     """Create a linkage tree for drawing tests."""
     return LinkageTree(
         scipy_linkage_matrix=linkage_matrix,
@@ -34,7 +34,7 @@ def linkage_tree(linkage_matrix: npt.NDArray[np.float_]) -> LinkageTree:
     )
 
 
-def test_dendrogram_drawer_text(linkage_matrix: npt.NDArray[np.float_]) -> None:
+def test_dendrogram_drawer_text(linkage_matrix: npt.NDArray[np.float64]) -> None:
     leaf_names = list("ABCDEFGH")
     leaf_weights = [(w + 1) / 36 for w in range(8)]
 
