@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.parallelization`.
 """
+
 from __future__ import annotations
 
 import itertools

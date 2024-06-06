@@ -1,6 +1,7 @@
 """
 String representations of expressions.
 """
+
 from __future__ import annotations
 
 import logging
@@ -11,8 +12,8 @@ from typing import Any, List, NamedTuple, Tuple
 from .. import Expression, ExpressionAlias, ExpressionFormatter
 from ..base import (
     AtomicExpression,
-    BracketedExpression,
     BracketPair,
+    BracketedExpression,
     InfixExpression,
     PrefixExpression,
 )
@@ -577,9 +578,12 @@ class InfixForm(ComplexForm):
         infix_padding = (
             InfixForm.PADDING_RIGHT
             if infix in [BinaryOperator.COMMA, BinaryOperator.COLON]
-            else InfixForm.PADDING_NONE
-            if infix in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
-            else InfixForm.PADDING_BOTH
+            else (
+                InfixForm.PADDING_NONE
+                if infix
+                in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
+                else InfixForm.PADDING_BOTH
+            )
         )
 
         return InfixForm(
@@ -666,9 +670,9 @@ class InfixForm(ComplexForm):
                     lines = inner_representation.to_lines(
                         config=config,
                         indent=indent,
-                        leading_characters=leading_characters
-                        if idx == 0
-                        else len_infix,
+                        leading_characters=(
+                            leading_characters if idx == 0 else len_infix
+                        ),
                         trailing_characters=(
                             trailing_characters if idx == last_idx else 0
                         ),

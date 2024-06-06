@@ -238,9 +238,11 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
             element_prefix = None
 
         actual_parameters = [
-            parameter[len(element_prefix) - 2 :]
-            if element_prefix is not None and parameter.startswith(element_prefix)
-            else parameter
+            (
+                parameter[len(element_prefix) - 2 :]
+                if element_prefix is not None and parameter.startswith(element_prefix)
+                else parameter
+            )
             for i, parameter in enumerate(signature.parameters.keys())
             if i > 0 or parameter not in {"self", "cls"}
         ]

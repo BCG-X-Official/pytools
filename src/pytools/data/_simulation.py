@@ -1,6 +1,7 @@
 """
 Utilities for creating simulated data sets.
 """
+
 from typing import Optional, Sequence, Tuple
 
 import numpy as np

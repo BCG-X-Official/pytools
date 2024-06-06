@@ -1,6 +1,7 @@
 """
 Implementation of :mod:`pytools.expression.composite.base`.
 """
+
 import logging
 from typing import Any
 

@@ -44,7 +44,6 @@ __tracker = AllTracker(globals())
 
 @inheritdoc(match="[see superclass]")
 class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
-
     """
     Draws dendrograms as trees, using line color and thickness to indicate leaf/branch
     weights.

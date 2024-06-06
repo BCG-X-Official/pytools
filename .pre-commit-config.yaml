@@ -5,19 +5,19 @@ repos:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 23.10.1
+    rev: 24.4.2
     hooks:
       - id: black
-        language: python_venv
+        language: python
         language_version: python39
 
   - repo: https://github.com/pycqa/flake8
-    rev: 5.0.4
+    rev: 7.0.0
     hooks:
       - id: flake8
         name: flake8
         entry: flake8 --config tox.ini
-        language: python_venv
+        language: python
         language_version: python39
         additional_dependencies:
           - flake8-comprehensions ~= 3.10
@@ -30,15 +30,15 @@ repos:
       - id: check-json
       - id: check-xml
       - id: check-yaml
-        language: python_venv
+        language: python
         exclude: condabuild/meta.yaml
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.2.0
+    rev: v1.10.0
     hooks:
       - id: mypy
         files: src|sphinx|test
-        language: python_venv
+        language: python
         language_version: python39
         additional_dependencies:
           - numpy~=1.24

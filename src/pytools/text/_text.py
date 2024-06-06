@@ -1,6 +1,7 @@
 """
 Utilities for rendering text.
 """
+
 import logging
 from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple, Union
 

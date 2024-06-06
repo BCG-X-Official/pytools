@@ -29,7 +29,7 @@ sys.path.insert(
     os.path.normpath(os.path.join(SCRIPT_DIR, "sphinx", "base")),
 )
 # noinspection PyUnresolvedReferences
-from make_util import get_package_version
+from make_util import get_package_version  # noqa: E402
 
 FACET_PATH_ENV = "FACET_PATH"
 FACET_PATH_URI_ENV = "FACET_PATH_URI"
@@ -92,9 +92,9 @@ class Builder(metaclass=ABCMeta):
 
         # add the project roots path to the environment as a URI
 
-        os.environ[
-            FACET_PATH_URI_ENV
-        ] = f"file://{request.pathname2url(projects_root_path)}"
+        os.environ[FACET_PATH_URI_ENV] = (
+            f"file://{request.pathname2url(projects_root_path)}"
+        )
 
         # determine the package version of the project
 
@@ -103,9 +103,9 @@ class Builder(metaclass=ABCMeta):
 
         package_version = str(get_package_version(package_path=src_root_path))
 
-        os.environ[
-            FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
-        ] = package_version
+        os.environ[FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())] = (
+            package_version
+        )
 
         self.package_version = package_version
         self.pyproject_toml = None

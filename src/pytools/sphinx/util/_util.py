@@ -1,6 +1,7 @@
 """
 Implementation of sphinx utility callbacks specific to building Gamma documentation.
 """
+
 from __future__ import annotations
 
 import collections.abc
@@ -61,8 +62,7 @@ except ImportError:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise TypeError("docutils package is not installed")
 
-        def replace(self, old: "Element", new: "Element") -> None:
-            ...
+        def replace(self, old: "Element", new: "Element") -> None: ...  # noqa: E704
 
     # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
     class _Text(_Element):
@@ -1060,8 +1060,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
                 bindings.current_class is cls
             ), "bindings expected to be for the correct class"
 
-            # noinspection PyTypeChecker
-            self._resolve_function_signature(bindings=bindings, func=obj.__func__)
+            self._resolve_function_signature(
+                bindings=bindings, func=cast(FunctionType, obj.__func__)
+            )
 
     def _update_current_class(
         self, cls: Optional[Type[Any]]
@@ -1207,9 +1208,11 @@ def _substitute_generic_type_arguments(
         return _copy_generic_type_with_arguments(
             type_expression=type_expression,
             new_arguments=tuple(
-                list(map(fn_substitute_type_vars, arg))
-                if isinstance(arg, list)
-                else fn_substitute_type_vars(arg)
+                (
+                    list(map(fn_substitute_type_vars, arg))
+                    if isinstance(arg, list)
+                    else fn_substitute_type_vars(arg)
+                )
                 for arg in type_args
             ),
         )

@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.viz.color`
 """
+
 from __future__ import annotations
 
 import logging
@@ -10,7 +11,7 @@ from typing import Callable, Set, TypeVar, Union, cast
 from matplotlib import cm
 from matplotlib.colors import Colormap, LinearSegmentedColormap
 
-from ._rgb import RgbaColor, RgbColor
+from ._rgb import RgbColor, RgbaColor
 from pytools.api import AllTracker, inheritdoc, validate_element_types, validate_type
 from pytools.expression import Expression, HasExpressionRepr
 from pytools.expression.atomic import Id
