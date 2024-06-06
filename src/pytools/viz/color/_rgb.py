@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.viz.color`
 """
+
 from __future__ import annotations
 
 import logging
@@ -85,6 +86,14 @@ class _RgbBase(tuple):  # type: ignore
                 f"{cls.__name__} expects at most {max_allowed} arguments but got: "
                 f"{args_list}"
             )
+
+    @property
+    def hex(self) -> str:
+        """
+        The hexadecimal representation of this color.
+        """
+        # convert floats to bytes in the range 0-255
+        return "#" + "".join(f"{int(round(c * 255)):02x}" for c in self)
 
 
 class RgbColor(_RgbBase):
