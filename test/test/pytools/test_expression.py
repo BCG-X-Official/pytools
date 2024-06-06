@@ -202,6 +202,30 @@ def test_comparison_expressions() -> None:
     assert freeze(a) != (a_copy + 1)
 
 
+def test_make_expression() -> None:
+    assert freeze(make_expression([1, 2, 3])) == freeze(
+        ListLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression((1, 2, 3))) == freeze(
+        TupleLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression({1, 2, 3})) == freeze(
+        SetLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression({1: 2, 3: 4})) == freeze(
+        DictLiteral((Lit(1), Lit(2)), (Lit(3), Lit(4)))
+    )
+    assert freeze(make_expression({"a": 2, "b": 4})) == freeze(
+        DictLiteral((Lit("a"), Lit(2)), (Lit("b"), Lit(4)))
+    )
+    assert freeze(make_expression(frozenset({1, 2, 3}))) == freeze(
+        Id(frozenset)(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression([1, 2, ...])) == freeze(
+        ListLiteral(Lit(1), Lit(2), Ellipsis)
+    )
+
+
 def test_expression_operators() -> None:
     a, b = Id.a, Id.b
     assert freeze(a + b) == freeze(BinaryOperation(BinaryOperator.ADD, a, b))

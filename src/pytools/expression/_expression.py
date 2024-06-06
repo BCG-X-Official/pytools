@@ -522,10 +522,18 @@ def make_expression(value: Any) -> Expression:
         from .composite import SetLiteral
 
         return SetLiteral(*value)
+    elif isinstance(value, frozenset):
+        from .atomic import Id
+
+        return Id.frozenset(*value)
     elif isinstance(value, dict):
         from .composite import DictLiteral
 
         return DictLiteral(*value.items())
+    elif value is Ellipsis:
+        from .atomic import Id
+
+        return Id("...")
     elif isinstance(value, np.ndarray):
         from .atomic import Id
         from .composite import ListLiteral
