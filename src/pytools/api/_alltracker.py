@@ -171,7 +171,7 @@ class AllTracker:
                     globals_[name] = obj = self._evaluate_type_alias(alias=obj)
                 else:
                     # update forward references in annotations
-                    update_forward_references(obj, globals_=globals_)
+                    update_forward_references(obj)
 
             # check that the object was defined locally
             try:
@@ -312,13 +312,13 @@ __tracker._imported.remove(public_module_prefix.__name__)
 
 
 def update_forward_references(
-    obj: Union[type, FunctionType], *, globals_: Dict[str, Any]
+    obj: Union[type, FunctionType], *, globals_: Optional[Dict[str, Any]] = None
 ) -> None:
     """
     Replace all forward references with their referenced classes.
 
     :param obj: a function or class
-    :param globals_: a global namespace to search the referenced classes in
+    :param globals_: a global namespace to search the referenced classes in (optional)
     """
 
     try:
