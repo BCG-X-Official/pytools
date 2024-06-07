@@ -25,8 +25,6 @@ drops support for earlier Python versions.
   object, usually the constructor of the superclass
 - API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
   variables in attribute signatures
-- API: new Sphinx callback class :class:`.SetPublicModule` to set the
-  ``__public_module__`` attribute of a class imported from a private module
 
 
 *pytools* 2.1
