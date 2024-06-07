@@ -103,7 +103,6 @@ __all__ = [
     "RenamePrivateArguments",
     "Replace3rdPartyDoc",
     "ResolveTypeVariables",
-    "SetPublicModule",
     "SkipIndirectImports",
     "TrackCurrentClass",
     "UpdateForwardReferences",
@@ -229,14 +228,14 @@ class AddInheritance(AutodocProcessDocstring):
             pos = _insert_position()
             lines[pos:pos] = bases_lines
 
-    def _class_module(self, cls: Any) -> str:
-        module_name: str = _class_attr(cls, attr=["__publicmodule__", "__module__"])
+    def _class_module(self, cls: type) -> str:
+        module_name: str = public_module_prefix(cls.__module__)
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    def _full_name(self, cls: Any) -> str:
+    def _full_name(self, cls: type) -> str:
         # get the full name of the class, including the module prefix
         return f"{self._class_module(cls)}.{_class_name(cls)}"
 
@@ -295,9 +294,9 @@ class AddInheritance(AutodocProcessDocstring):
             if cls.__bound__:
                 args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
             if cls.__covariant__:
-                args.append("*__covariant__=True*")
+                args.append("*covariant=True*")
             if cls.__contravariant__:
-                args.append("*__contravariant__=True*")
+                args.append("*contravariant=True*")
             return f'{cls}({", ".join(args)})' if args else str(cls)
         else:
             return str(cls)
@@ -725,7 +724,7 @@ def _class_attr(cls: Any, attr: List[str]) -> Any:
                 f"none of the attributes not found in class {cls}: {', '.join(attr)}"
             )
 
-    return _get_attr(_cls=cls)
+    return _get_attr(_cls=typing.get_origin(cls) or cls)
 
 
 class _TypeVarBindings:
@@ -1198,31 +1197,6 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
                 )
         except AttributeError:
             pass
-
-
-class SetPublicModule(AutodocProcessSignature, metaclass=SingletonABCMeta):
-    """
-    A Sphinx autodoc process signature that sets the public module of a class.
-    """
-
-    def process(
-        self,
-        app: Sphinx,
-        what: str,
-        name: str,
-        obj: object,
-        options: object,
-        signature: Optional[str],
-        return_annotation: Optional[str],
-    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
-
-        if what == "class":
-            cls = cast(type, obj)
-            cls.__public_module__ = (  # type: ignore[attr-defined]
-                public_module_prefix(cls.__module__)
-            )
-
-        return None
 
 
 class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
