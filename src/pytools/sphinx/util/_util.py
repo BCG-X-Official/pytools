@@ -293,10 +293,6 @@ class AddInheritance(AutodocProcessDocstring):
             ]
             if cls.__bound__:
                 args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
-            if cls.__covariant__:
-                args.append("*covariant=True*")
-            if cls.__contravariant__:
-                args.append("*contravariant=True*")
             return f'{cls}({", ".join(args)})' if args else str(cls)
         else:
             return str(cls)
