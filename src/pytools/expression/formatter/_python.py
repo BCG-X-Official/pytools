@@ -9,6 +9,7 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Any, List, NamedTuple, Tuple
 
+from ...api import AllTracker, inheritdoc
 from .. import Expression, ExpressionAlias, ExpressionFormatter
 from ..base import (
     AtomicExpression,
@@ -18,7 +19,6 @@ from ..base import (
     PrefixExpression,
 )
 from ..operator import BinaryOperator
-from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
