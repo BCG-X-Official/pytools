@@ -5,6 +5,30 @@ Release Notes
 .. |nbsp| unicode:: 0xA0
    :trim:
 
+*pytools* 3.0
+-------------
+
+*pytools* 3.0 adds support for language features introduced since Python 3.10, and
+drops support for earlier Python versions.
+
+
+*pytools* 3.0.0
+~~~~~~~~~~~~~~~
+
+- API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
+  return the color as a hexadecimal string
+- API: function :func:`.make_expression` now supports :class:`.frozenset` instances
+  and the ellipsis operator (``...``)
+- Various enhancements and adjustments to maintain compatibility with recent Python
+  versions
+- API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
+  object, usually the constructor of the superclass
+- API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
+  variables in attribute signatures
+- API: new Sphinx callback class :class:`.SetPublicModule` to set the
+  ``__public_module__`` attribute of a class imported from a private module
+
+
 *pytools* 2.1
 -------------
 
