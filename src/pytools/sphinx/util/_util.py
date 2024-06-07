@@ -9,11 +9,10 @@ import importlib
 import itertools
 import logging
 import re
-import sys
 import typing
 from abc import ABCMeta, abstractmethod
 from inspect import getattr_static
-from types import FunctionType, MethodType
+from types import FunctionType, MethodType, UnionType
 from typing import (
     Any,
     Callable,
@@ -37,7 +36,13 @@ from typing import (
 
 import typing_inspect
 
-from ...api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
+from ...api import (
+    AllTracker,
+    get_generic_bases,
+    inheritdoc,
+    public_module_prefix,
+    update_forward_references,
+)
 from ...meta import SingletonABCMeta
 from .. import (
     AutodocBeforeProcessSignature,
@@ -81,8 +86,6 @@ except ImportError:
 # Constants
 #
 
-_PYTHON_3_9_OR_LATER = sys.version_info >= (3, 9)
-
 
 log = logging.getLogger(__name__)
 
@@ -100,8 +103,10 @@ __all__ = [
     "RenamePrivateArguments",
     "Replace3rdPartyDoc",
     "ResolveTypeVariables",
+    "SetPublicModule",
     "SkipIndirectImports",
     "TrackCurrentClass",
+    "UpdateForwardReferences",
 ]
 
 #
@@ -110,6 +115,7 @@ __all__ = [
 
 method_descriptor: Type[Any] = type(str.startswith)
 wrapper_descriptor: Type[Any] = type(str.__add__)
+internal_function_or_method: Type[Any] = type(iter)
 
 
 #
@@ -545,7 +551,6 @@ class SkipIndirectImports(AutodocSkipMember, metaclass=SingletonABCMeta):
         return None
 
 
-@inheritdoc(match="""[see superclass]""")
 class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
     """
     Replace 3rd party docstrings with a reference to the 3rd party documentation.
@@ -607,9 +612,18 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
 
-            assert isinstance(
-                obj, (FunctionType, MethodType, method_descriptor, wrapper_descriptor)
-            ), f"{obj!r}:{type(obj)} is a function or method"
+            if not isinstance(
+                obj,
+                (
+                    FunctionType,
+                    MethodType,
+                    method_descriptor,
+                    wrapper_descriptor,
+                    internal_function_or_method,
+                ),
+            ):
+                log.warning(f"{obj!r}:{type(obj)} is not a function or method")
+                return
 
             if not obj_module or obj_module == "builtins":
                 full_name = obj.__qualname__
@@ -1186,6 +1200,55 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
+class SetPublicModule(AutodocProcessSignature, metaclass=SingletonABCMeta):
+    """
+    A Sphinx autodoc process signature that sets the public module of a class.
+    """
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+
+        if what == "class":
+            cls = cast(type, obj)
+            cls.__public_module__ = (  # type: ignore[attr-defined]
+                public_module_prefix(cls.__module__)
+            )
+
+        return None
+
+
+class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
+    """
+    A Sphinx autodoc process signature that updates forward references in the
+    docstring of a class.
+    """
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+
+        if what == "class":
+            cls = cast(type, obj)
+            update_forward_references(cls)
+
+        return None
+
+
 #
 # validate __all__
 #
@@ -1205,6 +1268,9 @@ def _substitute_generic_type_arguments(
     ] = typing_inspect.get_args(type_expression)
 
     if type_args:
+
+        if isinstance(type_expression, UnionType):
+            type_expression = Union[type_args[0], type_args[1]]
         return _copy_generic_type_with_arguments(
             type_expression=type_expression,
             new_arguments=tuple(
