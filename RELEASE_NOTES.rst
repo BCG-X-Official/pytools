@@ -23,6 +23,8 @@ drops support for earlier Python versions.
   taxonomies
 - API: function :func:`.make_expression` now supports :class:`.frozenset` instances
   and the ellipsis operator (``...``)
+- API: new function :func:`.expression_from_init_params` to create an object's
+  :class:`.Expression` representation from the attributes in its ``__init__`` method
 - API: new mixin class :class:`.HasDictRepr` that provides a method to return a
   dictionary representation of an object
 - API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
