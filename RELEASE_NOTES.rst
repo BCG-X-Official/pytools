@@ -17,14 +17,18 @@ drops support for earlier Python versions.
 
 - API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
   return the color as a hexadecimal string
+- API: new funcrion :func:`.get_init_params` to retrieve the object attributes
+  associated with the object's ``__init__`` method
 - API: function :func:`.make_expression` now supports :class:`.frozenset` instances
   and the ellipsis operator (``...``)
-- Various enhancements and adjustments to maintain compatibility with recent Python
-  versions
+- API: new mixin class :class:`.HasDictRepr` that provides a method to return a
+  dictionary representation of an object
 - API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
   object, usually the constructor of the superclass
 - API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
   variables in attribute signatures
+- Various enhancements and adjustments to maintain compatibility with recent Python
+  versions
 
 
 *pytools* 2.1
