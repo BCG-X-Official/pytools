@@ -17,8 +17,10 @@ drops support for earlier Python versions.
 
 - API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
   return the color as a hexadecimal string
-- API: new funcrion :func:`.get_init_params` to retrieve the object attributes
+- API: new function :func:`.get_init_params` to retrieve the object attributes
   associated with the object's ``__init__`` method
+- API: new classes :class:`.Taxonomy` and :class:`.Category` to represent hierarchical
+  taxonomies
 - API: function :func:`.make_expression` now supports :class:`.frozenset` instances
   and the ellipsis operator (``...``)
 - API: new mixin class :class:`.HasDictRepr` that provides a method to return a
