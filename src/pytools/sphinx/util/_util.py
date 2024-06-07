@@ -546,6 +546,7 @@ class SkipIndirectImports(AutodocSkipMember, metaclass=SingletonABCMeta):
         return None
 
 
+@inheritdoc(match="""[see superclass]""")
 class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
     """
     Replace 3rd party docstrings with a reference to the 3rd party documentation.
@@ -1195,6 +1196,7 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
+@inheritdoc(match="""[see superclass]""")
 class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
     """
     A Sphinx autodoc process signature that updates forward references in the
@@ -1211,6 +1213,7 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         signature: Optional[str],
         return_annotation: Optional[str],
     ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        """[see superclass]"""
 
         if what == "class":
             cls = cast(type, obj)
