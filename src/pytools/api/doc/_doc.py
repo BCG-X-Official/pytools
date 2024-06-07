@@ -253,6 +253,8 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
                 return_annotation is signature.empty
                 or return_annotation is None
                 or return_annotation is NoneType
+                # Also check for string "None" in case of forward references
+                or return_annotation == "None"
             ):
                 actual_parameters.append(FunctionDefinition.PARAM_RETURN)
 
