@@ -16,7 +16,7 @@ license = "Apache Software License v2.0"
 requires = [
     "joblib            >=0.14,<2a",
     "matplotlib        ~=3.0",
-    "numpy             >=1.21,<2a",  # cannot use ~= due to conda bug
+    "numpy             >=1.22,<2a",  # cannot use ~= due to conda bug
     "pandas            >=1",
     "scipy             ~=1.6",
     "typing_inspect    ~=0.7",
@@ -68,7 +68,7 @@ no-binary.min = ["matplotlib"]
 # minimum requirements of gamma-pytools
 joblib            = "~=0.14.0"
 matplotlib        = "~=3.0.3"
-numpy             = "==1.21.6"  # cannot use ~= due to conda bug
+numpy             = "==1.22.4"  # cannot use ~= due to conda bug
 pandas            = "~=1.0.5"
 python            = ">=3.10.13,<3.8a"    # cannot use ~= due to conda bug
 scipy             = "~=1.6.3"
