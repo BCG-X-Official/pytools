@@ -2,7 +2,6 @@
 Tests for utility functions related to generic types.
 """
 
-import sys
 from collections.abc import AsyncIterable, AsyncIterator, Iterable, Iterator, Mapping
 from typing import Any
 from typing import AsyncIterable as AsyncIterable_typing
@@ -19,9 +18,6 @@ from pytools.typing import get_generic_instance, issubclass_generic
 T = TypeVar("T")
 T_arg = TypeVar("T_arg", contravariant=True)
 T_ret = TypeVar("T_ret", covariant=True)
-
-
-_PYTHON_3_11 = sys.version_info >= (3, 11)
 
 
 class A:
@@ -57,11 +53,6 @@ class CNotGeneric(B):  # type: ignore[type-arg]
 
 
 def test_issubclass_generic() -> None:
-
-    if not _PYTHON_3_11:
-        with pytest.raises(NotImplementedError):
-            issubclass_generic(CRet[int], BRet[int])
-        return
 
     assert issubclass_generic(CRet[list[A]], BRet[list[A]])
 
@@ -114,11 +105,6 @@ def test_issubclass_generic() -> None:
 
 
 def test_get_generic_instance() -> None:
-
-    if not _PYTHON_3_11:
-        with pytest.raises(NotImplementedError):
-            get_generic_instance(CRet[int], BRet)
-        return
 
     assert get_generic_instance(CRet[int], BRet) == [BRet[int]]
     assert get_generic_instance(CNotGeneric, B) == [B[Any]]

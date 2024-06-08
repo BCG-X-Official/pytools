@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import itertools
 import logging
-import sys
 from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
@@ -61,13 +60,6 @@ __all__ = [
 #
 
 EllipsisType: TypeAlias = type(Ellipsis)  # type: ignore[valid-type]
-
-
-#
-# Constants
-#
-
-_PYTHON_3_11_OR_LATER = sys.version_info >= (3, 11)
 
 
 #
@@ -291,11 +283,6 @@ def get_generic_instance(subclass: type, base: type) -> list[type]:
                     bindings=base_bindings,
                 )
 
-    if not _PYTHON_3_11_OR_LATER:
-        raise NotImplementedError(
-            "get_generic_instance() requires Python 3.11 or later"
-        )
-
     if ti.get_origin(base) is not None and get_args(base):
         raise TypeError(f"arg base must not be a generic instance, but got {base}")
 
@@ -331,10 +318,6 @@ def get_generic_bases(*, generic_instance: type) -> tuple[type, ...]:
         :mod:`typing_inspect`)
     :return: the generic bases of the generic instance
     """
-    if not _PYTHON_3_11_OR_LATER:
-        raise NotImplementedError(
-            "get_generic_instance() requires Python 3.11 or later"
-        )
 
     generic_instance = _replace_deprecated_type(generic_instance)
     origin = get_origin(generic_instance) or generic_instance
@@ -392,11 +375,6 @@ def issubclass_generic(subclass: type | Never, base: type | Never) -> bool:
     :return: ``True`` if the class is a subclass of the generic instance, ``False``
         otherwise
     """
-
-    if not _PYTHON_3_11_OR_LATER:
-        raise NotImplementedError(
-            "get_generic_instance() requires Python 3.11 or later"
-        )
 
     # As a special case, type `Any` is a superclass of anything
     if base is Any:
