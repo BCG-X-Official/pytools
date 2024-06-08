@@ -520,9 +520,10 @@ def make_expression(value: Any) -> Expression:
 
         return TupleLiteral(*value)
     elif isinstance(value, set):
+        from .atomic import Id
         from .composite import SetLiteral
 
-        return SetLiteral(*value)
+        return SetLiteral(*value) if value else Id(set)()
     elif isinstance(value, frozenset):
         from .atomic import Id
 

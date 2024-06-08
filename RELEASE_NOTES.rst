@@ -9,28 +9,72 @@ Release Notes
 -------------
 
 *pytools* 3.0 adds support for language features introduced since Python 3.10, and
-drops support for earlier Python versions.
+drops support for Python versions.
 
 
 *pytools* 3.0.0
 ~~~~~~~~~~~~~~~
 
-- API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
-  return the color as a hexadecimal string
+- API: new utility functions for asynchronous programming in module
+  :mod:`pytools.asyncio`:
+
+  - :func:`.arun` to run an asynchronous function in a new event loop
+  - :func:`.aenumerate` to enumerate an asynchronous iterable
+  - :func:`.async_flatten` to flatten nested asynchronous iterables for optimized
+    asynchronous processing
+  - :func:`.iter_async_to_sync` to convert an asynchronous iterable to a synchronous
+    one
+  - :func:`.iter_sync_to_async` to convert a synchronous iterable to an asynchronous
+    one
+  - :func:`.unpack_exception_group` to unpack an exception group into one or more
+    individual exceptions
+
 - API: new function :func:`.get_init_params` to retrieve the object attributes
   associated with the object's ``__init__`` method
 - API: new classes :class:`.Taxonomy` and :class:`.Category` to represent hierarchical
   taxonomies
-- API: function :func:`.make_expression` now supports :class:`.frozenset` instances
-  and the ellipsis operator (``...``)
-- API: new function :func:`.expression_from_init_params` to create an object's
-  :class:`.Expression` representation from the attributes in its ``__init__`` method
+- API: enhancements to the :mod:`pytools.expression` module:
+
+  - new function :func:`.expression_from_init_params` to create an object's
+    :class:`.Expression` representation from the attributes in its ``__init__`` method
+  - new submodule :mod:`pytools.expression.repr` with enhanced versions of standard
+    Python container classes implementing the :class:`.HasExpressionRepr` interface:
+
+    - :class:`.ListWithExpressionRepr` for lists
+    - :class:`.TupleWithExpressionRepr` for tuples
+    - :class:`.SetWithExpressionRepr` for sets
+    - :class:`.DictWithExpressionRepr` for dictionaries
+
+- API: new module :mod:`pytools.typing` for generic type inspection at runtime
+
+  - new function :func:`.get_common_generic_base` to retrieve the common generic base
+    class of two types
+  - new function :func:`.get_common_generic_subclass` to retrieve the common generic
+    subclass of two types
+  - new function :func:`.get_generic_bases` to retrieve the generic base classes of a
+    type (requires Python 3.11)
+  - new function :func:`.get_generic_instance` to retrieve the generic instance of a
+    type (requires Python 3.11)
+  - new function :func:`.get_type_arguments` to retrieve the type arguments of a generic
+    type (requires Python 3.11)
+  - new function :func:`.isinstance_generic` to check if an object is an instance of a
+    generic type (requires Python 3.11)
+  - new function :func:`.issubclass_generic` to check if a type is a subclass of a
+    generic type (requires Python 3.11)
+
+- API: new utilities for generating Sphinx documentation
+
+  - API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
+    object, usually the constructor of the superclass
+  - API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
+    variables in attribute signatures
+
 - API: new mixin class :class:`.HasDictRepr` that provides a method to return a
   dictionary representation of an object
-- API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
-  object, usually the constructor of the superclass
-- API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
-  variables in attribute signatures
+- API: new function :func:`.is_running_in_notebook` to check if the code is running in a
+  Jupyter or Colab notebook
+- API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
+  return the color as a hexadecimal string
 - Various enhancements and adjustments to maintain compatibility with recent Python
   versions
 

@@ -137,7 +137,7 @@ def test_expression() -> None:
         (BinaryOperation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
         (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
-        (SetLiteral(), "{}"),
+        (SetLiteral(1), "{1}"),
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
         (Id.xx.isalpha(), "xx.isalpha()"),
@@ -154,6 +154,12 @@ def test_expression() -> None:
         assert len(
             PythonExpressionFormatter(single_line=True).to_text(expression)
         ) == len(expected_str)
+
+    with pytest.raises(
+        TypeError, match="^set literals must have at least one element$"
+    ):
+        # Set literals must have at least one element
+        SetLiteral()
 
 
 def test_expression_setting() -> None:
@@ -212,6 +218,7 @@ def test_make_expression() -> None:
     assert freeze(make_expression({1, 2, 3})) == freeze(
         SetLiteral(Lit(1), Lit(2), Lit(3))
     )
+    assert freeze(make_expression(set())) == freeze(Id(set)())
     assert freeze(make_expression({1: 2, 3: 4})) == freeze(
         DictLiteral((Lit(1), Lit(2)), (Lit(3), Lit(4)))
     )
