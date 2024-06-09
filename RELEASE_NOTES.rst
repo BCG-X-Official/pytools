@@ -77,6 +77,8 @@ Python 3.11, and drops support for Python versions.
   Jupyter or Colab notebook
 - API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
   return the color as a hexadecimal string
+- API: new class :class:`.TextTemplate` to generate text from a template string with
+  stricter management of template variables
 - Various enhancements and adjustments to maintain compatibility with recent Python
   versions
 
