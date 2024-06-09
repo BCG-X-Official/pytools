@@ -29,6 +29,8 @@ Python 3.11, and drops support for Python versions.
   - :func:`.unpack_exception_group` to unpack an exception group into one or more
     individual exceptions
 
+- API: new function :func:`.validate__all__declarations` to validate the ``__all__``
+  declarations of a module and its submodules
 - API: new function :func:`.get_init_params` to retrieve the object attributes
   associated with the object's ``__init__`` method
 - API: new classes :class:`.Taxonomy` and :class:`.Category` to represent hierarchical
