@@ -1,6 +1,7 @@
 """
 Implementation of sphinx utility callbacks specific to building Gamma documentation.
 """
+
 from __future__ import annotations
 
 import collections.abc
@@ -8,11 +9,10 @@ import importlib
 import itertools
 import logging
 import re
-import sys
 import typing
 from abc import ABCMeta, abstractmethod
 from inspect import getattr_static
-from types import FunctionType, MethodType
+from types import FunctionType, MethodType, UnionType
 from typing import (
     Any,
     Callable,
@@ -36,7 +36,13 @@ from typing import (
 
 import typing_inspect
 
-from ...api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
+from ...api import (
+    AllTracker,
+    get_generic_bases,
+    inheritdoc,
+    public_module_prefix,
+    update_forward_references,
+)
 from ...meta import SingletonABCMeta
 from .. import (
     AutodocBeforeProcessSignature,
@@ -61,8 +67,7 @@ except ImportError:
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise TypeError("docutils package is not installed")
 
-        def replace(self, old: "Element", new: "Element") -> None:
-            ...
+        def replace(self, old: "Element", new: "Element") -> None: ...  # noqa: E704
 
     # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
     class _Text(_Element):
@@ -80,8 +85,6 @@ except ImportError:
 #
 # Constants
 #
-
-_PYTHON_3_9_OR_LATER = sys.version_info >= (3, 9)
 
 
 log = logging.getLogger(__name__)
@@ -102,6 +105,7 @@ __all__ = [
     "ResolveTypeVariables",
     "SkipIndirectImports",
     "TrackCurrentClass",
+    "UpdateForwardReferences",
 ]
 
 #
@@ -110,6 +114,7 @@ __all__ = [
 
 method_descriptor: Type[Any] = type(str.startswith)
 wrapper_descriptor: Type[Any] = type(str.__add__)
+internal_function_or_method: Type[Any] = type(iter)
 
 
 #
@@ -223,14 +228,14 @@ class AddInheritance(AutodocProcessDocstring):
             pos = _insert_position()
             lines[pos:pos] = bases_lines
 
-    def _class_module(self, cls: Any) -> str:
-        module_name: str = _class_attr(cls, attr=["__publicmodule__", "__module__"])
+    def _class_module(self, cls: type) -> str:
+        module_name: str = public_module_prefix(cls.__module__)
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    def _full_name(self, cls: Any) -> str:
+    def _full_name(self, cls: type) -> str:
         # get the full name of the class, including the module prefix
         return f"{self._class_module(cls)}.{_class_name(cls)}"
 
@@ -288,10 +293,6 @@ class AddInheritance(AutodocProcessDocstring):
             ]
             if cls.__bound__:
                 args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
-            if cls.__covariant__:
-                args.append("*__covariant__=True*")
-            if cls.__contravariant__:
-                args.append("*__contravariant__=True*")
             return f'{cls}({", ".join(args)})' if args else str(cls)
         else:
             return str(cls)
@@ -607,9 +608,18 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
 
-            assert isinstance(
-                obj, (FunctionType, MethodType, method_descriptor, wrapper_descriptor)
-            ), f"{obj!r}:{type(obj)} is a function or method"
+            if not isinstance(
+                obj,
+                (
+                    FunctionType,
+                    MethodType,
+                    method_descriptor,
+                    wrapper_descriptor,
+                    internal_function_or_method,
+                ),
+            ):
+                log.warning(f"{obj!r}:{type(obj)} is not a function or method")
+                return
 
             if not obj_module or obj_module == "builtins":
                 full_name = obj.__qualname__
@@ -711,7 +721,7 @@ def _class_attr(cls: Any, attr: List[str]) -> Any:
                 f"none of the attributes not found in class {cls}: {', '.join(attr)}"
             )
 
-    return _get_attr(_cls=cls)
+    return _get_attr(_cls=typing.get_origin(cls) or cls)
 
 
 class _TypeVarBindings:
@@ -1060,8 +1070,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
                 bindings.current_class is cls
             ), "bindings expected to be for the correct class"
 
-            # noinspection PyTypeChecker
-            self._resolve_function_signature(bindings=bindings, func=obj.__func__)
+            self._resolve_function_signature(
+                bindings=bindings, func=cast(FunctionType, obj.__func__)
+            )
 
     def _update_current_class(
         self, cls: Optional[Type[Any]]
@@ -1185,6 +1196,32 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
+@inheritdoc(match="""[see superclass]""")
+class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
+    """
+    A Sphinx autodoc process signature that updates forward references in the
+    docstring of a class.
+    """
+
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: Optional[str],
+        return_annotation: Optional[str],
+    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        """[see superclass]"""
+
+        if what == "class":
+            cls = cast(type, obj)
+            update_forward_references(cls)
+
+        return None
+
+
 #
 # validate __all__
 #
@@ -1204,12 +1241,17 @@ def _substitute_generic_type_arguments(
     ] = typing_inspect.get_args(type_expression)
 
     if type_args:
+
+        if isinstance(type_expression, UnionType):
+            type_expression = Union[type_args[0], type_args[1]]
         return _copy_generic_type_with_arguments(
             type_expression=type_expression,
             new_arguments=tuple(
-                list(map(fn_substitute_type_vars, arg))
-                if isinstance(arg, list)
-                else fn_substitute_type_vars(arg)
+                (
+                    list(map(fn_substitute_type_vars, arg))
+                    if isinstance(arg, list)
+                    else fn_substitute_type_vars(arg)
+                )
                 for arg in type_args
             ),
         )

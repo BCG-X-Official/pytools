@@ -4,5 +4,6 @@ as `matplotlib` charts or as plain text.
 """
 
 from ._matplot import *
+from ._notebook import *
 from ._text import *
 from ._viz import *

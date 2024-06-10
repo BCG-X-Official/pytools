@@ -1,5 +1,5 @@
 """
-Support for simulating classification and regression data.
+Common data structures.
 """
 
 from ._linkage import *

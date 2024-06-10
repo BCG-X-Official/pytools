@@ -2,7 +2,6 @@
 Basic test cases for the `pytools.data` module
 """
 
-
 import numpy as np
 import pandas as pd
 import pytest

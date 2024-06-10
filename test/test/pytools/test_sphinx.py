@@ -14,7 +14,7 @@ V = TypeVar("V")
 
 
 class A(Generic[T, U]):
-    def f(self: S, x: Type[T]) -> U:
+    def f(self: S, x: Type[T]) -> U:  # type: ignore[empty-body]
         pass
 
     def g(self: S) -> Optional[S]:

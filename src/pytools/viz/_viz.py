@@ -3,6 +3,7 @@ The GAMMA visualization library, providing `model/view/controller` oriented clas
 rendering data in different shapes, styles and formats, e.g., as matplot charts or
 plain text.
 """
+
 import logging
 from abc import ABCMeta, abstractmethod
 from multiprocessing import Lock

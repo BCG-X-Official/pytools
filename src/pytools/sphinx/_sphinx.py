@@ -1,6 +1,7 @@
 """
 Implementation of sphinx module.
 """
+
 import logging
 from abc import ABCMeta, abstractmethod
 from typing import Any, List, Optional, Tuple
