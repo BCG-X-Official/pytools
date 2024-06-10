@@ -183,6 +183,11 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
             ECDFMatplotStyle,
         ]
 
+    @classmethod
+    def get_default_style(cls) -> ECDFStyle:
+        """[see superclass]"""
+        return ECDFMatplotStyle()
+
     def _draw(self, data: Union[Sequence[float], ArrayLike]) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")

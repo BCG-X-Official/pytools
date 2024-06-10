@@ -221,15 +221,12 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     #: The :class:`.DrawingStyle` used by this drawer.
     style: T_Style
 
-    #: The name of the default drawing style.
-    DEFAULT_STYLE = "matplot"
-
     def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:
         """
         :param style: the style to be used for drawing; either as a
-            :class:`.DrawingStyle` instance, or as the name of a default style.
-            Permissible names include ``"matplot"`` for a style supporting `matplotlib`,
-            and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
+            :class:`.DrawingStyle` instance, or as the name of a named style supported
+            by this drawer type; if not specified, the default style will be used
+            as returned by :meth:`get_default_style`
         """
 
         def _get_style_factory(_style_name: str) -> Callable[..., T_Style]:
@@ -240,7 +237,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 raise KeyError(f"unknown named style: {_style_name}")
 
         if style is None:
-            self.style = _get_style_factory(Drawer.DEFAULT_STYLE)()
+            self.style = self.get_default_style()
         elif isinstance(style, str):
             self.style = _get_style_factory(style)()
         elif isinstance(style, DrawingStyle):
@@ -250,8 +247,6 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 "arg style expected to be a string, or an instance of class "
                 f"{DrawingStyle.__name__}"
             )
-
-    __init__.__doc__ = cast(str, __init__.__doc__).replace("%DEFAULT%", DEFAULT_STYLE)
 
     @classmethod
     def get_named_styles(cls) -> Dict[str, Callable[..., T_Style]]:
@@ -277,6 +272,15 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         :returns: an iterable of style classes
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def get_default_style(cls) -> T_Style:
+        """
+        Get the default style for this drawer.
+
+        :return: the default style for this drawer
+        """
 
     def draw(self, data: T_Model, *, title: str) -> None:
         """

@@ -546,6 +546,11 @@ class MatrixDrawer(Drawer[Matrix[Any], MatrixStyle]):
             MatrixReportStyle,
         ]
 
+    @classmethod
+    def get_default_style(cls) -> MatrixStyle:
+        """[see superclass]"""
+        return MatrixMatplotStyle()
+
     def get_style_kwargs(self, data: Matrix[Any]) -> Dict[str, Any]:
         """[see superclass]"""
         return dict(

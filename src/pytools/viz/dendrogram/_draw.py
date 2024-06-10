@@ -61,6 +61,11 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
             DendrogramReportStyle,
         ]
 
+    @classmethod
+    def get_default_style(cls) -> DendrogramStyle:
+        """[see superclass]"""
+        return DendrogramMatplotStyle()
+
     def get_style_kwargs(self, data: LinkageTree) -> Dict[str, Any]:
         """[see superclass]"""
         return dict(
