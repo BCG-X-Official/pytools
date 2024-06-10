@@ -109,16 +109,11 @@ def test_expression_repr_html() -> None:
         - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
     )
 )"""
-    expected_html_expression = f"<pre>{expected_formatted_expression}\n</pre>\n"
+    # test if the string representation is generated as expected
+    assert str(expr) == expected_formatted_expression
 
     # test if the html representation is generated as expected
-    assert expr._repr_html_() == expected_html_expression
-
-    # test if the mimebundle representation is generated as expected
-    assert expr._repr_mimebundle_() == {
-        "text/html": expected_html_expression,
-        "text/plain": expected_formatted_expression,
-    }
+    assert expr._repr_html_() == f"<pre>{expected_formatted_expression}\n</pre>\n"
 
 
 def test_expression() -> None:
