@@ -170,7 +170,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or cast(T_ColorScheme, ColorScheme.DEFAULT)
 
     __init__.__doc__ = cast(str, __init__.__doc__).replace(
-        "%%COLORS_DEFAULT%%", repr(ColorScheme.DEFAULT)
+        "%%COLORS_DEFAULT%%", type(ColorScheme.DEFAULT).__name__
     )
 
     @classmethod
