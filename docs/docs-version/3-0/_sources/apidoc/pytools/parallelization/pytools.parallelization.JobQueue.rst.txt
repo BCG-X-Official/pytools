@@ -1,0 +1,35 @@
+pytools.parallelization.JobQueue
+================================
+
+.. currentmodule:: pytools.parallelization
+
+.. autoclass:: JobQueue
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~JobQueue.aggregate
+      ~JobQueue.jobs
+      ~JobQueue.on_run
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~JobQueue.lock
+   
+   
+
+   .. rubric:: Definitions

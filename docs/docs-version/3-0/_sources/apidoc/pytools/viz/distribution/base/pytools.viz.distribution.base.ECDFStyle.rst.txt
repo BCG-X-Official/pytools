@@ -1,0 +1,30 @@
+pytools.viz.distribution.base.ECDFStyle
+=======================================
+
+.. currentmodule:: pytools.viz.distribution.base
+
+.. autoclass:: ECDFStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ECDFStyle.finalize_drawing
+      ~ECDFStyle.get_default_style_name
+      ~ECDFStyle.get_named_styles
+      ~ECDFStyle.start_drawing
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

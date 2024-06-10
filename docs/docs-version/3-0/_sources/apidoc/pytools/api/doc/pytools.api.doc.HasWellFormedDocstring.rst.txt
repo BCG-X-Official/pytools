@@ -1,0 +1,27 @@
+pytools.api.doc.HasWellFormedDocstring
+======================================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: HasWellFormedDocstring
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HasWellFormedDocstring.test
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

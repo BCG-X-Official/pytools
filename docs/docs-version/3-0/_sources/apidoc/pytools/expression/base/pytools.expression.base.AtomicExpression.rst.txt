@@ -1,0 +1,41 @@
+pytools.expression.base.AtomicExpression
+========================================
+
+.. currentmodule:: pytools.expression.base
+
+.. autoclass:: AtomicExpression
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AtomicExpression.and_
+      ~AtomicExpression.eq_
+      ~AtomicExpression.hash_
+      ~AtomicExpression.not_
+      ~AtomicExpression.or_
+      ~AtomicExpression.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AtomicExpression.precedence_
+      ~AtomicExpression.subexpressions_
+      ~AtomicExpression.text_
+      ~AtomicExpression.value_
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,40 @@
+pytools.sphinx.util.AddInheritance
+==================================
+
+.. currentmodule:: pytools.sphinx.util
+
+.. autoclass:: AddInheritance
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AddInheritance.connect
+      ~AddInheritance.disconnect
+      ~AddInheritance.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AddInheritance.F_BASES
+      ~AddInheritance.F_GENERICS
+      ~AddInheritance.F_METACLASSES
+      ~AddInheritance.app
+      ~AddInheritance.event
+      ~AddInheritance.listener_id
+   
+   
+
+   .. rubric:: Definitions

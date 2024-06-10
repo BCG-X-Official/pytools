@@ -1,0 +1,6 @@
+pytools.typing.get\_generic\_bases
+==================================
+
+.. currentmodule:: pytools.typing
+
+.. autofunction:: get_generic_bases

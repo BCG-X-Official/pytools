@@ -1,0 +1,6 @@
+pytools.api.validate\_\_all\_\_declarations
+===========================================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: validate__all__declarations

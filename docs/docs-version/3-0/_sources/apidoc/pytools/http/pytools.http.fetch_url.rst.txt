@@ -1,0 +1,6 @@
+pytools.http.fetch\_url
+=======================
+
+.. currentmodule:: pytools.http
+
+.. autofunction:: fetch_url

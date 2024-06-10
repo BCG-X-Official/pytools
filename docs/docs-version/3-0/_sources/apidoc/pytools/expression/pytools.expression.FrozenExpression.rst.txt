@@ -1,0 +1,27 @@
+pytools.expression.FrozenExpression
+===================================
+
+.. currentmodule:: pytools.expression
+
+.. autoclass:: FrozenExpression
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~FrozenExpression.to_expression
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

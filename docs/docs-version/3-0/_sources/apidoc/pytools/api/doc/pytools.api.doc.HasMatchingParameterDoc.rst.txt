@@ -1,0 +1,27 @@
+pytools.api.doc.HasMatchingParameterDoc
+=======================================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: HasMatchingParameterDoc
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HasMatchingParameterDoc.test
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

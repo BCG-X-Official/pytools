@@ -1,0 +1,27 @@
+pytools.api.MissingClassMeta
+============================
+
+.. currentmodule:: pytools.api
+
+.. autoclass:: MissingClassMeta
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~MissingClassMeta.mro
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,42 @@
+pytools.expression.composite.SetLiteral
+=======================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: SetLiteral
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SetLiteral.and_
+      ~SetLiteral.eq_
+      ~SetLiteral.hash_
+      ~SetLiteral.not_
+      ~SetLiteral.or_
+      ~SetLiteral.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~SetLiteral.brackets_
+      ~SetLiteral.elements_
+      ~SetLiteral.precedence_
+      ~SetLiteral.subexpression_
+      ~SetLiteral.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

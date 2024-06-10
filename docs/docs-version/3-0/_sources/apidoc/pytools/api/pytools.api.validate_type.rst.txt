@@ -1,0 +1,6 @@
+pytools.api.validate\_type
+==========================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: validate_type

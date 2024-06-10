@@ -1,0 +1,6 @@
+pytools.fit.fitted\_only
+========================
+
+.. currentmodule:: pytools.fit
+
+.. autofunction:: fitted_only

@@ -1,0 +1,42 @@
+pytools.viz.color
+=================
+
+.. automodule:: pytools.viz.color
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: color
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      ColorScheme
+      FacetDarkColorScheme
+      FacetLightColorScheme
+      MatplotColorScheme
+      RgbColor
+      RgbaColor
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

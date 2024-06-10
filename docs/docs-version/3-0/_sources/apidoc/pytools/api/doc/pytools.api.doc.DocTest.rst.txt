@@ -1,0 +1,27 @@
+pytools.api.doc.DocTest
+=======================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: DocTest
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DocTest.test
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

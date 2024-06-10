@@ -1,0 +1,37 @@
+pytools.text.TextTemplate
+=========================
+
+.. currentmodule:: pytools.text
+
+.. autoclass:: TextTemplate
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TextTemplate.format_with_attributes
+      ~TextTemplate.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~TextTemplate.format_string
+      ~TextTemplate.formatting_keys
+      ~TextTemplate.allow_additional_keys
+      ~TextTemplate.ignore_unmatched_attributes
+   
+   
+
+   .. rubric:: Definitions

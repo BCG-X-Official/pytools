@@ -1,0 +1,28 @@
+pytools.meta.SingletonABCMeta
+=============================
+
+.. currentmodule:: pytools.meta
+
+.. autoclass:: SingletonABCMeta
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SingletonABCMeta.mro
+      ~SingletonABCMeta.register
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

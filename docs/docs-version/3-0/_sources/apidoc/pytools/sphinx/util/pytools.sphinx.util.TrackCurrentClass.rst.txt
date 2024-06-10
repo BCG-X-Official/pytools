@@ -1,0 +1,38 @@
+pytools.sphinx.util.TrackCurrentClass
+=====================================
+
+.. currentmodule:: pytools.sphinx.util
+
+.. autoclass:: TrackCurrentClass
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TrackCurrentClass.connect
+      ~TrackCurrentClass.disconnect
+      ~TrackCurrentClass.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~TrackCurrentClass.app
+      ~TrackCurrentClass.event
+      ~TrackCurrentClass.listener_id
+      ~TrackCurrentClass.current_class
+   
+   
+
+   .. rubric:: Definitions

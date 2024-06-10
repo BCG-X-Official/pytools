@@ -1,0 +1,42 @@
+pytools.expression.composite.TupleLiteral
+=========================================
+
+.. currentmodule:: pytools.expression.composite
+
+.. autoclass:: TupleLiteral
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TupleLiteral.and_
+      ~TupleLiteral.eq_
+      ~TupleLiteral.hash_
+      ~TupleLiteral.not_
+      ~TupleLiteral.or_
+      ~TupleLiteral.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~TupleLiteral.brackets_
+      ~TupleLiteral.elements_
+      ~TupleLiteral.precedence_
+      ~TupleLiteral.subexpression_
+      ~TupleLiteral.subexpressions_
+   
+   
+
+   .. rubric:: Definitions

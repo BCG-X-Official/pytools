@@ -1,0 +1,37 @@
+pytools.sphinx.AutodocSkipMember
+================================
+
+.. currentmodule:: pytools.sphinx
+
+.. autoclass:: AutodocSkipMember
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AutodocSkipMember.connect
+      ~AutodocSkipMember.disconnect
+      ~AutodocSkipMember.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~AutodocSkipMember.app
+      ~AutodocSkipMember.event
+      ~AutodocSkipMember.listener_id
+   
+   
+
+   .. rubric:: Definitions

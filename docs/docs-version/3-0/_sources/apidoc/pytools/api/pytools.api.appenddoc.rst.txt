@@ -1,0 +1,6 @@
+pytools.api.appenddoc
+=====================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: appenddoc

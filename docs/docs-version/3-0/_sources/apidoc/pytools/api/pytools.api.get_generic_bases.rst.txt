@@ -1,0 +1,6 @@
+pytools.api.get\_generic\_bases
+===============================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: get_generic_bases

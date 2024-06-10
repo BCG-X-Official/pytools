@@ -1,0 +1,38 @@
+pytools.data.taxonomy.Taxonomy
+==============================
+
+.. currentmodule:: pytools.data.taxonomy
+
+.. autoclass:: Taxonomy
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Taxonomy.from_dict
+      ~Taxonomy.get_leaves
+      ~Taxonomy.get_path_to
+      ~Taxonomy.is_descendant
+      ~Taxonomy.to_dict
+      ~Taxonomy.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Taxonomy.root
+   
+   
+
+   .. rubric:: Definitions

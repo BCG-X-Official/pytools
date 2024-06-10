@@ -1,0 +1,6 @@
+pytools.typing.issubclass\_generic
+==================================
+
+.. currentmodule:: pytools.typing
+
+.. autofunction:: issubclass_generic

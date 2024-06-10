@@ -1,0 +1,6 @@
+pytools.asyncio.unpack\_exception\_group
+========================================
+
+.. currentmodule:: pytools.asyncio
+
+.. autofunction:: unpack_exception_group

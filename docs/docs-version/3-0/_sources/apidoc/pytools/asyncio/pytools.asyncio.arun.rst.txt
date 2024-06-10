@@ -1,0 +1,6 @@
+pytools.asyncio.arun
+====================
+
+.. currentmodule:: pytools.asyncio
+
+.. autofunction:: arun

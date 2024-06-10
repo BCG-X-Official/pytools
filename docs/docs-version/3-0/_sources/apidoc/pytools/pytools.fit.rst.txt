@@ -1,0 +1,56 @@
+pytools.fit
+===========
+
+.. automodule:: pytools.fit
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: fit
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      FittableMixin
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: fit
+      :nosignatures:
+   
+      fitted_only
+   
+   
+
+   
+   
+   
+
+   
+   
+   ==========
+   Exceptions
+   ==========
+
+   .. autosummary::
+      :toctree: fit
+   
+      NotFittedError
+   
+   
+
+
+

@@ -1,0 +1,31 @@
+pytools.viz.matrix.base.MatrixStyle
+===================================
+
+.. currentmodule:: pytools.viz.matrix.base
+
+.. autoclass:: MatrixStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~MatrixStyle.draw_matrix
+      ~MatrixStyle.finalize_drawing
+      ~MatrixStyle.get_default_style_name
+      ~MatrixStyle.get_named_styles
+      ~MatrixStyle.start_drawing
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,37 @@
+pytools.sphinx.util.SkipIndirectImports
+=======================================
+
+.. currentmodule:: pytools.sphinx.util
+
+.. autoclass:: SkipIndirectImports
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SkipIndirectImports.connect
+      ~SkipIndirectImports.disconnect
+      ~SkipIndirectImports.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~SkipIndirectImports.app
+      ~SkipIndirectImports.event
+      ~SkipIndirectImports.listener_id
+   
+   
+
+   .. rubric:: Definitions

@@ -1,0 +1,51 @@
+pytools.viz.matrix
+==================
+
+.. automodule:: pytools.viz.matrix
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: matrix
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      MatrixDrawer
+      MatrixMatplotStyle
+      MatrixReportStyle
+      PercentageMatrixMatplotStyle
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+
+==========
+Submodules
+==========
+.. autosummary::
+   :toctree: matrix
+   :template: custom-module-template.rst
+   :recursive:
+
+   pytools.viz.matrix.base
+

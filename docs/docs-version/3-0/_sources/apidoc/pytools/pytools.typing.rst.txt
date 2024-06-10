@@ -1,0 +1,42 @@
+pytools.typing
+==============
+
+.. automodule:: pytools.typing
+   :no-imported-members:
+
+   
+
+   
+   
+   
+
+   
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: typing
+      :nosignatures:
+   
+      get_common_generic_base
+      get_common_generic_subclass
+      get_generic_bases
+      get_generic_instance
+      get_type_arguments
+      isinstance_generic
+      issubclass_generic
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

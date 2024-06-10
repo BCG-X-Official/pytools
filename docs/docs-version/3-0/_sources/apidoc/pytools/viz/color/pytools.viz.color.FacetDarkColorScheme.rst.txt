@@ -1,0 +1,48 @@
+pytools.viz.color.FacetDarkColorScheme
+======================================
+
+.. currentmodule:: pytools.viz.color
+
+.. autoclass:: FacetDarkColorScheme
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~FacetDarkColorScheme.contrast_color
+      ~FacetDarkColorScheme.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~FacetDarkColorScheme.DEFAULT
+      ~FacetDarkColorScheme.DEFAULT_DARK
+      ~FacetDarkColorScheme.DEFAULT_LIGHT
+      ~FacetDarkColorScheme.accent_1
+      ~FacetDarkColorScheme.accent_2
+      ~FacetDarkColorScheme.accent_3
+      ~FacetDarkColorScheme.background
+      ~FacetDarkColorScheme.colormap
+      ~FacetDarkColorScheme.fill_1
+      ~FacetDarkColorScheme.fill_2
+      ~FacetDarkColorScheme.fill_3
+      ~FacetDarkColorScheme.foreground
+      ~FacetDarkColorScheme.status_critical
+      ~FacetDarkColorScheme.status_ok
+      ~FacetDarkColorScheme.status_warning
+   
+   
+
+   .. rubric:: Definitions

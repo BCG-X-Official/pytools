@@ -1,0 +1,47 @@
+pytools.viz.color.ColorScheme
+=============================
+
+.. currentmodule:: pytools.viz.color
+
+.. autoclass:: ColorScheme
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ColorScheme.contrast_color
+      ~ColorScheme.to_expression
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~ColorScheme.DEFAULT
+      ~ColorScheme.DEFAULT_DARK
+      ~ColorScheme.DEFAULT_LIGHT
+      ~ColorScheme.accent_1
+      ~ColorScheme.accent_2
+      ~ColorScheme.accent_3
+      ~ColorScheme.background
+      ~ColorScheme.fill_1
+      ~ColorScheme.fill_2
+      ~ColorScheme.fill_3
+      ~ColorScheme.foreground
+      ~ColorScheme.status_critical
+      ~ColorScheme.status_ok
+      ~ColorScheme.status_warning
+   
+   
+
+   .. rubric:: Definitions

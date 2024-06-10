@@ -1,0 +1,36 @@
+pytools.api.doc.APIDefinition
+=============================
+
+.. currentmodule:: pytools.api.doc
+
+.. autoclass:: APIDefinition
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~APIDefinition.list_documented_parameters
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~APIDefinition.docstring
+      ~APIDefinition.full_name
+      ~APIDefinition.name
+      ~APIDefinition.public_module
+   
+   
+
+   .. rubric:: Definitions

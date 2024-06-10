@@ -1,0 +1,6 @@
+pytools.typing.get\_type\_arguments
+===================================
+
+.. currentmodule:: pytools.typing
+
+.. autofunction:: get_type_arguments

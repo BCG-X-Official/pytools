@@ -1,0 +1,6 @@
+pytools.api.missing\_function
+=============================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: missing_function

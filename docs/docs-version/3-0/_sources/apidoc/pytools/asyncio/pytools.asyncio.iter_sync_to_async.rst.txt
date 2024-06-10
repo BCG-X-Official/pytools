@@ -1,0 +1,6 @@
+pytools.asyncio.iter\_sync\_to\_async
+=====================================
+
+.. currentmodule:: pytools.asyncio
+
+.. autofunction:: iter_sync_to_async

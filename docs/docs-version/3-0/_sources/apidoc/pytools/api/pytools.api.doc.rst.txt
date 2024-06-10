@@ -1,0 +1,45 @@
+pytools.api.doc
+===============
+
+.. automodule:: pytools.api.doc
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: doc
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      APIDefinition
+      DocTest
+      FunctionDefinition
+      HasDocstring
+      HasMatchingParameterDoc
+      HasTypeHints
+      HasWellFormedDocstring
+      ModuleDefinition
+      NamedElementDefinition
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

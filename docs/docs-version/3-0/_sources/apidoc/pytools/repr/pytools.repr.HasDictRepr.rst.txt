@@ -1,0 +1,29 @@
+pytools.repr.HasDictRepr
+========================
+
+.. currentmodule:: pytools.repr
+
+.. autoclass:: HasDictRepr
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HasDictRepr.from_dict
+      ~HasDictRepr.to_dict
+      ~HasDictRepr.to_expression
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

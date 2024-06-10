@@ -1,0 +1,6 @@
+pytools.api.get\_init\_params
+=============================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: get_init_params

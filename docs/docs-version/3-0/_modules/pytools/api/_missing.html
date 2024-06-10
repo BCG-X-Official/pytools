@@ -1,0 +1,281 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pytools.api._missing &#8212; pytools  documentation</title>
+    
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+
+    
+  <link rel="stylesheet"
+    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
+    
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/gamma.js"></script>
+    <script src="../../../_static/js/versions.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="None">
+    
+
+    <!-- Google Analytics -->
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+
+<a class="navbar-brand" href="../../../index.html">
+  <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo">
+</a>
+
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_generated/getting_started.html">
+  Getting started
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../apidoc/pytools.html">
+  API reference
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../contribution_guide.html">
+  Development Guidelines
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../faqs.html">
+  FAQ
+ </a>
+</li>
+
+<li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="../../../_generated/release_notes.html">
+  Release Notes
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar">
+              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+              </div>
+              <div class="sidebar-end-items">
+              </div>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <h1>Source code for pytools.api._missing</h1><div class="highlight"><pre>
+<span></span>&quot;&quot;&quot;
+Implementation of ``MissingClassMeta``.
+&quot;&quot;&quot;
+
+import logging
+from collections.abc import Callable
+from typing import Any
+
+from typing_extensions import NoReturn
+
+log = logging.getLogger(__name__)
+
+__all__ = [&quot;MissingClassMeta&quot;, &quot;missing_function&quot;]
+
+
+<div class="viewcode-block" id="missing_function"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.missing_function.html#pytools.api.missing_function">[docs]</a>def missing_function(name: str, module: str) -&gt; Callable[..., NoReturn]:
+    &quot;&quot;&quot;
+    Create a placeholder function for a function that could not be imported from an
+    optional dependency.
+
+    The placeholder function raises an ImportError when called, stating that the given
+    function is missing, and the module that defines it needs to be installed.
+
+    :param name: the name of the missing function
+    :param module: the name of the module that defines the function
+    :return: a callable that raises an ImportError when called
+    &quot;&quot;&quot;
+
+    def _missing(*_args: Any, **_kwargs: Any) -&gt; NoReturn:
+        raise ImportError(
+            f&quot;Module {module!r} needs to be installed to use the {name!r} function&quot;
+        )
+
+    return _missing</div>
+
+
+<div class="viewcode-block" id="MissingClassMeta"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.MissingClassMeta.html#pytools.api.MissingClassMeta">[docs]</a>class MissingClassMeta(type):
+    &quot;&quot;&quot;
+    A metaclass that creates a placeholder for a class that could not be imported
+    from an optional dependency.
+
+    The placeholder class raises an ImportError when instantiated, stating that the
+    given class is missing, and the module that defines it needs to be installed.
+
+    Usage:
+
+    .. code-block:: python
+
+        try:
+            from some_module import SomeClass
+        except ImportError:
+            class SomeClass(metaclass=MissingClassMeta, module=&quot;some_module&quot;):
+                \&quot;&quot;&quot;Placeholder class for the missing ``SomeClass``.\&quot;&quot;&quot;
+    &quot;&quot;&quot;
+
+    def __init__(
+        cls,
+        name: str,
+        base: tuple[type, ...],
+        namespace: dict[str, Any],
+        *,
+        module: str,
+    ) -&gt; None:
+        &quot;&quot;&quot;
+        :param name: the name of the missing class
+        :param base: the base classes of the missing class
+        :param namespace: the namespace of the missing class
+        :param module: the name of the package dependency that is missing
+        &quot;&quot;&quot;
+        super().__init__(name, base, namespace)
+        # set the module of the missing class to the package name
+        cls.__module__ = module
+
+    def __new__(
+        cls,
+        name: str,
+        base: tuple[type, ...],
+        namespace: dict[str, Any],
+        *,
+        module: str,
+    ) -&gt; Any:
+        return super().__new__(cls, name, (), {})
+
+<div class="viewcode-block" id="MissingClassMeta.__call__"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.MissingClassMeta.html#pytools.api.MissingClassMeta.__call__">[docs]</a>    def __call__(cls, *args: Any, **kwargs: Any) -&gt; None:
+        raise ImportError(
+            f&quot;Module {cls.__module__!r} needs to be installed to use the &quot;
+            f&quot;{cls.__name__!r} class&quot;
+        )</div></div>
+</pre></div>
+
+              </div>
+              
+              
+              <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
+<footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2022, Boston Consulting Group (BCG).<br>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>

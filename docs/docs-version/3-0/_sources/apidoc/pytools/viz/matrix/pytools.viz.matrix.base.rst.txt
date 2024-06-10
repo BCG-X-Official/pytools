@@ -1,0 +1,37 @@
+pytools.viz.matrix.base
+=======================
+
+.. automodule:: pytools.viz.matrix.base
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: base
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      MatrixStyle
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
