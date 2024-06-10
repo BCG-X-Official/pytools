@@ -68,9 +68,9 @@ no-binary.min = ["matplotlib"]
 # minimum requirements of gamma-pytools
 joblib            = "~=1.0.1"
 matplotlib        = "~=3.6.3"
-numpy             = "==1.23.5"  # cannot use ~= due to conda bug
+numpy             = ">=1.23.5,<1.24a"  # cannot use ~= due to conda bug
 pandas            = "~=1.5.3"
-python            = ">=3.11.9,<3.8a"    # cannot use ~= due to conda bug
+python            = ">=3.11.9,<3.12a"    # cannot use ~= due to conda bug
 scipy             = "~=1.9.3"
 typing_inspect    = "~=0.7.1"
 typing_extensions = "~=4.0.0"
