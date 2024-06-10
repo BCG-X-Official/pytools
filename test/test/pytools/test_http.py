@@ -73,7 +73,7 @@ def test_fetch_url_403() -> None:
             http.client.HTTPException,
             match=(
                 r"^Request failed with status code 403: http://example\.com/"
-                r"nonexistent$",
+                r"nonexistent$"
             ),
         ):
             fetch_url(example_url)
