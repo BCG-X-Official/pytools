@@ -29,6 +29,10 @@ Python 3.11, and drops support for Python versions.
   - :func:`.unpack_exception_group` to unpack an exception group into one or more
     individual exceptions
 
+- API: new metaclass :class:`MissingClassMeta` to define a stand-in class for a missing
+  class that could not be imported from an optional dependency
+- API: new function :func:`.missing_function` to define a stand-in function for a
+  missing function that could not be imported from an optional dependency
 - API: new function :func:`.validate__all__declarations` to validate the ``__all__``
   declarations of a module and its submodules
 - API: new function :func:`.get_init_params` to retrieve the object attributes
