@@ -340,6 +340,11 @@
             <span class="n">ECDFMatplotStyle</span><span class="p">,</span>
         <span class="p">]</span></div>
 
+<div class="viewcode-block" id="ECDFDrawer.get_default_style"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer.get_default_style">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_default_style</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ECDFStyle</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ECDFMatplotStyle</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="ECDFDrawer._draw"><a class="viewcode-back" href="../../../../apidoc/pytools/viz/distribution/pytools.viz.distribution.ECDFDrawer.html#pytools.viz.distribution.ECDFDrawer._draw">[docs]</a>    <span class="k">def</span> <span class="nf">_draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">ArrayLike</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ecdf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ecdf</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="n">x_label</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>

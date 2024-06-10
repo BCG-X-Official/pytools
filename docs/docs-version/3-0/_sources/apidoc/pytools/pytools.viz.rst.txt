@@ -21,6 +21,7 @@ pytools.viz
       ColoredStyle
       Drawer
       DrawingStyle
+      HTMLStyle
       MatplotStyle
       TextStyle
    

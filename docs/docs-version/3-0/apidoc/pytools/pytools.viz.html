@@ -1081,6 +1081,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="viz/pytools.viz.HTMLStyle.html">
+     pytools.viz.HTMLStyle
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="viz/pytools.viz.MatplotStyle.html">
      pytools.viz.MatplotStyle
     </a>
@@ -1365,7 +1370,7 @@
   <section id="module-pytools.viz">
 <span id="pytools-viz"></span><h1>pytools.viz<a class="headerlink" href="#module-pytools.viz" title="Permalink to this headline">#</a></h1>
 <p>A lean MVC framework for rendering basic visualizations in different styles, e.g.,
-as <cite>matplotlib</cite> charts or as plain text.</p>
+as <cite>matplotlib</cite> charts, HTML, or as plain text.</p>
 <section id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">#</a></h2>
 <table class="autosummary longtable table autosummary">
@@ -1386,10 +1391,13 @@ as <cite>matplotlib</cite> charts or as plain text.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="viz/pytools.viz.DrawingStyle.html#pytools.viz.DrawingStyle" title="pytools.viz.DrawingStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DrawingStyle</span></code></a></p></td>
 <td><p>Base class for styles used by <a class="reference internal" href="viz/pytools.viz.Drawer.html#pytools.viz.Drawer" title="pytools.viz.Drawer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Drawer</span></code></a> objects.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="viz/pytools.viz.HTMLStyle.html#pytools.viz.HTMLStyle" title="pytools.viz.HTMLStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HTMLStyle</span></code></a></p></td>
+<td><p>Abstract base class for styles for rendering output as HTML.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="viz/pytools.viz.MatplotStyle.html#pytools.viz.MatplotStyle" title="pytools.viz.MatplotStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MatplotStyle</span></code></a></p></td>
 <td><p>Base class of drawing styles using <cite>matplotlib</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="viz/pytools.viz.TextStyle.html#pytools.viz.TextStyle" title="pytools.viz.TextStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextStyle</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="viz/pytools.viz.TextStyle.html#pytools.viz.TextStyle" title="pytools.viz.TextStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextStyle</span></code></a></p></td>
 <td><p>Base class of drawing styles producing plain text output.</p></td>
 </tr>
 </tbody>

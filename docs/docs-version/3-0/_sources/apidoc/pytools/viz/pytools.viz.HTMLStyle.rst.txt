@@ -1,9 +1,9 @@
-pytools.viz.Drawer
-==================
+pytools.viz.HTMLStyle
+=====================
 
 .. currentmodule:: pytools.viz
 
-.. autoclass:: Drawer
+.. autoclass:: HTMLStyle
    :members:
    :no-show-inheritance:
    :inherited-members:
@@ -16,12 +16,12 @@ pytools.viz.Drawer
    .. autosummary::
       :nosignatures:
    
-      ~Drawer.draw
-      ~Drawer.get_default_style
-      ~Drawer.get_named_styles
-      ~Drawer.get_style
-      ~Drawer.get_style_classes
-      ~Drawer.get_style_kwargs
+      ~HTMLStyle.finalize_drawing
+      ~HTMLStyle.get_default_style_name
+      ~HTMLStyle.get_named_styles
+      ~HTMLStyle.render_title
+      ~HTMLStyle.rgb_to_css
+      ~HTMLStyle.start_drawing
    
    
 
@@ -31,7 +31,8 @@ pytools.viz.Drawer
 
    .. autosummary::
    
-      ~Drawer.style
+      ~HTMLStyle.colors
+      ~HTMLStyle.out
    
    
 

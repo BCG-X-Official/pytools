@@ -1081,6 +1081,11 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../pytools.viz.HTMLStyle.html">
+     pytools.viz.HTMLStyle
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../pytools.viz.MatplotStyle.html">
      pytools.viz.MatplotStyle
     </a>
@@ -1357,9 +1362,9 @@
 </dd>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>style</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference internal" href="base/pytools.viz.dendrogram.base.DendrogramStyle.html#pytools.viz.dendrogram.base.DendrogramStyle" title="pytools.viz.dendrogram.base.DendrogramStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramStyle</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – the style to be used for drawing; either as a
-<a class="reference internal" href="../pytools.viz.DrawingStyle.html#pytools.viz.DrawingStyle" title="pytools.viz.DrawingStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrawingStyle</span></code></a> instance, or as the name of a default style.
-Permissible names include <code class="docutils literal notranslate"><span class="pre">&quot;matplot&quot;</span></code> for a style supporting <cite>matplotlib</cite>,
-and <code class="docutils literal notranslate"><span class="pre">&quot;text&quot;</span></code> if text rendering is supported (default: <code class="docutils literal notranslate"><span class="pre">&quot;matplot&quot;</span></code>)</p>
+<a class="reference internal" href="../pytools.viz.DrawingStyle.html#pytools.viz.DrawingStyle" title="pytools.viz.DrawingStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrawingStyle</span></code></a> instance, or as the name of a named style supported
+by this drawer type; if not specified, the default style will be used
+as returned by <a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_default_style" title="pytools.viz.dendrogram.DendrogramDrawer.get_default_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_default_style()</span></code></a></p>
 </dd>
 </dl>
 <p class="rubric">Method summary</p>
@@ -1372,8 +1377,14 @@ and <code class="docutils literal notranslate"><span class="pre">&quot;text&quot
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.draw" title="pytools.viz.dendrogram.DendrogramDrawer.draw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">draw</span></code></a></p></td>
 <td><p>Render the data using the style associated with this drawer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_named_styles" title="pytools.viz.dendrogram.DendrogramDrawer.get_named_styles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_named_styles</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_default_style" title="pytools.viz.dendrogram.DendrogramDrawer.get_default_style"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_default_style</span></code></a></p></td>
+<td><p>Get the default style for this drawer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_named_styles" title="pytools.viz.dendrogram.DendrogramDrawer.get_named_styles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_named_styles</span></code></a></p></td>
 <td><p>Get a mapping of names to style factories for all named styles recognized by this drawer's initializer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_style" title="pytools.viz.dendrogram.DendrogramDrawer.get_style"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_style</span></code></a></p></td>
+<td><p>Get a style object by name.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#pytools.viz.dendrogram.DendrogramDrawer.get_style_classes" title="pytools.viz.dendrogram.DendrogramDrawer.get_style_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_style_classes</span></code></a></p></td>
 <td><p>Get all style classes available for this drawer type.</p></td>
@@ -1390,10 +1401,7 @@ and <code class="docutils literal notranslate"><span class="pre">&quot;text&quot
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEFAULT_STYLE</span></code></p></td>
-<td><p>The name of the default drawing style.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">style</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">style</span></code></p></td>
 <td><p>The <a class="reference internal" href="../pytools.viz.DrawingStyle.html#pytools.viz.DrawingStyle" title="pytools.viz.DrawingStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DrawingStyle</span></code></a> used by this drawer.</p></td>
 </tr>
 </tbody>
@@ -1443,6 +1451,20 @@ drawer’s <a class="reference internal" href="#pytools.viz.dendrogram.Dendrogra
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.dendrogram.DendrogramDrawer.get_default_style">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_default_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/pytools/viz/dendrogram/_draw.html#DendrogramDrawer.get_default_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramDrawer.get_default_style" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the default style for this drawer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="base/pytools.viz.dendrogram.base.DendrogramStyle.html#pytools.viz.dendrogram.base.DendrogramStyle" title="pytools.viz.dendrogram.base.DendrogramStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramStyle</span></code></a></p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the default style for this drawer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pytools.viz.dendrogram.DendrogramDrawer.get_named_styles">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_named_styles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramDrawer.get_named_styles" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a mapping of names to style factories for all named styles recognized by
@@ -1450,7 +1472,27 @@ this drawer’s initializer.</p>
 <p>A factory is a class or function with no mandatory parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Dict" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Callable" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/constants.html#Ellipsis" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>, <a class="reference internal" href="base/pytools.viz.dendrogram.base.DendrogramStyle.html#pytools.viz.dendrogram.base.DendrogramStyle" title="pytools.viz.dendrogram.base.DendrogramStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramStyle</span></code></a>]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.AbstractSet" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSet</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytools.viz.dendrogram.DendrogramDrawer.get_style">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pytools.viz.dendrogram.DendrogramDrawer.get_style" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a style object by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the name of the style</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="base/pytools.viz.dendrogram.base.DendrogramStyle.html#pytools.viz.dendrogram.base.DendrogramStyle" title="pytools.viz.dendrogram.base.DendrogramStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">DendrogramStyle</span></code></a></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the style object</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/exceptions.html#KeyError" title="(in Python v3.7)"><strong>KeyError</strong></a> – if the style name is not recognized</p>
 </dd>
 </dl>
 </dd></dl>
