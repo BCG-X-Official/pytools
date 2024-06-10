@@ -83,6 +83,7 @@ Python 3.11, and drops support for Python versions.
   return the color as a hexadecimal string
 - API: new class :class:`.TextTemplate` to generate text from a template string with
   stricter management of template variables
+- API: new function :func:`.fetch_url` to download a file from a URL
 - Various enhancements and adjustments to maintain compatibility with recent Python
   versions
 
