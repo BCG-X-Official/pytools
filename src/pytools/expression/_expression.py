@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Optional, Tuple, TypeVar
+from typing import Any, Optional, Tuple, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -112,14 +112,6 @@ class HasExpressionRepr(metaclass=ABCMeta):
         # get the expression representing this object, and use the default formatter
         # to convert the expression to HTML for Jupyter notebooks
         return f"<pre>{self}\n</pre>\n"
-
-    def _repr_mimebundle_(self, **kwargs: Any) -> Dict[str, Any]:
-        # get plain text and HTML representations of this object
-        # for use in Jupyter notebooks
-        return {
-            "text/plain": str(self),
-            "text/html": self._repr_html_(),
-        }
 
 
 @inheritdoc(match="[see superclass]")

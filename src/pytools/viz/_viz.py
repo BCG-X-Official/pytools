@@ -8,6 +8,7 @@ import logging
 from abc import ABCMeta, abstractmethod
 from multiprocessing import Lock
 from typing import (
+    AbstractSet,
     Any,
     Callable,
     Dict,
@@ -169,7 +170,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
         self._colors = colors or cast(T_ColorScheme, ColorScheme.DEFAULT)
 
     __init__.__doc__ = cast(str, __init__.__doc__).replace(
-        "%%COLORS_DEFAULT%%", repr(ColorScheme.DEFAULT)
+        "%%COLORS_DEFAULT%%", type(ColorScheme.DEFAULT).__name__
     )
 
     @classmethod
@@ -221,28 +222,21 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     #: The :class:`.DrawingStyle` used by this drawer.
     style: T_Style
 
-    #: The name of the default drawing style.
-    DEFAULT_STYLE = "matplot"
+    #: The class-level named styles for this drawer type.
+    __named_styles: Optional[Dict[str, Callable[[], T_Style]]] = None
 
     def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:
         """
         :param style: the style to be used for drawing; either as a
-            :class:`.DrawingStyle` instance, or as the name of a default style.
-            Permissible names include ``"matplot"`` for a style supporting `matplotlib`,
-            and ``"text"`` if text rendering is supported (default: ``"%DEFAULT%"``)
+            :class:`.DrawingStyle` instance, or as the name of a named style supported
+            by this drawer type; if not specified, the default style will be used
+            as returned by :meth:`get_default_style`
         """
 
-        def _get_style_factory(_style_name: str) -> Callable[..., T_Style]:
-            # get the named style from the style dict
-            try:
-                return self.get_named_styles()[_style_name]
-            except KeyError:
-                raise KeyError(f"unknown named style: {_style_name}")
-
         if style is None:
-            self.style = _get_style_factory(Drawer.DEFAULT_STYLE)()
+            self.style = self.get_default_style()
         elif isinstance(style, str):
-            self.style = _get_style_factory(style)()
+            self.style = self.get_style(style)
         elif isinstance(style, DrawingStyle):
             self.style = style
         else:
@@ -251,10 +245,8 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                 f"{DrawingStyle.__name__}"
             )
 
-    __init__.__doc__ = cast(str, __init__.__doc__).replace("%DEFAULT%", DEFAULT_STYLE)
-
     @classmethod
-    def get_named_styles(cls) -> Dict[str, Callable[..., T_Style]]:
+    def _get_named_style_lookup(cls) -> Dict[str, Callable[[], T_Style]]:
         """
         Get a mapping of names to style factories for all named styles recognized by
         this drawer's initializer.
@@ -262,11 +254,38 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         A factory is a class or function with no mandatory parameters.
         """
 
-        return {
-            name: style
-            for style_class in cls.get_style_classes()
-            for name, style in style_class.get_named_styles().items()
-        }
+        if cls.__named_styles is None:
+            # Lazily initialize the named styles lookup table.
+            cls.__named_styles = {
+                name: style
+                for style_class in cls.get_style_classes()
+                for name, style in style_class.get_named_styles().items()
+            }
+
+        return cls.__named_styles
+
+    @classmethod
+    def get_named_styles(cls) -> AbstractSet[str]:
+        """
+        Get a mapping of names to style factories for all named styles recognized by
+        this drawer's initializer.
+
+        A factory is a class or function with no mandatory parameters.
+        """
+
+        return cls._get_named_style_lookup().keys()
+
+    @classmethod
+    def get_style(cls, name: str) -> T_Style:
+        """
+        Get a style object by name.
+
+        :param name: the name of the style
+        :return: the style object
+        :raises KeyError: if the style name is not recognized
+        """
+        style_factory: Callable[[], T_Style] = cls._get_named_style_lookup()[name]
+        return style_factory()
 
     @classmethod
     @abstractmethod
@@ -277,6 +296,15 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
         :returns: an iterable of style classes
         """
         pass
+
+    @classmethod
+    @abstractmethod
+    def get_default_style(cls) -> T_Style:
+        """
+        Get the default style for this drawer.
+
+        :return: the default style for this drawer
+        """
 
     def draw(self, data: T_Model, *, title: str) -> None:
         """
