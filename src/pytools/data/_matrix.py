@@ -5,8 +5,9 @@ Data type for matrices.
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
 from copy import copy
-from typing import Any, Generic, Iterable, List, Optional, Tuple, Type, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -55,31 +56,29 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
     values: npt.NDArray[T_Number]
 
     #: the names of the rows and columns
-    names: Tuple[Optional[npt.NDArray[Any]], Optional[npt.NDArray[Any]]]
+    names: tuple[npt.NDArray[Any] | None, npt.NDArray[Any] | None]
 
     #: the weights of the rows and columns
-    weights: Tuple[Optional[npt.NDArray[np.float_]], Optional[npt.NDArray[np.float_]]]
+    weights: tuple[npt.NDArray[np.float_] | None, npt.NDArray[np.float_] | None]
 
     #: the labels for the row and column axes
-    name_labels: Tuple[Optional[str], Optional[str]]
+    name_labels: tuple[str | None, str | None]
 
     #: the label for the value axis
-    value_label: Optional[str]
+    value_label: str | None
 
     #: the label for the weight axis
-    weight_label: Optional[str]
+    weight_label: str | None
 
     def __init__(
         self,
         values: npt.NDArray[T_Number],
         *,
-        names: Optional[Tuple[Optional[Iterable[Any]], Optional[Iterable[Any]]]] = None,
-        weights: Optional[
-            Tuple[Optional[Iterable[float]], Optional[Iterable[float]]]
-        ] = None,
-        value_label: Optional[str] = None,
-        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
-        weight_label: Optional[str] = None,
+        names: tuple[Iterable[Any] | None, Iterable[Any] | None] | None = None,
+        weights: None | (tuple[Iterable[float] | None, Iterable[float] | None]) = None,
+        value_label: str | None = None,
+        name_labels: tuple[str | None, str | None] | None = None,
+        weight_label: str | None = None,
     ) -> None:
         """
         :param values: the values of the matrix cells, as a 2d array
@@ -103,7 +102,7 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
             )
         self.values = values
 
-        args: List[Tuple[Any, str]] = [
+        args: list[tuple[Any, str]] = [
             (names, "names"),
             (weights, "weights"),
             (name_labels, "name_labels"),
@@ -124,8 +123,8 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
                 )
 
         def _arg_to_array(
-            axis: int, axis_arg: Optional[Iterable[Any]], arg_name_: str
-        ) -> Optional[npt.NDArray[Any]]:
+            axis: int, axis_arg: Iterable[Any] | None, arg_name_: str
+        ) -> npt.NDArray[Any] | None:
             if axis_arg is None:
                 return None
             else:
@@ -156,8 +155,8 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
         else:
 
             def _ensure_positive(
-                w: Optional[npt.NDArray[np.float_]], axis: int
-            ) -> Optional[npt.NDArray[np.float_]]:
+                w: npt.NDArray[np.float_] | None, axis: int
+            ) -> npt.NDArray[np.float_] | None:
                 if w is not None and (w < 0).any():
                     raise ValueError(
                         f"arg weights[{axis}] should be all positive, "
@@ -189,14 +188,12 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
 
     @classmethod
     def from_frame(
-        cls: Type[T_Matrix],
+        cls: type[T_Matrix],
         frame: pd.DataFrame,
         *,
-        weights: Optional[
-            Tuple[Optional[Iterable[float]], Optional[Iterable[float]]]
-        ] = None,
-        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
-        value_label: Optional[str] = None,
+        weights: None | (tuple[Iterable[float] | None, Iterable[float] | None]) = None,
+        name_labels: tuple[str | None, str | None] | None = None,
+        value_label: str | None = None,
     ) -> T_Matrix:
         """
         Create a :class:`.Matrix` from a data frame, using the indices
@@ -229,9 +226,7 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
 
     def resize(
         self,
-        size: Union[
-            int, float, Tuple[Union[int, float, None], Union[int, float, None]], None
-        ],
+        size: int | float | tuple[int | float | None, int | float | None] | None,
     ) -> Matrix[T_Number]:
         r"""
         Create a version of this matrix with fewer rows and/or columns.
@@ -325,12 +320,12 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
 
 
 def _validate_resize_arg(
-    size_new: Union[int, float, None], size_current: int, axis_name: str
-) -> Tuple[Optional[int], Optional[float]]:
+    size_new: int | float | None, size_current: int, axis_name: str
+) -> tuple[int | None, float | None]:
     def _message(error: str) -> str:
         return f"{axis_name} size {error}, but is {size_new!r}"
 
-    result: Tuple[Optional[int], Optional[float]] = (None, None)
+    result: tuple[int | None, float | None] = (None, None)
 
     if size_new is None:
         return result
@@ -357,9 +352,9 @@ def _validate_resize_arg(
 
 
 def _top_items_mask(
-    weights: Optional[npt.NDArray[np.float_]],
+    weights: npt.NDArray[np.float_] | None,
     current_size: int,
-    target_size: Tuple[Optional[int], Optional[float]],
+    target_size: tuple[int | None, float | None],
 ) -> npt.NDArray[np.bool_]:
     target_n, target_ratio = target_size
 
@@ -406,12 +401,12 @@ def _top_items_mask(
 
 def _resize_rows(
     values: npt.NDArray[T_Number],
-    weights: Optional[npt.NDArray[np.float_]],
-    names: Optional[npt.NDArray[Any]],
+    weights: npt.NDArray[np.float_] | None,
+    names: npt.NDArray[Any] | None,
     current_size: int,
-    target_size: Tuple[Optional[int], Optional[float]],
-) -> Tuple[
-    npt.NDArray[T_Number], Optional[npt.NDArray[np.float_]], Optional[npt.NDArray[Any]]
+    target_size: tuple[int | None, float | None],
+) -> tuple[
+    npt.NDArray[T_Number], npt.NDArray[np.float_] | None, npt.NDArray[Any] | None
 ]:
     mask = _top_items_mask(
         weights=weights, current_size=current_size, target_size=target_size
@@ -425,7 +420,7 @@ def _resize_rows(
 
 
 def _arrays_equal_or_none(
-    a: Optional[npt.NDArray[T_Number]], b: Optional[npt.NDArray[T_Number]]
+    a: npt.NDArray[T_Number] | None, b: npt.NDArray[T_Number] | None
 ) -> bool:
     if a is None:
         return b is None

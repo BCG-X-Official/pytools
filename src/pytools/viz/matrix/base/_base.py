@@ -4,7 +4,7 @@ Base classes for matrix styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -42,8 +42,8 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
-        weight_label: Optional[str] = None,
+        name_labels: tuple[str | None, str | None] = (None, None),
+        weight_label: str | None = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -62,13 +62,13 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         data: npt.NDArray[Any],
         *,
-        names: Tuple[
-            Optional[npt.NDArray[Any]],
-            Optional[npt.NDArray[Any]],
+        names: tuple[
+            npt.NDArray[Any] | None,
+            npt.NDArray[Any] | None,
         ],
-        weights: Tuple[
-            Optional[npt.NDArray[np.float_]],
-            Optional[npt.NDArray[np.float_]],
+        weights: tuple[
+            npt.NDArray[np.float_] | None,
+            npt.NDArray[np.float_] | None,
         ],
     ) -> None:
         """
@@ -82,8 +82,8 @@ class MatrixStyle(DrawingStyle, metaclass=ABCMeta):
 
     def finalize_drawing(
         self,
-        name_labels: Optional[Tuple[Optional[str], Optional[str]]] = None,
-        weight_label: Optional[str] = None,
+        name_labels: tuple[str | None, str | None] | None = None,
+        weight_label: str | None = None,
         **kwargs: Any,
     ) -> None:
         """

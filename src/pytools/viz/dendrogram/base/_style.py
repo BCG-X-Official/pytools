@@ -4,7 +4,8 @@ Base classes for dendrogram styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, List, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from pytools.api import AllTracker
 from pytools.viz import DrawingStyle
@@ -39,11 +40,11 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         *,
         title: str,
-        leaf_label: Optional[str] = None,
-        distance_label: Optional[str] = None,
-        weight_label: Optional[str] = None,
-        max_distance: Optional[float] = None,
-        leaf_names: Optional[Sequence[str]] = None,
+        leaf_label: str | None = None,
+        distance_label: str | None = None,
+        weight_label: str | None = None,
+        max_distance: float | None = None,
+        leaf_names: Sequence[str] | None = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -58,7 +59,7 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
         :param kwargs: additional drawer-specific arguments
         """
 
-        none_args: List[str] = [
+        none_args: list[str] = [
             arg
             for arg, value in {
                 "leaf_label": leaf_label,
@@ -79,11 +80,11 @@ class DendrogramStyle(DrawingStyle, metaclass=ABCMeta):
     def finalize_drawing(
         self,
         *,
-        leaf_label: Optional[str] = None,
-        distance_label: Optional[str] = None,
-        weight_label: Optional[str] = None,
-        max_distance: Optional[float] = None,
-        leaf_names: Optional[Sequence[str]] = None,
+        leaf_label: str | None = None,
+        distance_label: str | None = None,
+        weight_label: str | None = None,
+        max_distance: float | None = None,
+        leaf_names: Sequence[str] | None = None,
         **kwargs: Any,
     ) -> None:
         """

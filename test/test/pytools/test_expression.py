@@ -3,7 +3,6 @@ Tests for module pytools.expression
 """
 
 import logging
-from typing import List, Tuple
 
 import pytest
 
@@ -119,7 +118,7 @@ def test_expression_repr_html() -> None:
 def test_expression() -> None:
     lit_5 = Lit(5)
     lit_abc = Lit("abc")
-    expressions: List[Tuple[Expression, str]] = [
+    expressions: list[tuple[Expression, str]] = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
         (Id.xx, "xx"),

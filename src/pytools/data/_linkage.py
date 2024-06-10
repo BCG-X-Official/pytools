@@ -9,8 +9,9 @@ Linkage Tree.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator, Sequence
 from copy import copy
-from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -82,15 +83,15 @@ class LinkageTree(HasExpressionRepr):
 
     #: A label describing the type/unit of distances
     #: passed in arg `scipy_linkage_matrix` (optional).
-    distance_label: Optional[str]
+    distance_label: str | None
 
     #: A label describing the type of names
     #: passed in arg `leaf_names` (optional).
-    leaf_label: Optional[str]
+    leaf_label: str | None
 
     #: A label describing the type/unit of weights
     #: passed in arg `leaf_weights` (optional).
-    weight_label: Optional[str]
+    weight_label: str | None
 
     def __init__(
         self,
@@ -98,10 +99,10 @@ class LinkageTree(HasExpressionRepr):
         scipy_linkage_matrix: LinkageMatrix,
         leaf_names: Iterable[str],
         leaf_weights: Iterable[float],
-        max_distance: Optional[float] = None,
-        distance_label: Optional[str] = None,
-        leaf_label: Optional[str] = None,
-        weight_label: Optional[str] = None,
+        max_distance: float | None = None,
+        distance_label: str | None = None,
+        leaf_label: str | None = None,
+        weight_label: str | None = None,
     ) -> None:
         """
         :param scipy_linkage_matrix: linkage matrix calculated by function
@@ -141,7 +142,7 @@ class LinkageTree(HasExpressionRepr):
                 "from 0.0 to 1.0"
             )
 
-        self._nodes: List[Node] = [
+        self._nodes: list[Node] = [
             *[
                 LeafNode(index=index, name=label, weight=weight)
                 for index, (label, weight) in enumerate(zip(leaf_names, leaf_weights))
@@ -178,7 +179,7 @@ class LinkageTree(HasExpressionRepr):
         """
         return self._nodes[-1]
 
-    def children(self, node: Node) -> Optional[Tuple[Node, Node]]:
+    def children(self, node: Node) -> tuple[Node, Node] | None:
         """
         Get the children of the given node.
 
@@ -221,7 +222,7 @@ class LinkageTree(HasExpressionRepr):
 
         linkage: LinkageMatrix = self.scipy_linkage_matrix.copy()
 
-        def _sort_node(n: Node) -> Tuple[float, int]:
+        def _sort_node(n: Node) -> tuple[float, int]:
             # sort a linkage node and return its total weight and leaf count
 
             if n.is_leaf:

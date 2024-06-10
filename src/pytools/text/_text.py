@@ -3,7 +3,8 @@ Utilities for rendering text.
 """
 
 import logging
-from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple, Union
+from collections.abc import Iterable, Iterator, Sequence
+from typing import Any, Union
 
 import numpy.typing as npt
 import pandas as pd
@@ -31,7 +32,7 @@ __tracker = AllTracker(globals())
 # Type definitions
 #
 
-_TextCoordinates = Tuple[Union[int, slice], Union[int, slice]]
+_TextCoordinates = tuple[Union[int, slice], Union[int, slice]]
 
 
 #
@@ -86,7 +87,7 @@ class CharacterMatrix:
         """
         return self._n_columns
 
-    def lines(self, subset: Optional[Iterable[int]] = None) -> Iterable[str]:
+    def lines(self, subset: Iterable[int] | None = None) -> Iterable[str]:
         """
         Get this character matrix as strings representing the matrix rows, stripping
         trailing whitespace.
@@ -101,8 +102,8 @@ class CharacterMatrix:
         )
 
     @staticmethod
-    def __key_as_slices(key: _TextCoordinates) -> Tuple[slice, slice]:
-        def _to_slice(index: Union[int, slice]) -> slice:
+    def __key_as_slices(key: _TextCoordinates) -> tuple[slice, slice]:
+        def _to_slice(index: int | slice) -> slice:
             if isinstance(index, int):
                 return slice(index, index + 1)
             else:
@@ -143,9 +144,9 @@ _ALIGNMENT_OPTIONS = ["<", "^", ">"]
 
 def format_table(
     headings: Sequence[str],
-    data: Union[pd.DataFrame, npt.NDArray[Any], Sequence[Sequence[Any]]],
-    formats: Optional[Sequence[Optional[str]]] = None,
-    alignment: Optional[Sequence[Optional[str]]] = None,
+    data: pd.DataFrame | npt.NDArray[Any] | Sequence[Sequence[Any]],
+    formats: Sequence[str | None] | None = None,
+    alignment: Sequence[str | None] | None = None,
 ) -> str:
     """
     Print a formatted text table.
@@ -160,7 +161,7 @@ def format_table(
     """
     n_columns = len(headings)
 
-    formats_seq: Sequence[Optional[str]]
+    formats_seq: Sequence[str | None]
 
     if formats is None:
         formats_seq = [None] * n_columns
@@ -169,7 +170,7 @@ def format_table(
     else:
         formats_seq = formats
 
-    alignment_seq: Sequence[Optional[str]]
+    alignment_seq: Sequence[str | None]
 
     if alignment is None:
         alignment_seq = ["<"] * n_columns
@@ -183,19 +184,19 @@ def format_table(
     else:
         alignment_seq = alignment
 
-    def _formatted(item: Any, format_string: Optional[str]) -> str:
+    def _formatted(item: Any, format_string: str | None) -> str:
         if format_string is None:
             return str(item)
         else:
             return f"{item:{format_string}}"
 
-    def _iterate_row_data() -> Union[Iterable[Sequence[Any]], Iterable[pd.Series]]:
+    def _iterate_row_data() -> Iterable[Sequence[Any]] | Iterable[pd.Series]:
         if isinstance(data, pd.DataFrame):
             return (row for _, row in data.iterrows())
         else:
             return iter(data)
 
-    def _make_row(items: Union[Sequence[Any], pd.Series]) -> List[str]:
+    def _make_row(items: Sequence[Any] | pd.Series) -> list[str]:
         if len(items) != n_columns:
             raise ValueError(
                 "rows in data matrix must have the same length as arg headings"
@@ -205,9 +206,9 @@ def format_table(
             for item, format_string in zip(items, formats_seq)
         ]
 
-    body_rows: List[List[str]] = [_make_row(items) for items in _iterate_row_data()]
+    body_rows: list[list[str]] = [_make_row(items) for items in _iterate_row_data()]
 
-    column_widths: List[int] = [
+    column_widths: list[int] = [
         max(column_lengths)
         for column_lengths in zip(
             *(

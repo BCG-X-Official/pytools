@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import itertools
 import logging
+import typing
 from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
@@ -28,7 +29,6 @@ from types import GenericAlias
 from typing import (
     AbstractSet,
     Any,
-    FrozenSet,
     Generic,
     Never,
     TypeAlias,
@@ -91,7 +91,7 @@ _IMMUTABLE_GENERIC_ALIASES = {
     ByteString,
     Collection,
     Container,
-    FrozenSet,
+    getattr(typing, "FrozenSet"),
     Generator,
     ItemsView,
     Iterable,

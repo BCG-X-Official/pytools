@@ -6,21 +6,11 @@ import importlib
 import logging
 import os
 import re
+from collections.abc import Collection, Iterable
 from glob import glob
+from re import Pattern
 from types import FunctionType, ModuleType
-from typing import (
-    Any,
-    Collection,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Pattern,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, TypeVar
 
 from ._alltracker import AllTracker
 from ._api import to_tuple
@@ -78,23 +68,23 @@ class DocValidator:
     root_dir: str
 
     #: Names of protected functions and methods to be validated.
-    validate_protected: Tuple[str, ...]
+    validate_protected: tuple[str, ...]
 
     #: Names of modules for which parameter documentation and type hints should not be
     #: validated.
-    exclude_from_parameter_validation: Optional[Pattern[str]]
+    exclude_from_parameter_validation: Pattern[str] | None
 
     #: A dictionary mapping definitions to lists of errors identified during validation.
-    validation_errors: Dict[str, List[str]]
+    validation_errors: dict[str, list[str]]
 
     #: The documentation tests to run on each definition during validation.
-    validation_tests: Tuple[DocTest, ...]
+    validation_tests: tuple[DocTest, ...]
 
     #: The default value for parameter ``validate_protected``.
     DEFAULT_VALIDATE_PROTECTED = ("__init__",)
 
     #: Default collection of documentation tests to run during validation.
-    DEFAULT_VALIDATION_TESTS: Tuple[DocTest, ...] = (
+    DEFAULT_VALIDATION_TESTS: tuple[DocTest, ...] = (
         HasDocstring(),
         HasMatchingParameterDoc(),
         HasWellFormedDocstring(),
@@ -105,9 +95,9 @@ class DocValidator:
         self,
         *,
         root_dir: str,
-        validate_protected: Optional[Iterable[str]] = None,
-        exclude_from_parameter_validation: Optional[Union[str, Pattern[str]]] = None,
-        additional_tests: Optional[Iterable[DocTest]] = None,
+        validate_protected: Iterable[str] | None = None,
+        exclude_from_parameter_validation: str | Pattern[str] | None = None,
+        additional_tests: Iterable[DocTest] | None = None,
     ) -> None:
         """
         :param root_dir: the root directory of all Python files to be validated
@@ -183,7 +173,7 @@ class DocValidator:
         :param definitions: the definitions to run validation tests on
         """
         for definition in definitions:
-            errors: List[str] = []
+            errors: list[str] = []
             for test in self.validation_tests:
                 test_results = test.test(definition)
                 if test_results:
@@ -196,7 +186,7 @@ class DocValidator:
 
     def _validate_members(self, members: Collection[Any], public_module: str) -> None:
         def _filter_excluded(
-            kind: type, definition_type: Type[T_NamedElementDefinition]
+            kind: type, definition_type: type[T_NamedElementDefinition]
         ) -> Iterable[T_NamedElementDefinition]:
             definitions = (
                 definition_type(element=obj, public_module=public_module)
@@ -215,7 +205,7 @@ class DocValidator:
             else:
                 return definitions
 
-        classes: List[NamedElementDefinition[Type[Any]]] = list(
+        classes: list[NamedElementDefinition[type[Any]]] = list(
             _filter_excluded(kind=type, definition_type=NamedElementDefinition)
         )
         functions: Iterable[FunctionDefinition] = _filter_excluded(
@@ -252,7 +242,7 @@ class DocValidator:
                 )
             )
 
-    def _load_modules(self) -> List[ModuleType]:
+    def _load_modules(self) -> list[ModuleType]:
         # list paths to all python files
         suffix = ".py"
         root_dir = self.root_dir

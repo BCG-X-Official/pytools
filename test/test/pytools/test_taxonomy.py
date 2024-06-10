@@ -1,7 +1,7 @@
 from collections.abc import Iterable
+from typing import Self
 
 import pytest
-from typing_extensions import Self
 
 from pytools.data.taxonomy import Category, Taxonomy
 
