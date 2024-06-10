@@ -15,8 +15,20 @@ Python 3.11, and drops support for Python versions.
 *pytools* 3.0.0
 ~~~~~~~~~~~~~~~
 
-- API: new utility functions for asynchronous programming in module
-  :mod:`pytools.asyncio`:
+- :mod:`pytools.api`: new utility functions to get object's init parameters, validate
+  ``__all__`` declarations, and define stand-in objects for missing classes and
+  functions
+
+    - API: new function :func:`.get_init_params` to retrieve the object attributes
+      associated with the object's ``__init__`` method
+    - API: new metaclass :class:`MissingClassMeta` to define a stand-in class for a
+      missing class that could not be imported from an optional dependency
+    - API: new function :func:`.missing_function` to define a stand-in function for a
+      missing function that could not be imported from an optional dependency
+    - API: new function :func:`.validate__all__declarations` to validate the ``__all__``
+      declarations of a module and its submodules
+
+- :mod:`pytools.asyncio`: new module with utility functions for asynchronous programming
 
   - :func:`.arun` to run an asynchronous function in a new event loop
   - :func:`.aenumerate` to enumerate an asynchronous iterable
@@ -29,17 +41,10 @@ Python 3.11, and drops support for Python versions.
   - :func:`.unpack_exception_group` to unpack an exception group into one or more
     individual exceptions
 
-- API: new metaclass :class:`MissingClassMeta` to define a stand-in class for a missing
-  class that could not be imported from an optional dependency
-- API: new function :func:`.missing_function` to define a stand-in function for a
-  missing function that could not be imported from an optional dependency
-- API: new function :func:`.validate__all__declarations` to validate the ``__all__``
-  declarations of a module and its submodules
-- API: new function :func:`.get_init_params` to retrieve the object attributes
-  associated with the object's ``__init__`` method
-- API: new classes :class:`.Taxonomy` and :class:`.Category` to represent hierarchical
-  taxonomies
-- API: enhancements to the :mod:`pytools.expression` module:
+- :mod:`pytools.data.taxonomy`: new submodule with classes :class:`.Taxonomy` and
+  :class:`.Category` to represent hierarchical taxonomies
+
+- :mod:`pytools.expression`:
 
   - new function :func:`.expression_from_init_params` to create an object's
     :class:`.Expression` representation from the attributes in its ``__init__`` method
@@ -51,41 +56,46 @@ Python 3.11, and drops support for Python versions.
     - :class:`.SetWithExpressionRepr` for sets
     - :class:`.DictWithExpressionRepr` for dictionaries
 
-- API: new module :mod:`pytools.typing` for generic type inspection at runtime
+- :mod:`pytools.http`: new module with function :func:`.fetch_url` to download a file
+  from a URL
 
-  - new function :func:`.get_common_generic_base` to retrieve the common generic base
-    class of two types
-  - new function :func:`.get_common_generic_subclass` to retrieve the common generic
-    subclass of two types
-  - new function :func:`.get_generic_bases` to retrieve the generic base classes of a
-    type (requires Python 3.11)
-  - new function :func:`.get_generic_instance` to retrieve the generic instance of a
-    type (requires Python 3.11)
-  - new function :func:`.get_type_arguments` to retrieve the type arguments of a generic
-    type (requires Python 3.11)
-  - new function :func:`.isinstance_generic` to check if an object is an instance of a
-    generic type (requires Python 3.11)
-  - new function :func:`.issubclass_generic` to check if a type is a subclass of a
-    generic type (requires Python 3.11)
+- :mod:`pytools.repr`: new module with mixin class :class:`.HasDictRepr`, providing a
+  method to return a dictionary representation of an object
 
-- API: new utilities for generating Sphinx documentation
+- :mod:`pytools.sphinx`: new utilities for generating Sphinx documentation
 
   - API: new decorator :obj:`.apenddoc` to append docstrings to the docstring of another
     object, usually the constructor of the superclass
   - API: new Sphinx callback class :class:`.ResolveTypeVariables` to resolve type
     variables in attribute signatures
 
-- API: new mixin class :class:`.HasDictRepr` that provides a method to return a
-  dictionary representation of an object
-- API: new function :func:`.is_running_in_notebook` to check if the code is running in a
-  Jupyter or Colab notebook
-- API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
-  return the color as a hexadecimal string
-- API: new class :class:`.TextTemplate` to generate text from a template string with
-  stricter management of template variables
-- API: new function :func:`.fetch_url` to download a file from a URL
-- Various enhancements and adjustments to maintain compatibility with recent Python
-  versions
+- :mod:`pytools.text`: new class :class:`.TextTemplate` to generate text from a template
+  string with stricter management of template variables
+
+- :mod:`pytools.typing`: new module for generic type inspection at runtime
+
+  - new function :func:`.get_common_generic_base` to retrieve the common generic base
+    class of two types
+  - new function :func:`.get_common_generic_subclass` to retrieve the common generic
+    subclass of two types
+  - new function :func:`.get_generic_bases` to retrieve the generic base classes of a
+    type
+  - new function :func:`.get_generic_instance` to retrieve the generic instance of a
+    type
+  - new function :func:`.get_type_arguments` to retrieve the type arguments of a generic
+    type
+  - new function :func:`.isinstance_generic` to check if an object is an instance of a
+    generic type
+  - new function :func:`.issubclass_generic` to check if a type is a subclass of a
+    generic type
+
+- :mod:`pytools.viz`:
+    - API: new function :func:`.is_running_in_notebook` to check if the code is running
+      in a Jupyter or Colab notebook
+    - API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
+      return the color as a hexadecimal string
+
+- Various adjustments to maintain compatibility with recent Python versions
 
 
 *pytools* 2.1
