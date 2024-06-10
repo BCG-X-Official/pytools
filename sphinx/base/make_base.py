@@ -547,7 +547,7 @@ def version_string_to_url(version: pkg_version.Version) -> str:
 def check_sphinx_version() -> None:
     import sphinx
 
-    sphinx_version = pkg_version.parse(sphinx.__version__)
+    sphinx_version = pkg_version.parse(sphinx.__version__)  # type: ignore[attr-defined]
     if sphinx_version < pkg_version.parse("4.5"):
         raise RuntimeError("please upgrade sphinx to version 4.5 or newer")
 

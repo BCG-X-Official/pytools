@@ -1,6 +1,6 @@
 import pytest
 
-from pytools.viz.color import RgbaColor, RgbColor
+from pytools.viz.color import RgbColor, RgbaColor
 
 
 def test_rgb() -> None:

@@ -1,6 +1,7 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
 from __future__ import annotations
 
 import logging
@@ -519,13 +520,22 @@ def make_expression(value: Any) -> Expression:
 
         return TupleLiteral(*value)
     elif isinstance(value, set):
+        from .atomic import Id
         from .composite import SetLiteral
 
-        return SetLiteral(*value)
+        return SetLiteral(*value) if value else Id(set)()
+    elif isinstance(value, frozenset):
+        from .atomic import Id
+
+        return Id.frozenset(*value)
     elif isinstance(value, dict):
         from .composite import DictLiteral
 
         return DictLiteral(*value.items())
+    elif value is Ellipsis:
+        from .atomic import Id
+
+        return Id("...")
     elif isinstance(value, np.ndarray):
         from .atomic import Id
         from .composite import ListLiteral

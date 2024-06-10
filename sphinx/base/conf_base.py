@@ -4,6 +4,7 @@ Configuration file for the Sphinx documentation builder.
 For a full list of options see the documentation:
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
+
 import logging
 import os
 import shutil

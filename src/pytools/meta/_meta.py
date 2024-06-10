@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.meta`.
 """
+
 from __future__ import annotations
 
 import logging

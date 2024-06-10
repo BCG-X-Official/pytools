@@ -10,7 +10,7 @@ import sys
 _dir_base = os.path.join(os.path.dirname(os.path.dirname(__file__)), "base")
 sys.path.insert(0, _dir_base)
 
-from conf_base import set_config
+from conf_base import set_config  # noqa: E402
 
 # ----- set custom configuration -----
 

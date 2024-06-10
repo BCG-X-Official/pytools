@@ -1,6 +1,7 @@
 """
 Data type for matrices.
 """
+
 from __future__ import annotations
 
 import logging

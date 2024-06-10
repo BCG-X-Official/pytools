@@ -1,6 +1,7 @@
 """
 Operators used in expressions.
 """
+
 from __future__ import annotations
 
 import logging

@@ -1,6 +1,7 @@
 """
 Core implementation of :mod:`pytools.fit`.
 """
+
 import functools
 import logging
 from abc import ABCMeta, abstractmethod

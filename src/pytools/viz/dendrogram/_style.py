@@ -44,7 +44,6 @@ __tracker = AllTracker(globals())
 
 @inheritdoc(match="[see superclass]")
 class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
-
     """
     Draws dendrograms as trees, using line color and thickness to indicate leaf/branch
     weights.
@@ -217,8 +216,8 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
 
         # set the tick locations and labels
         y_axis = self.ax.yaxis
-        y_axis.set_ticks(ticks=list(self._get_ytick_locations(weights=weights)))
-        y_axis.set_ticklabels(ticklabels=names)
+        y_axis.set_ticks(list(self._get_ytick_locations(weights=weights)))
+        y_axis.set_ticklabels(names)
 
     def _get_ytick_locations(
         self, *, weights: Sequence[float]

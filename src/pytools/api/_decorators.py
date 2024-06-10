@@ -18,9 +18,14 @@ log = logging.getLogger(__name__)
 
 T = TypeVar("T")
 T_Type = TypeVar("T_Type", bound=Type[Any])
+T_Method = TypeVar("T_Method", bound=Callable[..., Any])
 
 
-__all__ = ["inheritdoc", "subsdoc"]
+__all__ = [
+    "appenddoc",
+    "inheritdoc",
+    "subsdoc",
+]
 
 
 #
@@ -136,7 +141,59 @@ def subsdoc(
     return _decorate
 
 
+def appenddoc(
+    *, to: Callable[..., Any], prepend: bool = False
+) -> Callable[[T_Method], T_Method]:
+    """
+    A decorator that appends the docstring of the decorated method to the docstring of
+    another method.
+
+    Useful especially if an ``__init__`` method is defined in a base class, and the
+    docstring of the derived class's ``__init__`` method defines additional parameters.
+
+    :param to: the other method to append the docstring to
+    :param prepend: if True, prepend the docstring of the decorated method to the
+        docstring of the other method, otherwise append it
+    :return: the actual decorating function
+    """
+
+    # the actual decorator
+    def _decorator(method: T_Method) -> T_Method:
+        # update the method's docstring, then returns the function itself
+
+        # get the docstring of the other method
+        other_doc = to.__doc__
+
+        # do not change the docstring if the other method has no docstring
+        if not other_doc:
+            log.warning(
+                f"@appenddoc: {to.__qualname__} has no docstring, nothing to append to "
+                f"{method.__qualname__}"
+            )
+            return method
+
+        # get the docstring of the parent class
+        other_doc = textwrap.dedent(other_doc).rstrip()
+
+        # get the docstring of the decorated method
+        method_doc = textwrap.dedent(method.__doc__ or "").rstrip()
+
+        # append the parent docstring to the method docstring
+        if prepend:
+            method.__doc__ = f"{method_doc}\n{other_doc}"
+        else:
+            method.__doc__ = f"{other_doc}\n{method_doc}"
+
+        return method
+
+    return _decorator
+
+
 __tracker.validate()
+
+#
+# Auxiliary functions
+#
 
 
 def _get_docstring(obj: Any) -> str:

@@ -1,6 +1,7 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
 from __future__ import annotations
 
 import itertools
@@ -100,6 +101,8 @@ class SetLiteral(CollectionLiteral):
         """
         :param elements: the set elements
         """
+        if not elements:
+            raise TypeError("set literals must have at least one element")
         super().__init__(brackets=BracketPair.CURLY, elements=elements)
 
 

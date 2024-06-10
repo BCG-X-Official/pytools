@@ -91,8 +91,7 @@ def is_list_like(obj: Any) -> bool:
         hasattr(obj, "__len__")
         and hasattr(obj, "__getitem__")
         and not isinstance(obj, (str, bytes))
-        # pandas data objects with more than 1 dimension, e.g., data frames
-        and not (isinstance(obj, pd.NDFrame) and obj.ndim != 1)
+        and not isinstance(obj, pd.DataFrame)
         # exclude zero-dimensional numpy arrays, effectively scalars
         and not (isinstance(obj, np.ndarray) and obj.ndim == 0)
     )
