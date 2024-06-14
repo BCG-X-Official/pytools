@@ -8,6 +8,13 @@ Release Notes
 *pytools* 2.1
 -------------
 
+2.1.3
+~~~~~
+
+- FIX: :class:`.DendrogramMatplotStyle` now calls :meth:`.Axis.set_ticklabels` using a
+  positional argument for the labels, to address a change in *matplotlib* |nbsp| 3.7
+
+
 2.1.2
 ~~~~~
 
