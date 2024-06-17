@@ -465,7 +465,7 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"conda mambabuild -c conda-forge -c bcg_gamma -c bcgx {recipe_path}"
+        build_cmd = f"conda mambabuild -c conda-forge -c bcgx {recipe_path}"
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
