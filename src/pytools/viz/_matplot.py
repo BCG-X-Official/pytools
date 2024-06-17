@@ -20,7 +20,7 @@ from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from packaging.version import Version
 
-from ..api import AllTracker, inheritdoc, to_list
+from ..api import AllTracker, as_list, inheritdoc
 from ._viz import ColoredStyle
 from .color import MatplotColorScheme, RgbaColor
 
@@ -95,7 +95,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
 
         if font_family is not None:
             font_family = (
-                to_list(font_family, element_type=str, arg_name="font")
+                as_list(font_family, element_type=str, arg_name="font")
                 + default_font_family
             )
         else:

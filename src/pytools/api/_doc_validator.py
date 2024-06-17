@@ -13,7 +13,7 @@ from types import FunctionType, ModuleType
 from typing import Any, TypeVar
 
 from ._alltracker import AllTracker
-from ._api import to_tuple
+from ._api import as_tuple
 from .doc import (
     APIDefinition,
     DocTest,
@@ -110,7 +110,7 @@ class DocValidator:
             element
         """
         self.root_dir = root_dir
-        self.validate_protected = to_tuple(
+        self.validate_protected = as_tuple(
             validate_protected or self.DEFAULT_VALIDATE_PROTECTED,
             element_type=str,
         )
