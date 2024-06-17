@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import pytest
 
@@ -10,7 +9,7 @@ log = logging.getLogger(__name__)
 
 
 @pytest.fixture  # type:ignore
-def jobs() -> List[Job[int]]:
+def jobs() -> list[Job[int]]:
     # generate jobs using a class
 
     class TestJob(Job[int]):
@@ -24,7 +23,7 @@ def jobs() -> List[Job[int]]:
 
 
 @pytest.fixture  # type:ignore
-def jobs_delayed() -> List[Job[int]]:
+def jobs_delayed() -> list[Job[int]]:
     # generate jobs using class function Job.delayed
     def plus_2(x: int) -> int:
         return x + 2

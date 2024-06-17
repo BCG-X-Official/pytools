@@ -8,11 +8,9 @@ import functools
 import logging
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable
-from typing import Any, cast, final
+from typing import Any, Self, cast, final
 
-from typing_extensions import Self
-
-from pytools.api import to_tuple
+from pytools.api import as_tuple
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +38,7 @@ class Category(metaclass=ABCMeta):
         """
         :param children: the subcategories of the category (optional)
         """
-        self._children = to_tuple(
+        self._children = as_tuple(
             children, element_type=type(self), arg_name="subcategories", optional=True
         )
 

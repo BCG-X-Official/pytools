@@ -3,7 +3,8 @@ Dendrogram styles.
 """
 
 import logging
-from typing import Any, Iterable, Optional, Sequence, TextIO, Union, cast
+from collections.abc import Iterable, Sequence
+from typing import Any, TextIO, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -58,9 +59,9 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
     def __init__(
         self,
         *,
-        ax: Optional[Axes] = None,
-        colors: Optional[MatplotColorScheme] = None,
-        font_family: Optional[Union[str, Iterable[str]]] = None,
+        ax: Axes | None = None,
+        colors: MatplotColorScheme | None = None,
+        font_family: str | Iterable[str] | None = None,
         min_weight: float = 0.01,
         padding: float = 0.1,
     ) -> None:
@@ -96,11 +97,11 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         self,
         *,
         title: str,
-        leaf_label: Optional[str] = None,
-        distance_label: Optional[str] = None,
-        weight_label: Optional[str] = None,
-        max_distance: Optional[float] = None,
-        leaf_names: Optional[Sequence[str]] = None,
+        leaf_label: str | None = None,
+        distance_label: str | None = None,
+        weight_label: str | None = None,
+        max_distance: float | None = None,
+        leaf_names: Sequence[str] | None = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
@@ -338,14 +339,14 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
     #: the width of the weight column
     _WEIGHT_COLUMN_WIDTH = 5
 
-    _char_matrix: Optional[CharacterMatrix]
-    _n_labels: Optional[int]
+    _char_matrix: CharacterMatrix | None
+    _n_labels: int | None
 
     def __init__(
         self,
-        out: Optional[TextIO] = None,
+        out: TextIO | None = None,
         width: int = 80,
-        max_label_width: Optional[int] = None,
+        max_label_width: int | None = None,
         max_height: int = 100,
     ) -> None:
         """
@@ -473,7 +474,7 @@ class DendrogramReportStyle(DendrogramStyle, TextStyle):
         matrix[y1, x] = "/"
 
     def start_drawing(
-        self, *, title: str, leaf_names: Optional[Sequence[str]] = None, **kwargs: Any
+        self, *, title: str, leaf_names: Sequence[str] | None = None, **kwargs: Any
     ) -> None:
         """
         Prepare a new dendrogram for drawing, using the given title.

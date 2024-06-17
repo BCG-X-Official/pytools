@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Generic, Iterable, Tuple, TypeVar
+from collections.abc import Iterable
+from typing import Any, Generic, TypeVar
 
 from ...api import AllTracker, inheritdoc
 from .. import Expression, HasExpressionRepr, make_expression
@@ -65,7 +66,7 @@ class AtomicExpression(Expression, Generic[T], metaclass=ABCMeta):
     """
 
     @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """
         The subexpressions of this expression
         (an empty tuple, as this expression is atomic).
@@ -120,7 +121,7 @@ class SingletonExpression(Expression, metaclass=ABCMeta):
         """
 
     @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """
         A tuple with this expression's subexpression as its only element.
         """
@@ -222,7 +223,7 @@ class CollectionLiteral(BracketedExpression):
     A collection literal, e.g., a list, set, tuple, or dictionary.
     """
 
-    _elements: Tuple[Expression, ...]
+    _elements: tuple[Expression, ...]
 
     def __init__(self, brackets: BracketPair, elements: Iterable[Any]) -> None:
         """
@@ -233,7 +234,7 @@ class CollectionLiteral(BracketedExpression):
         from ..atomic import Epsilon
         from ..composite import BinaryOperation
 
-        elements_tuple: Tuple[Expression, ...] = tuple(map(make_expression, elements))
+        elements_tuple: tuple[Expression, ...] = tuple(map(make_expression, elements))
 
         subexpression: Expression
         if not elements_tuple:
@@ -260,7 +261,7 @@ class CollectionLiteral(BracketedExpression):
         return super().subexpression_
 
     @property
-    def elements_(self) -> Tuple[Expression, ...]:
+    def elements_(self) -> tuple[Expression, ...]:
         """
         The expression(s) representing the elements of this expression.
         """
@@ -279,7 +280,7 @@ class Operation(Expression, metaclass=ABCMeta):
     """
 
     @property
-    def subexpressions_(self) -> Tuple["Expression", ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """[see superclass]"""
         return self.operands_
 
@@ -293,7 +294,7 @@ class Operation(Expression, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def operands_(self) -> Tuple[Expression, ...]:
+    def operands_(self) -> tuple[Expression, ...]:
         """
         The operands of this operation; same as :attr:`subexpressions_`.
         """
@@ -338,7 +339,7 @@ class PrefixExpression(Expression, metaclass=ABCMeta):
         pass
 
     @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """
         A tuple containing the prefix and the body of this expression.
         """

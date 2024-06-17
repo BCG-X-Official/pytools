@@ -5,7 +5,8 @@ Core implementation of decorators in :mod:`pytools.api`.
 import logging
 import re
 import textwrap
-from typing import Any, Callable, Optional, Type, TypeVar
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from pytools.api._alltracker import AllTracker
 
@@ -17,7 +18,7 @@ log = logging.getLogger(__name__)
 #
 
 T = TypeVar("T")
-T_Type = TypeVar("T_Type", bound=Type[Any])
+T_Type = TypeVar("T_Type", bound=type[Any])
 T_Method = TypeVar("T_Method", bound=Callable[..., Any])
 
 
@@ -97,7 +98,7 @@ def inheritdoc(*, match: str) -> Callable[[T_Type], T_Type]:
 
 
 def subsdoc(
-    *, pattern: str, replacement: str, using: Optional[Any] = None
+    *, pattern: str, replacement: str, using: Any | None = None
 ) -> Callable[[T], T]:
     """
     Decorator for substituting parts of an object's docstring.
@@ -209,7 +210,7 @@ def _get_docstring(obj: Any) -> str:
     return docstring
 
 
-def _set_docstring(obj: Any, docstring: Optional[str]) -> None:
+def _set_docstring(obj: Any, docstring: str | None) -> None:
     # set the docstring of the given object
 
     try:
@@ -218,7 +219,7 @@ def _set_docstring(obj: Any, docstring: Optional[str]) -> None:
         obj.__doc__ = docstring
 
 
-def _get_inherited_docstring(child_class: type, attr_name: str) -> Optional[str]:
+def _get_inherited_docstring(child_class: type, attr_name: str) -> str | None:
     # get the docstring for a given attribute from the base class of the given class
 
     return _get_docstring(getattr(super(child_class, child_class), attr_name, None))

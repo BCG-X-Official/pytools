@@ -9,7 +9,7 @@ import string
 from collections.abc import Iterable, Sized
 from typing import Any
 
-from pytools.api import inheritdoc, to_set
+from pytools.api import as_set, inheritdoc
 from pytools.expression import (
     Expression,
     HasExpressionRepr,
@@ -82,7 +82,7 @@ class TextTemplate(HasExpressionRepr):
             ignored (default: ``False``)
         """
         super().__init__()
-        required_keys = to_set(
+        required_keys = as_set(
             required_keys,
             element_type=str,
             arg_name="formatting_keys",
@@ -153,7 +153,7 @@ def _validate_format_string(
         raise TypeError(f"Format string must be a string, but got: {format_string!r}")
 
     # ensure arg expected_keys is a set
-    required_keys = to_set(required_keys, element_type=str, arg_name="required_keys")
+    required_keys = as_set(required_keys, element_type=str, arg_name="required_keys")
 
     # get all keys from the format string
     actual_keys = {

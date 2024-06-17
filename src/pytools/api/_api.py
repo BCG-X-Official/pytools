@@ -4,22 +4,9 @@ Core implementation of :mod:`pytools.api`.
 
 import logging
 import warnings
+from collections.abc import Callable, Collection, Iterable
 from functools import wraps
-from typing import (
-    Any,
-    Callable,
-    Collection,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from typing import Any, TypeVar, cast, overload
 
 import numpy as np
 import pandas as pd
@@ -35,10 +22,10 @@ __all__ = [
     "deprecation_warning",
     "get_generic_bases",
     "is_list_like",
-    "to_collection",
-    "to_list",
-    "to_set",
-    "to_tuple",
+    "as_collection",
+    "as_list",
+    "as_set",
+    "as_tuple",
     "validate_element_types",
     "validate_type",
 ]
@@ -49,9 +36,9 @@ __all__ = [
 #
 
 T = TypeVar("T")
-T_Collection = TypeVar("T_Collection", List[Any], Set[Any], Tuple[Any, ...])
+T_Collection = TypeVar("T_Collection", list[Any], set[Any], tuple[Any, ...])
 T_Iterable = TypeVar("T_Iterable", bound=Iterable[Any])
-T_Type = TypeVar("T_Type", bound=Type[Any])
+T_Type = TypeVar("T_Type", bound=type[Any])
 T_Callable = TypeVar("T_Callable", bound=Callable[..., Any])
 
 #
@@ -98,36 +85,36 @@ def is_list_like(obj: Any) -> bool:
 
 
 @overload
-def to_tuple(
+def as_tuple(
     values: Iterable[T],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Tuple[T, ...]:
+    arg_name: str | None = None,
+) -> tuple[T, ...]:
     """see below for implementation"""
     pass
 
 
 @overload
-def to_tuple(
-    values: Optional[T],
+def as_tuple(
+    values: T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Tuple[T, ...]:
+    arg_name: str | None = None,
+) -> tuple[T, ...]:
     """see below for implementation"""
     pass
 
 
-def to_tuple(
-    values: Union[Iterable[T], T, None],
+def as_tuple(
+    values: Iterable[T] | T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Tuple[T, ...]:
+    arg_name: str | None = None,
+) -> tuple[T, ...]:
     """
     Return the given values as a tuple:
 
@@ -148,7 +135,7 @@ def to_tuple(
     :raise TypeError: one or more values did not match the expected type(s)
     """
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=tuple,
         new_collection_type=tuple,
@@ -159,40 +146,40 @@ def to_tuple(
 
 
 @overload
-def to_list(
+def as_list(
     values: Iterable[T],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> List[T]:
+    arg_name: str | None = None,
+) -> list[T]:
     """see below for implementation"""
     pass
 
 
 @overload
-def to_list(
-    values: Optional[T],
+def as_list(
+    values: T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> List[T]:
+    arg_name: str | None = None,
+) -> list[T]:
     """see below for implementation"""
     pass
 
 
-@subsdoc(pattern="tuple", replacement="list", using=to_tuple)
-def to_list(
-    values: Union[Iterable[T], T, None],
+@subsdoc(pattern="tuple", replacement="list", using=as_tuple)
+def as_list(
+    values: Iterable[T] | T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> List[T]:
+    arg_name: str | None = None,
+) -> list[T]:
     """[will be substituted]"""
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=list,
         new_collection_type=list,
@@ -203,40 +190,40 @@ def to_list(
 
 
 @overload
-def to_set(
+def as_set(
     values: Iterable[T],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Set[T]:
+    arg_name: str | None = None,
+) -> set[T]:
     """see below for implementation"""
     pass
 
 
 @overload
-def to_set(
-    values: Optional[T],
+def as_set(
+    values: T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Set[T]:
+    arg_name: str | None = None,
+) -> set[T]:
     """see below for implementation"""
     pass
 
 
-@subsdoc(pattern="tuple", replacement="set", using=to_tuple)
-def to_set(
-    values: Union[Iterable[T], T, None],
+@subsdoc(pattern="tuple", replacement="set", using=as_tuple)
+def as_set(
+    values: Iterable[T] | T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
-) -> Set[T]:
+    arg_name: str | None = None,
+) -> set[T]:
     """[will be substituted]"""
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=set,
         new_collection_type=set,
@@ -247,24 +234,24 @@ def to_set(
 
 
 @overload
-def to_collection(
+def as_collection(
     values: Iterable[T],
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
+    arg_name: str | None = None,
 ) -> Collection[T]:
     """see below for implementation"""
     pass
 
 
 @overload
-def to_collection(
-    values: Optional[T],
+def as_collection(
+    values: T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
+    arg_name: str | None = None,
 ) -> Collection[T]:
     """see below for implementation"""
     pass
@@ -276,33 +263,33 @@ def to_collection(
     pattern=r"(given values as a collection)",
     replacement=r"\1, i.e., an iterable container",
 )
-@subsdoc(pattern="tuple", replacement="collection", using=to_tuple)
-def to_collection(
-    values: Union[Iterable[T], T, None],
+@subsdoc(pattern="tuple", replacement="collection", using=as_tuple)
+def as_collection(
+    values: Iterable[T] | T | None,
     *,
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool = False,
-    arg_name: Optional[str] = None,
+    arg_name: str | None = None,
 ) -> Collection[T]:
     """[will be substituted]"""
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=None,
-        new_collection_type=cast(Type[Tuple[Any, ...]], tuple),
+        new_collection_type=cast(type[tuple[Any, ...]], tuple),
         element_type=element_type,
         optional=optional,
         arg_name=arg_name,
     )
 
 
-def _to_collection(
-    values: Union[Iterable[T], T, None],
+def _as_collection(
+    values: Iterable[T] | T | None,
     *,
-    collection_type: Optional[Type[Collection[Any]]],
-    new_collection_type: Type[T_Collection],
-    element_type: Optional[Union[Type[T], Tuple[Type[T], ...]]] = None,
+    collection_type: type[Collection[Any]] | None,
+    new_collection_type: type[T_Collection],
+    element_type: type[T] | tuple[type[T], ...] | None = None,
     optional: bool,
-    arg_name: Optional[str],
+    arg_name: str | None,
 ) -> T_Collection:
     elements: T_Collection
 
@@ -338,9 +325,9 @@ def _to_collection(
 def validate_type(
     value: T,
     *,
-    expected_type: Union[Type[T], Tuple[Type[T], ...]],
+    expected_type: type[T] | tuple[type[T], ...],
     optional: bool = False,
-    name: Optional[str] = None,
+    name: str | None = None,
 ) -> T:
     """
     Validate that a value implements the expected type.
@@ -375,9 +362,9 @@ def validate_type(
 def validate_element_types(
     iterable: T_Iterable,
     *,
-    expected_type: Union[type, Tuple[type, ...]],
+    expected_type: type | tuple[type, ...],
     optional: bool = False,
-    name: Optional[str] = None,
+    name: str | None = None,
 ) -> T_Iterable:
     """
     Validate that all elements in the given iterable implement the expected type.
@@ -415,8 +402,8 @@ def validate_element_types(
 
 
 def _as_optional_type(
-    type_: Union[type, Tuple[type, ...]], *, is_optional: bool
-) -> Union[type, Tuple[type, ...]]:
+    type_: type | tuple[type, ...], *, is_optional: bool
+) -> type | tuple[type, ...]:
     # if is_optional is True, return a tuple comprising the original (types) and None
     if is_optional:
         if isinstance(type_, tuple):
@@ -429,8 +416,8 @@ def _as_optional_type(
 
 def _raise_type_mismatch(
     *,
-    name: Optional[str],
-    expected_type: Union[type, Tuple[type, ...]],
+    name: str | None,
+    expected_type: type | tuple[type, ...],
     mismatched_type: type,
     is_single: bool,
 ) -> None:
@@ -452,7 +439,7 @@ def _raise_type_mismatch(
     )
 
 
-def get_generic_bases(class_: type) -> Tuple[type, ...]:
+def get_generic_bases(class_: type) -> tuple[type, ...]:
     """
     Bugfix version of :func:`typing_inspect.get_generic_bases`.
 
@@ -462,7 +449,7 @@ def get_generic_bases(class_: type) -> Tuple[type, ...]:
     :param class_: class to get the generic bases for
     :return: the generic base classes of the given class
     """
-    bases: Tuple[type, ...] = typing_inspect.get_generic_bases(class_)
+    bases: tuple[type, ...] = typing_inspect.get_generic_bases(class_)
     if bases is typing_inspect.get_generic_bases(super(class_, class_)):
         return ()
     else:
@@ -487,8 +474,8 @@ def deprecated(*, message: str) -> Callable[[T_Callable], T_Callable]:
 
 
 def deprecated(
-    function: Optional[T_Callable] = None, *, message: Optional[str] = None
-) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
+    function: T_Callable | None = None, *, message: str | None = None
+) -> T_Callable | Callable[[T_Callable], T_Callable]:
     """
     Decorator to mark a function as deprecated.
 

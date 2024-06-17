@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta
-from typing import Any, Generic, MutableMapping, TypeVar
+from collections.abc import MutableMapping
+from typing import Any, Generic, TypeVar
 from weakref import WeakValueDictionary
 
 from ...api import AllTracker, inheritdoc

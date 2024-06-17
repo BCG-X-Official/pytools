@@ -7,27 +7,15 @@ from __future__ import annotations
 import itertools
 import logging
 from abc import ABCMeta, abstractmethod
+from collections.abc import Callable, Iterable, Sequence
 from functools import wraps
 from multiprocessing import Lock
 from multiprocessing.synchronize import Lock as LockType
-from typing import (
-    Any,
-    Callable,
-    Generic,
-    Iterable,
-    List,
-    Optional,
-    Sequence,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import Any, Generic, TypeVar, cast
 
 import joblib
 
-from ..api import AllTracker, inheritdoc, to_tuple
+from ..api import AllTracker, as_tuple, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -73,26 +61,26 @@ class ParallelizableMixin:
     """
 
     #: Number of jobs to use in parallel; if ``None``, use joblib default.
-    n_jobs: Optional[int]
+    n_jobs: int | None
 
     #: If ``True``, use threads in the parallel runs;
     #: if ``False`` or ``None``, use multiprocessing.
-    shared_memory: Optional[bool]
+    shared_memory: bool | None
 
     #: Number of batches to pre-dispatch; if ``None``, use joblib default.
-    pre_dispatch: Optional[Union[str, int]]
+    pre_dispatch: str | int | None
 
     #: Verbosity level used in the parallel computation;
     #: if ``None``, use joblib default.
-    verbose: Optional[int]
+    verbose: int | None
 
     def __init__(
         self,
         *,
-        n_jobs: Optional[int] = None,
-        shared_memory: Optional[bool] = None,
-        pre_dispatch: Optional[Union[str, int]] = None,
-        verbose: Optional[int] = None,
+        n_jobs: int | None = None,
+        shared_memory: bool | None = None,
+        pre_dispatch: str | int | None = None,
+        verbose: int | None = None,
     ) -> None:
         """
         :param n_jobs: number of jobs to use in parallel;
@@ -197,7 +185,7 @@ class JobQueue(Generic[T_Job_Result, T_Queue_Result], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def aggregate(self, job_results: List[T_Job_Result]) -> T_Queue_Result:
+    def aggregate(self, job_results: list[T_Job_Result]) -> T_Queue_Result:
         """
         Called by :meth:`.JobRunner.run_queue` to aggregate the results of all jobs once
         they have all been run.
@@ -219,20 +207,20 @@ class JobRunner(ParallelizableMixin):
     """
 
     # defined in superclass, repeated here for Sphinx
-    n_jobs: Optional[int]
+    n_jobs: int | None
 
     # defined in superclass, repeated here for Sphinx
-    shared_memory: Optional[bool]
+    shared_memory: bool | None
 
     # defined in superclass, repeated here for Sphinx
-    pre_dispatch: Optional[Union[str, int]]
+    pre_dispatch: str | int | None
 
     # defined in superclass, repeated here for Sphinx
-    verbose: Optional[int]
+    verbose: int | None
 
     @classmethod
     def from_parallelizable(
-        cls: Type[T_JobRunner], parallelizable: ParallelizableMixin
+        cls: type[T_JobRunner], parallelizable: ParallelizableMixin
     ) -> T_JobRunner:
         """
         Create a new :class:`JobRunner` using the parameters of the given parallelizable
@@ -249,7 +237,7 @@ class JobRunner(ParallelizableMixin):
             verbose=parallelizable.verbose,
         )
 
-    def run_jobs(self, jobs: Iterable[Job[T_Job_Result]]) -> List[T_Job_Result]:
+    def run_jobs(self, jobs: Iterable[Job[T_Job_Result]]) -> list[T_Job_Result]:
         """
         Run all given jobs in parallel.
 
@@ -257,7 +245,7 @@ class JobRunner(ParallelizableMixin):
         :return: the results of all jobs
         """
         with self._parallel() as parallel:
-            return cast(List[T_Job_Result], parallel((job.run, (), {}) for job in jobs))
+            return cast(list[T_Job_Result], parallel((job.run, (), {}) for job in jobs))
 
     def run_queue(self, queue: JobQueue[Any, T_Queue_Result]) -> T_Queue_Result:
         """
@@ -284,7 +272,7 @@ class JobRunner(ParallelizableMixin):
 
     def run_queues(
         self, queues: Iterable[JobQueue[T_Job_Result, T_Queue_Result]]
-    ) -> List[T_Queue_Result]:
+    ) -> list[T_Queue_Result]:
         """
         Run all jobs in the given queues, in parallel.
 
@@ -293,9 +281,9 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queues_seq: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
+        queues_seq: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = as_tuple(
             queues,
-            element_type=cast(Type[JobQueue[T_Job_Result, T_Queue_Result]], JobQueue),
+            element_type=cast(type[JobQueue[T_Job_Result, T_Queue_Result]], JobQueue),
             arg_name="queues",
         )
 
@@ -308,7 +296,7 @@ class JobRunner(ParallelizableMixin):
                 queue.on_run()
 
             with self._parallel() as parallel:
-                results: List[T_Job_Result] = parallel(
+                results: list[T_Job_Result] = parallel(
                     (job.run, (), {}) for queue in queues_seq for job in queue.jobs()
                 )
 
@@ -352,15 +340,15 @@ class SimpleQueue(
     lock: LockType
 
     #: The jobs run by this queue.
-    _jobs: Tuple[Job[T_Job_Result], ...]
+    _jobs: tuple[Job[T_Job_Result], ...]
 
     def __init__(self, jobs: Iterable[Job[T_Job_Result]]) -> None:
         """
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(
-            jobs, element_type=cast(Type[Job[T_Job_Result]], Job), arg_name="jobs"
+        self._jobs = as_tuple(
+            jobs, element_type=cast(type[Job[T_Job_Result]], Job), arg_name="jobs"
         )
 
     def jobs(self) -> Iterable[Job[T_Job_Result]]:
@@ -372,7 +360,7 @@ class SimpleQueue(
 
 
 @inheritdoc(match="""[see superclass]""")
-class CompositeQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_Result]):
+class CompositeQueue(JobQueue[T_Job_Result, list[T_Job_Result]], Generic[T_Job_Result]):
     """
     A queue composed from a collection of compatible queues.
     """
@@ -381,20 +369,20 @@ class CompositeQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_R
     lock: LockType
 
     #: The queues run by this queue.
-    queues: Tuple[JobQueue[T_Job_Result, List[T_Job_Result]], ...]
+    queues: tuple[JobQueue[T_Job_Result, list[T_Job_Result]], ...]
 
     def __init__(
-        self, queues: Sequence[JobQueue[T_Job_Result, List[T_Job_Result]]]
+        self, queues: Sequence[JobQueue[T_Job_Result, list[T_Job_Result]]]
     ) -> None:
         """
         :param queues: queues whose elements will be added to this queue in the given
             order
         """
         super().__init__()
-        self.queues = to_tuple(
+        self.queues = as_tuple(
             queues,
             element_type=cast(
-                Type[JobQueue[T_Job_Result, List[T_Job_Result]]], JobQueue
+                type[JobQueue[T_Job_Result, list[T_Job_Result]]], JobQueue
             ),
             arg_name="queues",
         )
@@ -403,7 +391,7 @@ class CompositeQueue(JobQueue[T_Job_Result, List[T_Job_Result]], Generic[T_Job_R
         """[see superclass]"""
         return itertools.chain.from_iterable(queue.jobs() for queue in self.queues)
 
-    def aggregate(self, job_results: List[T_Job_Result]) -> List[T_Job_Result]:
+    def aggregate(self, job_results: list[T_Job_Result]) -> list[T_Job_Result]:
         """
         Return the list of job results as-is, without aggregating them any further.
 

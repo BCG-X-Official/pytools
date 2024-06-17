@@ -4,9 +4,9 @@ Tests for dictionary representations of objects.
 
 import logging
 from collections.abc import Iterable
+from typing import Self
 
 import pytest
-from typing_extensions import Self
 
 from pytools.data.taxonomy import Category
 from pytools.repr import HasDictRepr

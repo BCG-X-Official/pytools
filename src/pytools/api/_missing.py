@@ -4,9 +4,7 @@ Implementation of ``MissingClassMeta``.
 
 import logging
 from collections.abc import Callable
-from typing import Any
-
-from typing_extensions import NoReturn
+from typing import Any, NoReturn
 
 log = logging.getLogger(__name__)
 

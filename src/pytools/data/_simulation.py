@@ -2,7 +2,7 @@
 Utilities for creating simulated data sets.
 """
 
-from typing import Optional, Sequence, Tuple
+from collections.abc import Sequence
 
 import numpy as np
 import pandas as pd
@@ -19,9 +19,9 @@ __tracker = AllTracker(globals())
 def sim_data(
     n: int = 100,
     intercept: float = -5,
-    two_way_coef: Optional[Tuple[float, float, float]] = None,
+    two_way_coef: tuple[float, float, float] | None = None,
     linear_vars: int = 10,
-    linear_var_coef: Optional[Sequence[float]] = None,
+    linear_var_coef: Sequence[float] | None = None,
     noise_vars: int = 0,
     corr_vars: int = 0,
     corr_type: str = "AR1",
@@ -30,7 +30,7 @@ def sim_data(
     bin_var_p: float = 0,
     bin_coef: float = 0,
     outcome: str = "classification",
-    regression_err: Optional[float] = None,
+    regression_err: float | None = None,
     seed_val: int = 4763546,
 ) -> pd.DataFrame:
     """

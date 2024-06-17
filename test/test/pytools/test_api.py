@@ -2,19 +2,18 @@
 Basic test cases for the `pytools.api` module
 """
 
-from typing import Any, Dict, Union
+from typing import Any, TypeAlias, Union
 
 import pytest
-from typing_extensions import TypeAlias
 
 from pytools.api import (
     AllTracker,
+    as_collection,
+    as_list,
+    as_set,
+    as_tuple,
     deprecated,
     subsdoc,
-    to_collection,
-    to_list,
-    to_set,
-    to_tuple,
     validate_element_types,
     validate_type,
 )
@@ -64,59 +63,59 @@ def test_subsdoc() -> None:
 
 
 def test_collection_conversions() -> None:
-    assert to_set(1) == {1}
-    assert to_list(1) == [1]
-    assert to_tuple(1) == (1,)
-    assert to_collection(1) == (1,)
+    assert as_set(1) == {1}
+    assert as_list(1) == [1]
+    assert as_tuple(1) == (1,)
+    assert as_collection(1) == (1,)
 
-    assert to_set([1, 2]) == {1, 2}
-    assert to_list((1, 2)) == [1, 2]
-    assert to_tuple([1, 2]) == (1, 2)
-    assert to_collection({1, 2}) == {1, 2}
-    assert to_collection([1, 2]) == [1, 2]
-    assert to_collection((1, 2)) == (1, 2)
-    assert to_collection(iter([1, 2])) == (1, 2)
+    assert as_set([1, 2]) == {1, 2}
+    assert as_list((1, 2)) == [1, 2]
+    assert as_tuple([1, 2]) == (1, 2)
+    assert as_collection({1, 2}) == {1, 2}
+    assert as_collection([1, 2]) == [1, 2]
+    assert as_collection((1, 2)) == (1, 2)
+    assert as_collection(iter([1, 2])) == (1, 2)
 
     my_set = {1, 2}
     my_list = [1, 2]
     my_tuple = (1, 2)
     my_dict = {1: 10, 2: 20}
 
-    assert to_set(my_set) is my_set  # NOSONAR
-    assert to_list(my_list) is my_list  # NOSONAR
-    assert to_tuple(my_tuple) is my_tuple  # NOSONAR
-    assert to_collection(my_set) is my_set  # NOSONAR
-    assert to_collection(my_list) is my_list  # NOSONAR
-    assert to_collection(my_tuple) is my_tuple  # NOSONAR
-    assert to_collection(my_dict) is my_dict  # NOSONAR
+    assert as_set(my_set) is my_set  # NOSONAR
+    assert as_list(my_list) is my_list  # NOSONAR
+    assert as_tuple(my_tuple) is my_tuple  # NOSONAR
+    assert as_collection(my_set) is my_set  # NOSONAR
+    assert as_collection(my_list) is my_list  # NOSONAR
+    assert as_collection(my_tuple) is my_tuple  # NOSONAR
+    assert as_collection(my_dict) is my_dict  # NOSONAR
 
-    assert to_set(None, optional=True) == set()
-    assert to_list(None, optional=True) == []
-    assert to_tuple(None, optional=True) == ()
-    assert to_collection(None, optional=True) == ()
+    assert as_set(None, optional=True) == set()
+    assert as_list(None, optional=True) == []
+    assert as_tuple(None, optional=True) == ()
+    assert as_collection(None, optional=True) == ()
 
-    assert to_set(None) == {None}
-    assert to_list(None) == [None]
-    assert to_tuple(None) == (None,)
-    assert to_collection(None) == (None,)
-
-    with pytest.raises(TypeError):
-        to_set(1, element_type=str)
-    with pytest.raises(TypeError):
-        to_list(1, element_type=str)
-    with pytest.raises(TypeError):
-        to_tuple(1, element_type=str)
-    with pytest.raises(TypeError):
-        to_collection(1, element_type=str)
+    assert as_set(None) == {None}
+    assert as_list(None) == [None]
+    assert as_tuple(None) == (None,)
+    assert as_collection(None) == (None,)
 
     with pytest.raises(TypeError):
-        to_set(["a", 1], element_type=str)
+        as_set(1, element_type=str)
     with pytest.raises(TypeError):
-        to_list(["a", 1], element_type=str)
+        as_list(1, element_type=str)
     with pytest.raises(TypeError):
-        to_tuple(["a", 1], element_type=str)
+        as_tuple(1, element_type=str)
     with pytest.raises(TypeError):
-        to_collection(["a", 1], element_type=str)
+        as_collection(1, element_type=str)
+
+    with pytest.raises(TypeError):
+        as_set(["a", 1], element_type=str)
+    with pytest.raises(TypeError):
+        as_list(["a", 1], element_type=str)
+    with pytest.raises(TypeError):
+        as_tuple(["a", 1], element_type=str)
+    with pytest.raises(TypeError):
+        as_collection(["a", 1], element_type=str)
 
     validate_element_types([1, 2, 3], expected_type=int)
     with pytest.raises(TypeError, match=r"^xyz "):
@@ -192,7 +191,7 @@ def test_all_tracker() -> None:
 
     # test with defaults, no constant declaration
 
-    mock_globals: Dict[str, Any] = dict(
+    mock_globals: dict[str, Any] = dict(
         __all__=["A", "B", "MyTypeAlias"],
         __name__=PKG_TEST_PYTOOLS_TEST_API,
     )

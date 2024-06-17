@@ -3,7 +3,8 @@ Core implementation of :mod:`pytools.viz.distribution`.
 """
 
 import logging
-from typing import Any, Iterable, Optional, Sequence, Type, Union, cast
+from collections.abc import Iterable, Sequence
+from typing import Any, cast
 
 import numpy as np
 import pandas as pd
@@ -51,8 +52,8 @@ class ECDFMatplotStyle(ECDFStyle, MatplotStyle):
         self,
         ecdf: ECDF,
         x_label: str,
-        iqr_multiple: Optional[float],
-        iqr_multiple_far: Optional[float],
+        iqr_multiple: float | None,
+        iqr_multiple_far: float | None,
     ) -> None:
         def _iqr_annotation(multiple: float) -> str:
             return f"(> {multiple:.3g} * IQR)"
@@ -113,21 +114,21 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
 
     #: iqr multiple to determine outliers;
     #: if ``None``, then no outliers and far outliers are computed
-    iqr_multiple: Optional[float]
+    iqr_multiple: float | None
 
     #: iqr multiple to determine far outliers;
     #: if ``None``, then no far outliers are computed, otherwise
     #: must be greater than ``iqr_multiple``
-    iqr_multiple_far: Optional[float]
+    iqr_multiple_far: float | None
 
     #: if ``True``, do not plot far outliers
     hide_far_outliers: bool
 
     def __init__(
         self,
-        style: Optional[Union[ECDFStyle, str]] = None,
-        iqr_multiple: Optional[float] = 1.5,
-        iqr_multiple_far: Optional[float] = 3.0,
+        style: ECDFStyle | str | None = None,
+        iqr_multiple: float | None = 1.5,
+        iqr_multiple_far: float | None = 3.0,
         hide_far_outliers: bool = False,
     ) -> None:
         """
@@ -159,7 +160,7 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
 
     __init__.__doc__ = cast(str, Drawer.__init__.__doc__) + cast(str, __init__.__doc__)
 
-    def draw(self, data: ArrayLike, *, title: Optional[str] = None) -> None:
+    def draw(self, data: ArrayLike, *, title: str | None = None) -> None:
         """
         Draw the ECDF.
 
@@ -177,7 +178,7 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
         super().draw(data=data, title=title)
 
     @classmethod
-    def get_style_classes(cls) -> Iterable[Type[ECDFStyle]]:
+    def get_style_classes(cls) -> Iterable[type[ECDFStyle]]:
         """[see superclass]"""
         return [
             ECDFMatplotStyle,
@@ -188,7 +189,7 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
         """[see superclass]"""
         return ECDFMatplotStyle()
 
-    def _draw(self, data: Union[Sequence[float], ArrayLike]) -> None:
+    def _draw(self, data: Sequence[float] | ArrayLike) -> None:
         ecdf = self._ecdf(data=data)
         x_label = getattr(data, "name", "value")
         # noinspection PyProtectedMember
@@ -199,7 +200,7 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
             iqr_multiple_far=self.iqr_multiple_far,
         )
 
-    def _ecdf(self, data: Union[Sequence[float], ArrayLike]) -> ECDF:
+    def _ecdf(self, data: Sequence[float] | ArrayLike) -> ECDF:
         """
         Compute ECDF for scalar values.
 

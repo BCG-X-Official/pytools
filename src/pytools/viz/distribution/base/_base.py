@@ -4,7 +4,7 @@ Base classes for distribution styles.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 from pytools.api import AllTracker
 from pytools.viz import DrawingStyle
@@ -102,8 +102,8 @@ class ECDFStyle(DrawingStyle, metaclass=ABCMeta):
         self,
         ecdf: ECDF,
         x_label: str,
-        iqr_multiple: Optional[float],
-        iqr_multiple_far: Optional[float],
+        iqr_multiple: float | None,
+        iqr_multiple_far: float | None,
     ) -> None:
         pass
 
