@@ -22,10 +22,10 @@ __all__ = [
     "deprecation_warning",
     "get_generic_bases",
     "is_list_like",
-    "to_collection",
-    "to_list",
-    "to_set",
-    "to_tuple",
+    "as_collection",
+    "as_list",
+    "as_set",
+    "as_tuple",
     "validate_element_types",
     "validate_type",
 ]
@@ -85,7 +85,7 @@ def is_list_like(obj: Any) -> bool:
 
 
 @overload
-def to_tuple(
+def as_tuple(
     values: Iterable[T],
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -97,7 +97,7 @@ def to_tuple(
 
 
 @overload
-def to_tuple(
+def as_tuple(
     values: T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -108,7 +108,7 @@ def to_tuple(
     pass
 
 
-def to_tuple(
+def as_tuple(
     values: Iterable[T] | T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -135,7 +135,7 @@ def to_tuple(
     :raise TypeError: one or more values did not match the expected type(s)
     """
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=tuple,
         new_collection_type=tuple,
@@ -146,7 +146,7 @@ def to_tuple(
 
 
 @overload
-def to_list(
+def as_list(
     values: Iterable[T],
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -158,7 +158,7 @@ def to_list(
 
 
 @overload
-def to_list(
+def as_list(
     values: T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -169,8 +169,8 @@ def to_list(
     pass
 
 
-@subsdoc(pattern="tuple", replacement="list", using=to_tuple)
-def to_list(
+@subsdoc(pattern="tuple", replacement="list", using=as_tuple)
+def as_list(
     values: Iterable[T] | T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -179,7 +179,7 @@ def to_list(
 ) -> list[T]:
     """[will be substituted]"""
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=list,
         new_collection_type=list,
@@ -190,7 +190,7 @@ def to_list(
 
 
 @overload
-def to_set(
+def as_set(
     values: Iterable[T],
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -202,7 +202,7 @@ def to_set(
 
 
 @overload
-def to_set(
+def as_set(
     values: T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -213,8 +213,8 @@ def to_set(
     pass
 
 
-@subsdoc(pattern="tuple", replacement="set", using=to_tuple)
-def to_set(
+@subsdoc(pattern="tuple", replacement="set", using=as_tuple)
+def as_set(
     values: Iterable[T] | T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -223,7 +223,7 @@ def to_set(
 ) -> set[T]:
     """[will be substituted]"""
 
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=set,
         new_collection_type=set,
@@ -234,7 +234,7 @@ def to_set(
 
 
 @overload
-def to_collection(
+def as_collection(
     values: Iterable[T],
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -246,7 +246,7 @@ def to_collection(
 
 
 @overload
-def to_collection(
+def as_collection(
     values: T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -263,8 +263,8 @@ def to_collection(
     pattern=r"(given values as a collection)",
     replacement=r"\1, i.e., an iterable container",
 )
-@subsdoc(pattern="tuple", replacement="collection", using=to_tuple)
-def to_collection(
+@subsdoc(pattern="tuple", replacement="collection", using=as_tuple)
+def as_collection(
     values: Iterable[T] | T | None,
     *,
     element_type: type[T] | tuple[type[T], ...] | None = None,
@@ -272,7 +272,7 @@ def to_collection(
     arg_name: str | None = None,
 ) -> Collection[T]:
     """[will be substituted]"""
-    return _to_collection(
+    return _as_collection(
         values=values,
         collection_type=None,
         new_collection_type=cast(type[tuple[Any, ...]], tuple),
@@ -282,7 +282,7 @@ def to_collection(
     )
 
 
-def _to_collection(
+def _as_collection(
     values: Iterable[T] | T | None,
     *,
     collection_type: type[Collection[Any]] | None,

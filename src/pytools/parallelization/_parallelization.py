@@ -15,7 +15,7 @@ from typing import Any, Generic, TypeVar, cast
 
 import joblib
 
-from ..api import AllTracker, inheritdoc, to_tuple
+from ..api import AllTracker, as_tuple, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -281,7 +281,7 @@ class JobRunner(ParallelizableMixin):
             :meth:`.JobQueue.aggregate`
         """
 
-        queues_seq: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = to_tuple(
+        queues_seq: Sequence[JobQueue[T_Job_Result, T_Queue_Result]] = as_tuple(
             queues,
             element_type=cast(type[JobQueue[T_Job_Result, T_Queue_Result]], JobQueue),
             arg_name="queues",
@@ -347,7 +347,7 @@ class SimpleQueue(
         :param jobs: jobs to be run by this queue in the given order
         """
         super().__init__()
-        self._jobs = to_tuple(
+        self._jobs = as_tuple(
             jobs, element_type=cast(type[Job[T_Job_Result]], Job), arg_name="jobs"
         )
 
@@ -379,7 +379,7 @@ class CompositeQueue(JobQueue[T_Job_Result, list[T_Job_Result]], Generic[T_Job_R
             order
         """
         super().__init__()
-        self.queues = to_tuple(
+        self.queues = as_tuple(
             queues,
             element_type=cast(
                 type[JobQueue[T_Job_Result, list[T_Job_Result]]], JobQueue

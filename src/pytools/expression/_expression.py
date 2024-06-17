@@ -11,7 +11,7 @@ from typing import Any, TypeVar
 import numpy as np
 import numpy.typing as npt
 
-from ..api import AllTracker, inheritdoc, to_list
+from ..api import AllTracker, as_list, inheritdoc
 from .operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)
@@ -406,10 +406,10 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return Index(self, key)
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        raise TypeError(f"cannot set indexed item of Expression: {to_list(key)}")
+        raise TypeError(f"cannot set indexed item of Expression: {as_list(key)}")
 
     def __delitem__(self, key: Any) -> None:
-        raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
+        raise TypeError(f"cannot delete indexed item of Expression: {as_list(key)}")
 
     def __getattr__(self, key: str) -> Expression:
         if key.startswith("_") or key.endswith("_"):
