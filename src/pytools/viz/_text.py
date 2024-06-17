@@ -1,5 +1,5 @@
 """
-Text styles for the GAMMA visualization library.
+Text styles for the visualization library.
 """
 
 import logging

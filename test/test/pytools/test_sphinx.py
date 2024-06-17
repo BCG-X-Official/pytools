@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, Generic, Optional, Type, TypeVar
+from typing import Any, Generic, Iterable, Optional, Type, TypeVar
 
 from pytools.viz import Drawer
 from pytools.viz.distribution import ECDFDrawer
@@ -14,7 +14,7 @@ V = TypeVar("V")
 
 
 class A(Generic[T, U]):
-    def f(self: S, x: Type[T]) -> U:
+    def f(self: S, x: Type[T]) -> U:  # type: ignore[empty-body]
         pass
 
     def g(self: S) -> Optional[S]:
@@ -63,8 +63,8 @@ def test_resolve_generic_class_parameters() -> None:
         app=sphinx, obj=ECDFDrawer.get_named_styles, bound_method=True
     )
 
-    assert ECDFDrawer.get_named_styles.__annotations__ == {
-        "return": Dict[str, Callable[..., ECDFStyle]]
+    assert ECDFDrawer.get_style_classes.__annotations__ == {
+        "return": Iterable[Type[ECDFStyle]]
     }
 
     _set_current_class(A)

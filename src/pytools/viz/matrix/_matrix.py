@@ -110,9 +110,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         colormap_normalize: Optional[Normalize] = None,
         colorbar_major_formatter: Optional[Formatter] = None,
         colorbar_minor_formatter: Optional[Formatter] = None,
-        cell_format: Union[str, Formatter, Callable[..., str], None] = None,
-        # todo: change to Callable[[Any], str] once sphinx "unhashable type" bug is
-        #       fixed
+        cell_format: Union[str, Formatter, Callable[[Any], str], None] = None,
         nan_substitute: Optional[float] = None,
     ) -> None:
         """
@@ -547,6 +545,11 @@ class MatrixDrawer(Drawer[Matrix[Any], MatrixStyle]):
             PercentageMatrixMatplotStyle,
             MatrixReportStyle,
         ]
+
+    @classmethod
+    def get_default_style(cls) -> MatrixStyle:
+        """[see superclass]"""
+        return MatrixMatplotStyle()
 
     def get_style_kwargs(self, data: Matrix[Any]) -> Dict[str, Any]:
         """[see superclass]"""

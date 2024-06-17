@@ -1,6 +1,7 @@
 """
 Utilities for rendering text.
 """
+
 import logging
 from typing import Any, Iterable, Iterator, List, Optional, Sequence, Tuple, Union
 
@@ -188,13 +189,13 @@ def format_table(
         else:
             return f"{item:{format_string}}"
 
-    def _iterate_row_data() -> Iterable[Sequence[Any]]:
+    def _iterate_row_data() -> Union[Iterable[Sequence[Any]], Iterable[pd.Series]]:
         if isinstance(data, pd.DataFrame):
             return (row for _, row in data.iterrows())
         else:
             return iter(data)
 
-    def _make_row(items: Sequence[Any]) -> List[str]:
+    def _make_row(items: Union[Sequence[Any], pd.Series]) -> List[str]:
         if len(items) != n_columns:
             raise ValueError(
                 "rows in data matrix must have the same length as arg headings"

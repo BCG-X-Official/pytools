@@ -86,3 +86,4 @@ Even class :class:`Expression` subclasses :class:`.HasExpressionRepr`;
 """
 
 from ._expression import *
+from ._initparams import *

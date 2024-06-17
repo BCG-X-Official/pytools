@@ -1,6 +1,7 @@
 """
 Basic test cases for the `pytools.api` module
 """
+
 from typing import Any, Dict, Union
 
 import pytest

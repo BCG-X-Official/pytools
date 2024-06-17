@@ -6,6 +6,7 @@ Linkage Tree.
 :class:`LinkageNode` and :class:`LeafNode` are the building blocks of
 :class:`LinkageTree`. Both these classes inherit from :class:`BaseNode`.
 """
+
 from __future__ import annotations
 
 from copy import copy
@@ -236,9 +237,9 @@ class LinkageTree(HasExpressionRepr):
             if weight_left / leaves_left < weight_right / leaves_right:
                 # swap nodes if the right node has the higher weight
                 n_linkage = linkage[n.index - self.n_leaves]
-                n_linkage[
-                    [LinkageTree.__F_CHILD_RIGHT, LinkageTree.__F_CHILD_LEFT]
-                ] = n_linkage[[LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]]
+                n_linkage[[LinkageTree.__F_CHILD_RIGHT, LinkageTree.__F_CHILD_LEFT]] = (
+                    n_linkage[[LinkageTree.__F_CHILD_LEFT, LinkageTree.__F_CHILD_RIGHT]]
+                )
 
             return weight_left + weight_right, leaves_left + leaves_right
 

@@ -1,6 +1,7 @@
 """
 Tests for the pytools.meta package
 """
+
 from pytools.meta import SingletonABCMeta, SingletonMeta
 
 

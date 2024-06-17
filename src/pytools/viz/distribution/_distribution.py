@@ -8,9 +8,9 @@ from typing import Any, Iterable, Optional, Sequence, Type, Union, cast
 import numpy as np
 import pandas as pd
 
+from ...api import AllTracker, inheritdoc
 from .. import Drawer, MatplotStyle
 from .base import ECDF, ECDFStyle, XYSeries
-from pytools.api import AllTracker, inheritdoc
 
 try:
     from numpy.typing import ArrayLike
@@ -182,6 +182,11 @@ class ECDFDrawer(Drawer[ArrayLike, ECDFStyle]):
         return [
             ECDFMatplotStyle,
         ]
+
+    @classmethod
+    def get_default_style(cls) -> ECDFStyle:
+        """[see superclass]"""
+        return ECDFMatplotStyle()
 
     def _draw(self, data: Union[Sequence[float], ArrayLike]) -> None:
         ecdf = self._ecdf(data=data)

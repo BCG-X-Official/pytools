@@ -1,4 +1,5 @@
 """
 A collection of Python extensions and tools used in BCG GAMMA's open-source libraries.
 """
-__version__ = "2.1.4"
+
+__version__ = "3.0rc2"

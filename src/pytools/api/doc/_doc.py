@@ -238,9 +238,11 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
             element_prefix = None
 
         actual_parameters = [
-            parameter[len(element_prefix) - 2 :]
-            if element_prefix is not None and parameter.startswith(element_prefix)
-            else parameter
+            (
+                parameter[len(element_prefix) - 2 :]
+                if element_prefix is not None and parameter.startswith(element_prefix)
+                else parameter
+            )
             for i, parameter in enumerate(signature.parameters.keys())
             if i > 0 or parameter not in {"self", "cls"}
         ]
@@ -251,6 +253,8 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
                 return_annotation is signature.empty
                 or return_annotation is None
                 or return_annotation is NoneType
+                # Also check for string "None" in case of forward references
+                or return_annotation == "None"
             ):
                 actual_parameters.append(FunctionDefinition.PARAM_RETURN)
 
