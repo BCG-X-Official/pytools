@@ -5,8 +5,9 @@ Core implementation of :mod:`pytools.viz.color`
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from types import FunctionType
-from typing import Callable, Set, TypeVar, Union, cast
+from typing import TypeVar, cast
 
 from matplotlib import cm
 from matplotlib.colors import Colormap, LinearSegmentedColormap
@@ -104,7 +105,7 @@ _COLORMAP_FACET = LinearSegmentedColormap.from_list(
 def _get_property_name(
     # we use a union type here: depending on the type checker, properties
     # will be considered a callable (mypy), or of type property (PyCharm)
-    p: Union[Callable[[ColorScheme], RgbColor], property]
+    p: Callable[[ColorScheme], RgbColor] | property
 ) -> str:
     # helper function used while setting class attributes of class ColorScheme (below)
     return cast(FunctionType, cast(property, p).fget).__name__
@@ -244,9 +245,7 @@ class ColorScheme(HasExpressionRepr):
         """
         return self._colors.get(ColorScheme._COLOR_STATUS_CRITICAL) or self.accent_3
 
-    def contrast_color(
-        self, fill_color: Union[RgbColor, RgbaColor]
-    ) -> Union[RgbColor, RgbaColor]:
+    def contrast_color(self, fill_color: RgbColor | RgbaColor) -> RgbColor | RgbaColor:
         """
         Return the p color or background color of this color schema,
         depending on which maximises contrast with the given fill color.
@@ -261,7 +260,7 @@ class ColorScheme(HasExpressionRepr):
         if not 3 <= len(fill_color) <= 4:
             raise ValueError(f"arg fill_color={fill_color!r} must be an RGB(A) color")
 
-        def _luminance(c: Union[RgbColor, RgbaColor]) -> float:
+        def _luminance(c: RgbColor | RgbaColor) -> float:
             return cast(float, sum(c[:3]))
 
         # find the color that maximises contrast
@@ -297,7 +296,7 @@ class ColorScheme(HasExpressionRepr):
     _COLOR_STATUS_WARNING = _get_property_name(status_warning)
     _COLOR_STATUS_CRITICAL = _get_property_name(status_critical)
 
-    _SUPPORTED_COLORS: Set[str]
+    _SUPPORTED_COLORS: set[str]
 
 
 ColorScheme._SUPPORTED_COLORS = {
@@ -336,7 +335,7 @@ class MatplotColorScheme(ColorScheme):
         self,
         foreground: RgbColor,
         background: RgbColor,
-        colormap: Union[Colormap, str],
+        colormap: Colormap | str,
         **colors: RgbColor,
     ) -> None:
         """

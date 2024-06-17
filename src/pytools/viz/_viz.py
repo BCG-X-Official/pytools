@@ -6,20 +6,9 @@ plain text.
 
 import logging
 from abc import ABCMeta, abstractmethod
+from collections.abc import Callable, Iterable
 from multiprocessing import Lock
-from typing import (
-    AbstractSet,
-    Any,
-    Callable,
-    Dict,
-    Generic,
-    Iterable,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from typing import AbstractSet, Any, Generic, TypeVar, cast
 
 from ..api import AllTracker, inheritdoc
 from .color import ColorScheme
@@ -97,7 +86,7 @@ class DrawingStyle(metaclass=ABCMeta):
         self._lock = Lock()
 
     @classmethod
-    def get_named_styles(cls: Type[T_Style]) -> Dict[str, Callable[..., T_Style]]:
+    def get_named_styles(cls: type[T_Style]) -> dict[str, Callable[..., T_Style]]:
         """
         Get a mapping of names to default instances of this style class.
 
@@ -161,7 +150,7 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
     #: the color scheme used by this drawing style
     _colors: T_ColorScheme
 
-    def __init__(self, *, colors: Optional[T_ColorScheme] = None) -> None:
+    def __init__(self, *, colors: T_ColorScheme | None = None) -> None:
         """
         :param colors: the color scheme to be used by this drawing style
             (default: :class:`.%%COLORS_DEFAULT%%`)
@@ -175,11 +164,11 @@ class ColoredStyle(DrawingStyle, Generic[T_ColorScheme], metaclass=ABCMeta):
 
     @classmethod
     def get_named_styles(
-        cls: Type[T_Style],
-    ) -> Dict[str, Callable[..., T_Style]]:
+        cls: type[T_Style],
+    ) -> dict[str, Callable[..., T_Style]]:
         """[see superclass]"""
-        named_styles: Dict[str, Callable[..., T_Style]] = cast(
-            Type[T_Style], super()
+        named_styles: dict[str, Callable[..., T_Style]] = cast(
+            type[T_Style], super()
         ).get_named_styles()
 
         return {
@@ -223,9 +212,9 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
     style: T_Style
 
     #: The class-level named styles for this drawer type.
-    __named_styles: Optional[Dict[str, Callable[[], T_Style]]] = None
+    __named_styles: dict[str, Callable[[], T_Style]] | None = None
 
-    def __init__(self, style: Optional[Union[T_Style, str]] = None) -> None:
+    def __init__(self, style: T_Style | str | None = None) -> None:
         """
         :param style: the style to be used for drawing; either as a
             :class:`.DrawingStyle` instance, or as the name of a named style supported
@@ -246,7 +235,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
             )
 
     @classmethod
-    def _get_named_style_lookup(cls) -> Dict[str, Callable[[], T_Style]]:
+    def _get_named_style_lookup(cls) -> dict[str, Callable[[], T_Style]]:
         """
         Get a mapping of names to style factories for all named styles recognized by
         this drawer's initializer.
@@ -289,7 +278,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def get_style_classes(cls) -> Iterable[Type[T_Style]]:
+    def get_style_classes(cls) -> Iterable[type[T_Style]]:
         """
         Get all style classes available for this drawer type.
 
@@ -349,7 +338,7 @@ class Drawer(Generic[T_Model, T_Style], metaclass=ABCMeta):
                     "DrawingStyle.finalize_drawing() not called from overloaded method"
                 )
 
-    def get_style_kwargs(self, data: T_Model) -> Dict[str, Any]:
+    def get_style_kwargs(self, data: T_Model) -> dict[str, Any]:
         """
         Using the given data object, derive keyword arguments to be passed to the
         style's :meth:`~.DrawingStyle.start_drawing` and

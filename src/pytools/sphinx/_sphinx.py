@@ -4,7 +4,7 @@ Implementation of sphinx module.
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from pytools.api import AllTracker
 
@@ -54,10 +54,10 @@ class SphinxCallback(metaclass=ABCMeta):
     """
 
     #: The Sphinx application instance of this callback; ``None`` if not connected.
-    _app: Optional[Sphinx]
+    _app: Sphinx | None
 
     #: The listener ID of this callback; ``None`` if not connected.
-    _listener_id: Optional[int]
+    _listener_id: int | None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -78,7 +78,7 @@ class SphinxCallback(metaclass=ABCMeta):
         pass
 
     @property
-    def app(self) -> Optional[Sphinx]:
+    def app(self) -> Sphinx | None:
         """
         The Sphinx application this callback is connected to.
 
@@ -87,7 +87,7 @@ class SphinxCallback(metaclass=ABCMeta):
         return self._app
 
     @property
-    def listener_id(self) -> Optional[int]:
+    def listener_id(self) -> int | None:
         """
         The listener ID of this callback.
 
@@ -95,7 +95,7 @@ class SphinxCallback(metaclass=ABCMeta):
         """
         return self._listener_id
 
-    def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
+    def connect(self, app: Sphinx, priority: int | None = None) -> int:
         """
         Register this callback to be called when :attr:`.event` is emitted.
 
@@ -206,7 +206,7 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
         name: str,
         obj: object,
         options: object,
-        lines: List[str],
+        lines: list[str],
     ) -> None:
         """
         Process an event.
@@ -231,7 +231,7 @@ class AutodocProcessDocstring(SphinxCallback, metaclass=ABCMeta):
         name: str,
         obj: object,
         options: object,
-        lines: List[str],
+        lines: list[str],
     ) -> None:
         try:
             self.process(
@@ -267,7 +267,7 @@ class AutodocBeforeProcessSignature(SphinxCallback, metaclass=ABCMeta):
 
     def __call__(
         self, app: Sphinx, obj: object, bound_method: bool
-    ) -> Optional[Tuple[str, str]]:
+    ) -> tuple[str, str] | None:
         try:
             return self.process(app=app, obj=obj, bound_method=bound_method)
         except Exception as e:
@@ -295,9 +295,9 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
         name: str,
         obj: object,
         options: object,
-        signature: Optional[str],
-        return_annotation: Optional[str],
-    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        signature: str | None,
+        return_annotation: str | None,
+    ) -> tuple[str | None, str | None] | None:
         """
         Process an event.
 
@@ -326,9 +326,9 @@ class AutodocProcessSignature(SphinxCallback, metaclass=ABCMeta):
         name: str,
         obj: object,
         options: object,
-        signature: Optional[str],
-        return_annotation: Optional[str],
-    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        signature: str | None,
+        return_annotation: str | None,
+    ) -> tuple[str | None, str | None] | None:
         try:
             return self.process(
                 app=app,
@@ -365,7 +365,7 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
         obj: object,
         skip: bool,
         options: object,
-    ) -> Optional[bool]:
+    ) -> bool | None:
         """
         Decide whether a member should be included in the documentation.
 
@@ -396,7 +396,7 @@ class AutodocSkipMember(SphinxCallback, metaclass=ABCMeta):
         obj: object,
         skip: bool,
         options: object,
-    ) -> Optional[bool]:
+    ) -> bool | None:
         try:
             return self.process(
                 app=app, what=what, name=name, obj=obj, skip=skip, options=options
@@ -420,7 +420,7 @@ class AutodocProcessBases(SphinxCallback, metaclass=ABCMeta):
 
     @abstractmethod
     def process(
-        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+        self, app: Sphinx, name: str, obj: object, options: object, bases: list[type]
     ) -> None:
         """
         Decide whether a member should be included in the documentation.
@@ -438,7 +438,7 @@ class AutodocProcessBases(SphinxCallback, metaclass=ABCMeta):
         pass
 
     def __call__(
-        self, app: Sphinx, name: str, obj: object, options: object, bases: List[type]
+        self, app: Sphinx, name: str, obj: object, options: object, bases: list[type]
     ) -> None:
         try:
             self.process(app=app, name=name, obj=obj, options=options, bases=bases)

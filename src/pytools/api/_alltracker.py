@@ -4,20 +4,9 @@ Core implementation of :mod:`pytools.api`.
 
 import logging
 import re
+from collections.abc import Callable, Collection, Iterable
 from types import FunctionType
-from typing import (
-    Any,
-    Callable,
-    Collection,
-    Dict,
-    Iterable,
-    List,
-    Optional,
-    Set,
-    TypeVar,
-    Union,
-    get_type_hints,
-)
+from typing import Any, TypeVar, get_type_hints
 
 from typing_inspect import get_args, is_forward_ref
 
@@ -93,9 +82,9 @@ class AllTracker:
     # noinspection PyShadowingNames
     def __init__(
         self,
-        globals_: Dict[str, Any],
+        globals_: dict[str, Any],
         *,
-        public_module: Optional[str] = None,
+        public_module: str | None = None,
         update_forward_references: bool = True,
         allow_global_constants: bool = False,
         allow_imported_definitions: bool = False,
@@ -199,7 +188,7 @@ class AllTracker:
                 # objects without a __dict__ will not permit setting the public module
                 pass
 
-    def get_tracked(self) -> List[str]:
+    def get_tracked(self) -> list[str]:
         """
         List the names of all locally tracked, public items.
 
@@ -312,7 +301,7 @@ __tracker._imported.remove(public_module_prefix.__name__)
 
 
 def update_forward_references(
-    obj: Union[type, FunctionType], *, globals_: Optional[Dict[str, Any]] = None
+    obj: type | FunctionType, *, globals_: dict[str, Any] | None = None
 ) -> None:
     """
     Replace all forward references with their referenced classes.
@@ -328,10 +317,10 @@ def update_forward_references(
         return
 
     # keep track of classes we already visited to prevent infinite recursion
-    visited: Set[type] = set()
+    visited: set[type] = set()
 
     def _update(
-        _obj: Union[type, FunctionType], local_ns: Optional[Dict[str, Any]] = None
+        _obj: type | FunctionType, local_ns: dict[str, Any] | None = None
     ) -> None:
         if isinstance(_obj, type) and _obj.__module__ == my_module:
             if _obj not in visited:
@@ -345,7 +334,7 @@ def update_forward_references(
             _update_annotations(_obj, local_ns)
 
     def _update_annotations(
-        _obj: Union[type, FunctionType], local_ns: Optional[Dict[str, Any]]
+        _obj: type | FunctionType, local_ns: dict[str, Any] | None
     ) -> None:
         # unwrap the object to get the underlying function, if applicable
         while isinstance(_obj, FunctionType):

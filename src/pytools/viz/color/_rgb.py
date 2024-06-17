@@ -5,10 +5,9 @@ Core implementation of :mod:`pytools.viz.color`
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, Optional, Tuple, cast, overload
+from typing import Any, TypeAlias, cast, overload
 
 from matplotlib.colors import to_rgb
-from typing_extensions import TypeAlias
 
 from pytools.api import AllTracker
 
@@ -35,7 +34,7 @@ __all__ = [
 #
 # Type aliases
 #
-TupleRgb: TypeAlias = Tuple[float, float, float]
+TupleRgb: TypeAlias = tuple[float, float, float]
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -51,21 +50,21 @@ __tracker = AllTracker(globals())
 
 class _RgbBase(tuple):  # type: ignore
     @property
-    def r(self: Tuple[float, ...]) -> float:
+    def r(self: tuple[float, ...]) -> float:
         """
         The luminosity value for the *red* channel.
         """
         return self[0]
 
     @property
-    def g(self: Tuple[float, ...]) -> float:
+    def g(self: tuple[float, ...]) -> float:
         """
         The luminosity value for the *green* channel.
         """
         return self[1]
 
     @property
-    def b(self: Tuple[float, ...]) -> float:
+    def b(self: tuple[float, ...]) -> float:
         """
         The luminosity value for the *blue* channel.
         """
@@ -73,7 +72,7 @@ class _RgbBase(tuple):  # type: ignore
 
     @classmethod
     def _check_arg_count(
-        cls, args: Tuple[Any, ...], kwargs: Dict[str, Any], max_allowed: int
+        cls, args: tuple[Any, ...], kwargs: dict[str, Any], max_allowed: int
     ) -> None:
         if len(args) + len(kwargs) > max_allowed:
             args_list = ", ".join(
@@ -137,12 +136,12 @@ class RgbaColor(_RgbBase):
 
     @overload
     def __new__(
-        cls, r: float, g: float, b: float, alpha: Optional[float] = None
+        cls, r: float, g: float, b: float, alpha: float | None = None
     ) -> RgbaColor:
         pass
 
     @overload
-    def __new__(cls, c: str, alpha: Optional[float] = None) -> RgbaColor:
+    def __new__(cls, c: str, alpha: float | None = None) -> RgbaColor:
         pass
 
     def __new__(cls, *args: Any, **kwargs: Any) -> RgbaColor:
@@ -164,7 +163,7 @@ class RgbaColor(_RgbBase):
         )
 
     @property
-    def alpha(self: Tuple[float, ...]) -> float:
+    def alpha(self: tuple[float, ...]) -> float:
         """
         The opacity value for the *alpha* channel.
         """
@@ -173,24 +172,24 @@ class RgbaColor(_RgbBase):
 
 @overload
 def _to_rgba(
-    r: float, g: float, b: float, alpha: Optional[float] = None
-) -> Tuple[TupleRgb, Optional[float]]:
+    r: float, g: float, b: float, alpha: float | None = None
+) -> tuple[TupleRgb, float | None]:
     pass
 
 
 @overload
-def _to_rgba(c: str, alpha: Optional[float] = None) -> Tuple[TupleRgb, Optional[float]]:
+def _to_rgba(c: str, alpha: float | None = None) -> tuple[TupleRgb, float | None]:
     pass
 
 
 def _to_rgba(
     *args: Any,
-    r: Optional[float] = None,
-    g: Optional[float] = None,
-    b: Optional[float] = None,
-    alpha: Optional[float] = None,
-    c: Optional[str] = None,
-) -> Tuple[TupleRgb, Optional[float]]:
+    r: float | None = None,
+    g: float | None = None,
+    b: float | None = None,
+    alpha: float | None = None,
+    c: str | None = None,
+) -> tuple[TupleRgb, float | None]:
     n_rgb_kwargs = (r is not None) + (g is not None) + (b is not None)
     if n_rgb_kwargs in (1, 2):
         raise ValueError(

@@ -2,18 +2,21 @@
 Tests for utility functions related to generic types.
 """
 
-from collections.abc import AsyncIterable, AsyncIterator, Iterable, Iterator, Mapping
-from typing import Any
-from typing import AsyncIterable as AsyncIterable_typing
-from typing import AsyncIterator as AsyncIterator_typing
-from typing import Generic
-from typing import Iterable as Iterable_typing
-from typing import Iterator as Iterator_typing
-from typing import TypeVar
+import typing
+from collections.abc import AsyncIterable
+from collections.abc import AsyncIterable as AsyncIterable_typing
+from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator as AsyncIterator_typing
+from collections.abc import Iterable, Iterator, Mapping
+from typing import Any, Generic, TypeVar
 
 import pytest
 
 from pytools.typing import get_generic_instance, issubclass_generic
+
+Iterable_typing = getattr(typing, "Iterable")
+Iterator_typing = getattr(typing, "Iterator")
+
 
 T = TypeVar("T")
 T_arg = TypeVar("T_arg", contravariant=True)

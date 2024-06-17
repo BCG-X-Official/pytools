@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta
-from typing import Any, Optional
+from typing import Any
 from weakref import ReferenceType
 
 from ..api import AllTracker
@@ -44,7 +44,7 @@ class SingletonMeta(type):
     Singleton classes must not accept any parameters upon instantiation.
     """
 
-    __instance_ref: Optional[ReferenceType]  # type: ignore
+    __instance_ref: ReferenceType | None  # type: ignore
 
     def __init__(cls: SingletonMeta, *args: Any, **kwargs: Any) -> None:
         """
@@ -71,11 +71,11 @@ class SingletonMeta(type):
             raise ValueError("singleton classes may not take any arguments")
 
         if cls.__instance_ref:
-            obj: Optional[Any] = cls.__instance_ref()
+            obj: Any | None = cls.__instance_ref()
             if obj is not None:
                 return obj
 
-        instance: Any = super(SingletonMeta, cls).__call__()
+        instance: Any = super().__call__()
         cls.__instance_ref = ReferenceType(instance)
         return instance
 

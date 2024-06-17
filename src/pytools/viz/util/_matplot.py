@@ -3,7 +3,7 @@ Utilities related to matplotlib.
 """
 
 import logging
-from typing import Any, Optional, Union
+from typing import Any
 
 from matplotlib.backend_bases import RendererBase
 from matplotlib.text import Text
@@ -60,7 +60,7 @@ class PercentageFormatter(
     - ``1555`` is formatted as ``1.6e+05%``
     """
 
-    def __call__(self, x: float, pos: Optional[int] = None) -> str:
+    def __call__(self, x: float, pos: int | None = None) -> str:
         if x < 1.0:
             return f"{x * 100.0:.3g}%"
         else:
@@ -79,10 +79,10 @@ class FittedText(
     def __init__(
         self,
         *,
-        x: Union[int, float] = 0,
-        y: Union[int, float] = 0,
-        width: Union[int, float, None] = None,
-        height: Union[int, float, None] = None,
+        x: int | float = 0,
+        y: int | float = 0,
+        width: int | float | None = None,
+        height: int | float | None = None,
         text: str = "",
         **kwargs: Any,
     ) -> None:
@@ -101,7 +101,7 @@ class FittedText(
         self._width = width
         self._height = height
 
-    def set_width(self, width: Union[int, float, None]) -> None:
+    def set_width(self, width: int | float | None) -> None:
         """
         Set the maximum allowed width for this text, in data coordinates.
 
@@ -110,7 +110,7 @@ class FittedText(
         self.stale = width != self._width
         self._width = width
 
-    def get_width(self) -> Union[int, float, None]:
+    def get_width(self) -> int | float | None:
         """
         Get the maximum allowed width for this text, in data coordinates.
 
@@ -118,7 +118,7 @@ class FittedText(
         """
         return self._width
 
-    def set_height(self, height: Union[int, float, None]) -> None:
+    def set_height(self, height: int | float | None) -> None:
         """
         Set the maximum allowed height for this text, in data coordinates.
 
@@ -127,7 +127,7 @@ class FittedText(
         self.stale = height != self._height
         self._height = height
 
-    def get_height(self) -> Union[int, float, None]:
+    def get_height(self) -> int | float | None:
         """
         Get the maximum allowed height for this text, in data coordinates.
 

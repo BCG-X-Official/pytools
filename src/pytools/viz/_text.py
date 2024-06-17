@@ -5,7 +5,7 @@ Text styles for the visualization library.
 import logging
 import sys
 from abc import ABCMeta
-from typing import Any, Optional, TextIO
+from typing import Any, TextIO
 
 from ..api import AllTracker, inheritdoc
 from ._viz import DrawingStyle
@@ -44,7 +44,7 @@ class TextStyle(DrawingStyle, metaclass=ABCMeta):
     #: The maximum width of the text to be produced.
     width: int
 
-    def __init__(self, out: Optional[TextIO] = None, width: int = 80) -> None:
+    def __init__(self, out: TextIO | None = None, width: int = 80) -> None:
         """
         :param out: the output stream this style instance writes to
             (defaults to :obj:`sys.stdout`)

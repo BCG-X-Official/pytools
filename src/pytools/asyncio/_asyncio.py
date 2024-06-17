@@ -7,18 +7,16 @@ from __future__ import annotations
 import asyncio
 import logging
 from asyncio import Queue
-from concurrent.futures import ThreadPoolExecutor
-from typing import (
-    Any,
+from collections.abc import (
     AsyncIterable,
     AsyncIterator,
     Awaitable,
     Coroutine,
     Iterable,
     Iterator,
-    TypeVar,
-    cast,
 )
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, TypeVar, cast
 
 log = logging.getLogger(__name__)
 

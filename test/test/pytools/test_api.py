@@ -2,10 +2,9 @@
 Basic test cases for the `pytools.api` module
 """
 
-from typing import Any, Dict, Union
+from typing import Any, TypeAlias, Union
 
 import pytest
-from typing_extensions import TypeAlias
 
 from pytools.api import (
     AllTracker,
@@ -192,7 +191,7 @@ def test_all_tracker() -> None:
 
     # test with defaults, no constant declaration
 
-    mock_globals: Dict[str, Any] = dict(
+    mock_globals: dict[str, Any] = dict(
         __all__=["A", "B", "MyTypeAlias"],
         __name__=PKG_TEST_PYTOOLS_TEST_API,
     )

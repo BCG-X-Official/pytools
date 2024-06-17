@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Optional, Tuple, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -130,7 +130,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """
         The subexpressions of this expression.
         """
@@ -556,7 +556,7 @@ def make_expression(value: Any) -> Expression:
         else:
             return BinaryOperation(BinaryOperator.SLICE, args[0], args[1])
     else:
-        name: Optional[str] = getattr(value, "__name__", None)
+        name: str | None = getattr(value, "__name__", None)
         if name:
             from .atomic import Id
 
@@ -626,7 +626,7 @@ class ExpressionAlias(Expression):
         return self.expression_.precedence_
 
     @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """[see superclass]"""
         return (self._expression,)
 
