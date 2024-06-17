@@ -165,6 +165,26 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_collection.html">
+     pytools.api.as_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_list.html">
+     pytools.api.as_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_set.html">
+     pytools.api.as_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_tuple.html">
+     pytools.api.as_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../api/pytools.api.deprecated.html">
      pytools.api.deprecated
     </a>
@@ -207,26 +227,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../api/pytools.api.subsdoc.html">
      pytools.api.subsdoc
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_collection.html">
-     pytools.api.to_collection
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_list.html">
-     pytools.api.to_list
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_set.html">
-     pytools.api.to_set
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_tuple.html">
-     pytools.api.to_tuple
     </a>
    </li>
    <li class="toctree-l2">
@@ -1355,7 +1355,7 @@
 <dd><p>A queue composed from a collection of compatible queues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Bases</dt>
-<dd class="field-odd"><p><a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JobQueue</span></code></a> [~T_Job_Result, <code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code> [~T_Job_Result]]</p>
+<dd class="field-odd"><p><a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JobQueue</span></code></a> [~T_Job_Result, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>]</p>
 </dd>
 <dt class="field-even">Generic types</dt>
 <dd class="field-even"><p>~T_Job_Result</p>
@@ -1364,7 +1364,7 @@
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/abc.html#abc.ABCMeta" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABCMeta</span></code></a></p>
 </dd>
 <dt class="field-even">Parameters</dt>
-<dd class="field-even"><p><strong>queues</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobQueue</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>), <a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]]]) – queues whose elements will be added to this queue in the given
+<dd class="field-even"><p><strong>queues</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization.JobQueue"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobQueue</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>), <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]]]) – queues whose elements will be added to this queue in the given
 order</p>
 </dd>
 </dl>
@@ -1408,11 +1408,11 @@ order</p>
 <dd><p>Return the list of job results as-is, without aggregating them any further.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>job_results</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]) – list of job results, ordered corresponding to the sequence
+<dd class="field-odd"><p><strong>job_results</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]) – list of job results, ordered corresponding to the sequence
 of jobs generated by method <a class="reference internal" href="#pytools.parallelization.CompositeQueue.jobs" title="pytools.parallelization.CompositeQueue.jobs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">jobs()</span></code></a></p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.List" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>the identical list of job results</p>
@@ -1426,7 +1426,7 @@ of jobs generated by method <a class="reference internal" href="#pytools.paralle
 <dd><p>Iterate the jobs in this queue.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference internal" href="pytools.parallelization.Job.html#pytools.parallelization.Job" title="pytools.parallelization.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference internal" href="pytools.parallelization.Job.html#pytools.parallelization.Job" title="pytools.parallelization.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.TypeVar" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code></a>(<code class="docutils literal notranslate"><span class="pre">T_Job_Result</span></code>)]]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the jobs in this queue</p>
@@ -1450,7 +1450,7 @@ each run.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.parallelization.CompositeQueue.queues">
-<span class="sig-name descname"><span class="pre">queues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization._parallelization.JobQueue"><span class="pre">JobQueue</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_Job_Result</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T_Job_Result</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.parallelization.CompositeQueue.queues" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">queues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue" title="pytools.parallelization._parallelization.JobQueue"><span class="pre">JobQueue</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_Job_Result</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_Job_Result</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.parallelization.CompositeQueue.queues" title="Permalink to this definition">#</a></dt>
 <dd><p>The queues run by this queue.</p>
 </dd></dl>
 

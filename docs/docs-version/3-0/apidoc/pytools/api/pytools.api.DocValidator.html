@@ -165,6 +165,26 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="pytools.api.as_collection.html">
+     pytools.api.as_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.api.as_list.html">
+     pytools.api.as_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.api.as_set.html">
+     pytools.api.as_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="pytools.api.as_tuple.html">
+     pytools.api.as_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="pytools.api.deprecated.html">
      pytools.api.deprecated
     </a>
@@ -207,26 +227,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="pytools.api.subsdoc.html">
      pytools.api.subsdoc
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="pytools.api.to_collection.html">
-     pytools.api.to_collection
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="pytools.api.to_list.html">
-     pytools.api.to_list
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="pytools.api.to_set.html">
-     pytools.api.to_set
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="pytools.api.to_tuple.html">
-     pytools.api.to_tuple
     </a>
    </li>
    <li class="toctree-l2">
@@ -1361,12 +1361,12 @@ is provided in parameter <code class="docutils literal notranslate"><span class=
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root_dir</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – the root directory of all Python files to be validated</p></li>
-<li><p><strong>validate_protected</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – names of protected functions and methods to be
+<li><p><strong>validate_protected</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – names of protected functions and methods to be
 validated (default: <code class="docutils literal notranslate"><span class="pre">('__init__',)</span></code>)</p></li>
-<li><p><strong>exclude_from_parameter_validation</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Pattern" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – do not validate parameter
+<li><p><strong>exclude_from_parameter_validation</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Union" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Pattern</span></code>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>], <a class="reference external" href="https://docs.python.org/3.7/library/constants.html#None" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>]) – do not validate parameter
 documentation and type hints for classes, methods or functions whose full
 name (including the module prefix) matches the given regular expression</p></li>
-<li><p><strong>additional_tests</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc.DocTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocTest</span></code></a>]]) – additional documentation tests to run on each API
+<li><p><strong>additional_tests</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Iterable" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc.DocTest"><code class="xref py py-class docutils literal notranslate"><span class="pre">DocTest</span></code></a>]]) – additional documentation tests to run on each API
 element</p></li>
 </ul>
 </dd>
@@ -1437,13 +1437,13 @@ failed</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.api.DocValidator.DEFAULT_VALIDATION_TESTS">
-<span class="sig-name descname"><span class="pre">DEFAULT_VALIDATION_TESTS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc._doc.DocTest"><span class="pre">doc.DocTest</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(HasDocstring(),</span> <span class="pre">HasMatchingParameterDoc(),</span> <span class="pre">HasWellFormedDocstring(),</span> <span class="pre">HasTypeHints())</span></em><a class="headerlink" href="#pytools.api.DocValidator.DEFAULT_VALIDATION_TESTS" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">DEFAULT_VALIDATION_TESTS</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc._doc.DocTest"><span class="pre">doc.DocTest</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(HasDocstring(),</span> <span class="pre">HasMatchingParameterDoc(),</span> <span class="pre">HasWellFormedDocstring(),</span> <span class="pre">HasTypeHints())</span></em><a class="headerlink" href="#pytools.api.DocValidator.DEFAULT_VALIDATION_TESTS" title="Permalink to this definition">#</a></dt>
 <dd><p>Default collection of documentation tests to run during validation.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.api.DocValidator.exclude_from_parameter_validation">
-<span class="sig-name descname"><span class="pre">exclude_from_parameter_validation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Pattern</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.exclude_from_parameter_validation" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">exclude_from_parameter_validation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">re.Pattern</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.exclude_from_parameter_validation" title="Permalink to this definition">#</a></dt>
 <dd><p>Names of modules for which parameter documentation and type hints should not be
 validated.</p>
 </dd></dl>
@@ -1456,19 +1456,19 @@ validated.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.api.DocValidator.validate_protected">
-<span class="sig-name descname"><span class="pre">validate_protected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validate_protected" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">validate_protected</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validate_protected" title="Permalink to this definition">#</a></dt>
 <dd><p>Names of protected functions and methods to be validated.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.api.DocValidator.validation_errors">
-<span class="sig-name descname"><span class="pre">validation_errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validation_errors" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">validation_errors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#dict" title="(in Python v3.7)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#list" title="(in Python v3.7)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validation_errors" title="Permalink to this definition">#</a></dt>
 <dd><p>A dictionary mapping definitions to lists of errors identified during validation.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.api.DocValidator.validation_tests">
-<span class="sig-name descname"><span class="pre">validation_tests</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc._doc.DocTest"><span class="pre">doc.DocTest</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validation_tests" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">validation_tests</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="doc/pytools.api.doc.DocTest.html#pytools.api.doc.DocTest" title="pytools.api.doc._doc.DocTest"><span class="pre">doc.DocTest</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.api.DocValidator.validation_tests" title="Permalink to this definition">#</a></dt>
 <dd><p>The documentation tests to run on each definition during validation.</p>
 </dd></dl>
 

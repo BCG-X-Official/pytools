@@ -155,6 +155,24 @@
 <nav id="bd-toc-nav">
     <ul class="visible nav section-nav flex-column">
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pytools-3-0">
+   <em>
+    pytools
+   </em>
+   3.0
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pytools-3-0-0">
+     <em>
+      pytools
+     </em>
+     3.0.0
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#pytools-2-1">
    <em>
     pytools
@@ -485,6 +503,105 @@
                 
   <section id="release-notes">
 <span id="id1"></span><h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">#</a></h1>
+<section id="pytools-3-0">
+<h2><em>pytools</em> 3.0<a class="headerlink" href="#pytools-3-0" title="Permalink to this headline">#</a></h2>
+<p><em>pytools</em> 3.0 adds support for language features introduced up to and including
+Python 3.11, and drops support for Python versions.</p>
+<section id="pytools-3-0-0">
+<h3><em>pytools</em> 3.0.0<a class="headerlink" href="#pytools-3-0-0" title="Permalink to this headline">#</a></h3>
+<ul>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.api.html#module-pytools.api" title="pytools.api"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.api</span></code></a>: new utility functions to get object’s init parameters, validate
+<code class="docutils literal notranslate"><span class="pre">__all__</span></code> declarations, and define stand-in objects for missing classes and
+functions</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>API: new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.get_init_params.html#pytools.api.get_init_params" title="pytools.api.get_init_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_init_params()</span></code></a> to retrieve the object attributes
+associated with the object’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method</p></li>
+<li><p>API: new metaclass <code class="xref py py-class docutils literal notranslate"><span class="pre">MissingClassMeta</span></code> to define a stand-in class for a
+missing class that could not be imported from an optional dependency</p></li>
+<li><p>API: new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.missing_function.html#pytools.api.missing_function" title="pytools.api.missing_function"><code class="xref py py-func docutils literal notranslate"><span class="pre">missing_function()</span></code></a> to define a stand-in function for a
+missing function that could not be imported from an optional dependency</p></li>
+<li><p>API: new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.validate__all__declarations.html#pytools.api.validate__all__declarations" title="pytools.api.validate__all__declarations"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate__all__declarations()</span></code></a> to validate the <code class="docutils literal notranslate"><span class="pre">__all__</span></code>
+declarations of a module and its submodules</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.asyncio.html#module-pytools.asyncio" title="pytools.asyncio"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.asyncio</span></code></a>: new module with utility functions for asynchronous programming</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.arun.html#pytools.asyncio.arun" title="pytools.asyncio.arun"><code class="xref py py-func docutils literal notranslate"><span class="pre">arun()</span></code></a> to run an asynchronous function in a new event loop</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.aenumerate.html#pytools.asyncio.aenumerate" title="pytools.asyncio.aenumerate"><code class="xref py py-func docutils literal notranslate"><span class="pre">aenumerate()</span></code></a> to enumerate an asynchronous iterable</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.async_flatten.html#pytools.asyncio.async_flatten" title="pytools.asyncio.async_flatten"><code class="xref py py-func docutils literal notranslate"><span class="pre">async_flatten()</span></code></a> to flatten nested asynchronous iterables for optimized
+asynchronous processing</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.iter_async_to_sync.html#pytools.asyncio.iter_async_to_sync" title="pytools.asyncio.iter_async_to_sync"><code class="xref py py-func docutils literal notranslate"><span class="pre">iter_async_to_sync()</span></code></a> to convert an asynchronous iterable to a synchronous
+one</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.iter_sync_to_async.html#pytools.asyncio.iter_sync_to_async" title="pytools.asyncio.iter_sync_to_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">iter_sync_to_async()</span></code></a> to convert a synchronous iterable to an asynchronous
+one</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/asyncio/pytools.asyncio.unpack_exception_group.html#pytools.asyncio.unpack_exception_group" title="pytools.asyncio.unpack_exception_group"><code class="xref py py-func docutils literal notranslate"><span class="pre">unpack_exception_group()</span></code></a> to unpack an exception group into one or more
+individual exceptions</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../apidoc/pytools/data/pytools.data.taxonomy.html#module-pytools.data.taxonomy" title="pytools.data.taxonomy"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.data.taxonomy</span></code></a>: new submodule with classes <a class="reference internal" href="../apidoc/pytools/data/taxonomy/pytools.data.taxonomy.Taxonomy.html#pytools.data.taxonomy.Taxonomy" title="pytools.data.taxonomy.Taxonomy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Taxonomy</span></code></a> and
+<a class="reference internal" href="../apidoc/pytools/data/taxonomy/pytools.data.taxonomy.Category.html#pytools.data.taxonomy.Category" title="pytools.data.taxonomy.Category"><code class="xref py py-class docutils literal notranslate"><span class="pre">Category</span></code></a> to represent hierarchical taxonomies</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.expression.html#module-pytools.expression" title="pytools.expression"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.expression</span></code></a>:</p>
+<ul class="simple">
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.expression_from_init_params.html#pytools.expression.expression_from_init_params" title="pytools.expression.expression_from_init_params"><code class="xref py py-func docutils literal notranslate"><span class="pre">expression_from_init_params()</span></code></a> to create an object’s
+<a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> representation from the attributes in its <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method</p></li>
+<li><p>new submodule <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.repr.html#module-pytools.expression.repr" title="pytools.expression.repr"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.expression.repr</span></code></a> with enhanced versions of standard
+Python container classes implementing the <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr" title="pytools.expression.HasExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasExpressionRepr</span></code></a> interface:</p>
+<ul>
+<li><p><a class="reference internal" href="../apidoc/pytools/expression/repr/pytools.expression.repr.ListWithExpressionRepr.html#pytools.expression.repr.ListWithExpressionRepr" title="pytools.expression.repr.ListWithExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListWithExpressionRepr</span></code></a> for lists</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/expression/repr/pytools.expression.repr.TupleWithExpressionRepr.html#pytools.expression.repr.TupleWithExpressionRepr" title="pytools.expression.repr.TupleWithExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">TupleWithExpressionRepr</span></code></a> for tuples</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/expression/repr/pytools.expression.repr.SetWithExpressionRepr.html#pytools.expression.repr.SetWithExpressionRepr" title="pytools.expression.repr.SetWithExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">SetWithExpressionRepr</span></code></a> for sets</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/expression/repr/pytools.expression.repr.DictWithExpressionRepr.html#pytools.expression.repr.DictWithExpressionRepr" title="pytools.expression.repr.DictWithExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">DictWithExpressionRepr</span></code></a> for dictionaries</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.http.html#module-pytools.http" title="pytools.http"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.http</span></code></a>: new module with function <a class="reference internal" href="../apidoc/pytools/http/pytools.http.fetch_url.html#pytools.http.fetch_url" title="pytools.http.fetch_url"><code class="xref py py-func docutils literal notranslate"><span class="pre">fetch_url()</span></code></a> to download a file
+from a URL</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.repr.html#module-pytools.repr" title="pytools.repr"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.repr</span></code></a>: new module with mixin class <a class="reference internal" href="../apidoc/pytools/repr/pytools.repr.HasDictRepr.html#pytools.repr.HasDictRepr" title="pytools.repr.HasDictRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasDictRepr</span></code></a>, providing a
+method to return a dictionary representation of an object</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.sphinx.html#module-pytools.sphinx" title="pytools.sphinx"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.sphinx</span></code></a>: new utilities for generating Sphinx documentation</p>
+<ul class="simple">
+<li><p>API: new decorator <code class="xref py py-obj docutils literal notranslate"><span class="pre">apenddoc</span></code> to append docstrings to the docstring of another
+object, usually the constructor of the superclass</p></li>
+<li><p>API: new Sphinx callback class <a class="reference internal" href="../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables" title="pytools.sphinx.util.ResolveTypeVariables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResolveTypeVariables</span></code></a> to resolve type
+variables in attribute signatures</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.text.html#module-pytools.text" title="pytools.text"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.text</span></code></a>: new class <a class="reference internal" href="../apidoc/pytools/text/pytools.text.TextTemplate.html#pytools.text.TextTemplate" title="pytools.text.TextTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextTemplate</span></code></a> to generate text from a template
+string with stricter management of template variables</p></li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.typing.html#module-pytools.typing" title="pytools.typing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.typing</span></code></a>: new module for generic type inspection at runtime</p>
+<ul class="simple">
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_common_generic_base.html#pytools.typing.get_common_generic_base" title="pytools.typing.get_common_generic_base"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_common_generic_base()</span></code></a> to retrieve the common generic base
+class of two types</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_common_generic_subclass.html#pytools.typing.get_common_generic_subclass" title="pytools.typing.get_common_generic_subclass"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_common_generic_subclass()</span></code></a> to retrieve the common generic
+subclass of two types</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.get_generic_bases.html#pytools.api.get_generic_bases" title="pytools.api.get_generic_bases"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_generic_bases()</span></code></a> to retrieve the generic base classes of a
+type</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_generic_instance.html#pytools.typing.get_generic_instance" title="pytools.typing.get_generic_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_generic_instance()</span></code></a> to retrieve the generic instance of a
+type</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_type_arguments.html#pytools.typing.get_type_arguments" title="pytools.typing.get_type_arguments"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_type_arguments()</span></code></a> to retrieve the type arguments of a generic
+type</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.isinstance_generic.html#pytools.typing.isinstance_generic" title="pytools.typing.isinstance_generic"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance_generic()</span></code></a> to check if an object is an instance of a
+generic type</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic" title="pytools.typing.issubclass_generic"><code class="xref py py-func docutils literal notranslate"><span class="pre">issubclass_generic()</span></code></a> to check if a type is a subclass of a
+generic type</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../apidoc/pytools/pytools.viz.html#module-pytools.viz" title="pytools.viz"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pytools.viz</span></code></a>:</p>
+<ul class="simple">
+<li><p>API: new class <a class="reference internal" href="../apidoc/pytools/viz/pytools.viz.HTMLStyle.html#pytools.viz.HTMLStyle" title="pytools.viz.HTMLStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLStyle</span></code></a> for rendering HTML content with drawers</p></li>
+<li><p>API: new function <a class="reference internal" href="../apidoc/pytools/viz/pytools.viz.is_running_in_notebook.html#pytools.viz.is_running_in_notebook" title="pytools.viz.is_running_in_notebook"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_running_in_notebook()</span></code></a> to check if the code is running
+in a Jupyter or Colab notebook</p></li>
+<li><p>API: new property <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor.hex" title="pytools.viz.color.RgbColor.hex"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hex</span></code></a> for <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor" title="pytools.viz.color.RgbColor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RgbColor</span></code></a> and <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbaColor.html#pytools.viz.color.RgbaColor" title="pytools.viz.color.RgbaColor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RgbaColor</span></code></a> to
+return the color as a hexadecimal string</p></li>
+</ul>
+</li>
+<li><p>Various adjustments to maintain compatibility with recent Python versions</p></li>
+</ul>
+</section>
+</section>
 <section id="pytools-2-1">
 <h2><em>pytools</em> 2.1<a class="headerlink" href="#pytools-2-1" title="Permalink to this headline">#</a></h2>
 <section id="id2">
@@ -526,7 +643,7 @@ notebooks</p></li>
 <section id="pytools-2-0">
 <h2><em>pytools</em> 2.0<a class="headerlink" href="#pytools-2-0" title="Permalink to this headline">#</a></h2>
 <p><em>pytools</em> 2 introduces enhanced visualisations along with additional API improvements,
-and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.dac88f346cada58ae022599fffbbd961643b5d5b.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
+and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.06c7d2613a3eebac6a09befcad2b2fae6374d262.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
 <section id="id6">
 <h3>2.0.7<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
@@ -557,7 +674,7 @@ accessing their <code class="docutils literal notranslate"><span class="pre">__g
 <section id="id10">
 <h3>2.0.3<a class="headerlink" href="#id10" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
-<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.dac88f346cada58ae022599fffbbd961643b5d5b.dirty)"><span class="xref std std-doc">mypy</span></a>
+<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.06c7d2613a3eebac6a09befcad2b2fae6374d262.dirty)"><span class="xref std std-doc">mypy</span></a>
 recognizes it as a positional-only argument, and that subclasses can change its
 name without breaking the API</p></li>
 <li><p>FIX: make <a class="reference internal" href="../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables" title="pytools.sphinx.util.ResolveTypeVariables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResolveTypeVariables</span></code></a> compatible with Python 3.9</p></li>
@@ -596,8 +713,8 @@ minor version, reducing the amount of near-similar documentation</p></li>
 <section id="pytools-api">
 <h4><code class="docutils literal notranslate"><span class="pre">pytools.api</span></code><a class="headerlink" href="#pytools-api" title="Permalink to this headline">#</a></h4>
 <ul class="simple">
-<li><p>API: collection validation/conversion functions <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_set.html#pytools.api.to_set" title="pytools.api.to_set"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_set()</span></code></a>, <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_tuple.html#pytools.api.to_tuple" title="pytools.api.to_tuple"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_tuple()</span></code></a>,
-<a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_list.html#pytools.api.to_list" title="pytools.api.to_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_list()</span></code></a>, and <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_collection.html#pytools.api.to_collection" title="pytools.api.to_collection"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code></a> have a new argument <code class="docutils literal notranslate"><span class="pre">optional</span></code></p></li>
+<li><p>API: collection validation/conversion functions <code class="xref py py-func docutils literal notranslate"><span class="pre">to_set()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">to_tuple()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">to_list()</span></code>, and <code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code> have a new argument <code class="docutils literal notranslate"><span class="pre">optional</span></code></p></li>
 <li><p>API: decorator <a class="reference internal" href="../apidoc/pytools/api/pytools.api.subsdoc.html#pytools.api.subsdoc" title="pytools.api.subsdoc"><code class="xref py py-func docutils literal notranslate"><span class="pre">subsdoc()</span></code></a> has a new optional argument <code class="docutils literal notranslate"><span class="pre">using</span></code>, indicating
 an object whose docstring will be used as the basis for creating the substituted
 docstring of the decorated object</p></li>
@@ -615,7 +732,7 @@ labels for the row, column, and weight axes</p></li>
 <section id="pytools-expression">
 <h4><code class="docutils literal notranslate"><span class="pre">pytools.expression</span></code><a class="headerlink" href="#pytools-expression" title="Permalink to this headline">#</a></h4>
 <ul class="simple">
-<li><p>API: improved conversion of <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.26)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> arrays to <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> objects in
+<li><p>API: improved conversion of <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> arrays to <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.Expression.html#pytools.expression.Expression" title="pytools.expression.Expression"><code class="xref py py-class docutils literal notranslate"><span class="pre">Expression</span></code></a> objects in
 function <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.make_expression.html#pytools.expression.make_expression" title="pytools.expression.make_expression"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_expression()</span></code></a></p></li>
 <li><p>API: removed method <code class="docutils literal notranslate"><span class="pre">get_class_id</span></code> from class <a class="reference internal" href="../apidoc/pytools/expression/pytools.expression.HasExpressionRepr.html#pytools.expression.HasExpressionRepr" title="pytools.expression.HasExpressionRepr"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasExpressionRepr</span></code></a></p></li>
 </ul>
@@ -751,10 +868,10 @@ validate values against, in line with how <a class="reference external" href="ht
 <section id="id19">
 <h3>1.2.0<a class="headerlink" href="#id19" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
-<li><p>API: new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_collection.html#pytools.api.to_collection" title="pytools.api.to_collection"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code></a> preserves any type of collection, and
+<li><p>API: new function <code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code> preserves any type of collection, and
 converts iterators into <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a> instances</p></li>
-<li><p>API: functions <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_set.html#pytools.api.to_set" title="pytools.api.to_set"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_set()</span></code></a>, <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_list.html#pytools.api.to_list" title="pytools.api.to_list"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_list()</span></code></a>, <a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_tuple.html#pytools.api.to_tuple" title="pytools.api.to_tuple"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_tuple()</span></code></a>,
-<a class="reference internal" href="../apidoc/pytools/api/pytools.api.to_collection.html#pytools.api.to_collection" title="pytools.api.to_collection"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code></a>, and <a class="reference internal" href="../apidoc/pytools/api/pytools.api.validate_element_types.html#pytools.api.validate_element_types" title="pytools.api.validate_element_types"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate_element_types()</span></code></a> now accept multiple
+<li><p>API: functions <code class="xref py py-func docutils literal notranslate"><span class="pre">to_set()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">to_list()</span></code>, <code class="xref py py-func docutils literal notranslate"><span class="pre">to_tuple()</span></code>,
+<code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code>, and <a class="reference internal" href="../apidoc/pytools/api/pytools.api.validate_element_types.html#pytools.api.validate_element_types" title="pytools.api.validate_element_types"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate_element_types()</span></code></a> now accept multiple
 alternative types to validate elements against, in line with how <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#isinstance" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a>
 tests for multiple types</p></li>
 <li><p>BUILD: add support for <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> ~= 3.0, <a class="reference external" href="https://docs.scipy.org/doc/scipy/index.html#module-scipy" title="(in SciPy v1.13.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code></a> ~= 1.6,
@@ -899,7 +1016,7 @@ minor fixes.</p>
 <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.9.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></a> object</p></li>
 <li><p>FIX: preserve correct instance for subclasses of singleton classes</p></li>
 <li><p>FIX: add a few missing type hints</p></li>
-<li><p>BUILD: add support for <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v1.26)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> 1.20</p></li>
+<li><p>BUILD: add support for <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> 1.20</p></li>
 <li><p>BUILD: updates and changes to the CI/CD pipeline</p></li>
 </ul>
 </section>

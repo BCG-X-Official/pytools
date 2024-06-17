@@ -17,7 +17,9 @@ pytools.viz.distribution.ECDFDrawer
       :nosignatures:
    
       ~ECDFDrawer.draw
+      ~ECDFDrawer.get_default_style
       ~ECDFDrawer.get_named_styles
+      ~ECDFDrawer.get_style
       ~ECDFDrawer.get_style_classes
       ~ECDFDrawer.get_style_kwargs
    
@@ -29,7 +31,6 @@ pytools.viz.distribution.ECDFDrawer
 
    .. autosummary::
    
-      ~ECDFDrawer.DEFAULT_STYLE
       ~ECDFDrawer.style
       ~ECDFDrawer.iqr_multiple
       ~ECDFDrawer.iqr_multiple_far

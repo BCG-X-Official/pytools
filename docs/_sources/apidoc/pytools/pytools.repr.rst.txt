@@ -1,0 +1,37 @@
+pytools.repr
+============
+
+.. automodule:: pytools.repr
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: repr
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      HasDictRepr
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

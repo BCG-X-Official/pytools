@@ -1,0 +1,38 @@
+pytools.expression.repr.ListWithExpressionRepr
+==============================================
+
+.. currentmodule:: pytools.expression.repr
+
+.. autoclass:: ListWithExpressionRepr
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~ListWithExpressionRepr.append
+      ~ListWithExpressionRepr.clear
+      ~ListWithExpressionRepr.copy
+      ~ListWithExpressionRepr.count
+      ~ListWithExpressionRepr.extend
+      ~ListWithExpressionRepr.index
+      ~ListWithExpressionRepr.insert
+      ~ListWithExpressionRepr.pop
+      ~ListWithExpressionRepr.remove
+      ~ListWithExpressionRepr.reverse
+      ~ListWithExpressionRepr.sort
+      ~ListWithExpressionRepr.to_expression
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

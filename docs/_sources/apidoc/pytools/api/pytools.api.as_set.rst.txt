@@ -1,0 +1,6 @@
+pytools.api.as\_set
+===================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: as_set

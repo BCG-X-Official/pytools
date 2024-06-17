@@ -29,6 +29,7 @@ pytools.viz.color.RgbColor
    
       ~RgbColor.b
       ~RgbColor.g
+      ~RgbColor.hex
       ~RgbColor.r
    
    

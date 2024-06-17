@@ -1,0 +1,29 @@
+pytools.expression.repr.TupleWithExpressionRepr
+===============================================
+
+.. currentmodule:: pytools.expression.repr
+
+.. autoclass:: TupleWithExpressionRepr
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~TupleWithExpressionRepr.count
+      ~TupleWithExpressionRepr.index
+      ~TupleWithExpressionRepr.to_expression
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

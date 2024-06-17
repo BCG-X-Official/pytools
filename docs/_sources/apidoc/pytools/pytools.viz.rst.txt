@@ -21,12 +21,23 @@ pytools.viz
       ColoredStyle
       Drawer
       DrawingStyle
+      HTMLStyle
       MatplotStyle
       TextStyle
    
    
 
    
+   
+   =========
+   Functions
+   =========
+
+   .. autosummary::
+      :toctree: viz
+      :nosignatures:
+   
+      is_running_in_notebook
    
    
 

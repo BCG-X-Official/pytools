@@ -1,0 +1,6 @@
+pytools.api.as\_list
+====================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: as_list

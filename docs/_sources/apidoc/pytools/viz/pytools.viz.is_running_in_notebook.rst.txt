@@ -1,0 +1,6 @@
+pytools.viz.is\_running\_in\_notebook
+=====================================
+
+.. currentmodule:: pytools.viz
+
+.. autofunction:: is_running_in_notebook

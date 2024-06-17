@@ -1,0 +1,6 @@
+pytools.typing.get\_generic\_instance
+=====================================
+
+.. currentmodule:: pytools.typing
+
+.. autofunction:: get_generic_instance

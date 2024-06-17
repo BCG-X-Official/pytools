@@ -1,0 +1,39 @@
+pytools.viz.HTMLStyle
+=====================
+
+.. currentmodule:: pytools.viz
+
+.. autoclass:: HTMLStyle
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~HTMLStyle.finalize_drawing
+      ~HTMLStyle.get_default_style_name
+      ~HTMLStyle.get_named_styles
+      ~HTMLStyle.render_title
+      ~HTMLStyle.rgb_to_css
+      ~HTMLStyle.start_drawing
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~HTMLStyle.colors
+      ~HTMLStyle.out
+   
+   
+
+   .. rubric:: Definitions

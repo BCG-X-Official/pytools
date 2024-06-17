@@ -1,0 +1,6 @@
+pytools.api.as\_tuple
+=====================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: as_tuple

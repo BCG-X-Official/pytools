@@ -165,6 +165,26 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../api/pytools.api.as_collection.html">
+     pytools.api.as_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../api/pytools.api.as_list.html">
+     pytools.api.as_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../api/pytools.api.as_set.html">
+     pytools.api.as_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../api/pytools.api.as_tuple.html">
+     pytools.api.as_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../api/pytools.api.deprecated.html">
      pytools.api.deprecated
     </a>
@@ -207,26 +227,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../../api/pytools.api.subsdoc.html">
      pytools.api.subsdoc
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../api/pytools.api.to_collection.html">
-     pytools.api.to_collection
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../api/pytools.api.to_list.html">
-     pytools.api.to_list
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../api/pytools.api.to_set.html">
-     pytools.api.to_set
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../api/pytools.api.to_tuple.html">
-     pytools.api.to_tuple
     </a>
    </li>
    <li class="toctree-l2">
@@ -1360,7 +1360,7 @@ can be matched by <em>intersphinx</em>.</p>
 </dd>
 <dt class="field-even">Parameters</dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>collapsible_submodules</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – mapping from module paths to their public
+<li><p><strong>collapsible_submodules</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Mapping" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]) – mapping from module paths to their public
 prefix, e.g., <code class="docutils literal notranslate"><span class="pre">{&quot;pandas.core.frame&quot;:</span> <span class="pre">&quot;pandas&quot;}</span></code></p></li>
 <li><p><strong>collapse_private_modules</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#bool" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, collapse module sub-paths
 consisting of one or more protected modules (i.e. the module name starts

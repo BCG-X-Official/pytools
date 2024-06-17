@@ -1,0 +1,37 @@
+pytools.sphinx.util.UpdateForwardReferences
+===========================================
+
+.. currentmodule:: pytools.sphinx.util
+
+.. autoclass:: UpdateForwardReferences
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~UpdateForwardReferences.connect
+      ~UpdateForwardReferences.disconnect
+      ~UpdateForwardReferences.process
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~UpdateForwardReferences.app
+      ~UpdateForwardReferences.event
+      ~UpdateForwardReferences.listener_id
+   
+   
+
+   .. rubric:: Definitions

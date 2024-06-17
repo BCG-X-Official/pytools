@@ -17,7 +17,9 @@ pytools.viz.Drawer
       :nosignatures:
    
       ~Drawer.draw
+      ~Drawer.get_default_style
       ~Drawer.get_named_styles
+      ~Drawer.get_style
       ~Drawer.get_style_classes
       ~Drawer.get_style_kwargs
    
@@ -29,7 +31,6 @@ pytools.viz.Drawer
 
    .. autosummary::
    
-      ~Drawer.DEFAULT_STYLE
       ~Drawer.style
    
    

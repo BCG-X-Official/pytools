@@ -56,4 +56,5 @@ Submodules
    :recursive:
 
    pytools.data.linkage
+   pytools.data.taxonomy
 

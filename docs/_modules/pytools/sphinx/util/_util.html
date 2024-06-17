@@ -158,6 +158,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Implementation of sphinx utility callbacks specific to building Gamma documentation.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span> <span class="nn">collections.abc</span>
@@ -165,35 +166,23 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getattr_static</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">ForwardRef</span><span class="p">,</span>
-    <span class="n">Generator</span><span class="p">,</span>
-    <span class="n">Generic</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Mapping</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Pattern</span><span class="p">,</span>
-    <span class="n">Set</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">cast</span><span class="p">,</span>
-    <span class="n">get_type_hints</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">Pattern</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">UnionType</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ForwardRef</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">get_type_hints</span>
 
 <span class="kn">import</span> <span class="nn">typing_inspect</span>
 
-<span class="kn">from</span> <span class="nn">...api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">get_generic_bases</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">public_module_prefix</span>
+<span class="kn">from</span> <span class="nn">...api</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AllTracker</span><span class="p">,</span>
+    <span class="n">get_generic_bases</span><span class="p">,</span>
+    <span class="n">inheritdoc</span><span class="p">,</span>
+    <span class="n">public_module_prefix</span><span class="p">,</span>
+    <span class="n">update_forward_references</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">...meta</span> <span class="kn">import</span> <span class="n">SingletonABCMeta</span>
 <span class="kn">from</span> <span class="nn">..</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AutodocBeforeProcessSignature</span><span class="p">,</span>
@@ -212,14 +201,13 @@
 
     <span class="c1"># noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection</span>
     <span class="k">class</span> <span class="nc">_Element</span><span class="p">:</span>
-        <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Element&quot;</span><span class="p">]</span>
-        <span class="n">attributes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+        <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Element</span><span class="p">]</span>
+        <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;docutils package is not installed&quot;</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="s2">&quot;Element&quot;</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="s2">&quot;Element&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="o">...</span>
+        <span class="k">def</span> <span class="nf">replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>  <span class="c1"># noqa: E704</span>
 
     <span class="c1"># noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection</span>
     <span class="k">class</span> <span class="nc">_Text</span><span class="p">(</span><span class="n">_Element</span><span class="p">):</span>
@@ -237,8 +225,6 @@
 <span class="c1">#</span>
 <span class="c1"># Constants</span>
 <span class="c1">#</span>
-
-<span class="n">_PYTHON_3_9_OR_LATER</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -259,14 +245,16 @@
     <span class="s2">&quot;ResolveTypeVariables&quot;</span><span class="p">,</span>
     <span class="s2">&quot;SkipIndirectImports&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TrackCurrentClass&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UpdateForwardReferences&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1">#</span>
 <span class="c1"># Type variables</span>
 <span class="c1">#</span>
 
-<span class="n">method_descriptor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">)</span>
-<span class="n">wrapper_descriptor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="fm">__add__</span><span class="p">)</span>
+<span class="n">method_descriptor</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">startswith</span><span class="p">)</span>
+<span class="n">wrapper_descriptor</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="fm">__add__</span><span class="p">)</span>
+<span class="n">internal_function_or_method</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">iter</span><span class="p">)</span>
 
 
 <span class="c1">#</span>
@@ -302,7 +290,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">collapsible_submodules</span> <span class="o">=</span> <span class="n">collapsible_submodules</span>
 
         <span class="c1">#: Dict mapping visited classes to their unprocessed docstrings.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1">#: Field directive for base classes.</span>
     <span class="n">F_BASES</span> <span class="o">=</span> <span class="s2">&quot;:bases:&quot;</span>
@@ -318,7 +306,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-        <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
@@ -343,18 +331,18 @@
             <span class="c1"># detect and allow repeat visits</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_visited</span><span class="p">[</span><span class="n">class_</span><span class="p">]</span> <span class="o">=</span> <span class="n">_current_lines</span>
 
-        <span class="n">bases_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+        <span class="n">bases_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
 
-        <span class="n">bases</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_minimal_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
+        <span class="n">bases</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_minimal_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">bases</span><span class="p">:</span>
             <span class="n">base_names</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">)</span>
             <span class="n">bases_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">AddInheritance</span><span class="o">.</span><span class="n">F_BASES</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">base_names</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="n">generics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_generics</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
+        <span class="n">generics</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_generics</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">generics</span><span class="p">:</span>
             <span class="n">bases_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">AddInheritance</span><span class="o">.</span><span class="n">F_GENERICS</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">generics</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="n">metaclasses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_metaclasses</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
+        <span class="n">metaclasses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_metaclasses</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">metaclasses</span><span class="p">:</span>
             <span class="n">bases_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">AddInheritance</span><span class="o">.</span><span class="n">F_METACLASSES</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metaclasses</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -367,7 +355,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_insert_bases_lines</span><span class="p">(</span><span class="n">bases_lines</span><span class="p">,</span> <span class="n">lines</span><span class="p">)</span></div>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_insert_bases_lines</span><span class="p">(</span><span class="n">bases_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_insert_bases_lines</span><span class="p">(</span><span class="n">bases_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">def</span> <span class="nf">_insert_position</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\s*:\w+(?:\s+\w+)*:&quot;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
@@ -380,14 +368,14 @@
             <span class="n">pos</span> <span class="o">=</span> <span class="n">_insert_position</span><span class="p">()</span>
             <span class="n">lines</span><span class="p">[</span><span class="n">pos</span><span class="p">:</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">bases_lines</span>
 
-    <span class="k">def</span> <span class="nf">_class_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_class_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;__publicmodule__&quot;</span><span class="p">,</span> <span class="s2">&quot;__module__&quot;</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">_class_module</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">module_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">public_module_prefix</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__module__</span><span class="p">)</span>
 
         <span class="c1"># return the collapsed submodule if it exists,</span>
         <span class="c1"># else return the unchanged module name</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">collapsible_submodules</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">module_name</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="c1"># get the full name of the class, including the module prefix</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_module</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">_class_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 
@@ -440,20 +428,16 @@
 
     <span class="k">def</span> <span class="nf">_typevar_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">TypeVar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
-            <span class="n">args</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__constraints__</span>
             <span class="p">]</span>
             <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__bound__</span><span class="p">:</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bound= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__bound__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__covariant__</span><span class="p">:</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;*__covariant__=True*&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__contravariant__</span><span class="p">:</span>
-                <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;*__contravariant__=True*&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_generics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_get_generics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
             <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -465,7 +449,7 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_metaclasses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_get_metaclasses</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="n">meta_</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">meta_</span> <span class="ow">in</span> <span class="n">_get_bases</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">class_</span><span class="p">),</span> <span class="n">include_subclass</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -503,20 +487,20 @@
 <span class="sd">            with an underscore)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_classes_visited</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_classes_visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
         <span class="n">col</span> <span class="o">=</span> <span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_make_substitution_pattern</span><span class="p">(</span><span class="n">old</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;\.&quot;</span><span class="p">),</span> <span class="n">new</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="n">collapsible_submodules</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_intersphinx_collapsible_prefixes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">col</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_intersphinx_collapsible_prefixes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">col</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_collapse_private_modules</span> <span class="o">=</span> <span class="n">collapse_private_modules</span>
 
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="c1"># create the regex substitution rule given a raw match and replacement patterns</span>
         <span class="k">pass</span>
 
@@ -579,7 +563,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-        <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
@@ -588,7 +572,7 @@
 
     <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;(`~?)</span><span class="si">{</span><span class="n">old</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">1</span><span class="si">{</span><span class="n">new</span><span class="si">}</span><span class="s2">&quot;</span></div>
 
 
@@ -606,9 +590,9 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-        <span class="n">signature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">return_annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+        <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_annotation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">signature</span> <span class="ow">or</span> <span class="n">return_annotation</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
@@ -624,7 +608,7 @@
 
     <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">old</span><span class="p">),</span> <span class="n">new</span></div>
 
 
@@ -675,7 +659,7 @@
 
     <span class="k">def</span> <span class="nf">_make_substitution_pattern</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">old</span><span class="p">),</span> <span class="n">new</span></div>
 
 
@@ -693,7 +677,7 @@
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">skip</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">skip</span> <span class="ow">and</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;module&quot;</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">):</span>
             <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;skipping: </span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -730,7 +714,7 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-        <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
@@ -764,9 +748,18 @@
 
             <span class="n">directive</span> <span class="o">=</span> <span class="n">Replace3rdPartyDoc</span><span class="o">.</span><span class="n">__RST_DIRECTIVE</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">what</span><span class="p">,</span> <span class="n">what</span><span class="p">)</span>
 
-            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-                <span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">method_descriptor</span><span class="p">,</span> <span class="n">wrapper_descriptor</span><span class="p">)</span>
-            <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">:</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> is a function or method&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="n">obj</span><span class="p">,</span>
+                <span class="p">(</span>
+                    <span class="n">FunctionType</span><span class="p">,</span>
+                    <span class="n">MethodType</span><span class="p">,</span>
+                    <span class="n">method_descriptor</span><span class="p">,</span>
+                    <span class="n">wrapper_descriptor</span><span class="p">,</span>
+                    <span class="n">internal_function_or_method</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">obj</span><span class="si">!r}</span><span class="s2">:</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not a function or method&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="n">obj_module</span> <span class="ow">or</span> <span class="n">obj_module</span> <span class="o">==</span> <span class="s2">&quot;builtins&quot;</span><span class="p">:</span>
                 <span class="n">full_name</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span>
@@ -790,7 +783,7 @@
 <span class="k">def</span> <span class="nf">_get_bases</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">include_subclass</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="c1"># get the names of the immediate base classes of arg _subclass</span>
 
-    <span class="n">visited_classes</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">visited_classes</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_inner</span><span class="p">(</span><span class="n">_subclass</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">_include_subclass</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
         <span class="c1"># ensure we have the non-generic origin class</span>
@@ -802,7 +795,7 @@
 
         <span class="c1"># get the base classes; try generic bases first then fall back to regular</span>
         <span class="c1"># bases</span>
-        <span class="n">base_classes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">base_classes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">get_generic_bases</span><span class="p">(</span><span class="n">_subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_subclass</span><span class="o">.</span><span class="vm">__bases__</span>
         <span class="p">)</span>
 
@@ -829,7 +822,7 @@
     <span class="k">return</span> <span class="n">_inner</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="n">_include_subclass</span><span class="o">=</span><span class="n">include_subclass</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_minimal_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">_get_minimal_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
     <span class="n">bases_with_origin</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">or</span> <span class="n">base</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">_get_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">include_subclass</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
@@ -848,7 +841,7 @@
     <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">_class_attr</span><span class="p">(</span><span class="bp">cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;__qualname__&quot;</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">,</span> <span class="s2">&quot;_name&quot;</span><span class="p">]))</span>
 
 
-<span class="k">def</span> <span class="nf">_class_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_class_attr</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">_get_attr</span><span class="p">(</span><span class="n">_cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="c1"># we try to get the class attribute</span>
         <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="n">attr</span><span class="p">:</span>
@@ -868,20 +861,20 @@
                 <span class="sa">f</span><span class="s2">&quot;none of the attributes not found in class </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">_get_attr</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="bp">cls</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_get_attr</span><span class="p">(</span><span class="n">_cls</span><span class="o">=</span><span class="n">typing</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">cls</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">_TypeVarBindings</span><span class="p">:</span>
-    <span class="n">current_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
-    <span class="n">_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span>
-        <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="n">Dict</span><span class="p">[</span>
+    <span class="n">current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+    <span class="n">_bindings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span>
+        <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="nb">dict</span><span class="p">[</span>
             <span class="n">TypeVar</span><span class="p">,</span>
-            <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">],</span>
+            <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
         <span class="p">],</span>
     <span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">current_class</span> <span class="o">=</span> <span class="n">current_class</span>
@@ -890,8 +883,8 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">resolve_parameter</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">defining_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">TypeVar</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">defining_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">parameter</span><span class="p">:</span> <span class="n">TypeVar</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Resolve a type parameter, substituting it with an actual type if the parameter</span>
 <span class="sd">        is bound to a type argument in the context of the current class;</span>
@@ -907,19 +900,19 @@
 
     <span class="k">def</span> <span class="nf">_get_parameter_bindings</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
-        <span class="n">subclass_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]]:</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+        <span class="n">subclass_bindings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]]:</span>
         <span class="c1"># get type variable bindings for all generic types defined in the class</span>
         <span class="c1"># hierarchy of the given parent class, applying the given bindings derived from</span>
         <span class="c1"># child classes</span>
 
         <span class="c1"># if arg cls has generic type parameters, it will have a corresponding</span>
-        <span class="n">cls_origin</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cls_origin</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="n">cls_origin</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
-        <span class="n">class_bindings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]</span>
+        <span class="n">class_bindings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">cls_origin</span><span class="p">:</span>
             <span class="n">class_bindings</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">param</span><span class="p">:</span> <span class="n">subclass_bindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">if</span> <span class="n">subclass_bindings</span> <span class="k">else</span> <span class="n">arg</span>
@@ -977,11 +970,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">original_signatures</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]]</span>
+    <span class="n">original_signatures</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]]</span>
 
-    <span class="n">_current_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
-    <span class="n">_current_class_bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span>
-    <span class="n">_track_current_class</span><span class="p">:</span> <span class="s2">&quot;TrackCurrentClass&quot;</span>
+    <span class="n">_current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">_current_class_bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span> <span class="o">|</span> <span class="kc">None</span>
+    <span class="n">_track_current_class</span><span class="p">:</span> <span class="n">TrackCurrentClass</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -991,7 +984,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_track_current_class</span> <span class="o">=</span> <span class="n">TrackCurrentClass</span><span class="p">()</span>
 
-<div class="viewcode-block" id="ResolveTypeVariables.connect"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="ResolveTypeVariables.connect"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span> <span class="n">priority</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">TrackCurrentClass</span><span class="p">()</span><span class="o">.</span><span class="n">app</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">app</span><span class="p">:</span>
@@ -1006,7 +999,7 @@
         <span class="bp">self</span><span class="p">,</span> <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># get the class in which the method has been defined</span>
-        <span class="n">defining_class_opt</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="n">defining_class_opt</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_defining_class</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">defining_class_opt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># missing or unknown defining class: nothing to resolve in the signature</span>
             <span class="k">return</span>
@@ -1016,7 +1009,7 @@
         <span class="n">signature_original_items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_original_signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
         <span class="k">def</span> <span class="nf">_get_self_or_cls_type_substitution</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">(</span>
-            <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]],</span> <span class="n">Tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+            <span class="nb">tuple</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">signature_original_items</span><span class="p">:</span>
                 <span class="n">method_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_method_type</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
@@ -1044,14 +1037,14 @@
 
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
-        <span class="n">arg_0_type_var</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">]</span>
-        <span class="n">arg_0_substitute</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+        <span class="n">arg_0_type_var</span><span class="p">:</span> <span class="n">TypeVar</span> <span class="o">|</span> <span class="kc">None</span>
+        <span class="n">arg_0_substitute</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 
         <span class="n">arg_0_type_var</span><span class="p">,</span> <span class="n">arg_0_substitute</span> <span class="o">=</span> <span class="n">_get_self_or_cls_type_substitution</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">_substitute_type_vars_in_type_expression</span><span class="p">(</span>
-            <span class="n">type_expression</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
+            <span class="n">type_expression</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">:</span>
             <span class="c1"># recursively substitute type vars with their resolutions</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_expression</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">type_expression</span> <span class="o">==</span> <span class="n">arg_0_type_var</span><span class="p">:</span>
@@ -1078,13 +1071,13 @@
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">tp</span> <span class="ow">in</span> <span class="n">signature_original_items</span><span class="p">:</span>
             <span class="n">signature</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_substitute_type_vars_in_type_expression</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_resolve_attribute_signatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_resolve_attribute_signatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
 
         <span class="k">def</span> <span class="nf">_substitute_type_vars_in_type_expression</span><span class="p">(</span>
-            <span class="n">type_expression</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
+            <span class="n">type_expression</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">:</span>
             <span class="c1"># recursively substitute type vars with their resolutions</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_expression</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
                 <span class="c1"># resolve type variables defined by Generic[] in the</span>
@@ -1104,7 +1097,7 @@
             <span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_defining_class</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">_get_defining_class</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># get the class that defined the callable</span>
 
         <span class="k">if</span> <span class="s2">&quot;.&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">method</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">:</span>
@@ -1119,7 +1112,7 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
-                <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+                <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
                 <span class="nb">eval</span><span class="p">(</span>
                     <span class="n">method_container</span><span class="p">,</span>
                     <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">method</span><span class="o">.</span><span class="vm">__module__</span><span class="p">)</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
@@ -1136,7 +1129,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_method_type</span><span class="p">(</span><span class="n">defining_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_method_type</span><span class="p">(</span><span class="n">defining_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="c1"># do we have a static or class method?</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">raw_func</span> <span class="o">=</span> <span class="n">getattr_static</span><span class="p">(</span><span class="n">defining_class</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
@@ -1154,9 +1147,9 @@
 
     <span class="k">def</span> <span class="nf">_get_original_signature</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">FunctionType</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]:</span>
         <span class="c1"># get the original signature as defined in the code</span>
-        <span class="n">signature_original</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]]</span>
+        <span class="n">signature_original</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">signature_original</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">original_signatures</span><span class="p">[</span><span class="n">func</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1173,7 +1166,7 @@
             <span class="c1"># instance method definitions are unbound, so we need to determine</span>
             <span class="c1"># the class we are currently in from context</span>
 
-            <span class="n">bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span>
+            <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span> <span class="o">|</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__qualname__</span><span class="p">:</span>
                 <span class="c1"># this is a function, not a method</span>
                 <span class="k">return</span>
@@ -1217,16 +1210,15 @@
                 <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span> <span class="ow">is</span> <span class="bp">cls</span>
             <span class="p">),</span> <span class="s2">&quot;bindings expected to be for the correct class&quot;</span>
 
-            <span class="c1"># noinspection PyTypeChecker</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span><span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_function_signature</span><span class="p">(</span>
+                <span class="n">bindings</span><span class="o">=</span><span class="n">bindings</span><span class="p">,</span> <span class="n">func</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">FunctionType</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__func__</span><span class="p">)</span>
+            <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_update_current_class</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_update_current_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_TypeVarBindings</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">cls</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
-        <span class="n">bindings</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_TypeVarBindings</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
+        <span class="n">bindings</span><span class="p">:</span> <span class="n">_TypeVarBindings</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_current_class_bindings</span>
 
         <span class="k">if</span> <span class="n">bindings</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bindings</span><span class="o">.</span><span class="n">current_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">cls</span><span class="p">:</span>
             <span class="c1"># we&#39;re visiting a new class</span>
@@ -1251,7 +1243,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#: The class currently being processed by autodoc.</span>
-    <span class="n">current_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span>
+    <span class="n">current_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
@@ -1265,9 +1257,9 @@
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-        <span class="n">signature</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">return_annotation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
+        <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_annotation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
@@ -1318,7 +1310,7 @@
 
         <span class="c1"># get the original signature</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">annotations</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__annotations__</span>
+            <span class="n">annotations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="vm">__annotations__</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="n">annotations</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -1342,6 +1334,32 @@
             <span class="k">pass</span></div></div>
 
 
+<div class="viewcode-block" id="UpdateForwardReferences"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.UpdateForwardReferences.html#pytools.sphinx.util.UpdateForwardReferences">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">UpdateForwardReferences</span><span class="p">(</span><span class="n">AutodocProcessSignature</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">SingletonABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Sphinx autodoc process signature that updates forward references in the</span>
+<span class="sd">    docstring of a class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UpdateForwardReferences.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.UpdateForwardReferences.html#pytools.sphinx.util.UpdateForwardReferences.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span>
+        <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">obj</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">return_annotation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
+            <span class="bp">cls</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+            <span class="n">update_forward_references</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div></div>
+
+
 <span class="c1">#</span>
 <span class="c1"># validate __all__</span>
 <span class="c1">#</span>
@@ -1350,23 +1368,28 @@
 
 
 <span class="k">def</span> <span class="nf">_substitute_generic_type_arguments</span><span class="p">(</span>
-    <span class="n">type_expression</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">],</span>
+    <span class="n">type_expression</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">fn_substitute_type_vars</span><span class="p">:</span> <span class="n">typing</span><span class="o">.</span><span class="n">Callable</span><span class="p">[</span>
-        <span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]</span>
+        <span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">],</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span>
     <span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">:</span>
     <span class="c1"># dynamically resolve type variables inside nested type expressions</span>
-    <span class="n">type_args</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="o">...</span>
-    <span class="p">]</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">type_expression</span><span class="p">)</span>
+    <span class="n">type_args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">type_expression</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">type_args</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_expression</span><span class="p">,</span> <span class="n">UnionType</span><span class="p">):</span>
+            <span class="n">type_expression</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">type_args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">type_args</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="k">return</span> <span class="n">_copy_generic_type_with_arguments</span><span class="p">(</span>
             <span class="n">type_expression</span><span class="o">=</span><span class="n">type_expression</span><span class="p">,</span>
             <span class="n">new_arguments</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
-                <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">fn_substitute_type_vars</span><span class="p">,</span> <span class="n">arg</span><span class="p">))</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">fn_substitute_type_vars</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="p">(</span>
+                    <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">fn_substitute_type_vars</span><span class="p">,</span> <span class="n">arg</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">fn_substitute_type_vars</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+                <span class="p">)</span>
                 <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">type_args</span>
             <span class="p">),</span>
         <span class="p">)</span>
@@ -1375,11 +1398,9 @@
 
 
 <span class="k">def</span> <span class="nf">_copy_generic_type_with_arguments</span><span class="p">(</span>
-    <span class="n">type_expression</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">],</span>
-    <span class="n">new_arguments</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span>
-        <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="o">...</span>
-    <span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]:</span>
+    <span class="n">type_expression</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">new_arguments</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">:</span>
     <span class="c1"># create a copy of the given type expression, replacing its type arguments with</span>
     <span class="c1"># the given new arguments</span>
 
@@ -1389,16 +1410,16 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">copy_with</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
             <span class="p">[</span>
-                <span class="n">Tuple</span><span class="p">[</span>
-                    <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span> <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">]],</span>
+                <span class="nb">tuple</span><span class="p">[</span>
+                    <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">]</span> <span class="o">|</span> <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
                     <span class="o">...</span><span class="p">,</span>
                 <span class="p">]</span>
             <span class="p">],</span>
-            <span class="n">Union</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">TypeVar</span><span class="p">],</span>
+            <span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="n">TypeVar</span><span class="p">,</span>
         <span class="p">]</span> <span class="o">=</span> <span class="n">type_expression</span><span class="o">.</span><span class="n">copy_with</span>  <span class="c1"># type: ignore</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="c1"># this is a generic type that does not support copying</span>
-        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">origin</span><span class="p">[</span><span class="n">new_arguments</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">origin</span><span class="p">[</span><span class="n">new_arguments</span><span class="p">])</span>
 
     <span class="c1"># unpack callable args, since copy_with() expects a flat tuple</span>
     <span class="c1"># (arg_1, arg_2, ..., arg_n, return)</span>

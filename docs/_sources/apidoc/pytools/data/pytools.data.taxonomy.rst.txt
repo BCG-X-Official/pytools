@@ -1,0 +1,38 @@
+pytools.data.taxonomy
+=====================
+
+.. automodule:: pytools.data.taxonomy
+   :no-imported-members:
+
+   
+
+   
+   
+   =======
+   Classes
+   =======
+
+   .. autosummary::
+      :toctree: taxonomy
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      Category
+      Taxonomy
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

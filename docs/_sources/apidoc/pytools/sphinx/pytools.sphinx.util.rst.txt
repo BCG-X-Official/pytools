@@ -27,6 +27,7 @@ pytools.sphinx.util
       ResolveTypeVariables
       SkipIndirectImports
       TrackCurrentClass
+      UpdateForwardReferences
    
    
 

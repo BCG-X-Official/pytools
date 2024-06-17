@@ -17,7 +17,9 @@ pytools.viz.dendrogram.DendrogramDrawer
       :nosignatures:
    
       ~DendrogramDrawer.draw
+      ~DendrogramDrawer.get_default_style
       ~DendrogramDrawer.get_named_styles
+      ~DendrogramDrawer.get_style
       ~DendrogramDrawer.get_style_classes
       ~DendrogramDrawer.get_style_kwargs
    
@@ -29,7 +31,6 @@ pytools.viz.dendrogram.DendrogramDrawer
 
    .. autosummary::
    
-      ~DendrogramDrawer.DEFAULT_STYLE
       ~DendrogramDrawer.style
    
    

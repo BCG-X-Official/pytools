@@ -1,0 +1,6 @@
+pytools.api.as\_collection
+==========================
+
+.. currentmodule:: pytools.api
+
+.. autofunction:: as_collection

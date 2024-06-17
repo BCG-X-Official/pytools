@@ -165,6 +165,26 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../../../api/pytools.api.as_collection.html">
+     pytools.api.as_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../api/pytools.api.as_list.html">
+     pytools.api.as_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../api/pytools.api.as_set.html">
+     pytools.api.as_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../../../api/pytools.api.as_tuple.html">
+     pytools.api.as_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../../../api/pytools.api.deprecated.html">
      pytools.api.deprecated
     </a>
@@ -207,26 +227,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../../../api/pytools.api.subsdoc.html">
      pytools.api.subsdoc
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../api/pytools.api.to_collection.html">
-     pytools.api.to_collection
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../api/pytools.api.to_list.html">
-     pytools.api.to_list
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../api/pytools.api.to_set.html">
-     pytools.api.to_set
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../../../api/pytools.api.to_tuple.html">
-     pytools.api.to_tuple
     </a>
    </li>
    <li class="toctree-l2">
@@ -1357,8 +1357,8 @@ separate sequences of the same length.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>x</cite> coordinate values</p></li>
-<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>y</cite> coordinate values</p></li>
+<li><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>x</cite> coordinate values</p></li>
+<li><p><strong>y</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – series of all <cite>y</cite> coordinate values</p></li>
 </ul>
 </dd>
 </dl>
@@ -1380,13 +1380,13 @@ separate sequences of the same length.</p>
 <p class="rubric">Definitions</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.viz.distribution.base.XYSeries.x">
-<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.x" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.x" title="Permalink to this definition">#</a></dt>
 <dd><p>series of all <cite>x</cite> coordinate values</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pytools.viz.distribution.base.XYSeries.y">
-<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.y" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><span class="pre">collections.abc.Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#pytools.viz.distribution.base.XYSeries.y" title="Permalink to this definition">#</a></dt>
 <dd><p>series of all <cite>y</cite> coordinate values</p>
 </dd></dl>
 

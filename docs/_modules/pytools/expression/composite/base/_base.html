@@ -158,14 +158,15 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Implementation of :mod:`pytools.expression.composite.base`.</span>
 <span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
+<span class="kn">from</span> <span class="nn">....api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span>
 <span class="kn">from</span> <span class="nn">...</span> <span class="kn">import</span> <span class="n">Expression</span>
 <span class="kn">from</span> <span class="nn">...atomic</span> <span class="kn">import</span> <span class="n">Epsilon</span><span class="p">,</span> <span class="n">Id</span>
 <span class="kn">from</span> <span class="nn">...base</span> <span class="kn">import</span> <span class="n">SimplePrefixExpression</span>
 <span class="kn">from</span> <span class="nn">...operator</span> <span class="kn">import</span> <span class="n">BinaryOperator</span><span class="p">,</span> <span class="n">UnaryOperator</span>
-<span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 

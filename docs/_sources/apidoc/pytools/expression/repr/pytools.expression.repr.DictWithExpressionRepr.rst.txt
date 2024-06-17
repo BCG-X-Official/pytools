@@ -1,0 +1,38 @@
+pytools.expression.repr.DictWithExpressionRepr
+==============================================
+
+.. currentmodule:: pytools.expression.repr
+
+.. autoclass:: DictWithExpressionRepr
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~DictWithExpressionRepr.clear
+      ~DictWithExpressionRepr.copy
+      ~DictWithExpressionRepr.fromkeys
+      ~DictWithExpressionRepr.get
+      ~DictWithExpressionRepr.items
+      ~DictWithExpressionRepr.keys
+      ~DictWithExpressionRepr.pop
+      ~DictWithExpressionRepr.popitem
+      ~DictWithExpressionRepr.setdefault
+      ~DictWithExpressionRepr.to_expression
+      ~DictWithExpressionRepr.update
+      ~DictWithExpressionRepr.values
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

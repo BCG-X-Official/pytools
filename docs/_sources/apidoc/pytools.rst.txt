@@ -36,12 +36,16 @@ Submodules
    :recursive:
 
    pytools.api
+   pytools.asyncio
    pytools.data
    pytools.expression
    pytools.fit
+   pytools.http
    pytools.meta
    pytools.parallelization
+   pytools.repr
    pytools.sphinx
    pytools.text
+   pytools.typing
    pytools.viz
 

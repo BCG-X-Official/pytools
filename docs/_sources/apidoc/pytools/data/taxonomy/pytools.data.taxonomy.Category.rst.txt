@@ -1,0 +1,35 @@
+pytools.data.taxonomy.Category
+==============================
+
+.. currentmodule:: pytools.data.taxonomy
+
+.. autoclass:: Category
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Category.traverse
+   
+   
+
+   
+   
+   .. rubric:: Attribute summary
+
+   .. autosummary::
+   
+      ~Category.children
+      ~Category.has_children
+      ~Category.name
+   
+   
+
+   .. rubric:: Definitions

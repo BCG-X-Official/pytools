@@ -30,6 +30,7 @@ pytools.viz.color.RgbaColor
       ~RgbaColor.alpha
       ~RgbaColor.b
       ~RgbaColor.g
+      ~RgbaColor.hex
       ~RgbaColor.r
    
    

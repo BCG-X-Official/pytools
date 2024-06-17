@@ -17,7 +17,9 @@ pytools.viz.matrix.MatrixDrawer
       :nosignatures:
    
       ~MatrixDrawer.draw
+      ~MatrixDrawer.get_default_style
       ~MatrixDrawer.get_named_styles
+      ~MatrixDrawer.get_style
       ~MatrixDrawer.get_style_classes
       ~MatrixDrawer.get_style_kwargs
    
@@ -29,7 +31,6 @@ pytools.viz.matrix.MatrixDrawer
 
    .. autosummary::
    
-      ~MatrixDrawer.DEFAULT_STYLE
       ~MatrixDrawer.style
    
    

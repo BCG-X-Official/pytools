@@ -1,0 +1,6 @@
+pytools.asyncio.async\_flatten
+==============================
+
+.. currentmodule:: pytools.asyncio
+
+.. autofunction:: async_flatten

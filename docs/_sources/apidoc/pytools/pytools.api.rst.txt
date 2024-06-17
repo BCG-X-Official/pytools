@@ -19,6 +19,7 @@ pytools.api
    
       AllTracker
       DocValidator
+      MissingClassMeta
    
    
 
@@ -32,18 +33,22 @@ pytools.api
       :toctree: api
       :nosignatures:
    
+      appenddoc
+      as_collection
+      as_list
+      as_set
+      as_tuple
       deprecated
       deprecation_warning
       get_generic_bases
+      get_init_params
       inheritdoc
       is_list_like
+      missing_function
       public_module_prefix
       subsdoc
-      to_collection
-      to_list
-      to_set
-      to_tuple
       update_forward_references
+      validate__all__declarations
       validate_element_types
       validate_type
    

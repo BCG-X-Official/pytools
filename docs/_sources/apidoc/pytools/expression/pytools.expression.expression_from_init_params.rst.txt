@@ -1,0 +1,6 @@
+pytools.expression.expression\_from\_init\_params
+=================================================
+
+.. currentmodule:: pytools.expression
+
+.. autofunction:: expression_from_init_params

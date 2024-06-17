@@ -1,0 +1,6 @@
+pytools.asyncio.aenumerate
+==========================
+
+.. currentmodule:: pytools.asyncio
+
+.. autofunction:: aenumerate

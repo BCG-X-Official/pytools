@@ -165,6 +165,26 @@
     </a>
    </li>
    <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_collection.html">
+     pytools.api.as_collection
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_list.html">
+     pytools.api.as_list
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_set.html">
+     pytools.api.as_set
+    </a>
+   </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../api/pytools.api.as_tuple.html">
+     pytools.api.as_tuple
+    </a>
+   </li>
+   <li class="toctree-l2">
     <a class="reference internal" href="../api/pytools.api.deprecated.html">
      pytools.api.deprecated
     </a>
@@ -207,26 +227,6 @@
    <li class="toctree-l2">
     <a class="reference internal" href="../api/pytools.api.subsdoc.html">
      pytools.api.subsdoc
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_collection.html">
-     pytools.api.to_collection
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_list.html">
-     pytools.api.to_list
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_set.html">
-     pytools.api.to_set
-    </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="../api/pytools.api.to_tuple.html">
-     pytools.api.to_tuple
     </a>
    </li>
    <li class="toctree-l2">
@@ -1378,10 +1378,10 @@ of variable surrogacy</p></li>
 <li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – number of observations</p></li>
 <li><p><strong>intercept</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – value for the intercept which can be modified to generate class
 imbalance</p></li>
-<li><p><strong>two_way_coef</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Tuple" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]) – tuple of three coefficients: two linear terms and an
+<li><p><strong>two_way_coef</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#tuple" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]) – tuple of three coefficients: two linear terms and an
 interaction effect</p></li>
 <li><p><strong>linear_vars</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – number of linear features</p></li>
-<li><p><strong>linear_var_coef</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]) – an optional list of coefficients for linear features if
+<li><p><strong>linear_var_coef</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference external" href="https://docs.python.org/3.7/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]]) – an optional list of coefficients for linear features if
 the default is not desired</p></li>
 <li><p><strong>noise_vars</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – number of unrelated independent noise features (do not
 contribute to the linear predictor)</p></li>
@@ -1395,7 +1395,7 @@ correlated noise features</p></li>
 <li><p><strong>bin_coef</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>) – coefficient for the impact of binary feature on linear predictor</p></li>
 <li><p><strong>outcome</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>) – can be either classification for a binary outcome or regression
 for a continuous outcome</p></li>
-<li><p><strong>regression_err</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/typing.html#typing.Optional" title="(in Python v3.7)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – the error to be used in simulating a regression outcome</p></li>
+<li><p><strong>regression_err</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#float" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]) – the error to be used in simulating a regression outcome</p></li>
 <li><p><strong>seed_val</strong> (<a class="reference external" href="https://docs.python.org/3.7/library/functions.html#int" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>) – set a seed for reproducibility</p></li>
 </ul>
 </dd>

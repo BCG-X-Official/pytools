@@ -1,0 +1,44 @@
+pytools.expression.repr.SetWithExpressionRepr
+=============================================
+
+.. currentmodule:: pytools.expression.repr
+
+.. autoclass:: SetWithExpressionRepr
+   :members:
+   :no-show-inheritance:
+   :inherited-members:
+   :special-members: __call__
+
+   
+   
+   .. rubric:: Method summary
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~SetWithExpressionRepr.add
+      ~SetWithExpressionRepr.clear
+      ~SetWithExpressionRepr.copy
+      ~SetWithExpressionRepr.difference
+      ~SetWithExpressionRepr.difference_update
+      ~SetWithExpressionRepr.discard
+      ~SetWithExpressionRepr.intersection
+      ~SetWithExpressionRepr.intersection_update
+      ~SetWithExpressionRepr.isdisjoint
+      ~SetWithExpressionRepr.issubset
+      ~SetWithExpressionRepr.issuperset
+      ~SetWithExpressionRepr.pop
+      ~SetWithExpressionRepr.remove
+      ~SetWithExpressionRepr.symmetric_difference
+      ~SetWithExpressionRepr.symmetric_difference_update
+      ~SetWithExpressionRepr.to_expression
+      ~SetWithExpressionRepr.union
+      ~SetWithExpressionRepr.update
+   
+   
+
+   
+   
+   
+
+   .. rubric:: Definitions

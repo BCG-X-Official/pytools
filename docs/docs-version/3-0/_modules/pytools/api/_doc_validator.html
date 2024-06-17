@@ -163,24 +163,14 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Collection</span><span class="p">,</span> <span class="n">Iterable</span>
 <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">Pattern</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Collection</span><span class="p">,</span>
-    <span class="n">Dict</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Pattern</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span> <span class="nn">._alltracker</span> <span class="kn">import</span> <span class="n">AllTracker</span>
-<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">to_tuple</span>
+<span class="kn">from</span> <span class="nn">._api</span> <span class="kn">import</span> <span class="n">as_tuple</span>
 <span class="kn">from</span> <span class="nn">.doc</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">APIDefinition</span><span class="p">,</span>
     <span class="n">DocTest</span><span class="p">,</span>
@@ -235,23 +225,23 @@
     <span class="n">root_dir</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="c1">#: Names of protected functions and methods to be validated.</span>
-    <span class="n">validate_protected</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">validate_protected</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 
     <span class="c1">#: Names of modules for which parameter documentation and type hints should not be</span>
     <span class="c1">#: validated.</span>
-    <span class="n">exclude_from_parameter_validation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="n">exclude_from_parameter_validation</span><span class="p">:</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1">#: A dictionary mapping definitions to lists of errors identified during validation.</span>
-    <span class="n">validation_errors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="n">validation_errors</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
 
     <span class="c1">#: The documentation tests to run on each definition during validation.</span>
-    <span class="n">validation_tests</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DocTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">validation_tests</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DocTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
 
     <span class="c1">#: The default value for parameter ``validate_protected``.</span>
     <span class="n">DEFAULT_VALIDATE_PROTECTED</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;__init__&quot;</span><span class="p">,)</span>
 
     <span class="c1">#: Default collection of documentation tests to run during validation.</span>
-    <span class="n">DEFAULT_VALIDATION_TESTS</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">DocTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">DEFAULT_VALIDATION_TESTS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DocTest</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">HasDocstring</span><span class="p">(),</span>
         <span class="n">HasMatchingParameterDoc</span><span class="p">(),</span>
         <span class="n">HasWellFormedDocstring</span><span class="p">(),</span>
@@ -262,9 +252,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="n">root_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">validate_protected</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">exclude_from_parameter_validation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">additional_tests</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">DocTest</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">validate_protected</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">exclude_from_parameter_validation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Pattern</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">additional_tests</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">DocTest</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param root_dir: the root directory of all Python files to be validated</span>
@@ -277,7 +267,7 @@
 <span class="sd">            element</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span> <span class="o">=</span> <span class="n">root_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">validate_protected</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validate_protected</span> <span class="o">=</span> <span class="n">as_tuple</span><span class="p">(</span>
             <span class="n">validate_protected</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_VALIDATE_PROTECTED</span><span class="p">,</span>
             <span class="n">element_type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="p">)</span>
@@ -340,7 +330,7 @@
 <span class="sd">        :param definitions: the definitions to run validation tests on</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">definition</span> <span class="ow">in</span> <span class="n">definitions</span><span class="p">:</span>
-            <span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_tests</span><span class="p">:</span>
                 <span class="n">test_results</span> <span class="o">=</span> <span class="n">test</span><span class="o">.</span><span class="n">test</span><span class="p">(</span><span class="n">definition</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">test_results</span><span class="p">:</span>
@@ -353,7 +343,7 @@
 
     <span class="k">def</span> <span class="nf">_validate_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">members</span><span class="p">:</span> <span class="n">Collection</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">public_module</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">def</span> <span class="nf">_filter_excluded</span><span class="p">(</span>
-            <span class="n">kind</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">definition_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T_NamedElementDefinition</span><span class="p">]</span>
+            <span class="n">kind</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">definition_type</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T_NamedElementDefinition</span><span class="p">]</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T_NamedElementDefinition</span><span class="p">]:</span>
             <span class="n">definitions</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="n">definition_type</span><span class="p">(</span><span class="n">element</span><span class="o">=</span><span class="n">obj</span><span class="p">,</span> <span class="n">public_module</span><span class="o">=</span><span class="n">public_module</span><span class="p">)</span>
@@ -372,7 +362,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">definitions</span>
 
-        <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">NamedElementDefinition</span><span class="p">[</span><span class="n">Type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">classes</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">NamedElementDefinition</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">Any</span><span class="p">]]]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
             <span class="n">_filter_excluded</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="n">definition_type</span><span class="o">=</span><span class="n">NamedElementDefinition</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">functions</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">FunctionDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="n">_filter_excluded</span><span class="p">(</span>
@@ -409,7 +399,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_load_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_load_modules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ModuleType</span><span class="p">]:</span>
         <span class="c1"># list paths to all python files</span>
         <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;.py&quot;</span>
         <span class="n">root_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span>

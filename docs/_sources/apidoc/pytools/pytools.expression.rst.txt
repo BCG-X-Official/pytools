@@ -35,6 +35,7 @@ pytools.expression
       :toctree: expression
       :nosignatures:
    
+      expression_from_init_params
       freeze
       make_expression
    
@@ -64,4 +65,5 @@ Submodules
    pytools.expression.composite
    pytools.expression.formatter
    pytools.expression.operator
+   pytools.expression.repr
 

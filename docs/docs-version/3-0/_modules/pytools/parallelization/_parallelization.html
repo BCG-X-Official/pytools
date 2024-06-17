@@ -164,27 +164,15 @@
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Lock</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.synchronize</span> <span class="kn">import</span> <span class="n">Lock</span> <span class="k">as</span> <span class="n">LockType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Generic</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Sequence</span><span class="p">,</span>
-    <span class="n">Tuple</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-    <span class="n">cast</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">cast</span>
 
 <span class="kn">import</span> <span class="nn">joblib</span>
 
-<span class="kn">from</span> <span class="nn">..api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">inheritdoc</span><span class="p">,</span> <span class="n">to_tuple</span>
+<span class="kn">from</span> <span class="nn">..api</span> <span class="kn">import</span> <span class="n">AllTracker</span><span class="p">,</span> <span class="n">as_tuple</span><span class="p">,</span> <span class="n">inheritdoc</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -230,26 +218,26 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#: Number of jobs to use in parallel; if ``None``, use joblib default.</span>
-    <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1">#: If ``True``, use threads in the parallel runs;</span>
     <span class="c1">#: if ``False`` or ``None``, use multiprocessing.</span>
-    <span class="n">shared_memory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="n">shared_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1">#: Number of batches to pre-dispatch; if ``None``, use joblib default.</span>
-    <span class="n">pre_dispatch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="n">pre_dispatch</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1">#: Verbosity level used in the parallel computation;</span>
     <span class="c1">#: if ``None``, use joblib default.</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">shared_memory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">pre_dispatch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">shared_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">pre_dispatch</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param n_jobs: number of jobs to use in parallel;</span>
@@ -354,7 +342,7 @@
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 <div class="viewcode-block" id="JobQueue.aggregate"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobQueue.html#pytools.parallelization.JobQueue.aggregate">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T_Queue_Result</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T_Queue_Result</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Called by :meth:`.JobRunner.run_queue` to aggregate the results of all jobs once</span>
 <span class="sd">        they have all been run.</span>
@@ -376,20 +364,20 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># defined in superclass, repeated here for Sphinx</span>
-    <span class="n">n_jobs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1"># defined in superclass, repeated here for Sphinx</span>
-    <span class="n">shared_memory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="n">shared_memory</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1"># defined in superclass, repeated here for Sphinx</span>
-    <span class="n">pre_dispatch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="n">pre_dispatch</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
     <span class="c1"># defined in superclass, repeated here for Sphinx</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="JobRunner.from_parallelizable"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.from_parallelizable">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_parallelizable</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T_JobRunner</span><span class="p">],</span> <span class="n">parallelizable</span><span class="p">:</span> <span class="n">ParallelizableMixin</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T_JobRunner</span><span class="p">],</span> <span class="n">parallelizable</span><span class="p">:</span> <span class="n">ParallelizableMixin</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T_JobRunner</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a new :class:`JobRunner` using the parameters of the given parallelizable</span>
@@ -406,7 +394,7 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">parallelizable</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="JobRunner.run_jobs"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">run_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jobs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]:</span>
+<div class="viewcode-block" id="JobRunner.run_jobs"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">run_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jobs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run all given jobs in parallel.</span>
 
@@ -414,7 +402,7 @@
 <span class="sd">        :return: the results of all jobs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel</span><span class="p">()</span> <span class="k">as</span> <span class="n">parallel</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">],</span> <span class="n">parallel</span><span class="p">((</span><span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">))</span></div>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">],</span> <span class="n">parallel</span><span class="p">((</span><span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">jobs</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="JobRunner.run_queue"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queue">[docs]</a>    <span class="k">def</span> <span class="nf">run_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">:</span> <span class="n">JobQueue</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T_Queue_Result</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -441,7 +429,7 @@
 
 <div class="viewcode-block" id="JobRunner.run_queues"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.JobRunner.html#pytools.parallelization.JobRunner.run_queues">[docs]</a>    <span class="k">def</span> <span class="nf">run_queues</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">queues</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">]]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Queue_Result</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Queue_Result</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run all jobs in the given queues, in parallel.</span>
 
@@ -450,9 +438,9 @@
 <span class="sd">            :meth:`.JobQueue.aggregate`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">queues_seq</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">]]</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span>
+        <span class="n">queues_seq</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">]]</span> <span class="o">=</span> <span class="n">as_tuple</span><span class="p">(</span>
             <span class="n">queues</span><span class="p">,</span>
-            <span class="n">element_type</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">Type</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">]],</span> <span class="n">JobQueue</span><span class="p">),</span>
+            <span class="n">element_type</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">T_Queue_Result</span><span class="p">]],</span> <span class="n">JobQueue</span><span class="p">),</span>
             <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;queues&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -465,7 +453,7 @@
                 <span class="n">queue</span><span class="o">.</span><span class="n">on_run</span><span class="p">()</span>
 
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel</span><span class="p">()</span> <span class="k">as</span> <span class="n">parallel</span><span class="p">:</span>
-                <span class="n">results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span>
+                <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]</span> <span class="o">=</span> <span class="n">parallel</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">run</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{})</span> <span class="k">for</span> <span class="n">queue</span> <span class="ow">in</span> <span class="n">queues_seq</span> <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">()</span>
                 <span class="p">)</span>
 
@@ -509,15 +497,15 @@
     <span class="n">lock</span><span class="p">:</span> <span class="n">LockType</span>
 
     <span class="c1">#: The jobs run by this queue.</span>
-    <span class="n">_jobs</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">_jobs</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">],</span> <span class="o">...</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jobs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param jobs: jobs to be run by this queue in the given order</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span>
-            <span class="n">jobs</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="n">Type</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="n">Job</span><span class="p">),</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;jobs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span> <span class="o">=</span> <span class="n">as_tuple</span><span class="p">(</span>
+            <span class="n">jobs</span><span class="p">,</span> <span class="n">element_type</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="n">Job</span><span class="p">),</span> <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;jobs&quot;</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="SimpleQueue.jobs"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.SimpleQueue.html#pytools.parallelization.SimpleQueue.jobs">[docs]</a>    <span class="k">def</span> <span class="nf">jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Job</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]]:</span>
@@ -529,7 +517,7 @@
 
 
 <div class="viewcode-block" id="CompositeQueue"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.CompositeQueue.html#pytools.parallelization.CompositeQueue">[docs]</a><span class="nd">@inheritdoc</span><span class="p">(</span><span class="n">match</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span><span class="p">)</span>
-<span class="k">class</span> <span class="nc">CompositeQueue</span><span class="p">(</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">CompositeQueue</span><span class="p">(</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A queue composed from a collection of compatible queues.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -538,20 +526,20 @@
     <span class="n">lock</span><span class="p">:</span> <span class="n">LockType</span>
 
     <span class="c1">#: The queues run by this queue.</span>
-    <span class="n">queues</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">queues</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]],</span> <span class="o">...</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">queues</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]]]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">queues</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]]]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param queues: queues whose elements will be added to this queue in the given</span>
 <span class="sd">            order</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">queues</span> <span class="o">=</span> <span class="n">to_tuple</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queues</span> <span class="o">=</span> <span class="n">as_tuple</span><span class="p">(</span>
             <span class="n">queues</span><span class="p">,</span>
             <span class="n">element_type</span><span class="o">=</span><span class="n">cast</span><span class="p">(</span>
-                <span class="n">Type</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]]],</span> <span class="n">JobQueue</span>
+                <span class="nb">type</span><span class="p">[</span><span class="n">JobQueue</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]]],</span> <span class="n">JobQueue</span>
             <span class="p">),</span>
             <span class="n">arg_name</span><span class="o">=</span><span class="s2">&quot;queues&quot;</span><span class="p">,</span>
         <span class="p">)</span>
@@ -560,7 +548,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="o">.</span><span class="n">from_iterable</span><span class="p">(</span><span class="n">queue</span><span class="o">.</span><span class="n">jobs</span><span class="p">()</span> <span class="k">for</span> <span class="n">queue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">queues</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CompositeQueue.aggregate"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.CompositeQueue.html#pytools.parallelization.CompositeQueue.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_results</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]:</span>
+<div class="viewcode-block" id="CompositeQueue.aggregate"><a class="viewcode-back" href="../../../apidoc/pytools/parallelization/pytools.parallelization.CompositeQueue.html#pytools.parallelization.CompositeQueue.aggregate">[docs]</a>    <span class="k">def</span> <span class="nf">aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T_Job_Result</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return the list of job results as-is, without aggregating them any further.</span>
 
