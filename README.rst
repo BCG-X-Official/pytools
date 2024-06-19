@@ -5,6 +5,8 @@
 *pytools* is an open source library containing general machine learning and visualisation
 utilities for reuse, including:
 
+TEST
+
 - Basic tools for API development, supporting documentation, deprecation, and run-time validation
 - Support for simulating classification and regression data
 - Utilities for constructing complex expressions and rendering them as indented strings
