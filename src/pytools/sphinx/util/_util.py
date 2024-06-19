@@ -1193,12 +1193,20 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         options: object,
         signature: str | None,
         return_annotation: str | None,
-    ) -> tuple[str | None, str | None] | None:
+    ) -> None:
         """[see superclass]"""
 
         if what == "class":
-            cls = cast(type, obj)
-            update_forward_references(cls)
+            try:
+                update_forward_references(cast(type, obj))
+            except Exception as e:
+                log.error(f"failed to update forward references for {name}: {e}")
+                # print the traceback to the console
+                import traceback
+
+                traceback.print_exc()
+
+                raise
 
         return None
 
