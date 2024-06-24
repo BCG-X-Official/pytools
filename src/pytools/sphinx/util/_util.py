@@ -24,6 +24,7 @@ from ...api import (
     get_generic_bases,
     inheritdoc,
     public_module_prefix,
+    subsdoc,
     update_forward_references,
 )
 from ...meta import SingletonABCMeta
@@ -1184,6 +1185,13 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
     docstring of a class.
     """
 
+    @subsdoc(
+        # match and delete the row that declares :return:
+        # remember this is a multiline string, so we need to match the whole line
+        pattern=r"\s*:return:.*",
+        replacement="",
+        using=AutodocProcessSignature.process,
+    )
     def process(
         self,
         app: Sphinx,
