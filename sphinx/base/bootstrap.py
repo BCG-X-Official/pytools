@@ -1,5 +1,4 @@
 def run_make(*, branch: str, working_directory: str) -> None:
-    from typing import List, Tuple
 
     class Bootstrapper:
         # URI of pytools raw file storage on GitHub
@@ -13,7 +12,7 @@ def run_make(*, branch: str, working_directory: str) -> None:
         PATH_TEMPLATES_BASE = [*PATH_MAKE_BASE, "_templates"]
 
         # path/filename pairs of files to load from the pytools repo
-        FILES_TO_LOAD: List[Tuple[List[str], str]] = [
+        FILES_TO_LOAD: list[tuple[list[str], str]] = [
             (PATH_MAKE_BASE, "conf_base.py"),
             (PATH_MAKE_BASE, "make_base.py"),
             (PATH_MAKE_BASE, "make_util.py"),
@@ -45,7 +44,7 @@ def run_make(*, branch: str, working_directory: str) -> None:
             if make_path not in sys.path:
                 sys.path.insert(0, make_path)
 
-        def _load_file(self, path: List[str], filename: str) -> None:
+        def _load_file(self, path: list[str], filename: str) -> None:
             import os
             import time
             from urllib import request

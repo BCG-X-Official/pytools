@@ -9,7 +9,12 @@ Release Notes
 -------------
 
 *pytools* 3.0 adds support for language features introduced up to and including
-Python 3.11, and drops support for Python versions.
+Python 3.10, and drops support for Python versions.
+
+*pytools* 3.0.1
+~~~~~~~~~~~~~~~
+
+- BUILD: add support for Python 3.10
 
 
 *pytools* 3.0.0

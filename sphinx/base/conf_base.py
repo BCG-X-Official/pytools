@@ -9,7 +9,7 @@ import logging
 import os
 import shutil
 import sys
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from sphinx.application import Sphinx
 
@@ -24,11 +24,11 @@ _dir_src = os.path.join(os.path.dirname(_dir_sphinx), "src")
 
 # noinspection PyShadowingNames
 def set_config(
-    globals_: Dict[str, Any],
+    globals_: dict[str, Any],
     *,
     project: str,
-    html_logo: Optional[str] = None,
-    intersphinx_mapping: Optional[Dict[str, Tuple[str, Optional[str]]]] = None,
+    html_logo: str | None = None,
+    intersphinx_mapping: dict[str, tuple[str, str | None]] | None = None,
 ) -> None:
     """
     Add required modules to the python path, and set custom configuration options
@@ -60,7 +60,7 @@ def set_config(
     )
 
 
-def _update_intersphinx_mapping(mapping: Dict[str, Tuple[str, Optional[str]]]) -> None:
+def _update_intersphinx_mapping(mapping: dict[str, tuple[str, str | None]]) -> None:
     global intersphinx_mapping
     intersphinx_mapping.update(mapping)
 
@@ -112,7 +112,7 @@ autodoc_default_options = {
 nbsphinx_allow_errors = True
 
 # add intersphinx mapping
-intersphinx_mapping: Dict[str, Tuple[str, Optional[str]]] = {
+intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "mypy": ("https://mypy.readthedocs.io/en/latest/", None),

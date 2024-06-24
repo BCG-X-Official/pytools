@@ -210,8 +210,6 @@ def get_generic_instance(subclass: type, base: type) -> list[type]:
     Calling ``get_generic_base_arguments(MySubclass, MyClass)`` will yield
     ``MyClass[int]``.
 
-    Requires Python 3.11.
-
     :param subclass: the subclass for which to get the type arguments of the base class
     :param base: the base class for which to get the type arguments
     :return: the generic instances of the base class
@@ -233,13 +231,13 @@ def get_generic_instance(subclass: type, base: type) -> list[type]:
                     return bound_type
             elif ti.is_generic_type(tp):
                 # Recursively apply bindings to unbound parameters of the type argument
-                bound_args = tuple(
+                bound_args: tuple[type, ...] = tuple(
                     _apply_bindings(arg_) for arg_ in ti.get_parameters(tp)
                 )
                 return (
                     cast(
                         type,
-                        tp[*bound_args],  # type: ignore[index]
+                        tp[bound_args],  # type: ignore[index]
                     )
                     if bound_args
                     else tp
@@ -261,7 +259,7 @@ def get_generic_instance(subclass: type, base: type) -> list[type]:
         if origin is base:
             # We have found the generic base
             yield (
-                subclass_[*args_subs] if args_subs else subclass_  # type: ignore[index]
+                subclass_[args_subs] if args_subs else subclass_  # type: ignore[index]
             )
         else:
             # Map bases to original bases
@@ -311,8 +309,6 @@ def get_generic_bases(*, generic_instance: type) -> tuple[type, ...]:
     - If the origin is a :class:`.AsyncIterator`, return a generic instance of its base
       class, :class:`.AsyncIterable`
 
-    Requires Python 3.11.
-
     :param generic_instance: the generic instance to get the generic bases of (note that
         this is not a non-generic type, as in the original function in
         :mod:`typing_inspect`)
@@ -336,7 +332,7 @@ def get_generic_bases(*, generic_instance: type) -> tuple[type, ...]:
         )
 
         return (
-            special_generic_base[*ti.get_args(generic_instance)],  # type: ignore[index]
+            special_generic_base[ti.get_args(generic_instance)],  # type: ignore[index]
         )
 
     # The origin is not a generic alias
@@ -367,8 +363,6 @@ def issubclass_generic(subclass: type | Never, base: type | Never) -> bool:
     """
     Check if a class is a subclass of a generic instance, i.e., it is a subclass of the
     generic class, and has compatible type arguments.
-
-    Requires Python 3.11.
 
     :param subclass: the class to check
     :param base: the generic class to check against
@@ -448,8 +442,6 @@ def isinstance_generic(obj: Any, base: type) -> bool:
     Check if an object is an instance of a generic instance, i.e., it is a subclass of
     the generic class, and has compatible type arguments.
 
-    Requires Python 3.11.
-
     :param obj: the object to check
     :param base: the generic class to check against
     :return: ``True`` if the object is an instance of the generic instance, ``False``
@@ -496,7 +488,7 @@ def _infer_generic_types(cls: type) -> type:
     if unbound_parameters:
         return cast(
             type,
-            cls[*map(_infer_type_var, unbound_parameters)],  # type: ignore[index]
+            cls[tuple(map(_infer_type_var, unbound_parameters))],  # type: ignore[index]
         )
     else:
         return cls
@@ -577,10 +569,10 @@ def _replace_deprecated_type(tp: type) -> type:
                 f"Type typing.{tp.__name__} is deprecated; "
                 f"please use {origin.__module__}.{origin.__name__} instead"
             )
-            args = get_args(tp)
+            args: tuple[type, ...] = get_args(tp)
             if args:
                 # If the type has arguments, apply the same arguments to the replacement
-                return cast(type, origin[*args])  # type: ignore[index]
+                return cast(type, origin[args])  # type: ignore[index]
             else:
                 return origin
     return tp
