@@ -16,7 +16,7 @@ from pytools.viz.dendrogram import DendrogramDrawer, DendrogramReportStyle
 log = logging.getLogger(__name__)
 
 
-@pytest.fixture  # type: ignore
+@pytest.fixture
 def linkage_matrix() -> npt.NDArray[np.int_]:
     """Create a linkage matrix."""
     x = np.array([[i] for i in [2, 8, 0, 4, 1, 9, 9, 0]])
@@ -24,7 +24,7 @@ def linkage_matrix() -> npt.NDArray[np.int_]:
     return linkage
 
 
-@pytest.fixture  # type: ignore
+@pytest.fixture
 def linkage_tree(linkage_matrix: npt.NDArray[np.float_]) -> LinkageTree:
     """Create a linkage tree for drawing tests."""
     return LinkageTree(
