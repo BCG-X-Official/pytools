@@ -21,7 +21,7 @@ def get_package_version(package_path: str) -> pkg_version.Version:
 
     print(f"Retrieving package version from {init_path}", file=sys.stderr)
 
-    with open(init_path, "rt") as init_file:
+    with open(init_path) as init_file:
         init_lines = init_file.readlines()
 
     matches = {

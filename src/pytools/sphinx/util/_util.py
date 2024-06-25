@@ -14,16 +14,16 @@ from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Mapping
 from inspect import getattr_static
 from re import Pattern
-from types import FunctionType, MethodType, UnionType
+from types import FunctionType, GenericAlias, MethodType, UnionType
 from typing import Any, ForwardRef, Generic, TypeVar, Union, cast, get_type_hints
 
 import typing_inspect
 
 from ...api import (
     AllTracker,
-    get_generic_bases,
     inheritdoc,
     public_module_prefix,
+    subsdoc,
     update_forward_references,
 )
 from ...meta import SingletonABCMeta
@@ -272,9 +272,10 @@ class AddInheritance(AutodocProcessDocstring):
     def _typevar_name(self, cls: TypeVar) -> str:
         if isinstance(cls, TypeVar):
             args: list[str] = [
-                self._class_name_with_generics(c) for c in cls.__constraints__
+                self._class_name_with_generics(c)
+                for c in getattr(cls, "__constraints__", ())
             ]
-            if cls.__bound__:
+            if getattr(cls, "__bound__", None):
                 args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
             return f'{cls}({", ".join(args)})' if args else str(cls)
         else:
@@ -287,7 +288,7 @@ class AddInheritance(AutodocProcessDocstring):
                     self._typevar_name(arg)
                     for arg in typing_inspect.get_args(base, evaluate=True)
                 )
-                for base in get_generic_bases(child_class)
+                for base in _get_generic_bases(child_class)
                 if typing_inspect.get_origin(base) is Generic
             )
         )
@@ -639,7 +640,7 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
         # get the base classes; try generic bases first then fall back to regular
         # bases
         base_classes: tuple[type, ...] = (
-            get_generic_bases(_subclass) or _subclass.__bases__
+            _get_generic_bases(_subclass) or _subclass.__bases__
         )
 
         # include the _subclass itself in the list of bases, if requested
@@ -772,7 +773,7 @@ class _TypeVarBindings:
 
         superclass_bindings = {
             superclass: bindings
-            for generic_superclass in get_generic_bases(cls)
+            for generic_superclass in _get_generic_bases(cls)
             for superclass, bindings in (
                 self._get_parameter_bindings(
                     cls=generic_superclass, subclass_bindings=class_bindings
@@ -1184,6 +1185,13 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
     docstring of a class.
     """
 
+    @subsdoc(
+        # match and delete the row that declares :return:
+        # remember this is a multiline string, so we need to match the whole line
+        pattern=r"\s*:return:.*",
+        replacement="",
+        using=AutodocProcessSignature.process,
+    )
     def process(
         self,
         app: Sphinx,
@@ -1193,12 +1201,20 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         options: object,
         signature: str | None,
         return_annotation: str | None,
-    ) -> tuple[str | None, str | None] | None:
+    ) -> None:
         """[see superclass]"""
 
         if what == "class":
-            cls = cast(type, obj)
-            update_forward_references(cls)
+            try:
+                update_forward_references(cast(type, obj))
+            except Exception as e:
+                log.error(f"failed to update forward references for {name}: {e}")
+                # print the traceback to the console
+                import traceback
+
+                traceback.print_exc()
+
+                raise
 
         return None
 
@@ -1271,3 +1287,22 @@ def _copy_generic_type_with_arguments(
         new_arguments = (*new_arguments[0], *new_arguments[1:])
 
     return copy_with(new_arguments)
+
+
+def _get_generic_bases(class_: type) -> tuple[type, ...]:
+    """
+    Bugfix version of :func:`typing_inspect.get_generic_bases`.
+
+    Prevents getting the generic bases of the parent class if not defined for the given
+    class.
+
+    :param class_: class to get the generic bases for
+    :return: the generic base classes of the given class
+    """
+    bases: tuple[type, ...] = typing_inspect.get_generic_bases(class_)
+    if not isinstance(
+        class_, GenericAlias
+    ) and bases is typing_inspect.get_generic_bases(super(class_, class_)):
+        return ()
+    else:
+        return bases
