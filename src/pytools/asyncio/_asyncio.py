@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import sys
 from asyncio import Queue
 from collections.abc import (
     AsyncIterable,
@@ -35,6 +36,34 @@ __all__ = [
 
 T = TypeVar("T")
 
+
+#
+# Python 3.10 compatibility
+#
+
+if sys.version_info < (3, 11):
+    from typing import Generic
+
+    class ExceptionGroup(Exception, Generic[T]):
+        """
+        Placeholder for the ExceptionGroup class, which is available from Python 3.11.
+        """
+
+        exceptions: list[Exception] = []
+
+    class TaskGroup:
+        """
+        Placeholder for the TaskGroup class, which is available from Python 3.11.
+        """
+
+        def __aenter__(self) -> Any:
+            pass
+
+        def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> Any:
+            pass
+
+else:
+    from asyncio import TaskGroup
 
 #
 # Constants
@@ -86,7 +115,7 @@ async def aenumerate(
         i += 1
 
 
-async def async_flatten(
+def async_flatten(
     async_iter_of_iters: AsyncIterable[AsyncIterable[T]],
 ) -> AsyncIterator[T]:
     """
@@ -96,6 +125,50 @@ async def async_flatten(
     :param async_iter_of_iters: an asynchronous iterator of asynchronous iterators
     :return: an asynchronous iterator
     """
+
+    return _async_flatten_310(async_iter_of_iters)
+
+
+async def _async_flatten_310(
+    async_iter_of_iters: AsyncIterable[AsyncIterable[T]],
+) -> AsyncIterator[T]:
+    queue: Queue[T] = asyncio.Queue()
+
+    async def _process_nested(async_iter: AsyncIterable[T]) -> None:
+        async for _value in async_iter:
+            await queue.put(_value)
+
+    async def _producer() -> None:
+        try:
+
+            # Wait for all tasks to complete, propagating any exceptions.
+            await asyncio.gather(
+                *[
+                    asyncio.create_task(_process_nested(async_iter))
+                    async for async_iter in async_iter_of_iters
+                ]
+            )
+        finally:
+            # Signal the end of processing by putting a sentinel value in the queue.
+            await queue.put(cast(T, _END))
+
+    # start a new producer task to process the nested iterators
+    producer_task = asyncio.create_task(_producer())
+
+    # Then wait for the iterators to add their values to the queue
+    while True:
+        value = await queue.get()
+        if value is _END:
+            break
+        yield value
+
+    # Wait for the producer task to complete
+    await producer_task
+
+
+async def _async_flatten_311(
+    async_iter_of_iters: AsyncIterable[AsyncIterable[T]],
+) -> AsyncIterator[T]:
     queue: Queue[T] = asyncio.Queue()
 
     async def _process_nested(async_iter: AsyncIterable[T]) -> None:
@@ -106,7 +179,7 @@ async def async_flatten(
         # Coroutine to process each nested iterator as concurrently as possible,
         # using a task group to manage the processing of each nested iterator.
 
-        async with asyncio.TaskGroup() as producer_tg:
+        async with TaskGroup() as producer_tg:
             async for async_iter in async_iter_of_iters:
                 producer_tg.create_task(_process_nested(async_iter))
 
@@ -115,7 +188,7 @@ async def async_flatten(
         await queue.put(cast(T, _END))
 
     # start a new producer task to process the nested iterators
-    async with asyncio.TaskGroup() as tg:
+    async with TaskGroup() as tg:
         # Start processing the nested iterators concurrently
         tg.create_task(_producer())
 
