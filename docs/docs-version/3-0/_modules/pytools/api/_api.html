@@ -167,7 +167,6 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">typing_inspect</span>
 
 <span class="kn">from</span> <span class="nn">._alltracker</span> <span class="kn">import</span> <span class="n">AllTracker</span>
 <span class="kn">from</span> <span class="nn">._decorators</span> <span class="kn">import</span> <span class="n">subsdoc</span>
@@ -177,7 +176,6 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;deprecated&quot;</span><span class="p">,</span>
     <span class="s2">&quot;deprecation_warning&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_generic_bases&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_list_like&quot;</span><span class="p">,</span>
     <span class="s2">&quot;as_collection&quot;</span><span class="p">,</span>
     <span class="s2">&quot;as_list&quot;</span><span class="p">,</span>
@@ -594,23 +592,6 @@
         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">message_head</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">expected_type_str</span><span class="si">}</span><span class="s2"> &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;but got: </span><span class="si">{</span><span class="n">mismatched_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="p">)</span>
-
-
-<div class="viewcode-block" id="get_generic_bases"><a class="viewcode-back" href="../../../apidoc/pytools/api/pytools.api.get_generic_bases.html#pytools.api.get_generic_bases">[docs]</a><span class="k">def</span> <span class="nf">get_generic_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Bugfix version of :func:`typing_inspect.get_generic_bases`.</span>
-
-<span class="sd">    Prevents getting the generic bases of the parent class if not defined for the given</span>
-<span class="sd">    class.</span>
-
-<span class="sd">    :param class_: class to get the generic bases for</span>
-<span class="sd">    :return: the generic base classes of the given class</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_generic_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">bases</span> <span class="ow">is</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_generic_bases</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">class_</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">bases</span></div>
 
 
 <span class="c1">#</span>

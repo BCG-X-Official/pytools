@@ -40,7 +40,6 @@ pytools.api
       as_tuple
       deprecated
       deprecation_warning
-      get_generic_bases
       get_init_params
       inheritdoc
       is_list_like

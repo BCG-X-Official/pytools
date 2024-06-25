@@ -163,6 +163,14 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pytools-3-0-1">
+     <em>
+      pytools
+     </em>
+     3.0.1
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#pytools-3-0-0">
      <em>
       pytools
@@ -506,7 +514,13 @@
 <section id="pytools-3-0">
 <h2><em>pytools</em> 3.0<a class="headerlink" href="#pytools-3-0" title="Permalink to this headline">#</a></h2>
 <p><em>pytools</em> 3.0 adds support for language features introduced up to and including
-Python 3.11, and drops support for Python versions.</p>
+Python 3.10, and drops support for Python versions.</p>
+<section id="pytools-3-0-1">
+<h3><em>pytools</em> 3.0.1<a class="headerlink" href="#pytools-3-0-1" title="Permalink to this headline">#</a></h3>
+<ul class="simple">
+<li><p>BUILD: add support for Python 3.10</p></li>
+</ul>
+</section>
 <section id="pytools-3-0-0">
 <h3><em>pytools</em> 3.0.0<a class="headerlink" href="#pytools-3-0-0" title="Permalink to this headline">#</a></h3>
 <ul>
@@ -577,8 +591,8 @@ string with stricter management of template variables</p></li>
 class of two types</p></li>
 <li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_common_generic_subclass.html#pytools.typing.get_common_generic_subclass" title="pytools.typing.get_common_generic_subclass"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_common_generic_subclass()</span></code></a> to retrieve the common generic
 subclass of two types</p></li>
-<li><p>new function <a class="reference internal" href="../apidoc/pytools/api/pytools.api.get_generic_bases.html#pytools.api.get_generic_bases" title="pytools.api.get_generic_bases"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_generic_bases()</span></code></a> to retrieve the generic base classes of a
-type</p></li>
+<li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_generic_bases.html#pytools.typing.get_generic_bases" title="pytools.typing.get_generic_bases"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_generic_bases()</span></code></a> to retrieve the generic base
+classes of a type</p></li>
 <li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_generic_instance.html#pytools.typing.get_generic_instance" title="pytools.typing.get_generic_instance"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_generic_instance()</span></code></a> to retrieve the generic instance of a
 type</p></li>
 <li><p>new function <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.get_type_arguments.html#pytools.typing.get_type_arguments" title="pytools.typing.get_type_arguments"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_type_arguments()</span></code></a> to retrieve the type arguments of a generic
@@ -594,7 +608,7 @@ generic type</p></li>
 <li><p>API: new class <a class="reference internal" href="../apidoc/pytools/viz/pytools.viz.HTMLStyle.html#pytools.viz.HTMLStyle" title="pytools.viz.HTMLStyle"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMLStyle</span></code></a> for rendering HTML content with drawers</p></li>
 <li><p>API: new function <a class="reference internal" href="../apidoc/pytools/viz/pytools.viz.is_running_in_notebook.html#pytools.viz.is_running_in_notebook" title="pytools.viz.is_running_in_notebook"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_running_in_notebook()</span></code></a> to check if the code is running
 in a Jupyter or Colab notebook</p></li>
-<li><p>API: new property <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor.hex" title="pytools.viz.color.RgbColor.hex"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hex</span></code></a> for <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor" title="pytools.viz.color.RgbColor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RgbColor</span></code></a> and <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbaColor.html#pytools.viz.color.RgbaColor" title="pytools.viz.color.RgbaColor"><code class="xref py py-class docutils literal notranslate"><span class="pre">RgbaColor</span></code></a> to
+<li><p>API: new property <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbColor.html#pytools.viz.color.RgbColor.hex" title="pytools.viz.color.RgbColor.hex"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RgbColor.hex</span></code></a> and <a class="reference internal" href="../apidoc/pytools/viz/color/pytools.viz.color.RgbaColor.html#pytools.viz.color.RgbaColor.hex" title="pytools.viz.color.RgbaColor.hex"><code class="xref py py-attr docutils literal notranslate"><span class="pre">RgbaColor.hex</span></code></a> to
 return the color as a hexadecimal string</p></li>
 </ul>
 </li>
@@ -643,7 +657,7 @@ notebooks</p></li>
 <section id="pytools-2-0">
 <h2><em>pytools</em> 2.0<a class="headerlink" href="#pytools-2-0" title="Permalink to this headline">#</a></h2>
 <p><em>pytools</em> 2 introduces enhanced visualisations along with additional API improvements,
-and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.06c7d2613a3eebac6a09befcad2b2fae6374d262.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
+and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.d39f0234a18762a9b261a28763c7bea706633ce7.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
 <section id="id6">
 <h3>2.0.7<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
@@ -674,7 +688,7 @@ accessing their <code class="docutils literal notranslate"><span class="pre">__g
 <section id="id10">
 <h3>2.0.3<a class="headerlink" href="#id10" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
-<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.06c7d2613a3eebac6a09befcad2b2fae6374d262.dirty)"><span class="xref std std-doc">mypy</span></a>
+<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.d39f0234a18762a9b261a28763c7bea706633ce7.dirty)"><span class="xref std std-doc">mypy</span></a>
 recognizes it as a positional-only argument, and that subclasses can change its
 name without breaking the API</p></li>
 <li><p>FIX: make <a class="reference internal" href="../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables" title="pytools.sphinx.util.ResolveTypeVariables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResolveTypeVariables</span></code></a> compatible with Python 3.9</p></li>
@@ -874,7 +888,7 @@ converts iterators into <a class="reference external" href="https://docs.python.
 <code class="xref py py-func docutils literal notranslate"><span class="pre">to_collection()</span></code>, and <a class="reference internal" href="../apidoc/pytools/api/pytools.api.validate_element_types.html#pytools.api.validate_element_types" title="pytools.api.validate_element_types"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate_element_types()</span></code></a> now accept multiple
 alternative types to validate elements against, in line with how <a class="reference external" href="https://docs.python.org/3.7/library/functions.html#isinstance" title="(in Python v3.7)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a>
 tests for multiple types</p></li>
-<li><p>BUILD: add support for <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> ~= 3.0, <a class="reference external" href="https://docs.scipy.org/doc/scipy/index.html#module-scipy" title="(in SciPy v1.13.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code></a> ~= 1.6,
+<li><p>BUILD: add support for <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.9.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">matplotlib</span></code></a> ~= 3.0, <a class="reference external" href="https://docs.scipy.org/doc/scipy/index.html#module-scipy" title="(in SciPy v1.14.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">scipy</span></code></a> ~= 1.6,
 and <a class="reference external" href="https://github.com/ilevkivskyi/typing_inspect">typing-inspect</a> ~= 0.7</p></li>
 </ul>
 </section>

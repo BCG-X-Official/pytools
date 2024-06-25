@@ -163,6 +163,7 @@
 
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">typing</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AsyncGenerator</span><span class="p">,</span>
@@ -187,7 +188,6 @@
     <span class="n">AbstractSet</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Generic</span><span class="p">,</span>
-    <span class="n">Never</span><span class="p">,</span>
     <span class="n">TypeAlias</span><span class="p">,</span>
     <span class="n">TypeVar</span><span class="p">,</span>
     <span class="n">cast</span><span class="p">,</span>
@@ -196,8 +196,22 @@
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">typing_inspect</span> <span class="k">as</span> <span class="nn">ti</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Never</span>
 
 <span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">subsdoc</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+
+    <span class="k">class</span> <span class="nc">SpecialForm</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Placeholder for the SpecialForm class, which is required up to Python 3.10.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">_SpecialForm</span> <span class="k">as</span> <span class="n">SpecialForm</span>
+
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -367,8 +381,6 @@
 <span class="sd">    Calling ``get_generic_base_arguments(MySubclass, MyClass)`` will yield</span>
 <span class="sd">    ``MyClass[int]``.</span>
 
-<span class="sd">    Requires Python 3.11.</span>
-
 <span class="sd">    :param subclass: the subclass for which to get the type arguments of the base class</span>
 <span class="sd">    :param base: the base class for which to get the type arguments</span>
 <span class="sd">    :return: the generic instances of the base class</span>
@@ -390,13 +402,13 @@
                     <span class="k">return</span> <span class="n">bound_type</span>
             <span class="k">elif</span> <span class="n">ti</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="n">tp</span><span class="p">):</span>
                 <span class="c1"># Recursively apply bindings to unbound parameters of the type argument</span>
-                <span class="n">bound_args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">bound_args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
                     <span class="n">_apply_bindings</span><span class="p">(</span><span class="n">arg_</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg_</span> <span class="ow">in</span> <span class="n">ti</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="k">return</span> <span class="p">(</span>
                     <span class="n">cast</span><span class="p">(</span>
                         <span class="nb">type</span><span class="p">,</span>
-                        <span class="n">tp</span><span class="p">[</span><span class="o">*</span><span class="n">bound_args</span><span class="p">],</span>  <span class="c1"># type: ignore[index]</span>
+                        <span class="n">tp</span><span class="p">[</span><span class="n">bound_args</span><span class="p">],</span>  <span class="c1"># type: ignore[index]</span>
                     <span class="p">)</span>
                     <span class="k">if</span> <span class="n">bound_args</span>
                     <span class="k">else</span> <span class="n">tp</span>
@@ -418,7 +430,7 @@
         <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">base</span><span class="p">:</span>
             <span class="c1"># We have found the generic base</span>
             <span class="k">yield</span> <span class="p">(</span>
-                <span class="n">subclass_</span><span class="p">[</span><span class="o">*</span><span class="n">args_subs</span><span class="p">]</span> <span class="k">if</span> <span class="n">args_subs</span> <span class="k">else</span> <span class="n">subclass_</span>  <span class="c1"># type: ignore[index]</span>
+                <span class="n">subclass_</span><span class="p">[</span><span class="n">args_subs</span><span class="p">]</span> <span class="k">if</span> <span class="n">args_subs</span> <span class="k">else</span> <span class="n">subclass_</span>  <span class="c1"># type: ignore[index]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Map bases to original bases</span>
@@ -468,8 +480,6 @@
 <span class="sd">    - If the origin is a :class:`.AsyncIterator`, return a generic instance of its base</span>
 <span class="sd">      class, :class:`.AsyncIterable`</span>
 
-<span class="sd">    Requires Python 3.11.</span>
-
 <span class="sd">    :param generic_instance: the generic instance to get the generic bases of (note that</span>
 <span class="sd">        this is not a non-generic type, as in the original function in</span>
 <span class="sd">        :mod:`typing_inspect`)</span>
@@ -493,7 +503,7 @@
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">special_generic_base</span><span class="p">[</span><span class="o">*</span><span class="n">ti</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)],</span>  <span class="c1"># type: ignore[index]</span>
+            <span class="n">special_generic_base</span><span class="p">[</span><span class="n">ti</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)],</span>  <span class="c1"># type: ignore[index]</span>
         <span class="p">)</span>
 
     <span class="c1"># The origin is not a generic alias</span>
@@ -524,8 +534,6 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a class is a subclass of a generic instance, i.e., it is a subclass of the</span>
 <span class="sd">    generic class, and has compatible type arguments.</span>
-
-<span class="sd">    Requires Python 3.11.</span>
 
 <span class="sd">    :param subclass: the class to check</span>
 <span class="sd">    :param base: the generic class to check against</span>
@@ -605,8 +613,6 @@
 <span class="sd">    Check if an object is an instance of a generic instance, i.e., it is a subclass of</span>
 <span class="sd">    the generic class, and has compatible type arguments.</span>
 
-<span class="sd">    Requires Python 3.11.</span>
-
 <span class="sd">    :param obj: the object to check</span>
 <span class="sd">    :param base: the generic class to check against</span>
 <span class="sd">    :return: ``True`` if the object is an instance of the generic instance, ``False``</span>
@@ -653,7 +659,7 @@
     <span class="k">if</span> <span class="n">unbound_parameters</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
             <span class="nb">type</span><span class="p">,</span>
-            <span class="bp">cls</span><span class="p">[</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="n">_infer_type_var</span><span class="p">,</span> <span class="n">unbound_parameters</span><span class="p">)],</span>  <span class="c1"># type: ignore[index]</span>
+            <span class="bp">cls</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">_infer_type_var</span><span class="p">,</span> <span class="n">unbound_parameters</span><span class="p">))],</span>  <span class="c1"># type: ignore[index]</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span>
@@ -690,7 +696,9 @@
     <span class="c1"># We only support generic types, types, type variables, and Ellipsis as arguments;</span>
     <span class="c1"># raise an error if we encounter anything else</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span>
-        <span class="n">ti</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">))</span> <span class="ow">or</span> <span class="n">arg</span> <span class="ow">is</span> <span class="bp">Ellipsis</span>
+        <span class="n">ti</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">SpecialForm</span><span class="p">))</span>
+        <span class="ow">or</span> <span class="n">arg</span> <span class="ow">is</span> <span class="bp">Ellipsis</span>
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -734,10 +742,10 @@
                 <span class="sa">f</span><span class="s2">&quot;Type typing.</span><span class="si">{</span><span class="n">tp</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is deprecated; &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;please use </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> instead&quot;</span>
             <span class="p">)</span>
-            <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+            <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
                 <span class="c1"># If the type has arguments, apply the same arguments to the replacement</span>
-                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">origin</span><span class="p">[</span><span class="o">*</span><span class="n">args</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
+                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">origin</span><span class="p">[</span><span class="n">args</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">origin</span>
     <span class="k">return</span> <span class="n">tp</span>

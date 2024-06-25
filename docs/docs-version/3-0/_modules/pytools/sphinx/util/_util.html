@@ -171,16 +171,16 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Mapping</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">getattr_static</span>
 <span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">Pattern</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">UnionType</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">GenericAlias</span><span class="p">,</span> <span class="n">MethodType</span><span class="p">,</span> <span class="n">UnionType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ForwardRef</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">get_type_hints</span>
 
 <span class="kn">import</span> <span class="nn">typing_inspect</span>
 
 <span class="kn">from</span> <span class="nn">...api</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AllTracker</span><span class="p">,</span>
-    <span class="n">get_generic_bases</span><span class="p">,</span>
     <span class="n">inheritdoc</span><span class="p">,</span>
     <span class="n">public_module_prefix</span><span class="p">,</span>
+    <span class="n">subsdoc</span><span class="p">,</span>
     <span class="n">update_forward_references</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">...meta</span> <span class="kn">import</span> <span class="n">SingletonABCMeta</span>
@@ -429,9 +429,10 @@
     <span class="k">def</span> <span class="nf">_typevar_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">cls</span><span class="p">:</span> <span class="n">TypeVar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
             <span class="n">args</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__constraints__</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__constraints__&quot;</span><span class="p">,</span> <span class="p">())</span>
             <span class="p">]</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__bound__</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__bound__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
                 <span class="n">args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bound= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_class_name_with_generics</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__bound__</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -444,7 +445,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_typevar_name</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">evaluate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="p">)</span>
-                <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">get_generic_bases</span><span class="p">(</span><span class="n">child_class</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">_get_generic_bases</span><span class="p">(</span><span class="n">child_class</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">is</span> <span class="n">Generic</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -796,7 +797,7 @@
         <span class="c1"># get the base classes; try generic bases first then fall back to regular</span>
         <span class="c1"># bases</span>
         <span class="n">base_classes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">get_generic_bases</span><span class="p">(</span><span class="n">_subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_subclass</span><span class="o">.</span><span class="vm">__bases__</span>
+            <span class="n">_get_generic_bases</span><span class="p">(</span><span class="n">_subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_subclass</span><span class="o">.</span><span class="vm">__bases__</span>
         <span class="p">)</span>
 
         <span class="c1"># include the _subclass itself in the list of bases, if requested</span>
@@ -929,7 +930,7 @@
 
         <span class="n">superclass_bindings</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">superclass</span><span class="p">:</span> <span class="n">bindings</span>
-            <span class="k">for</span> <span class="n">generic_superclass</span> <span class="ow">in</span> <span class="n">get_generic_bases</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">generic_superclass</span> <span class="ow">in</span> <span class="n">_get_generic_bases</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">superclass</span><span class="p">,</span> <span class="n">bindings</span> <span class="ow">in</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_get_parameter_bindings</span><span class="p">(</span>
                     <span class="bp">cls</span><span class="o">=</span><span class="n">generic_superclass</span><span class="p">,</span> <span class="n">subclass_bindings</span><span class="o">=</span><span class="n">class_bindings</span>
@@ -1341,7 +1342,14 @@
 <span class="sd">    docstring of a class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="UpdateForwardReferences.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.UpdateForwardReferences.html#pytools.sphinx.util.UpdateForwardReferences.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+<div class="viewcode-block" id="UpdateForwardReferences.process"><a class="viewcode-back" href="../../../../apidoc/pytools/sphinx/util/pytools.sphinx.util.UpdateForwardReferences.html#pytools.sphinx.util.UpdateForwardReferences.process">[docs]</a>    <span class="nd">@subsdoc</span><span class="p">(</span>
+        <span class="c1"># match and delete the row that declares :return:</span>
+        <span class="c1"># remember this is a multiline string, so we need to match the whole line</span>
+        <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\s*:return:.*&quot;</span><span class="p">,</span>
+        <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">using</span><span class="o">=</span><span class="n">AutodocProcessSignature</span><span class="o">.</span><span class="n">process</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">app</span><span class="p">:</span> <span class="n">Sphinx</span><span class="p">,</span>
         <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1350,12 +1358,20 @@
         <span class="n">options</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
         <span class="n">signature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_annotation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;[see superclass]&quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;class&quot;</span><span class="p">:</span>
-            <span class="bp">cls</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-            <span class="n">update_forward_references</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">update_forward_references</span><span class="p">(</span><span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">obj</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;failed to update forward references for </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="c1"># print the traceback to the console</span>
+                <span class="kn">import</span> <span class="nn">traceback</span>
+
+                <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+                <span class="k">raise</span>
 
         <span class="k">return</span> <span class="kc">None</span></div></div>
 
@@ -1428,6 +1444,25 @@
         <span class="n">new_arguments</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">new_arguments</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">*</span><span class="n">new_arguments</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
 
     <span class="k">return</span> <span class="n">copy_with</span><span class="p">(</span><span class="n">new_arguments</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_generic_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bugfix version of :func:`typing_inspect.get_generic_bases`.</span>
+
+<span class="sd">    Prevents getting the generic bases of the parent class if not defined for the given</span>
+<span class="sd">    class.</span>
+
+<span class="sd">    :param class_: class to get the generic bases for</span>
+<span class="sd">    :return: the generic base classes of the given class</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_generic_bases</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">class_</span><span class="p">,</span> <span class="n">GenericAlias</span>
+    <span class="p">)</span> <span class="ow">and</span> <span class="n">bases</span> <span class="ow">is</span> <span class="n">typing_inspect</span><span class="o">.</span><span class="n">get_generic_bases</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">class_</span><span class="p">,</span> <span class="n">class_</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">bases</span>
 </pre></div>
 
               </div>
