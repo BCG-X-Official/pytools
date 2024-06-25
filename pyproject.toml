@@ -53,7 +53,8 @@ docs = [
     "jupyter == 1",
     "docutils ~= 0.17",
     "xlrd ~= 1.2",
-    "m2r ~= 0.2"
+    "m2r ~= 0.2",
+    "mypy ~= 1.10",
 ]
 
 [tool.flit.metadata.urls]

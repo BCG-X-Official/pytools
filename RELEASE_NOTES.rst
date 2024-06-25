@@ -83,8 +83,8 @@ Python 3.10, and drops support for Python versions.
     class of two types
   - new function :func:`.get_common_generic_subclass` to retrieve the common generic
     subclass of two types
-  - new function :func:`.get_generic_bases` to retrieve the generic base classes of a
-    type
+  - new function :func:`~pytools.typing.get_generic_bases` to retrieve the generic base
+    classes of a type
   - new function :func:`.get_generic_instance` to retrieve the generic instance of a
     type
   - new function :func:`.get_type_arguments` to retrieve the type arguments of a generic
@@ -99,7 +99,7 @@ Python 3.10, and drops support for Python versions.
   - API: new class :class:`.HTMLStyle` for rendering HTML content with drawers
   - API: new function :func:`.is_running_in_notebook` to check if the code is running
     in a Jupyter or Colab notebook
-  - API: new property :attr:`.hex` for :class:`.RgbColor` and :class:`.RgbaColor` to
+  - API: new property :attr:`.RgbColor.hex` and :attr:`.RgbaColor.hex` to
     return the color as a hexadecimal string
 
 - Various adjustments to maintain compatibility with recent Python versions

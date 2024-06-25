@@ -10,7 +10,6 @@ from typing import Any, TypeVar, cast, overload
 
 import numpy as np
 import pandas as pd
-import typing_inspect
 
 from ._alltracker import AllTracker
 from ._decorators import subsdoc
@@ -20,7 +19,6 @@ log = logging.getLogger(__name__)
 __all__ = [
     "deprecated",
     "deprecation_warning",
-    "get_generic_bases",
     "is_list_like",
     "as_collection",
     "as_list",
@@ -437,23 +435,6 @@ def _raise_type_mismatch(
         f"{message_head} {instance} of {expected_type_str} "
         f"but got: {mismatched_type.__name__}"
     )
-
-
-def get_generic_bases(class_: type) -> tuple[type, ...]:
-    """
-    Bugfix version of :func:`typing_inspect.get_generic_bases`.
-
-    Prevents getting the generic bases of the parent class if not defined for the given
-    class.
-
-    :param class_: class to get the generic bases for
-    :return: the generic base classes of the given class
-    """
-    bases: tuple[type, ...] = typing_inspect.get_generic_bases(class_)
-    if bases is typing_inspect.get_generic_bases(super(class_, class_)):
-        return ()
-    else:
-        return bases
 
 
 #
