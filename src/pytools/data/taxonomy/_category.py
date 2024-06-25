@@ -8,7 +8,9 @@ import functools
 import logging
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable
-from typing import Any, Self, cast, final
+from typing import Any, cast, final
+
+from typing_extensions import Self
 
 from pytools.api import as_tuple
 

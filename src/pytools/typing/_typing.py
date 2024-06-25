@@ -30,7 +30,6 @@ from typing import (
     AbstractSet,
     Any,
     Generic,
-    Never,
     TypeAlias,
     TypeVar,
     cast,
@@ -39,6 +38,7 @@ from typing import (
 )
 
 import typing_inspect as ti
+from typing_extensions import Never
 
 from pytools.api import subsdoc
 
