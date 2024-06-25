@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import itertools
 import logging
+import sys
 import typing
 from collections.abc import (
     AsyncGenerator,
@@ -41,6 +42,19 @@ import typing_inspect as ti
 from typing_extensions import Never
 
 from pytools.api import subsdoc
+
+if sys.version_info >= (3, 11):
+
+    class SpecialForm:
+        """
+        Placeholder for the SpecialForm class, which is required up to Python 3.10.
+        """
+
+        pass
+
+else:
+    from typing import _SpecialForm as SpecialForm
+
 
 log = logging.getLogger(__name__)
 
@@ -525,7 +539,9 @@ def _get_origin_parameters(
     # We only support generic types, types, type variables, and Ellipsis as arguments;
     # raise an error if we encounter anything else
     if not all(
-        ti.is_generic_type(arg) or isinstance(arg, (type, TypeVar)) or arg is Ellipsis
+        ti.is_generic_type(arg)
+        or isinstance(arg, (type, TypeVar, SpecialForm))
+        or arg is Ellipsis
         for arg in args
     ):
         raise TypeError(
