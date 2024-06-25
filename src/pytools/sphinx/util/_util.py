@@ -24,6 +24,7 @@ from ...api import (
     get_generic_bases,
     inheritdoc,
     public_module_prefix,
+    subsdoc,
     update_forward_references,
 )
 from ...meta import SingletonABCMeta
@@ -1184,6 +1185,13 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
     docstring of a class.
     """
 
+    @subsdoc(
+        # match and delete the row that declares :return:
+        # remember this is a multiline string, so we need to match the whole line
+        pattern=r"\s*:return:.*",
+        replacement="",
+        using=AutodocProcessSignature.process,
+    )
     def process(
         self,
         app: Sphinx,
@@ -1193,12 +1201,20 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         options: object,
         signature: str | None,
         return_annotation: str | None,
-    ) -> tuple[str | None, str | None] | None:
+    ) -> None:
         """[see superclass]"""
 
         if what == "class":
-            cls = cast(type, obj)
-            update_forward_references(cls)
+            try:
+                update_forward_references(cast(type, obj))
+            except Exception as e:
+                log.error(f"failed to update forward references for {name}: {e}")
+                # print the traceback to the console
+                import traceback
+
+                traceback.print_exc()
+
+                raise
 
         return None
 
