@@ -89,7 +89,7 @@ stages:
           - script: |
               # package dependencies for mypy
               dependencies=(
-                numpy~=1.24
+                numpy~=2.0
                 packaging
                 pytest
               )

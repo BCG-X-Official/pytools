@@ -32,7 +32,7 @@ __all__ = ["Matrix"]
 #
 
 T_Matrix = TypeVar("T_Matrix", bound="Matrix[Any]")
-T_Number = TypeVar("T_Number", bound="np.number[npt.NBitBase]")
+T_Number = TypeVar("T_Number", bound="np.number[Any]")
 
 #
 # Ensure all symbols introduced below are included in __all__
@@ -59,7 +59,7 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
     names: tuple[npt.NDArray[Any] | None, npt.NDArray[Any] | None]
 
     #: the weights of the rows and columns
-    weights: tuple[npt.NDArray[np.float_] | None, npt.NDArray[np.float_] | None]
+    weights: tuple[npt.NDArray[np.float64] | None, npt.NDArray[np.float64] | None]
 
     #: the labels for the row and column axes
     name_labels: tuple[str | None, str | None]
@@ -155,8 +155,8 @@ class Matrix(HasExpressionRepr, Generic[T_Number]):
         else:
 
             def _ensure_positive(
-                w: npt.NDArray[np.float_] | None, axis: int
-            ) -> npt.NDArray[np.float_] | None:
+                w: npt.NDArray[np.float64] | None, axis: int
+            ) -> npt.NDArray[np.float64] | None:
                 if w is not None and (w < 0).any():
                     raise ValueError(
                         f"arg weights[{axis}] should be all positive, "
@@ -352,7 +352,7 @@ def _validate_resize_arg(
 
 
 def _top_items_mask(
-    weights: npt.NDArray[np.float_] | None,
+    weights: npt.NDArray[np.float64] | None,
     current_size: int,
     target_size: tuple[int | None, float | None],
 ) -> npt.NDArray[np.bool_]:
@@ -385,7 +385,7 @@ def _top_items_mask(
         # THe target weight is expressed as a ratio of total weight
         # (0 < target_ratio <= 1).
 
-        weights_sorted_cumsum: npt.NDArray[np.float_] = weights[
+        weights_sorted_cumsum: npt.NDArray[np.float64] = weights[
             ix_weights_descending_stable
         ].cumsum()
         mask[
@@ -401,12 +401,12 @@ def _top_items_mask(
 
 def _resize_rows(
     values: npt.NDArray[T_Number],
-    weights: npt.NDArray[np.float_] | None,
+    weights: npt.NDArray[np.float64] | None,
     names: npt.NDArray[Any] | None,
     current_size: int,
     target_size: tuple[int | None, float | None],
 ) -> tuple[
-    npt.NDArray[T_Number], npt.NDArray[np.float_] | None, npt.NDArray[Any] | None
+    npt.NDArray[T_Number], npt.NDArray[np.float64] | None, npt.NDArray[Any] | None
 ]:
     mask = _top_items_mask(
         weights=weights, current_size=current_size, target_size=target_size

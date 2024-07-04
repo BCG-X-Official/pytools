@@ -222,7 +222,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
 
     def _get_ytick_locations(
         self, *, weights: Sequence[float]
-    ) -> npt.NDArray[np.float_]:
+    ) -> npt.NDArray[np.float64]:
         """
         Get the tick locations for the y axis.
 
@@ -231,7 +231,7 @@ class DendrogramMatplotStyle(DendrogramStyle, ColorbarMatplotStyle):
         """
         weights_array = np.array(weights)
         # noinspection PyTypeChecker
-        ytick_locations: npt.NDArray[np.float_] = -(
+        ytick_locations: npt.NDArray[np.float64] = -(
             np.arange(len(weights)) * self.padding
             + weights_array.cumsum()
             - weights_array / 2

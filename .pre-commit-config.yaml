@@ -50,6 +50,6 @@ repos:
         language_version: python310
         pass_filenames: false
         additional_dependencies:
-          - numpy~=1.24
+          - numpy~=2.0
           - pytest
           - packaging
