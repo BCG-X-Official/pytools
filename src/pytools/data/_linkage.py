@@ -32,7 +32,7 @@ __all__ = ["LinkageTree"]
 # Type variables
 #
 
-LinkageMatrix = npt.NDArray[np.float_]
+LinkageMatrix = npt.NDArray[np.float64]
 
 
 #

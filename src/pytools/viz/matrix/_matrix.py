@@ -155,16 +155,16 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             npt.NDArray[Any] | None,
         ],
         weights: tuple[
-            npt.NDArray[np.float_] | None,
-            npt.NDArray[np.float_] | None,
+            npt.NDArray[np.float64] | None,
+            npt.NDArray[np.float64] | None,
         ],
     ) -> None:
         """[see superclass]"""
         ax: Axes = self.ax
         colors = self.colors
 
-        weights_rows: npt.NDArray[np.float_]
-        weights_columns: npt.NDArray[np.float_]
+        weights_rows: npt.NDArray[np.float64]
+        weights_columns: npt.NDArray[np.float64]
         # replace undefined weights with all ones
         weights_rows, weights_columns = tuple(
             np.ones(n) if w is None else w for w, n in zip(weights, data.shape)
@@ -172,8 +172,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
         # calculate the horizontal and vertical matrix cell bounds based on the
         # cumulative sums of the axis weights; default all weights to 1 if not defined
-        column_bounds: npt.NDArray[np.float_]
-        row_bounds: npt.NDArray[np.float_]
+        column_bounds: npt.NDArray[np.float64]
+        row_bounds: npt.NDArray[np.float64]
 
         row_bounds = -np.array([0, *weights_rows]).cumsum()
         column_bounds = np.array([0, *weights_columns]).cumsum()
@@ -200,7 +200,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # draw the matrix cells
         for c, (x0, x1) in enumerate(zip(column_bounds, column_bounds[1:])):
             for r, (y1, y0) in enumerate(zip(row_bounds, row_bounds[1:])):
-                color: npt.NDArray[np.float_] = cell_colors[r, c]
+                color: npt.NDArray[np.float64] = cell_colors[r, c]
                 ax.add_patch(
                     Rectangle(
                         (
@@ -224,7 +224,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         y_tick_locations = (row_bounds[:-1] + row_bounds[1:]) / 2
 
         def _set_ticks(
-            tick_locations: npt.NDArray[np.float_],
+            tick_locations: npt.NDArray[np.float64],
             tick_labels: npt.NDArray[Any],
             axis: Axis,
             tick_params: dict[str, Any],
@@ -461,15 +461,15 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
             npt.NDArray[Any] | None,
         ],
         weights: tuple[
-            npt.NDArray[np.float_] | None,
-            npt.NDArray[np.float_] | None,
+            npt.NDArray[np.float64] | None,
+            npt.NDArray[np.float64] | None,
         ],
     ) -> None:
         """[see superclass]"""
 
         def _axis_marks(
             axis_names: npt.NDArray[Any] | None,
-            axis_weights: npt.NDArray[np.float_] | None,
+            axis_weights: npt.NDArray[np.float64] | None,
         ) -> Iterable[str] | None:
             axis_names_iter: Iterable[Any]
 
