@@ -14,6 +14,7 @@ Python 3.10, and drops support for Python versions.
 *pytools* 3.0.2
 ~~~~~~~~~~~~~~~
 
+- BUILD: :mod:`numpy` |nbsp| 2 is now supported
 - FIX: :func:`.issubclass_generic` now supports unions, tuples of types, and ``None``,
   and uses clearer error messages if called with invalid arguments
 
