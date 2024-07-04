@@ -26,7 +26,7 @@ from collections.abc import (
     Sequence,
     ValuesView,
 )
-from types import GenericAlias
+from types import GenericAlias, NoneType, UnionType
 from typing import (
     AbstractSet,
     Any,
@@ -373,13 +373,13 @@ def get_type_arguments(obj: Any, base: type) -> list[tuple[type, ...]]:
     return list(map(get_args, get_generic_instance(ti.get_generic_type(obj), base)))
 
 
-def issubclass_generic(subclass: type | Never, base: type | Never) -> bool:
+def issubclass_generic(subclass: Any, base: Any) -> bool:
     """
     Check if a class is a subclass of a generic instance, i.e., it is a subclass of the
     generic class, and has compatible type arguments.
 
-    :param subclass: the class to check
-    :param base: the generic class to check against
+    :param subclass: the (potentially generic) subclass to check
+    :param base: the (potentially generic) base class to check against
     :return: ``True`` if the class is a subclass of the generic instance, ``False``
         otherwise
     """
@@ -396,16 +396,56 @@ def issubclass_generic(subclass: type | Never, base: type | Never) -> bool:
     elif base is Never:
         return False
 
+    # Special case: if the subclass is a union type, check if all types in the union are
+    # subclasses of the base class
+    if get_origin(subclass) in (typing.Union, UnionType):
+        return all(issubclass_generic(arg, base) for arg in get_args(subclass))
+
+    # Special case: if the base class is a union type, check if the subclass is a
+    # subclass of at least one of the types in the union
+    if get_origin(base) in (typing.Union, UnionType):
+        return any(issubclass_generic(subclass, arg) for arg in get_args(base))
+
+    # Special case: if the base class is a tuple, check if the subclass is a subclass of
+    # at least one type in the tuple
+    if isinstance(base, tuple):
+        try:
+            return any(issubclass_generic(subclass, arg) for arg in base)
+        except TypeError as e:
+            raise TypeError(
+                f"isinstance_generic() arg 2 must be a type, type-like, or tuple of "
+                f"types or type-likes, but got {base!r}"
+            ) from e
+
+    # Typehints can contain `None` as a shorthand for `NoneType`; replace it with the
+    # actual type
+    if subclass is None:
+        subclass = NoneType
+    if base is None:
+        base = NoneType
+
+    # Replace deprecated types in typing with their canonical replacements in
+    # collections.abc
     subclass = _replace_deprecated_type(subclass)
     base = _replace_deprecated_type(base)
 
     # Get the non-generic origin of the base class
     base_origin = get_origin(base) or base
+    if not isinstance(base_origin, type):
+        raise TypeError(
+            f"isinstance_generic() arg 2 must be a type, type-like, or tuple of types "
+            f"or type-likes, but got {base!r}"
+        )
 
     # If the non-generic origin of the subclass is not a subclass of the non-generic
     # origin of the base class, the subclass cannot be a subclass of the base class
     subclass_origin = get_origin(subclass) or subclass
-    if not issubclass(subclass_origin, base_origin):
+    if not isinstance(subclass_origin, type):
+        raise TypeError(
+            f"isinstance_generic() arg 1 must be a type or type-like, but got "
+            f"{subclass!r}"
+        )
+    elif not issubclass(subclass_origin, base_origin):
         return False
 
     # If the base class is not a generic class, there are no type arguments to check
@@ -567,7 +607,7 @@ def _get_origin_parameters(
         )
 
 
-def _replace_deprecated_type(tp: type) -> type:
+def _replace_deprecated_type(tp: T) -> T:
     """
     Replace deprecated types in :mod:`typing` with their canonical replacements in
     :mod:`collections.abc`.
@@ -577,18 +617,23 @@ def _replace_deprecated_type(tp: type) -> type:
         deprecated
     """
 
-    if tp.__module__ == "typing":
+    origin: type | None = get_origin(tp)
+    if (
         # Check if the same type is defined in collections.abc
-        origin: type | None = get_origin(tp)
-        if origin is not None and origin.__module__ == "collections.abc":
-            log.warning(
-                f"Type typing.{tp.__name__} is deprecated; "
-                f"please use {origin.__module__}.{origin.__name__} instead"
-            )
-            args: tuple[type, ...] = get_args(tp)
-            if args:
-                # If the type has arguments, apply the same arguments to the replacement
-                return cast(type, origin[args])  # type: ignore[index]
-            else:
-                return origin
+        origin is not None
+        and tp.__module__ == "typing"
+        and origin.__module__ == "collections.abc"
+    ):
+        log.warning(
+            "Type typing.%s is deprecated; please use %s.%s instead",
+            tp.__name__,  # type: ignore[attr-defined]
+            origin.__module__,
+            origin.__name__,
+        )
+        args: tuple[type, ...] = get_args(tp)
+        if args:
+            # If the type has arguments, apply the same arguments to the replacement
+            return cast(T, origin[args])  # type: ignore[index]
+        else:
+            return cast(T, origin)
     return tp

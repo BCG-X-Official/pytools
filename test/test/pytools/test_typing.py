@@ -11,6 +11,7 @@ from collections.abc import Iterable, Iterator, Mapping
 from typing import Any, Generic, TypeVar
 
 import pytest
+from typing_extensions import Never
 
 from pytools.typing import get_generic_instance, issubclass_generic
 
@@ -105,6 +106,43 @@ def test_issubclass_generic() -> None:
     assert issubclass_generic(
         AsyncIterator_typing[Mapping[str, int]], AsyncIterable[Mapping[str, Any]]
     )
+
+    assert issubclass_generic(int, float | int)
+    assert issubclass_generic(float, float | int)
+    assert issubclass_generic(int | float, float | int)
+    assert issubclass_generic(int | float, typing.Union[float | int])
+
+    assert issubclass_generic(int, (float, int))
+
+    assert issubclass_generic(Never, None)
+    assert issubclass_generic(None, None)
+    assert not issubclass_generic(None, int)
+
+    with pytest.raises(
+        TypeError,
+        match=(
+            r"^isinstance_generic\(\) arg 2 must be a type, type-like, or tuple of "
+            r"types or type-likes, but got 3$"
+        ),
+    ):
+        issubclass_generic(int, 3)
+
+    with pytest.raises(
+        TypeError,
+        match=(
+            r"^isinstance_generic\(\) arg 2 must be a type, type-like, or tuple of "
+            r"types or type-likes, but got \(3, <class 'int'>\)$"
+        ),
+    ):
+        issubclass_generic(int, (3, int))
+
+    with pytest.raises(
+        TypeError,
+        match=(
+            r"^isinstance_generic\(\) arg 1 must be a type or type-like, but got 3$"
+        ),
+    ):
+        issubclass_generic(3, int)
 
 
 def test_get_generic_instance() -> None:
