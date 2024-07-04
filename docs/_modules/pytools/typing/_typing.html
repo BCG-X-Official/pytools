@@ -183,7 +183,7 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">ValuesView</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">GenericAlias</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">GenericAlias</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">UnionType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">AbstractSet</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
@@ -530,13 +530,13 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get_args</span><span class="p">,</span> <span class="n">get_generic_instance</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">get_generic_type</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">base</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="issubclass_generic"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic">[docs]</a><span class="k">def</span> <span class="nf">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="n">Never</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="n">Never</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="issubclass_generic"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic">[docs]</a><span class="k">def</span> <span class="nf">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if a class is a subclass of a generic instance, i.e., it is a subclass of the</span>
 <span class="sd">    generic class, and has compatible type arguments.</span>
 
-<span class="sd">    :param subclass: the class to check</span>
-<span class="sd">    :param base: the generic class to check against</span>
+<span class="sd">    :param subclass: the (potentially generic) subclass to check</span>
+<span class="sd">    :param base: the (potentially generic) base class to check against</span>
 <span class="sd">    :return: ``True`` if the class is a subclass of the generic instance, ``False``</span>
 <span class="sd">        otherwise</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -553,16 +553,56 @@
     <span class="k">elif</span> <span class="n">base</span> <span class="ow">is</span> <span class="n">Never</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
 
+    <span class="c1"># Special case: if the subclass is a union type, check if all types in the union are</span>
+    <span class="c1"># subclasses of the base class</span>
+    <span class="k">if</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">,</span> <span class="n">UnionType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">issubclass_generic</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">subclass</span><span class="p">))</span>
+
+    <span class="c1"># Special case: if the base class is a union type, check if the subclass is a</span>
+    <span class="c1"># subclass of at least one of the types in the union</span>
+    <span class="k">if</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">,</span> <span class="n">UnionType</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">base</span><span class="p">))</span>
+
+    <span class="c1"># Special case: if the base class is a tuple, check if the subclass is a subclass of</span>
+    <span class="c1"># at least one type in the tuple</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">base</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 2 must be a type, type-like, or tuple of &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;types or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+    <span class="c1"># Typehints can contain `None` as a shorthand for `NoneType`; replace it with the</span>
+    <span class="c1"># actual type</span>
+    <span class="k">if</span> <span class="n">subclass</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">subclass</span> <span class="o">=</span> <span class="n">NoneType</span>
+    <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">NoneType</span>
+
+    <span class="c1"># Replace deprecated types in typing with their canonical replacements in</span>
+    <span class="c1"># collections.abc</span>
     <span class="n">subclass</span> <span class="o">=</span> <span class="n">_replace_deprecated_type</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span>
     <span class="n">base</span> <span class="o">=</span> <span class="n">_replace_deprecated_type</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
 
     <span class="c1"># Get the non-generic origin of the base class</span>
     <span class="n">base_origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">or</span> <span class="n">base</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_origin</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 2 must be a type, type-like, or tuple of types &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="c1"># If the non-generic origin of the subclass is not a subclass of the non-generic</span>
     <span class="c1"># origin of the base class, the subclass cannot be a subclass of the base class</span>
     <span class="n">subclass_origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">subclass</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass_origin</span><span class="p">,</span> <span class="n">base_origin</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subclass_origin</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 1 must be a type or type-like, but got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subclass</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass_origin</span><span class="p">,</span> <span class="n">base_origin</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># If the base class is not a generic class, there are no type arguments to check</span>
@@ -724,7 +764,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_replace_deprecated_type</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_replace_deprecated_type</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace deprecated types in :mod:`typing` with their canonical replacements in</span>
 <span class="sd">    :mod:`collections.abc`.</span>
@@ -734,20 +774,25 @@
 <span class="sd">        deprecated</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">tp</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;typing&quot;</span><span class="p">:</span>
+    <span class="n">origin</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
         <span class="c1"># Check if the same type is defined in collections.abc</span>
-        <span class="n">origin</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;collections.abc&quot;</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Type typing.</span><span class="si">{</span><span class="n">tp</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is deprecated; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;please use </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> instead&quot;</span>
-            <span class="p">)</span>
-            <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
-                <span class="c1"># If the type has arguments, apply the same arguments to the replacement</span>
-                <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">origin</span><span class="p">[</span><span class="n">args</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">origin</span>
+        <span class="n">origin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="n">tp</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;typing&quot;</span>
+        <span class="ow">and</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;collections.abc&quot;</span>
+    <span class="p">):</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;Type typing.</span><span class="si">%s</span><span class="s2"> is deprecated; please use </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> instead&quot;</span><span class="p">,</span>
+            <span class="n">tp</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>  <span class="c1"># type: ignore[attr-defined]</span>
+            <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span>
+            <span class="n">origin</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="c1"># If the type has arguments, apply the same arguments to the replacement</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="p">[</span><span class="n">args</span><span class="p">])</span>  <span class="c1"># type: ignore[index]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">tp</span>
 </pre></div>
 

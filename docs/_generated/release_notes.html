@@ -163,6 +163,14 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pytools-3-0-2">
+     <em>
+      pytools
+     </em>
+     3.0.2
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#pytools-3-0-1">
      <em>
       pytools
@@ -515,6 +523,14 @@
 <h2><em>pytools</em> 3.0<a class="headerlink" href="#pytools-3-0" title="Permalink to this headline">#</a></h2>
 <p><em>pytools</em> 3.0 adds support for language features introduced up to and including
 Python 3.10, and drops support for Python versions.</p>
+<section id="pytools-3-0-2">
+<h3><em>pytools</em> 3.0.2<a class="headerlink" href="#pytools-3-0-2" title="Permalink to this headline">#</a></h3>
+<ul class="simple">
+<li><p>BUILD: <a class="reference external" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="(in NumPy v2.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">numpy</span></code></a> 2 is now supported</p></li>
+<li><p>FIX: <a class="reference internal" href="../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic" title="pytools.typing.issubclass_generic"><code class="xref py py-func docutils literal notranslate"><span class="pre">issubclass_generic()</span></code></a> now supports unions, tuples of types, and <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+and uses clearer error messages if called with invalid arguments</p></li>
+</ul>
+</section>
 <section id="pytools-3-0-1">
 <h3><em>pytools</em> 3.0.1<a class="headerlink" href="#pytools-3-0-1" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
@@ -657,7 +673,7 @@ notebooks</p></li>
 <section id="pytools-2-0">
 <h2><em>pytools</em> 2.0<a class="headerlink" href="#pytools-2-0" title="Permalink to this headline">#</a></h2>
 <p><em>pytools</em> 2 introduces enhanced visualisations along with additional API improvements,
-and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.d39f0234a18762a9b261a28763c7bea706633ce7.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
+and is now subject to static type checking with <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.12.0+dev.606971807fad1de26ebc575d327d4c1c33f71c0e.dirty)"><span class="xref std std-doc">mypy</span></a>.</p>
 <section id="id6">
 <h3>2.0.7<a class="headerlink" href="#id6" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
@@ -688,7 +704,7 @@ accessing their <code class="docutils literal notranslate"><span class="pre">__g
 <section id="id10">
 <h3>2.0.3<a class="headerlink" href="#id10" title="Permalink to this headline">#</a></h3>
 <ul class="simple">
-<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.11.0+dev.d39f0234a18762a9b261a28763c7bea706633ce7.dirty)"><span class="xref std std-doc">mypy</span></a>
+<li><p>REFACTOR: rename arg of <a class="reference internal" href="../apidoc/pytools/fit/pytools.fit.FittableMixin.html#pytools.fit.FittableMixin.fit" title="pytools.fit.FittableMixin.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FittableMixin.fit()</span></code></a> to <code class="docutils literal notranslate"><span class="pre">__x</span></code>, so that <a class="reference external" href="https://mypy.readthedocs.io/en/latest/index.html" title="(in mypy v1.12.0+dev.606971807fad1de26ebc575d327d4c1c33f71c0e.dirty)"><span class="xref std std-doc">mypy</span></a>
 recognizes it as a positional-only argument, and that subclasses can change its
 name without breaking the API</p></li>
 <li><p>FIX: make <a class="reference internal" href="../apidoc/pytools/sphinx/util/pytools.sphinx.util.ResolveTypeVariables.html#pytools.sphinx.util.ResolveTypeVariables" title="pytools.sphinx.util.ResolveTypeVariables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResolveTypeVariables</span></code></a> compatible with Python 3.9</p></li>
