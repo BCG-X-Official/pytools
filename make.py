@@ -12,9 +12,10 @@ import subprocess
 import sys
 import warnings
 from abc import ABCMeta, abstractmethod
+from collections.abc import Collection, Iterator, Mapping
 from glob import glob
 from traceback import print_exc
-from typing import Any, Collection, Dict, Iterator, List, Mapping, Set, cast
+from typing import Any, cast
 from urllib import request
 from urllib.error import HTTPError
 from xml.etree import ElementTree
@@ -29,7 +30,7 @@ sys.path.insert(
     os.path.normpath(os.path.join(SCRIPT_DIR, "sphinx", "base")),
 )
 # noinspection PyUnresolvedReferences
-from make_util import get_package_version
+from make_util import get_package_version  # noqa: E402
 
 FACET_PATH_ENV = "FACET_PATH"
 FACET_PATH_URI_ENV = "FACET_PATH_URI"
@@ -92,9 +93,9 @@ class Builder(metaclass=ABCMeta):
 
         # add the project roots path to the environment as a URI
 
-        os.environ[
-            FACET_PATH_URI_ENV
-        ] = f"file://{request.pathname2url(projects_root_path)}"
+        os.environ[FACET_PATH_URI_ENV] = (
+            f"file://{request.pathname2url(projects_root_path)}"
+        )
 
         # determine the package version of the project
 
@@ -103,9 +104,9 @@ class Builder(metaclass=ABCMeta):
 
         package_version = str(get_package_version(package_path=src_root_path))
 
-        os.environ[
-            FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
-        ] = package_version
+        os.environ[FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())] = (
+            package_version
+        )
 
         self.package_version = package_version
         self.pyproject_toml = None
@@ -160,7 +161,7 @@ class Builder(metaclass=ABCMeta):
             os.environ[FACET_PATH_ENV], self.project, "pyproject.toml"
         )
         log(f"Reading build configuration from {pyproject_toml_path}")
-        with open(pyproject_toml_path, "rt") as f:
+        with open(pyproject_toml_path) as f:
             self.pyproject_toml = pyproject_toml = toml.load(f)
 
         return pyproject_toml
@@ -184,7 +185,7 @@ class Builder(metaclass=ABCMeta):
 
         log(f"Testing package version: {package} {new_version}")
 
-        released_versions: List[Version] = self._get_existing_releases(package)
+        released_versions: list[Version] = self._get_existing_releases(package)
 
         if new_version in released_versions:
             raise AssertionError(
@@ -215,7 +216,7 @@ class Builder(metaclass=ABCMeta):
                 f"release of major/minor version {new_version} can go ahead"
             )
 
-    def _get_existing_releases(self, package: str) -> List[Version]:
+    def _get_existing_releases(self, package: str) -> list[Version]:
         releases_uri = f"https://pypi.org/rss/project/{package}/releases.xml"
         log(f"Getting existing releases from {releases_uri}")
         try:
@@ -234,7 +235,7 @@ class Builder(metaclass=ABCMeta):
         tree = ElementTree.fromstring(releases_xml)
         releases_nodes = tree.findall(path=".//channel//item//title")
 
-        released_versions: List[Version] = sorted(
+        released_versions: list[Version] = sorted(
             Version(r) for r in [r.text for r in releases_nodes]
         )
 
@@ -256,7 +257,7 @@ class Builder(metaclass=ABCMeta):
 
         requirements_to_expose = self._get_requirements_to_expose()
 
-        environment_version_variables: Dict[str, str] = {
+        environment_version_variables: dict[str, str] = {
             # replace non-word characters with '_' to make valid environment variable
             # names
             (
@@ -270,7 +271,7 @@ class Builder(metaclass=ABCMeta):
             export_environment_variable(name=package, value=version)
 
         # get packages to be built from source
-        build_no_binaries: List[str] = (
+        build_no_binaries: list[str] = (
             self.get_pyproject_toml()[TOML_BUILD]
             .get(TOML_NO_BINARY, {})
             .get(self.dependency_type, [])
@@ -303,7 +304,7 @@ class Builder(metaclass=ABCMeta):
         flit_metadata = self.get_pyproject_toml()[TOML_TOOL][TOML_FLIT][TOML_METADATA]
 
         python_version = flit_metadata[TOML_REQUIRES_PYTHON]
-        run_dependencies: Dict[str, str] = {
+        run_dependencies: dict[str, str] = {
             name: validate_pip_version_spec(
                 dependency_type=DEP_DEFAULT, package=name, spec=version.lstrip()
             )
@@ -328,12 +329,12 @@ class Builder(metaclass=ABCMeta):
 
         # get full project specification from the TOML file
         # get the matrix test dependencies (min and max)
-        build_matrix_definition: Dict[str, Dict[str, str]] = self.get_pyproject_toml()[
+        build_matrix_definition: dict[str, dict[str, str]] = self.get_pyproject_toml()[
             TOML_BUILD
         ][TOML_MATRIX]
 
-        def get_matrix_dependencies(matrix_type: str) -> Dict[str, str]:
-            dependencies: Dict[str, str] = build_matrix_definition.get(matrix_type, {})
+        def get_matrix_dependencies(matrix_type: str) -> dict[str, str]:
+            dependencies: dict[str, str] = build_matrix_definition.get(matrix_type, {})
             if not dependencies:
                 return {}
             return {
@@ -345,11 +346,11 @@ class Builder(metaclass=ABCMeta):
                 for name, version in dependencies.items()
             }
 
-        min_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MIN)
-        max_dependencies: Dict[str, str] = get_matrix_dependencies(DEP_MAX)
+        min_dependencies: dict[str, str] = get_matrix_dependencies(DEP_MIN)
+        max_dependencies: dict[str, str] = get_matrix_dependencies(DEP_MAX)
 
         # check that the min and max dependencies supersede all default dependencies
-        dependencies_not_covered_in_matrix: Set[str] = (
+        dependencies_not_covered_in_matrix: set[str] = (
             run_dependencies.keys() - min_dependencies.keys()
         ) | (run_dependencies.keys() - max_dependencies.keys())
 
@@ -465,7 +466,7 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"conda mambabuild -c conda-forge -c bcg_gamma {recipe_path}"
+        build_cmd = f"conda mambabuild -c conda-forge {recipe_path}"
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
@@ -556,7 +557,7 @@ class ToxBuilder(Builder):
                 for package in glob(os.path.join(project_repo_path, package_glob))
             ]
             # store index.html
-            with open(project_index_html_path, "wt") as f:
+            with open(project_index_html_path, "w") as f:
                 f.writelines(package_file_links)
 
             log(f"Local PyPi Index created at: {pypi_index_path}")
@@ -596,8 +597,8 @@ class ToxBuilder(Builder):
         # file, unless they reference a facet dependency environment variable which
         # has not been exported
 
-        removed_lines: List[str] = []
-        with open(tox_ini_path, "rt") as f_in, open(tox_ini_tmp_path, "wt") as f_out:
+        removed_lines: list[str] = []
+        with open(tox_ini_path) as f_in, open(tox_ini_tmp_path, "w") as f_out:
             for line in f_in.readlines():
                 # get all environment variables referenced in the line
                 # these use the tox.ini `{env:` syntax and start with the
@@ -641,7 +642,7 @@ def get_projects_root_path() -> str:
     return facet_path
 
 
-def get_known_projects() -> Set[str]:
+def get_known_projects() -> set[str]:
     dir_entries: Iterator[os.DirEntry] = cast(
         Iterator[os.DirEntry], os.scandir(get_projects_root_path())
     )

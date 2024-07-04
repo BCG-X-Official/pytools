@@ -1,16 +1,17 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
 from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Any, Dict, Optional, Tuple, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import numpy.typing as npt
 
-from ..api import AllTracker, inheritdoc, to_list
+from ..api import AllTracker, as_list, inheritdoc
 from .operator import BinaryOperator, UnaryOperator
 
 log = logging.getLogger(__name__)
@@ -112,14 +113,6 @@ class HasExpressionRepr(metaclass=ABCMeta):
         # to convert the expression to HTML for Jupyter notebooks
         return f"<pre>{self}\n</pre>\n"
 
-    def _repr_mimebundle_(self, **kwargs: Any) -> Dict[str, Any]:
-        # get plain text and HTML representations of this object
-        # for use in Jupyter notebooks
-        return {
-            "text/plain": str(self),
-            "text/html": self._repr_html_(),
-        }
-
 
 @inheritdoc(match="[see superclass]")
 class Expression(HasExpressionRepr, metaclass=ABCMeta):
@@ -137,7 +130,7 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """
         The subexpressions of this expression.
         """
@@ -413,10 +406,10 @@ class Expression(HasExpressionRepr, metaclass=ABCMeta):
         return Index(self, key)
 
     def __setitem__(self, key: Any, value: Any) -> None:
-        raise TypeError(f"cannot set indexed item of Expression: {to_list(key)}")
+        raise TypeError(f"cannot set indexed item of Expression: {as_list(key)}")
 
     def __delitem__(self, key: Any) -> None:
-        raise TypeError(f"cannot delete indexed item of Expression: {to_list(key)}")
+        raise TypeError(f"cannot delete indexed item of Expression: {as_list(key)}")
 
     def __getattr__(self, key: str) -> Expression:
         if key.startswith("_") or key.endswith("_"):
@@ -519,13 +512,22 @@ def make_expression(value: Any) -> Expression:
 
         return TupleLiteral(*value)
     elif isinstance(value, set):
+        from .atomic import Id
         from .composite import SetLiteral
 
-        return SetLiteral(*value)
+        return SetLiteral(*value) if value else Id(set)()
+    elif isinstance(value, frozenset):
+        from .atomic import Id
+
+        return Id.frozenset(*value)
     elif isinstance(value, dict):
         from .composite import DictLiteral
 
         return DictLiteral(*value.items())
+    elif value is Ellipsis:
+        from .atomic import Id
+
+        return Id("...")
     elif isinstance(value, np.ndarray):
         from .atomic import Id
         from .composite import ListLiteral
@@ -554,7 +556,7 @@ def make_expression(value: Any) -> Expression:
         else:
             return BinaryOperation(BinaryOperator.SLICE, args[0], args[1])
     else:
-        name: Optional[str] = getattr(value, "__name__", None)
+        name: str | None = getattr(value, "__name__", None)
         if name:
             from .atomic import Id
 
@@ -624,7 +626,7 @@ class ExpressionAlias(Expression):
         return self.expression_.precedence_
 
     @property
-    def subexpressions_(self) -> Tuple[Expression, ...]:
+    def subexpressions_(self) -> tuple[Expression, ...]:
         """[see superclass]"""
         return (self._expression,)
 

@@ -3,7 +3,8 @@ Drawing dendrograms.
 """
 
 import logging
-from typing import Any, Dict, Iterable, List, NamedTuple, Optional, Type, Union
+from collections.abc import Iterable
+from typing import Any, NamedTuple
 
 from ...api import AllTracker, inheritdoc
 from ...data import LinkageTree
@@ -35,8 +36,8 @@ __tracker = AllTracker(globals())
 
 
 class _SubtreeInfo(NamedTuple):
-    names: List[str]
-    weights: List[float]
+    names: list[str]
+    weights: list[float]
     weight_total: float
 
 
@@ -49,19 +50,24 @@ class DendrogramDrawer(Drawer[LinkageTree, DendrogramStyle]):
     # defined in superclass, repeated here for Sphinx
     style: DendrogramStyle
 
-    def __init__(self, style: Optional[Union[DendrogramStyle, str]] = None) -> None:
+    def __init__(self, style: DendrogramStyle | str | None = None) -> None:
         """[see superclass]"""
         super().__init__(style=style)
 
     @classmethod
-    def get_style_classes(cls) -> Iterable[Type[DendrogramStyle]]:
+    def get_style_classes(cls) -> Iterable[type[DendrogramStyle]]:
         """[see superclass]"""
         return [
             DendrogramMatplotStyle,
             DendrogramReportStyle,
         ]
 
-    def get_style_kwargs(self, data: LinkageTree) -> Dict[str, Any]:
+    @classmethod
+    def get_default_style(cls) -> DendrogramStyle:
+        """[see superclass]"""
+        return DendrogramMatplotStyle()
+
+    def get_style_kwargs(self, data: LinkageTree) -> dict[str, Any]:
         """[see superclass]"""
         return dict(
             leaf_label=data.leaf_label,

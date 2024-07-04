@@ -1,12 +1,13 @@
 """
 Implementation of :mod:`pytools.expression` and subpackages.
 """
+
 from __future__ import annotations
 
 import itertools
 import logging
 from abc import ABCMeta
-from typing import Any, Tuple, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from ...api import AllTracker, inheritdoc
 from .. import Expression, ExpressionAlias, make_expression
@@ -100,6 +101,8 @@ class SetLiteral(CollectionLiteral):
         """
         :param elements: the set elements
         """
+        if not elements:
+            raise TypeError("set literals must have at least one element")
         super().__init__(brackets=BracketPair.CURLY, elements=elements)
 
 
@@ -108,7 +111,7 @@ class DictLiteral(CollectionLiteral):
     A dictionary expression.
     """
 
-    def __init__(self, *args: Tuple[Any, Any], **kwargs: Any) -> None:
+    def __init__(self, *args: tuple[Any, Any], **kwargs: Any) -> None:
         """
         :param args: dictionary entries as tuples ``(key, value)``
         :param kwargs: dictionary entries as keyword arguments
@@ -152,7 +155,7 @@ class UnaryOperation(SimplePrefixExpression, Operation, metaclass=ABCMeta):
         return self._operator
 
     @property
-    def operands_(self) -> Tuple[Expression, ...]:
+    def operands_(self) -> tuple[Expression, ...]:
         """[see superclass]"""
         return self.subexpressions_
 
@@ -180,7 +183,7 @@ class BinaryOperation(InfixExpression, Operation):
         if len(operands) < 2:
             raise ValueError("operation requires at least two operands")
 
-        operands_expr: Tuple[Expression, ...] = tuple(
+        operands_expr: tuple[Expression, ...] = tuple(
             make_expression(operand) for operand in operands
         )
 
@@ -203,7 +206,7 @@ class BinaryOperation(InfixExpression, Operation):
         return self._operator
 
     @property
-    def operands_(self) -> Tuple[Expression, ...]:
+    def operands_(self) -> tuple[Expression, ...]:
         """[see superclass]"""
         return self._operands
 
@@ -217,7 +220,7 @@ class BinaryOperation(InfixExpression, Operation):
         """[see superclass]"""
         return self.infix_.precedence
 
-    def _flattened_operands(self) -> Tuple[Expression, ...]:
+    def _flattened_operands(self) -> tuple[Expression, ...]:
         operands = self.operands_
         first_operand = operands[0]
 
@@ -342,7 +345,7 @@ class Attr(BinaryOperation):
     The ``….…`` ("dot") operation to reference an attribute of an object.
     """
 
-    def __init__(self, obj: Any, attribute: Union[Id, str]) -> None:
+    def __init__(self, obj: Any, attribute: Id | str) -> None:
         """
         :param obj: the object whose attribute is referenced
         :param attribute: the name of the attribute being referenced

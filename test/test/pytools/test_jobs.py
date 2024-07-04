@@ -1,12 +1,11 @@
 import logging
-from typing import List
 
 from pytools.parallelization import Job, JobRunner, SimpleQueue
 
 log = logging.getLogger(__name__)
 
 
-def test_jobs(jobs: List[Job[int]], jobs_delayed: List[Job[int]]) -> None:
+def test_jobs(jobs: list[Job[int]], jobs_delayed: list[Job[int]]) -> None:
     assert JobRunner().run_jobs(jobs) == [0, 1, 2, 3, 4, 5, 6, 7]
     assert JobRunner(n_jobs=1).run_jobs(jobs) == [0, 1, 2, 3, 4, 5, 6, 7]
     assert JobRunner(n_jobs=-3).run_jobs(jobs) == [0, 1, 2, 3, 4, 5, 6, 7]
@@ -16,9 +15,9 @@ def test_jobs(jobs: List[Job[int]], jobs_delayed: List[Job[int]]) -> None:
     assert JobRunner(n_jobs=-3).run_jobs(jobs_delayed) == [2, 3, 4, 5]
 
 
-def test_queue(jobs: List[Job[int]], jobs_delayed: List[Job[int]]) -> None:
-    class PassthroughQueue(SimpleQueue[int, List[int]]):
-        def aggregate(self, job_results: List[int]) -> List[int]:
+def test_queue(jobs: list[Job[int]], jobs_delayed: list[Job[int]]) -> None:
+    class PassthroughQueue(SimpleQueue[int, list[int]]):
+        def aggregate(self, job_results: list[int]) -> list[int]:
             return job_results
 
     queue_1 = PassthroughQueue(jobs)
@@ -46,7 +45,7 @@ def test_queue(jobs: List[Job[int]], jobs_delayed: List[Job[int]]) -> None:
     ]
 
     class SumQueue(SimpleQueue[int, int]):
-        def aggregate(self, job_results: List[int]) -> int:
+        def aggregate(self, job_results: list[int]) -> int:
             return sum(job_results)
 
     queue_1_sum = SumQueue(jobs)

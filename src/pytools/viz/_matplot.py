@@ -4,7 +4,8 @@ Matplot styles for the GAMMA visualization library.
 
 import logging
 from abc import ABCMeta
-from typing import Any, Callable, Iterable, List, Optional, Union, cast, overload
+from collections.abc import Callable, Iterable
+from typing import Any, cast, overload
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ from matplotlib.legend import Legend
 from matplotlib.ticker import Formatter
 from packaging.version import Version
 
-from ..api import AllTracker, inheritdoc, to_list
+from ..api import AllTracker, as_list, inheritdoc
 from ._viz import ColoredStyle
 from .color import MatplotColorScheme, RgbaColor
 
@@ -73,9 +74,9 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
     def __init__(
         self,
         *,
-        ax: Optional[Axes] = None,
-        colors: Optional[MatplotColorScheme] = None,
-        font_family: Optional[Union[str, Iterable[str]]] = None,
+        ax: Axes | None = None,
+        colors: MatplotColorScheme | None = None,
+        font_family: str | Iterable[str] | None = None,
     ) -> None:
         """
         :param ax: optional axes object to draw on; create a new figure if not specified
@@ -87,14 +88,14 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         super().__init__(colors=colors)
         self._ax = ax
 
-        default_font_family: List[str] = (
+        default_font_family: list[str] = (
             MatplotStyle._DEFAULT_FONT
             + matplotlib.rcParams[MatplotStyle._DEFAULT_FONT_FAMILY]
         )
 
         if font_family is not None:
             font_family = (
-                to_list(font_family, element_type=str, arg_name="font")
+                as_list(font_family, element_type=str, arg_name="font")
                 + default_font_family
             )
         else:
@@ -133,7 +134,7 @@ class MatplotStyle(ColoredStyle[MatplotColorScheme], metaclass=ABCMeta):
         :return: the renderer
         """
 
-        renderer: Optional[RendererBase]
+        renderer: RendererBase | None
         if __matplotlib_version__ < __matplotlib_3_6__:
             renderer = self.ax.get_renderer_cache()
         else:
@@ -257,17 +258,17 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
 
     #: The colorbar associated with this style;
     #: set when :meth:`.ColorbarMatplotStyle.start_drawing` is called.
-    colorbar: Optional[ColorbarBase] = None
+    colorbar: ColorbarBase | None = None
 
     def __init__(
         self,
         *,
-        ax: Optional[Axes] = None,
-        colors: Optional[MatplotColorScheme] = None,
-        font_family: Optional[Union[str, Iterable[str]]] = None,
+        ax: Axes | None = None,
+        colors: MatplotColorScheme | None = None,
+        font_family: str | Iterable[str] | None = None,
         colormap_normalize: Normalize = None,
-        colorbar_major_formatter: Optional[Formatter] = None,
-        colorbar_minor_formatter: Optional[Formatter] = None,
+        colorbar_major_formatter: Formatter | None = None,
+        colorbar_minor_formatter: Formatter | None = None,
     ) -> None:
         """
         :param colormap_normalize: the :class:`~matplotlib.colors.Normalize` object
@@ -298,7 +299,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
     )
 
     @overload
-    def color_for_value(self, z: Union[int, float]) -> RgbaColor:
+    def color_for_value(self, z: int | float) -> RgbaColor:
         """[overload]"""
         pass
 
@@ -308,8 +309,8 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         pass
 
     def color_for_value(
-        self, z: Union[int, float, npt.NDArray[np.float64]]
-    ) -> Union[RgbaColor, npt.NDArray[np.float64]]:
+        self, z: int | float | npt.NDArray[np.float64]
+    ) -> RgbaColor | npt.NDArray[np.float64]:
         """
         Get the color(s) associated with the given value(s), based on the color map and
         normalization defined for this style.
@@ -328,7 +329,7 @@ class ColorbarMatplotStyle(MatplotStyle, metaclass=ABCMeta):
         self,
         *,
         title: str,
-        colorbar_label: Optional[str] = None,
+        colorbar_label: str | None = None,
         **kwargs: Any,
     ) -> None:
         """

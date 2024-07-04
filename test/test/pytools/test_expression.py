@@ -3,7 +3,6 @@ Tests for module pytools.expression
 """
 
 import logging
-from typing import List, Tuple
 
 import pytest
 
@@ -109,22 +108,17 @@ def test_expression_repr_html() -> None:
         - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
     )
 )"""
-    expected_html_expression = f"<pre>{expected_formatted_expression}\n</pre>\n"
+    # test if the string representation is generated as expected
+    assert str(expr) == expected_formatted_expression
 
     # test if the html representation is generated as expected
-    assert expr._repr_html_() == expected_html_expression
-
-    # test if the mimebundle representation is generated as expected
-    assert expr._repr_mimebundle_() == {
-        "text/html": expected_html_expression,
-        "text/plain": expected_formatted_expression,
-    }
+    assert expr._repr_html_() == f"<pre>{expected_formatted_expression}\n</pre>\n"
 
 
 def test_expression() -> None:
     lit_5 = Lit(5)
     lit_abc = Lit("abc")
-    expressions: List[Tuple[Expression, str]] = [
+    expressions: list[tuple[Expression, str]] = [
         (lit_5, "5"),
         (lit_abc, "'abc'"),
         (Id.xx, "xx"),
@@ -137,7 +131,7 @@ def test_expression() -> None:
         (BinaryOperation(BinaryOperator.ADD, lit_5, lit_abc, Id.xx), "5 + 'abc' + xx"),
         (Call(Id("func")), "func()"),
         (ListLiteral(), "[]"),
-        (SetLiteral(), "{}"),
+        (SetLiteral(1), "{1}"),
         (TupleLiteral(), "()"),
         (DictLiteral(), "{}"),
         (Id.xx.isalpha(), "xx.isalpha()"),
@@ -154,6 +148,12 @@ def test_expression() -> None:
         assert len(
             PythonExpressionFormatter(single_line=True).to_text(expression)
         ) == len(expected_str)
+
+    with pytest.raises(
+        TypeError, match="^set literals must have at least one element$"
+    ):
+        # Set literals must have at least one element
+        SetLiteral()
 
 
 def test_expression_setting() -> None:
@@ -200,6 +200,31 @@ def test_comparison_expressions() -> None:
     assert freeze(a) == freeze(a_copy)
     assert freeze(a) != a_copy
     assert freeze(a) != (a_copy + 1)
+
+
+def test_make_expression() -> None:
+    assert freeze(make_expression([1, 2, 3])) == freeze(
+        ListLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression((1, 2, 3))) == freeze(
+        TupleLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression({1, 2, 3})) == freeze(
+        SetLiteral(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression(set())) == freeze(Id(set)())
+    assert freeze(make_expression({1: 2, 3: 4})) == freeze(
+        DictLiteral((Lit(1), Lit(2)), (Lit(3), Lit(4)))
+    )
+    assert freeze(make_expression({"a": 2, "b": 4})) == freeze(
+        DictLiteral((Lit("a"), Lit(2)), (Lit("b"), Lit(4)))
+    )
+    assert freeze(make_expression(frozenset({1, 2, 3}))) == freeze(
+        Id(frozenset)(Lit(1), Lit(2), Lit(3))
+    )
+    assert freeze(make_expression([1, 2, ...])) == freeze(
+        ListLiteral(Lit(1), Lit(2), Ellipsis)
+    )
 
 
 def test_expression_operators() -> None:

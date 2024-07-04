@@ -1,11 +1,12 @@
 """
 Operators used in expressions.
 """
+
 from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import Mapping, Optional, Set, Tuple
+from collections.abc import Mapping
 
 from pytools.api import AllTracker
 
@@ -35,7 +36,7 @@ class Operator(metaclass=ABCMeta):
     #: Largest possible value of :attr:`.precedence` for default operators.
     MAX_PRECEDENCE: int
 
-    def __init__(self, symbol: str, precedence: Optional[int] = None) -> None:
+    def __init__(self, symbol: str, precedence: int | None = None) -> None:
         """
         :param symbol: the symbol representing this operator
         :param precedence: the precedence of this operator; defaults to Python's
@@ -197,7 +198,7 @@ UnaryOperator.INVERT = UnaryOperator("~")
 UnaryOperator.NOT = UnaryOperator("not")
 UnaryOperator.LAMBDA = UnaryOperator("lambda")
 
-__OPERATOR_PRECEDENCE_ORDER: Tuple[Set[Operator], ...] = (
+__OPERATOR_PRECEDENCE_ORDER: tuple[set[Operator], ...] = (
     {BinaryOperator.ASSIGN},
     {BinaryOperator.COMMA, UnaryOperator.LAMBDA},
     {BinaryOperator.COLON, BinaryOperator.SLICE},

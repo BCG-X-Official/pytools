@@ -12,8 +12,9 @@ import subprocess
 import sys
 from abc import ABCMeta, abstractmethod
 from collections import defaultdict
+from collections.abc import Iterable
 from glob import glob
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any
 from weakref import ReferenceType
 
 from make_util import get_package_version as _get_package_version
@@ -76,7 +77,7 @@ class CommandMeta(ABCMeta):
 
     def __init__(cls, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        cls.__instance_ref: Optional[ReferenceType[Command]] = None
+        cls.__instance_ref: ReferenceType[Command] | None = None
 
     def __call__(cls, *args: Any, **kwargs: Any) -> Command:
         """
@@ -92,7 +93,7 @@ class CommandMeta(ABCMeta):
             if obj is not None:
                 return obj
 
-        instance: Command = super(CommandMeta, cls).__call__()
+        instance: Command = super().__call__()
         cls.__instance_ref = ReferenceType(instance)
         return instance
 
@@ -110,11 +111,11 @@ class Command(metaclass=CommandMeta):
         pass
 
     @abstractmethod
-    def get_dependencies(self) -> Tuple["Command", ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         pass
 
-    def get_prerequisites(self) -> Iterable["Command"]:
-        dependencies_extended: List[Command] = []
+    def get_prerequisites(self) -> Iterable[Command]:
+        dependencies_extended: list[Command] = []
 
         for dependency in self.get_dependencies():
             dependencies_inherited = dependency.get_dependencies()
@@ -151,7 +152,7 @@ class Clean(Command):
     def get_description(self) -> str:
         return "remove Sphinx build output"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         return ()
 
     def _run(self) -> None:
@@ -167,7 +168,7 @@ class ApiDoc(Command):
     def get_description(self) -> str:
         return "generate Sphinx API documentation from sources"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         # noinspection PyRedundantParentheses
         return (Clean(),)
 
@@ -188,7 +189,7 @@ class ApiDoc(Command):
 """
 
         os.makedirs(os.path.dirname(FILE_AUTOSUMMARY_TEMPLATE), exist_ok=True)
-        with open(FILE_AUTOSUMMARY_TEMPLATE, "wt") as f:
+        with open(FILE_AUTOSUMMARY_TEMPLATE, "w") as f:
             f.writelines(autosummary_rst)
         autogen_options = " ".join(
             [
@@ -213,7 +214,7 @@ class GettingStartedDoc(Command):
     def get_description(self) -> str:
         return "generate getting started documentation from sources"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         # noinspection PyRedundantParentheses
         return (Clean(),)
 
@@ -223,7 +224,7 @@ class GettingStartedDoc(Command):
         os.makedirs(DIR_SPHINX_GENERATED, exist_ok=True)
 
         # open the rst readme file
-        with open(os.path.join(DIR_REPO_ROOT, "README.rst"), "r") as file:
+        with open(os.path.join(DIR_REPO_ROOT, "README.rst")) as file:
             readme_data = file.read()
 
         # modify links (step back needed as build will add subdirectory to paths)
@@ -234,19 +235,19 @@ class GettingStartedDoc(Command):
 
         with open(os.path.join(DIR_SPHINX_GENERATED, "release_notes.rst"), "w") as dst:
             dst.write(".. _release-notes:\n\n")
-            with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst"), "r") as src:
+            with open(os.path.join(DIR_REPO_ROOT, "RELEASE_NOTES.rst")) as src:
                 dst.write(src.read())
 
         # create a new getting_started.rst that combines the header from templates and
         # adds an include for the README
         with open(
-            os.path.join(DIR_SPHINX_TEMPLATES, "getting-started-header.rst"), "r"
+            os.path.join(DIR_SPHINX_TEMPLATES, "getting-started-header.rst")
         ) as file:
             template_data = file.read()
 
         with open(
             os.path.join(DIR_SPHINX_GENERATED, "getting_started.rst"),
-            "wt",
+            "w",
         ) as file:
             file.writelines(template_data)
             file.writelines(readme_data)
@@ -256,7 +257,7 @@ class FetchPkgVersions(Command):
     def get_description(self) -> str:
         return "fetch available package versions with docs"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         return ()
 
     def _run(self) -> None:
@@ -271,7 +272,7 @@ class FetchPkgVersions(Command):
             f"const DOCS_VERSIONS = {json.dumps(version_data, indent=4,)}"
         )
 
-        with open(FILE_JS_VERSIONS, "wt") as f:
+        with open(FILE_JS_VERSIONS, "w") as f:
             f.write(version_data_as_js)
 
         log(f"Version data written to: {FILE_JS_VERSIONS!r}")
@@ -281,7 +282,7 @@ class PrepareDocsDeployment(Command):
     def get_description(self) -> str:
         return "integrate documentation of previous versions"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         return ()
 
     def _run(self) -> None:
@@ -373,7 +374,7 @@ class Html(Command):
     def get_description(self) -> str:
         return "build Sphinx docs as HTML"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         return Clean(), FetchPkgVersions(), ApiDoc(), GettingStartedDoc()
 
     def _run(self) -> None:
@@ -399,7 +400,7 @@ class Help(Command):
     def get_description(self) -> str:
         return "print this help message"
 
-    def get_dependencies(self) -> Tuple[Command, ...]:
+    def get_dependencies(self) -> tuple[Command, ...]:
         return ()
 
     def _run(self) -> None:
@@ -415,11 +416,11 @@ class Versions:
         self.version_tags = sorted(version_tags, reverse=True)
 
     @property
-    def latest_version(self) -> pkg_version:
+    def latest_version(self) -> pkg_version.Version:
         return self.version_tags[0]
 
 
-_versions: Optional[Versions] = None
+_versions: Versions | None = None
 
 
 def get_versions() -> Versions:
@@ -449,13 +450,13 @@ def get_versions() -> Versions:
     # append the version we are building to version_tags
     version_tags = (*version_tags, PACKAGE_VERSION)
 
-    versions_by_minor_version: Dict[str, List[pkg_version.Version]] = defaultdict(list)
+    versions_by_minor_version: dict[str, list[pkg_version.Version]] = defaultdict(list)
 
     for v in version_tags:
         if not (v.is_prerelease or v.is_devrelease) and v >= start_from_version_tag:
             versions_by_minor_version[f"{v.major}.{v.minor}"].append(v)
 
-    minor_versions: List[pkg_version] = [
+    minor_versions: list[pkg_version.Version] = [
         max(versions) for versions in versions_by_minor_version.values()
     ]
 
@@ -488,7 +489,7 @@ def make() -> None:
     os.environ[ENV_PYTHON_PATH] = os.pathsep.join(module_paths)
 
     # run all given commands:
-    executed_commands: Set[Command] = set()
+    executed_commands: set[Command] = set()
 
     for next_command_name in commands_passed:
 
@@ -547,7 +548,7 @@ def version_string_to_url(version: pkg_version.Version) -> str:
 def check_sphinx_version() -> None:
     import sphinx
 
-    sphinx_version = pkg_version.parse(sphinx.__version__)
+    sphinx_version = pkg_version.parse(sphinx.__version__)  # type: ignore[attr-defined]
     if sphinx_version < pkg_version.parse("4.5"):
         raise RuntimeError("please upgrade sphinx to version 4.5 or newer")
 
@@ -565,7 +566,7 @@ Available program arguments:
     print(usage)
 
 
-available_commands: Dict[str, Command] = {
+available_commands: dict[str, Command] = {
     cmd.name: cmd
     for cmd in (
         Clean(),

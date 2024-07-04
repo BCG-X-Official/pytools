@@ -1,20 +1,12 @@
 """
 Core implementation of :mod:`pytools.fit`.
 """
+
 import functools
 import logging
 from abc import ABCMeta, abstractmethod
-from typing import (
-    Any,
-    Callable,
-    Generic,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    overload,
-)
+from collections.abc import Callable
+from typing import Any, Generic, TypeVar, cast, overload
 
 from ..api import AllTracker
 
@@ -120,16 +112,16 @@ def fitted_only(__method: T_Callable) -> T_Callable:
 @overload
 def fitted_only(
     *,
-    not_fitted_error: Type[Exception] = NotFittedError,
+    not_fitted_error: type[Exception] = NotFittedError,
 ) -> Callable[[T_Callable], T_Callable]:
     """[overloaded]"""
 
 
 def fitted_only(
-    __method: Optional[T_Callable] = None,
+    __method: T_Callable | None = None,
     *,
-    not_fitted_error: Type[Exception] = NotFittedError,
-) -> Union[T_Callable, Callable[[T_Callable], T_Callable]]:
+    not_fitted_error: type[Exception] = NotFittedError,
+) -> T_Callable | Callable[[T_Callable], T_Callable]:
     # noinspection GrazieInspection
     """
     Decorator that ensures that the decorated method is only called if the object is

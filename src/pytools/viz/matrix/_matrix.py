@@ -3,19 +3,8 @@ Core implementation of :mod:`pytools.viz.matrix`.
 """
 
 import logging
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    Iterable,
-    Optional,
-    TextIO,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-)
+from collections.abc import Callable, Iterable
+from typing import Any, TextIO, TypeVar, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -96,7 +85,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
 
     #: Formatter for annotating each matrix cell with its value; if ``None``,
     #: no cells are annotated.
-    cell_formatter: Optional[Formatter] = None
+    cell_formatter: Formatter | None = None
 
     #: The value to look up in the colormap for undefined matrix cells.
     nan_substitute: float
@@ -104,16 +93,14 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
     def __init__(
         self,
         *,
-        ax: Optional[Axes] = None,
-        colors: Optional[MatplotColorScheme] = None,
-        font_family: Optional[Union[str, Iterable[str]]] = None,
-        colormap_normalize: Optional[Normalize] = None,
-        colorbar_major_formatter: Optional[Formatter] = None,
-        colorbar_minor_formatter: Optional[Formatter] = None,
-        cell_format: Union[str, Formatter, Callable[..., str], None] = None,
-        # todo: change to Callable[[Any], str] once sphinx "unhashable type" bug is
-        #       fixed
-        nan_substitute: Optional[float] = None,
+        ax: Axes | None = None,
+        colors: MatplotColorScheme | None = None,
+        font_family: str | Iterable[str] | None = None,
+        colormap_normalize: Normalize | None = None,
+        colorbar_major_formatter: Formatter | None = None,
+        colorbar_minor_formatter: Formatter | None = None,
+        cell_format: str | Formatter | Callable[[Any], str] | None = None,
+        nan_substitute: float | None = None,
     ) -> None:
         """
         :param cell_format: format for annotating each matrix cell with
@@ -163,13 +150,13 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         data: npt.NDArray[Any],
         *,
-        names: Tuple[
-            Optional[npt.NDArray[Any]],
-            Optional[npt.NDArray[Any]],
+        names: tuple[
+            npt.NDArray[Any] | None,
+            npt.NDArray[Any] | None,
         ],
-        weights: Tuple[
-            Optional[npt.NDArray[np.float64]],
-            Optional[npt.NDArray[np.float64]],
+        weights: tuple[
+            npt.NDArray[np.float64] | None,
+            npt.NDArray[np.float64] | None,
         ],
     ) -> None:
         """[see superclass]"""
@@ -197,7 +184,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ).reshape((*data.shape, 4))
 
         # define hatch parameters
-        hatch_params: Dict[bool, Dict[str, Any]] = {
+        hatch_params: dict[bool, dict[str, Any]] = {
             False: {},
             True: dict(
                 hatch="////",
@@ -240,7 +227,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
             tick_locations: npt.NDArray[np.float64],
             tick_labels: npt.NDArray[Any],
             axis: Axis,
-            tick_params: Dict[str, Any],
+            tick_params: dict[str, Any],
         ) -> None:
             # set the ticks for the given axis
 
@@ -261,7 +248,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         # add tick labels
 
         row_names, column_names = names
-        column_tick_params: Dict[str, Any]
+        column_tick_params: dict[str, Any]
 
         if (
             column_names is not None
@@ -324,7 +311,7 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         ax.xaxis.set_minor_locator(FixedLocator(column_bounds[1:-1]))
         ax.yaxis.set_minor_locator(FixedLocator(row_bounds[1:-1]))
 
-        def _grid_visible_kwarg(value: bool) -> Dict[str, bool]:
+        def _grid_visible_kwarg(value: bool) -> dict[str, bool]:
             if IS_MATPLOTLIB_3_5_OR_LATER:
                 return dict(visible=value)
             else:
@@ -346,8 +333,8 @@ class MatrixMatplotStyle(MatrixStyle, ColorbarMatplotStyle):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
-        weight_label: Optional[str] = None,
+        name_labels: tuple[str | None, str | None] = (None, None),
+        weight_label: str | None = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
@@ -394,11 +381,11 @@ class PercentageMatrixMatplotStyle(MatrixMatplotStyle):
     def __init__(
         self,
         *,
-        ax: Optional[Axes] = None,
-        colors: Optional[MatplotColorScheme] = None,
-        font_family: Optional[Union[str, Iterable[str]]] = None,
-        colormap_normalize: Optional[Normalize] = None,
-        nan_substitute: Optional[float] = None,
+        ax: Axes | None = None,
+        colors: MatplotColorScheme | None = None,
+        font_family: str | Iterable[str] | None = None,
+        colormap_normalize: Normalize | None = None,
+        nan_substitute: float | None = None,
     ) -> None:
         """
         :param nan_substitute: the value to look up in the colormap for undefined matrix
@@ -449,8 +436,8 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         self,
         *,
         title: str,
-        name_labels: Tuple[Optional[str], Optional[str]] = (None, None),
-        weight_label: Optional[str] = None,
+        name_labels: tuple[str | None, str | None] = (None, None),
+        weight_label: str | None = None,
         **kwargs: Any,
     ) -> None:
         """[see superclass]"""
@@ -469,21 +456,21 @@ class MatrixReportStyle(MatrixStyle, TextStyle):
         self,
         data: npt.NDArray[Any],
         *,
-        names: Tuple[
-            Optional[npt.NDArray[Any]],
-            Optional[npt.NDArray[Any]],
+        names: tuple[
+            npt.NDArray[Any] | None,
+            npt.NDArray[Any] | None,
         ],
-        weights: Tuple[
-            Optional[npt.NDArray[np.float64]],
-            Optional[npt.NDArray[np.float64]],
+        weights: tuple[
+            npt.NDArray[np.float64] | None,
+            npt.NDArray[np.float64] | None,
         ],
     ) -> None:
         """[see superclass]"""
 
         def _axis_marks(
-            axis_names: Optional[npt.NDArray[Any]],
-            axis_weights: Optional[npt.NDArray[np.float64]],
-        ) -> Optional[Iterable[str]]:
+            axis_names: npt.NDArray[Any] | None,
+            axis_weights: npt.NDArray[np.float64] | None,
+        ) -> Iterable[str] | None:
             axis_names_iter: Iterable[Any]
 
             if axis_names is None:
@@ -533,14 +520,14 @@ class MatrixDrawer(Drawer[Matrix[Any], MatrixStyle]):
     #: see :attr:`.Drawer.style`
     style: MatrixStyle
 
-    def __init__(self, style: Optional[Union[MatrixStyle, str]] = None) -> None:
+    def __init__(self, style: MatrixStyle | str | None = None) -> None:
         """
         :param style: the style to be used for drawing (default: ``"matplot"``)
         """
         super().__init__(style=style)
 
     @classmethod
-    def get_style_classes(cls) -> Iterable[Type[MatrixStyle]]:
+    def get_style_classes(cls) -> Iterable[type[MatrixStyle]]:
         """[see superclass]"""
         return [
             MatrixMatplotStyle,
@@ -548,7 +535,12 @@ class MatrixDrawer(Drawer[Matrix[Any], MatrixStyle]):
             MatrixReportStyle,
         ]
 
-    def get_style_kwargs(self, data: Matrix[Any]) -> Dict[str, Any]:
+    @classmethod
+    def get_default_style(cls) -> MatrixStyle:
+        """[see superclass]"""
+        return MatrixMatplotStyle()
+
+    def get_style_kwargs(self, data: Matrix[Any]) -> dict[str, Any]:
         """[see superclass]"""
         return dict(
             name_labels=data.name_labels,

@@ -8,7 +8,7 @@ import re
 from abc import ABCMeta, abstractmethod
 from inspect import Signature
 from types import FunctionType, ModuleType
-from typing import Generic, List, Optional, TypeVar, Union
+from typing import Generic, TypeVar, Union
 
 from pytools.api import AllTracker, inheritdoc
 
@@ -86,12 +86,12 @@ class APIDefinition(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def docstring(self) -> Optional[str]:
+    def docstring(self) -> str | None:
         """
         The docstring of this API element; ``None`` if the docstring is undefined.
         """
 
-    def list_documented_parameters(self) -> Optional[List[str]]:
+    def list_documented_parameters(self) -> list[str] | None:
         """
         Extract all documented parameter names from the docstring, including
         ``"return"`` if the return parameter is documented.
@@ -147,7 +147,7 @@ class ModuleDefinition(APIDefinition):
         return self.name
 
     @property
-    def docstring(self) -> Optional[str]:
+    def docstring(self) -> str | None:
         """[see superclass]"""
         return self.module.__doc__
 
@@ -165,7 +165,7 @@ class NamedElementDefinition(APIDefinition, Generic[T_Type]):
     #: the class or function
     element: T_Type
 
-    def __init__(self, element: T_Type, *, public_module: Optional[str] = None) -> None:
+    def __init__(self, element: T_Type, *, public_module: str | None = None) -> None:
         """
         :param element: the API element
         :param public_module: the public module exposing the element; this can be
@@ -192,7 +192,7 @@ class NamedElementDefinition(APIDefinition, Generic[T_Type]):
         return f"{self._public_module}.{element.__qualname__}"
 
     @property
-    def docstring(self) -> Optional[str]:
+    def docstring(self) -> str | None:
         """[see superclass]"""
         return self.element.__doc__
 
@@ -216,7 +216,7 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
 
     def list_actual_parameters(
         self, include_return: bool, convert_private: bool
-    ) -> List[str]:
+    ) -> list[str]:
         """
         Extract all parameter names from the function signature
 
@@ -238,9 +238,11 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
             element_prefix = None
 
         actual_parameters = [
-            parameter[len(element_prefix) - 2 :]
-            if element_prefix is not None and parameter.startswith(element_prefix)
-            else parameter
+            (
+                parameter[len(element_prefix) - 2 :]
+                if element_prefix is not None and parameter.startswith(element_prefix)
+                else parameter
+            )
             for i, parameter in enumerate(signature.parameters.keys())
             if i > 0 or parameter not in {"self", "cls"}
         ]
@@ -251,6 +253,8 @@ class FunctionDefinition(NamedElementDefinition[FunctionType]):
                 return_annotation is signature.empty
                 or return_annotation is None
                 or return_annotation is NoneType
+                # Also check for string "None" in case of forward references
+                or return_annotation == "None"
             ):
                 actual_parameters.append(FunctionDefinition.PARAM_RETURN)
 
@@ -264,7 +268,7 @@ class DocTest(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:
+    def test(self, definition: APIDefinition) -> str | list[str] | None:
         """
         Test the given definition.
 
@@ -284,7 +288,7 @@ class HasDocstring(DocTest):
     Test that the definition's docstring exists and is not empty.
     """
 
-    def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:
+    def test(self, definition: APIDefinition) -> None | str | list[str]:
         """[see superclass]"""
 
         doc = definition.docstring
@@ -300,7 +304,7 @@ class HasMatchingParameterDoc(DocTest):
     Check if parameters match between a callable's signature and its docstring.
     """
 
-    def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:
+    def test(self, definition: APIDefinition) -> None | str | list[str]:
         """[see superclass]"""
 
         if not isinstance(definition, FunctionDefinition):
@@ -329,7 +333,7 @@ class HasWellFormedDocstring(DocTest):
     Check if the given element has a well-formed docstring.
     """
 
-    def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:
+    def test(self, definition: APIDefinition) -> None | str | list[str]:
         """[see superclass]"""
         docstring = definition.docstring
 
@@ -340,7 +344,7 @@ class HasWellFormedDocstring(DocTest):
 
         previous_line_text_indent = -1
 
-        errors: List[str] = []
+        errors: list[str] = []
 
         for line in lines:
             if not line:
@@ -367,7 +371,7 @@ class HasTypeHints(DocTest):
     Check if the given function is fully type hinted.
     """
 
-    def test(self, definition: APIDefinition) -> Union[None, str, List[str]]:
+    def test(self, definition: APIDefinition) -> None | str | list[str]:
         """[see superclass]"""
 
         if not isinstance(definition, FunctionDefinition):
@@ -375,7 +379,7 @@ class HasTypeHints(DocTest):
 
         function = definition.element
         annotations = function.__annotations__
-        errors: List[str] = []
+        errors: list[str] = []
 
         parameters_without_annotations = {
             parameter

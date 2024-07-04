@@ -1,23 +1,24 @@
 """
 String representations of expressions.
 """
+
 from __future__ import annotations
 
 import logging
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, NamedTuple, Tuple
+from typing import Any, NamedTuple
 
+from ...api import AllTracker, inheritdoc
 from .. import Expression, ExpressionAlias, ExpressionFormatter
 from ..base import (
     AtomicExpression,
-    BracketedExpression,
     BracketPair,
+    BracketedExpression,
     InfixExpression,
     PrefixExpression,
 )
 from ..operator import BinaryOperator
-from pytools.api import AllTracker, inheritdoc
 
 log = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class TextualForm:
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """
         Generate a list of indented lines from this textual form.
 
@@ -212,7 +213,7 @@ class EmptyForm(TextualForm):
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
         return []
 
@@ -246,7 +247,7 @@ class AtomicForm(TextualForm):
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
 
         return [IndentedLine(indent=indent, text=self.to_single_line())]
@@ -283,7 +284,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
         indent: int = 0,
         leading_characters: int = 0,
         trailing_characters: int = 0,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
 
         if (
@@ -309,7 +310,7 @@ class ComplexForm(TextualForm, metaclass=ABCMeta):
         indent: int,
         leading_characters: int,
         trailing_characters: int,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """
         Convert this representation to multiple lines.
 
@@ -380,7 +381,7 @@ class BracketedForm(ComplexForm):
         indent: int,
         leading_characters: int,
         trailing_characters: int,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
 
         return [
@@ -461,10 +462,10 @@ class PrefixForm(ComplexForm):
         indent: int,
         leading_characters: int,
         trailing_characters: int,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
 
-        prefix_lines: List[IndentedLine] = self.prefix.to_lines(
+        prefix_lines: list[IndentedLine] = self.prefix.to_lines(
             config=config,
             indent=indent,
             leading_characters=leading_characters,
@@ -505,7 +506,7 @@ class InfixForm(ComplexForm):
         self,
         infix: str = "",
         infix_padding: str = PADDING_BOTH,
-        subforms: Tuple[TextualForm, ...] = (),
+        subforms: tuple[TextualForm, ...] = (),
     ) -> None:
         """
         :param infix: the infix operator separating the subforms
@@ -577,9 +578,12 @@ class InfixForm(ComplexForm):
         infix_padding = (
             InfixForm.PADDING_RIGHT
             if infix in [BinaryOperator.COMMA, BinaryOperator.COLON]
-            else InfixForm.PADDING_NONE
-            if infix in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
-            else InfixForm.PADDING_BOTH
+            else (
+                InfixForm.PADDING_NONE
+                if infix
+                in [BinaryOperator.DOT, BinaryOperator.SLICE, BinaryOperator.NONE]
+                else InfixForm.PADDING_BOTH
+            )
         )
 
         return InfixForm(
@@ -616,12 +620,12 @@ class InfixForm(ComplexForm):
         indent: int,
         leading_characters: int,
         trailing_characters: int,
-    ) -> List[IndentedLine]:
+    ) -> list[IndentedLine]:
         """[see superclass]"""
 
-        subforms: Tuple[TextualForm, ...] = self.subforms
+        subforms: tuple[TextualForm, ...] = self.subforms
 
-        result: List[IndentedLine] = []
+        result: list[IndentedLine] = []
 
         if len(subforms) == 1:
             result.extend(
@@ -637,7 +641,7 @@ class InfixForm(ComplexForm):
             last_idx = len(subforms) - 1
             infix = self.infix
 
-            lines: List[IndentedLine]
+            lines: list[IndentedLine]
 
             if self.infix_padding is InfixForm.PADDING_RIGHT:
                 len_infix = len(infix)
@@ -666,9 +670,9 @@ class InfixForm(ComplexForm):
                     lines = inner_representation.to_lines(
                         config=config,
                         indent=indent,
-                        leading_characters=leading_characters
-                        if idx == 0
-                        else len_infix,
+                        leading_characters=(
+                            leading_characters if idx == 0 else len_infix
+                        ),
                         trailing_characters=(
                             trailing_characters if idx == last_idx else 0
                         ),

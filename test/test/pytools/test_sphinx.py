@@ -1,5 +1,7 @@
 import logging
-from typing import Any, Callable, Dict, Generic, Optional, Type, TypeVar
+import typing
+from collections.abc import Iterable
+from typing import Any, Generic, TypeVar
 
 from pytools.viz import Drawer
 from pytools.viz.distribution import ECDFDrawer
@@ -14,14 +16,14 @@ V = TypeVar("V")
 
 
 class A(Generic[T, U]):
-    def f(self: S, x: Type[T]) -> U:
+    def f(self: S, x: type[T]) -> U:  # type: ignore[empty-body]
         pass
 
-    def g(self: S) -> Optional[S]:
+    def g(self: S) -> S | None:
         pass
 
     @classmethod
-    def h(cls: Type[S]) -> S:
+    def h(cls: type[S]) -> S:
         return cls()
 
 
@@ -42,7 +44,7 @@ def test_resolve_generic_class_parameters() -> None:
     track_current_class = TrackCurrentClass()
     resolve_type_variables = ResolveTypeVariables()
 
-    def _set_current_class(cls: Type[Any]) -> None:
+    def _set_current_class(cls: type[Any]) -> None:
         track_current_class.process(
             app=sphinx,
             what="class",
@@ -63,37 +65,44 @@ def test_resolve_generic_class_parameters() -> None:
         app=sphinx, obj=ECDFDrawer.get_named_styles, bound_method=True
     )
 
-    assert ECDFDrawer.get_named_styles.__annotations__ == {
-        "return": Dict[str, Callable[..., ECDFStyle]]
+    assert ECDFDrawer.get_style_classes.__annotations__ == {
+        "return": Iterable[type[ECDFStyle]]
     }
 
     _set_current_class(A)
 
     resolve_type_variables.process(app=sphinx, obj=A, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=A.f, bound_method=False)
-    assert A.f.__annotations__ == {"self": A, "x": Type[T], "return": U}
+
+    type_a = type[A]  # type: ignore[type-arg]
+    type_b = type[B]  # type: ignore[type-arg]
+    type_t = type[T]
+    type_u = type[U]
+    type_str = type[str]
+
+    assert A.f.__annotations__ == {"self": A, "x": type_t, "return": U}
     resolve_type_variables.process(app=sphinx, obj=A.g, bound_method=False)
-    assert A.g.__annotations__ == {"self": A, "return": Optional[A]}
+    assert A.g.__annotations__ == {"self": A, "return": typing.Optional[A]}
 
     resolve_type_variables.process(app=sphinx, obj=A.h, bound_method=False)
-    assert A.h.__annotations__ == {"cls": Type[A], "return": A}
+    assert A.h.__annotations__ == {"cls": type_a, "return": A}
 
     _set_current_class(B)
 
     resolve_type_variables.process(app=sphinx, obj=B, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=B.f, bound_method=False)
     assert B.f is A.f
-    assert A.f.__annotations__ == {"self": B, "x": Type[U], "return": int}
+    assert A.f.__annotations__ == {"self": B, "x": type_u, "return": int}
     resolve_type_variables.process(app=sphinx, obj=B.g, bound_method=False)
     assert B.g is A.g
-    assert A.g.__annotations__ == {"self": B, "return": Optional[B]}
+    assert A.g.__annotations__ == {"self": B, "return": typing.Optional[B]}
     resolve_type_variables.process(app=sphinx, obj=B.h, bound_method=False)
     assert B.h is not A.h
-    assert B.h.__annotations__ == {"cls": Type[B], "return": B}
+    assert B.h.__annotations__ == {"cls": type_b, "return": B}
 
     _set_current_class(C)
 
     resolve_type_variables.process(app=sphinx, obj=C, bound_method=False)
     resolve_type_variables.process(app=sphinx, obj=C.f, bound_method=False)
     assert C.f is A.f
-    assert A.f.__annotations__ == {"self": C, "x": Type[str], "return": int}
+    assert A.f.__annotations__ == {"self": C, "x": type_str, "return": int}

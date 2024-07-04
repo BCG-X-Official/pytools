@@ -1,6 +1,7 @@
 """
 Implementation of sphinx utility callbacks specific to building Gamma documentation.
 """
+
 from __future__ import annotations
 
 import collections.abc
@@ -8,35 +9,23 @@ import importlib
 import itertools
 import logging
 import re
-import sys
 import typing
 from abc import ABCMeta, abstractmethod
+from collections.abc import Callable, Generator, Iterable, Mapping
 from inspect import getattr_static
-from types import FunctionType, MethodType
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    ForwardRef,
-    Generator,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Pattern,
-    Set,
-    Tuple,
-    Type,
-    TypeVar,
-    Union,
-    cast,
-    get_type_hints,
-)
+from re import Pattern
+from types import FunctionType, GenericAlias, MethodType, UnionType
+from typing import Any, ForwardRef, Generic, TypeVar, Union, cast, get_type_hints
 
 import typing_inspect
 
-from ...api import AllTracker, get_generic_bases, inheritdoc, public_module_prefix
+from ...api import (
+    AllTracker,
+    inheritdoc,
+    public_module_prefix,
+    subsdoc,
+    update_forward_references,
+)
 from ...meta import SingletonABCMeta
 from .. import (
     AutodocBeforeProcessSignature,
@@ -55,14 +44,13 @@ except ImportError:
 
     # noinspection PyMissingOrEmptyDocstring,PyUnusedLocal,SpellCheckingInspection
     class _Element:
-        children: List["Element"]
-        attributes: Dict[str, Any]
+        children: list[Element]
+        attributes: dict[str, Any]
 
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             raise TypeError("docutils package is not installed")
 
-        def replace(self, old: "Element", new: "Element") -> None:
-            ...
+        def replace(self, old: Element, new: Element) -> None: ...  # noqa: E704
 
     # noinspection PyMissingOrEmptyDocstring,SpellCheckingInspection
     class _Text(_Element):
@@ -80,8 +68,6 @@ except ImportError:
 #
 # Constants
 #
-
-_PYTHON_3_9_OR_LATER = sys.version_info >= (3, 9)
 
 
 log = logging.getLogger(__name__)
@@ -102,14 +88,16 @@ __all__ = [
     "ResolveTypeVariables",
     "SkipIndirectImports",
     "TrackCurrentClass",
+    "UpdateForwardReferences",
 ]
 
 #
 # Type variables
 #
 
-method_descriptor: Type[Any] = type(str.startswith)
-wrapper_descriptor: Type[Any] = type(str.__add__)
+method_descriptor: type[Any] = type(str.startswith)
+wrapper_descriptor: type[Any] = type(str.__add__)
+internal_function_or_method: type[Any] = type(iter)
 
 
 #
@@ -145,7 +133,7 @@ class AddInheritance(AutodocProcessDocstring):
         self.collapsible_submodules = collapsible_submodules
 
         #: Dict mapping visited classes to their unprocessed docstrings.
-        self._visited: Dict[type, str] = {}
+        self._visited: dict[type, str] = {}
 
     #: Field directive for base classes.
     F_BASES = ":bases:"
@@ -161,7 +149,7 @@ class AddInheritance(AutodocProcessDocstring):
         name: str,
         obj: object,
         options: object,
-        lines: List[str],
+        lines: list[str],
     ) -> None:
         """[see superclass]"""
 
@@ -186,18 +174,18 @@ class AddInheritance(AutodocProcessDocstring):
             # detect and allow repeat visits
             self._visited[class_] = _current_lines
 
-        bases_lines: List[str] = [""]
+        bases_lines: list[str] = [""]
 
-        bases: List[type] = _get_minimal_bases(class_)
+        bases: list[type] = _get_minimal_bases(class_)
         if bases:
             base_names = (self._class_name_with_generics(base) for base in bases)
             bases_lines.append(f'{AddInheritance.F_BASES} {", ".join(base_names)}')
 
-        generics: List[str] = self._get_generics(class_)
+        generics: list[str] = self._get_generics(class_)
         if generics:
             bases_lines.append(f'{AddInheritance.F_GENERICS} {", ".join(generics)}')
 
-        metaclasses: List[str] = self._get_metaclasses(class_)
+        metaclasses: list[str] = self._get_metaclasses(class_)
         if metaclasses:
             bases_lines.append(
                 f'{AddInheritance.F_METACLASSES} {", ".join(metaclasses)}'
@@ -210,7 +198,7 @@ class AddInheritance(AutodocProcessDocstring):
         self._insert_bases_lines(bases_lines, lines)
 
     @staticmethod
-    def _insert_bases_lines(bases_lines: List[str], lines: List[str]) -> None:
+    def _insert_bases_lines(bases_lines: list[str], lines: list[str]) -> None:
         def _insert_position() -> int:
             for n, line in enumerate(lines):
                 if re.match(r"\s*:\w+(?:\s+\w+)*:", line) and (
@@ -223,14 +211,14 @@ class AddInheritance(AutodocProcessDocstring):
             pos = _insert_position()
             lines[pos:pos] = bases_lines
 
-    def _class_module(self, cls: Any) -> str:
-        module_name: str = _class_attr(cls, attr=["__publicmodule__", "__module__"])
+    def _class_module(self, cls: type) -> str:
+        module_name: str = public_module_prefix(cls.__module__)
 
         # return the collapsed submodule if it exists,
         # else return the unchanged module name
         return self.collapsible_submodules.get(module_name, module_name)
 
-    def _full_name(self, cls: Any) -> str:
+    def _full_name(self, cls: type) -> str:
         # get the full name of the class, including the module prefix
         return f"{self._class_module(cls)}.{_class_name(cls)}"
 
@@ -283,32 +271,29 @@ class AddInheritance(AutodocProcessDocstring):
 
     def _typevar_name(self, cls: TypeVar) -> str:
         if isinstance(cls, TypeVar):
-            args: List[str] = [
-                self._class_name_with_generics(c) for c in cls.__constraints__
+            args: list[str] = [
+                self._class_name_with_generics(c)
+                for c in getattr(cls, "__constraints__", ())
             ]
-            if cls.__bound__:
+            if getattr(cls, "__bound__", None):
                 args.append(f"bound= {self._class_name_with_generics(cls.__bound__)}")
-            if cls.__covariant__:
-                args.append("*__covariant__=True*")
-            if cls.__contravariant__:
-                args.append("*__contravariant__=True*")
             return f'{cls}({", ".join(args)})' if args else str(cls)
         else:
             return str(cls)
 
-    def _get_generics(self, child_class: type) -> List[str]:
+    def _get_generics(self, child_class: type) -> list[str]:
         return list(
             itertools.chain.from_iterable(
                 (
                     self._typevar_name(arg)
                     for arg in typing_inspect.get_args(base, evaluate=True)
                 )
-                for base in get_generic_bases(child_class)
+                for base in _get_generic_bases(child_class)
                 if typing_inspect.get_origin(base) is Generic
             )
         )
 
-    def _get_metaclasses(self, class_: type) -> List[str]:
+    def _get_metaclasses(self, class_: type) -> list[str]:
         return [
             self._class_name_with_generics(meta_)
             for meta_ in _get_bases(type(class_), include_subclass=True)
@@ -346,20 +331,20 @@ class CollapseModulePaths(metaclass=ABCMeta):
             with an underscore)
         """
         super().__init__()
-        self._classes_visited: Set[type] = set()
+        self._classes_visited: set[type] = set()
 
         col = [
             self._make_substitution_pattern(old.replace(".", r"\."), new)
             for old, new in collapsible_submodules.items()
         ]
 
-        self._intersphinx_collapsible_prefixes: List[Tuple[Pattern[str], str]] = col
+        self._intersphinx_collapsible_prefixes: list[tuple[Pattern[str], str]] = col
         self._collapse_private_modules = collapse_private_modules
 
     @abstractmethod
     def _make_substitution_pattern(
         self, old: str, new: str
-    ) -> Tuple[Pattern[str], str]:
+    ) -> tuple[Pattern[str], str]:
         # create the regex substitution rule given a raw match and replacement patterns
         pass
 
@@ -422,7 +407,7 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
         name: str,
         obj: object,
         options: object,
-        lines: List[str],
+        lines: list[str],
     ) -> None:
         """[see superclass]"""
 
@@ -431,7 +416,7 @@ class CollapseModulePathsInDocstring(CollapseModulePaths, AutodocProcessDocstrin
 
     def _make_substitution_pattern(
         self, old: str, new: str
-    ) -> Tuple[Pattern[str], str]:
+    ) -> tuple[Pattern[str], str]:
         return re.compile(f"(`~?){old}"), f"\\1{new}"
 
 
@@ -449,9 +434,9 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
         name: str,
         obj: object,
         options: object,
-        signature: Optional[str],
-        return_annotation: Optional[str],
-    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        signature: str | None,
+        return_annotation: str | None,
+    ) -> tuple[str | None, str | None] | None:
         """[see superclass]"""
         if signature or return_annotation:
             return (
@@ -467,7 +452,7 @@ class CollapseModulePathsInSignature(CollapseModulePaths, AutodocProcessSignatur
 
     def _make_substitution_pattern(
         self, old: str, new: str
-    ) -> Tuple[Pattern[str], str]:
+    ) -> tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -518,7 +503,7 @@ class CollapseModulePathsInXRef(ObjectDescriptionTransform, CollapseModulePaths)
 
     def _make_substitution_pattern(
         self, old: str, new: str
-    ) -> Tuple[Pattern[str], str]:
+    ) -> tuple[Pattern[str], str]:
         return re.compile(old), new
 
 
@@ -536,7 +521,7 @@ class SkipIndirectImports(AutodocSkipMember, metaclass=SingletonABCMeta):
         obj: object,
         skip: bool,
         options: object,
-    ) -> Optional[bool]:
+    ) -> bool | None:
         """[see superclass]"""
         if not skip and what == "module" and name.startswith("_"):
             log.info(f"skipping: {what}: {name}")
@@ -573,7 +558,7 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
         name: str,
         obj: object,
         options: object,
-        lines: List[str],
+        lines: list[str],
     ) -> None:
         """[see superclass]"""
 
@@ -607,9 +592,18 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 
             directive = Replace3rdPartyDoc.__RST_DIRECTIVE.get(what, what)
 
-            assert isinstance(
-                obj, (FunctionType, MethodType, method_descriptor, wrapper_descriptor)
-            ), f"{obj!r}:{type(obj)} is a function or method"
+            if not isinstance(
+                obj,
+                (
+                    FunctionType,
+                    MethodType,
+                    method_descriptor,
+                    wrapper_descriptor,
+                    internal_function_or_method,
+                ),
+            ):
+                log.warning(f"{obj!r}:{type(obj)} is not a function or method")
+                return
 
             if not obj_module or obj_module == "builtins":
                 full_name = obj.__qualname__
@@ -633,7 +627,7 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, None]:
     # get the names of the immediate base classes of arg _subclass
 
-    visited_classes: Set[type] = set()
+    visited_classes: set[type] = set()
 
     def _inner(_subclass: type, _include_subclass: bool) -> Generator[type, None, None]:
         # ensure we have the non-generic origin class
@@ -645,8 +639,8 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
 
         # get the base classes; try generic bases first then fall back to regular
         # bases
-        base_classes: Tuple[type, ...] = (
-            get_generic_bases(_subclass) or _subclass.__bases__
+        base_classes: tuple[type, ...] = (
+            _get_generic_bases(_subclass) or _subclass.__bases__
         )
 
         # include the _subclass itself in the list of bases, if requested
@@ -672,7 +666,7 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
     return _inner(subclass, _include_subclass=include_subclass)
 
 
-def _get_minimal_bases(class_: type) -> List[type]:
+def _get_minimal_bases(class_: type) -> list[type]:
     bases_with_origin = [
         (base, typing_inspect.get_origin(base) or base)
         for base in set(_get_bases(class_, include_subclass=False))
@@ -691,7 +685,7 @@ def _class_name(cls: Any) -> str:
     return cast(str, _class_attr(cls=cls, attr=["__qualname__", "__name__", "_name"]))
 
 
-def _class_attr(cls: Any, attr: List[str]) -> Any:
+def _class_attr(cls: Any, attr: list[str]) -> Any:
     def _get_attr(_cls: type) -> Any:
         # we try to get the class attribute
         for attr_name in attr:
@@ -711,20 +705,20 @@ def _class_attr(cls: Any, attr: List[str]) -> Any:
                 f"none of the attributes not found in class {cls}: {', '.join(attr)}"
             )
 
-    return _get_attr(_cls=cls)
+    return _get_attr(_cls=typing.get_origin(cls) or cls)
 
 
 class _TypeVarBindings:
-    current_class: Type[Any]
-    _bindings: Dict[
-        Type[Any],
-        Dict[
+    current_class: type[Any]
+    _bindings: dict[
+        type[Any],
+        dict[
             TypeVar,
-            Union[Type[Any], TypeVar],
+            type[Any] | TypeVar,
         ],
     ]
 
-    def __init__(self, current_class: Type[Any]) -> None:
+    def __init__(self, current_class: type[Any]) -> None:
         super().__init__()
 
         self.current_class = current_class
@@ -733,8 +727,8 @@ class _TypeVarBindings:
         )
 
     def resolve_parameter(
-        self, defining_class: Type[Any], parameter: TypeVar
-    ) -> Union[Type[Any], TypeVar]:
+        self, defining_class: type[Any], parameter: TypeVar
+    ) -> type[Any] | TypeVar:
         """
         Resolve a type parameter, substituting it with an actual type if the parameter
         is bound to a type argument in the context of the current class;
@@ -750,19 +744,19 @@ class _TypeVarBindings:
 
     def _get_parameter_bindings(
         self,
-        cls: Type[Any],
-        subclass_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]],
-    ) -> Dict[Type[Any], Dict[TypeVar, Union[Type[Any], TypeVar]]]:
+        cls: type[Any],
+        subclass_bindings: dict[TypeVar, type[Any] | TypeVar],
+    ) -> dict[type[Any], dict[TypeVar, type[Any] | TypeVar]]:
         # get type variable bindings for all generic types defined in the class
         # hierarchy of the given parent class, applying the given bindings derived from
         # child classes
 
         # if arg cls has generic type parameters, it will have a corresponding
-        cls_origin: Optional[Type[Any]] = None
+        cls_origin: type[Any] | None = None
         if typing_inspect.is_generic_type(cls):
             cls_origin = typing_inspect.get_origin(cls)
 
-        class_bindings: Dict[TypeVar, Union[Type[Any], TypeVar]]
+        class_bindings: dict[TypeVar, type[Any] | TypeVar]
         if cls_origin:
             class_bindings = {
                 param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
@@ -779,7 +773,7 @@ class _TypeVarBindings:
 
         superclass_bindings = {
             superclass: bindings
-            for generic_superclass in get_generic_bases(cls)
+            for generic_superclass in _get_generic_bases(cls)
             for superclass, bindings in (
                 self._get_parameter_bindings(
                     cls=generic_superclass, subclass_bindings=class_bindings
@@ -820,11 +814,11 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
     """
 
-    original_signatures: Dict[Any, Dict[str, Union[Type[Any], TypeVar]]]
+    original_signatures: dict[Any, dict[str, type[Any] | TypeVar]]
 
-    _current_class: Optional[Type[Any]]
-    _current_class_bindings: Optional[_TypeVarBindings]
-    _track_current_class: "TrackCurrentClass"
+    _current_class: type[Any] | None
+    _current_class_bindings: _TypeVarBindings | None
+    _track_current_class: TrackCurrentClass
 
     def __init__(self) -> None:
         super().__init__()
@@ -834,7 +828,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         self._current_class_bindings = None
         self._track_current_class = TrackCurrentClass()
 
-    def connect(self, app: Sphinx, priority: Optional[int] = None) -> int:
+    def connect(self, app: Sphinx, priority: int | None = None) -> int:
         """[see superclass]"""
 
         if TrackCurrentClass().app is not app:
@@ -849,7 +843,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         self, bindings: _TypeVarBindings, func: FunctionType
     ) -> None:
         # get the class in which the method has been defined
-        defining_class_opt: Optional[Type[Any]] = self._get_defining_class(func)
+        defining_class_opt: type[Any] | None = self._get_defining_class(func)
         if defining_class_opt is None:
             # missing or unknown defining class: nothing to resolve in the signature
             return
@@ -859,7 +853,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         signature_original_items = list(self._get_original_signature(func).items())
 
         def _get_self_or_cls_type_substitution() -> (
-            Union[Tuple[TypeVar, Type[Any]], Tuple[None, None]]
+            tuple[TypeVar, type[Any]] | tuple[None, None]
         ):
             if signature_original_items:
                 method_type = self._get_method_type(defining_class, func)
@@ -887,14 +881,14 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
             return None, None
 
-        arg_0_type_var: Optional[TypeVar]
-        arg_0_substitute: Optional[Type[Any]]
+        arg_0_type_var: TypeVar | None
+        arg_0_substitute: type[Any] | None
 
         arg_0_type_var, arg_0_substitute = _get_self_or_cls_type_substitution()
 
         def _substitute_type_vars_in_type_expression(
-            type_expression: Union[Type[Any], TypeVar]
-        ) -> Union[Type[Any], TypeVar]:
+            type_expression: type[Any] | TypeVar,
+        ) -> type[Any] | TypeVar:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 if type_expression == arg_0_type_var:
@@ -921,13 +915,13 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
         for name, tp in signature_original_items:
             signature[name] = _substitute_type_vars_in_type_expression(tp)
 
-    def _resolve_attribute_signatures(self, cls: Type[Any]) -> None:
+    def _resolve_attribute_signatures(self, cls: type[Any]) -> None:
         assert self._current_class_bindings is not None
         bindings: _TypeVarBindings = self._current_class_bindings
 
         def _substitute_type_vars_in_type_expression(
-            type_expression: Union[Type[Any], TypeVar]
-        ) -> Union[Type[Any], TypeVar]:
+            type_expression: type[Any] | TypeVar,
+        ) -> type[Any] | TypeVar:
             # recursively substitute type vars with their resolutions
             if isinstance(type_expression, TypeVar):
                 # resolve type variables defined by Generic[] in the
@@ -947,7 +941,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
             }
 
     @staticmethod
-    def _get_defining_class(method: FunctionType) -> Optional[Type[Any]]:
+    def _get_defining_class(method: FunctionType) -> type[Any] | None:
         # get the class that defined the callable
 
         if "." not in method.__qualname__:
@@ -962,7 +956,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
         try:
             return cast(
-                Type[Any],
+                type[Any],
                 eval(
                     method_container,
                     importlib.import_module(method.__module__).__dict__,
@@ -979,7 +973,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
             return None
 
     @staticmethod
-    def _get_method_type(defining_class: Type[Any], func: FunctionType) -> int:
+    def _get_method_type(defining_class: type[Any], func: FunctionType) -> int:
         # do we have a static or class method?
         try:
             raw_func = getattr_static(defining_class, func.__name__)
@@ -997,9 +991,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
 
     def _get_original_signature(
         self, func: FunctionType
-    ) -> Dict[str, Union[Type[Any], TypeVar]]:
+    ) -> dict[str, type[Any] | TypeVar]:
         # get the original signature as defined in the code
-        signature_original: Dict[str, Union[Type[Any], TypeVar]]
+        signature_original: dict[str, type[Any] | TypeVar]
         try:
             signature_original = self.original_signatures[func]
         except KeyError:
@@ -1016,7 +1010,7 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
             # instance method definitions are unbound, so we need to determine
             # the class we are currently in from context
 
-            bindings: Optional[_TypeVarBindings]
+            bindings: _TypeVarBindings | None
             if obj.__name__ == obj.__qualname__:
                 # this is a function, not a method
                 return
@@ -1060,16 +1054,15 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
                 bindings.current_class is cls
             ), "bindings expected to be for the correct class"
 
-            # noinspection PyTypeChecker
-            self._resolve_function_signature(bindings=bindings, func=obj.__func__)
+            self._resolve_function_signature(
+                bindings=bindings, func=cast(FunctionType, obj.__func__)
+            )
 
-    def _update_current_class(
-        self, cls: Optional[Type[Any]]
-    ) -> Optional[_TypeVarBindings]:
+    def _update_current_class(self, cls: type[Any] | None) -> _TypeVarBindings | None:
         if cls is None:
             return None
 
-        bindings: Optional[_TypeVarBindings] = self._current_class_bindings
+        bindings: _TypeVarBindings | None = self._current_class_bindings
 
         if bindings is None or bindings.current_class is not cls:
             # we're visiting a new class
@@ -1094,7 +1087,7 @@ class TrackCurrentClass(AutodocProcessSignature, metaclass=SingletonABCMeta):
     """
 
     #: The class currently being processed by autodoc.
-    current_class: Optional[Type[Any]]
+    current_class: type[Any] | None
 
     def __init__(self) -> None:
         super().__init__()
@@ -1108,9 +1101,9 @@ class TrackCurrentClass(AutodocProcessSignature, metaclass=SingletonABCMeta):
         name: str,
         obj: object,
         options: object,
-        signature: Optional[str],
-        return_annotation: Optional[str],
-    ) -> Optional[Tuple[Optional[str], Optional[str]]]:
+        signature: str | None,
+        return_annotation: str | None,
+    ) -> tuple[str | None, str | None] | None:
         """[see superclass]"""
 
         if what == "class":
@@ -1161,7 +1154,7 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
 
         # get the original signature
         try:
-            annotations: Dict[str, Any] = obj.__annotations__
+            annotations: dict[str, Any] = obj.__annotations__
         except AttributeError:
             annotations = {}
 
@@ -1185,6 +1178,47 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
+@inheritdoc(match="""[see superclass]""")
+class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
+    """
+    A Sphinx autodoc process signature that updates forward references in the
+    docstring of a class.
+    """
+
+    @subsdoc(
+        # match and delete the row that declares :return:
+        # remember this is a multiline string, so we need to match the whole line
+        pattern=r"\s*:return:.*",
+        replacement="",
+        using=AutodocProcessSignature.process,
+    )
+    def process(
+        self,
+        app: Sphinx,
+        what: str,
+        name: str,
+        obj: object,
+        options: object,
+        signature: str | None,
+        return_annotation: str | None,
+    ) -> None:
+        """[see superclass]"""
+
+        if what == "class":
+            try:
+                update_forward_references(cast(type, obj))
+            except Exception as e:
+                log.error(f"failed to update forward references for {name}: {e}")
+                # print the traceback to the console
+                import traceback
+
+                traceback.print_exc()
+
+                raise
+
+        return None
+
+
 #
 # validate __all__
 #
@@ -1193,23 +1227,28 @@ __tracker.validate()
 
 
 def _substitute_generic_type_arguments(
-    type_expression: Union[Type[Any], TypeVar],
+    type_expression: type[Any] | TypeVar,
     fn_substitute_type_vars: typing.Callable[
-        [Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]
+        [type[Any] | TypeVar], type[Any] | TypeVar
     ],
-) -> Union[Type[Any], TypeVar]:
+) -> type[Any] | TypeVar:
     # dynamically resolve type variables inside nested type expressions
-    type_args: Tuple[
-        Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]], ...
-    ] = typing_inspect.get_args(type_expression)
+    type_args: tuple[list[type[Any] | TypeVar] | type[Any] | TypeVar, ...] = (
+        typing_inspect.get_args(type_expression)
+    )
 
     if type_args:
+
+        if isinstance(type_expression, UnionType):
+            type_expression = Union[type_args[0], type_args[1]]
         return _copy_generic_type_with_arguments(
             type_expression=type_expression,
             new_arguments=tuple(
-                list(map(fn_substitute_type_vars, arg))
-                if isinstance(arg, list)
-                else fn_substitute_type_vars(arg)
+                (
+                    list(map(fn_substitute_type_vars, arg))
+                    if isinstance(arg, list)
+                    else fn_substitute_type_vars(arg)
+                )
                 for arg in type_args
             ),
         )
@@ -1218,11 +1257,9 @@ def _substitute_generic_type_arguments(
 
 
 def _copy_generic_type_with_arguments(
-    type_expression: Union[Type[Any], TypeVar],
-    new_arguments: Tuple[
-        Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]], ...
-    ],
-) -> Union[Type[Any], TypeVar]:
+    type_expression: type[Any] | TypeVar,
+    new_arguments: tuple[list[type[Any] | TypeVar] | type[Any] | TypeVar, ...],
+) -> type[Any] | TypeVar:
     # create a copy of the given type expression, replacing its type arguments with
     # the given new arguments
 
@@ -1232,16 +1269,16 @@ def _copy_generic_type_with_arguments(
     try:
         copy_with: Callable[
             [
-                Tuple[
-                    Union[List[Union[Type[Any], TypeVar]], Union[Type[Any], TypeVar]],
+                tuple[
+                    list[type[Any] | TypeVar] | type[Any] | TypeVar,
                     ...,
                 ]
             ],
-            Union[Type[Any], TypeVar],
+            type[Any] | TypeVar,
         ] = type_expression.copy_with  # type: ignore
     except AttributeError:
         # this is a generic type that does not support copying
-        return cast(Type[Any], origin[new_arguments])
+        return cast(type[Any], origin[new_arguments])
 
     # unpack callable args, since copy_with() expects a flat tuple
     # (arg_1, arg_2, ..., arg_n, return)
@@ -1250,3 +1287,22 @@ def _copy_generic_type_with_arguments(
         new_arguments = (*new_arguments[0], *new_arguments[1:])
 
     return copy_with(new_arguments)
+
+
+def _get_generic_bases(class_: type) -> tuple[type, ...]:
+    """
+    Bugfix version of :func:`typing_inspect.get_generic_bases`.
+
+    Prevents getting the generic bases of the parent class if not defined for the given
+    class.
+
+    :param class_: class to get the generic bases for
+    :return: the generic base classes of the given class
+    """
+    bases: tuple[type, ...] = typing_inspect.get_generic_bases(class_)
+    if not isinstance(
+        class_, GenericAlias
+    ) and bases is typing_inspect.get_generic_bases(super(class_, class_)):
+        return ()
+    else:
+        return bases
