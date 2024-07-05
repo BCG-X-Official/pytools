@@ -21,6 +21,8 @@ from typing import Any, TypeVar, cast
 
 log = logging.getLogger(__name__)
 
+PYTHON_3_11 = sys.version_info >= (3, 11)
+
 __all__ = [
     "aenumerate",
     "arun",
@@ -41,7 +43,7 @@ T = TypeVar("T")
 # Python 3.10 compatibility
 #
 
-if sys.version_info < (3, 11):
+if not PYTHON_3_11:
     from typing import Generic
 
     class ExceptionGroup(Exception, Generic[T]):
@@ -63,7 +65,7 @@ if sys.version_info < (3, 11):
             pass
 
 else:
-    from asyncio import TaskGroup
+    from asyncio import TaskGroup  # type: ignore[attr-defined, no-redef]
 
 #
 # Constants
@@ -126,7 +128,10 @@ def async_flatten(
     :return: an asynchronous iterator
     """
 
-    return _async_flatten_310(async_iter_of_iters)
+    if PYTHON_3_11:
+        return _async_flatten_311(async_iter_of_iters)
+    else:
+        return _async_flatten_310(async_iter_of_iters)
 
 
 async def _async_flatten_310(
