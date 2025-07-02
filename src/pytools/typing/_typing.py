@@ -379,9 +379,9 @@ def issubclass_generic(subclass: Any, base: Any) -> bool:
     """
 
     # As a special case, type `Any` is a superclass of anything
-    if base is Any:
+    if base is Any or base is object:
         return True
-    elif subclass is Any:
+    elif subclass is Any or subclass is object:
         return False
 
     # As a special case, type `Never` is a subclass of anything
