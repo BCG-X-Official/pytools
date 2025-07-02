@@ -177,16 +177,10 @@ def get_common_generic_subclass(classes: Iterable[type[T]]) -> type[T]:
     # iterate over the classes, excluding duplicates
     iter_classes = iter(set(classes))
 
-    # start with the first class
-    try:
-        common_class = next(iter_classes)
-    except StopIteration:
-        raise TypeError(
-            "get_common_generic_subclass() requires at least one class, but got none"
-        )
+    common_class: type[T] | Any = Any
 
     for cls in iter_classes:
-        if issubclass_generic(cls, common_class):
+        if common_class is Any or issubclass_generic(cls, common_class):
             common_class = cls
         elif not issubclass_generic(common_class, cls):
             raise TypeError(
