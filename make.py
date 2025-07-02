@@ -465,10 +465,16 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"rattler-build build -c conda-forge -c bcg_gamma --output-dir {build_path} {recipe_path}"
+        build_cmd = (
+            f"rattler-build build "
+            f"-c conda-forge -c bcg_gamma "
+            f"--output-dir {build_path} "
+            f"--recipe-dir {recipe_path}"
+        )
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
+            f"Recipe path: {recipe_path}\n"
             f"Build Command: {build_cmd}"
         )
         subprocess.run(args=build_cmd, shell=True, check=True)
