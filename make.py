@@ -92,9 +92,9 @@ class Builder(metaclass=ABCMeta):
 
         # add the project roots path to the environment as a URI
 
-        os.environ[
-            FACET_PATH_URI_ENV
-        ] = f"file://{request.pathname2url(projects_root_path)}"
+        os.environ[FACET_PATH_URI_ENV] = (
+            f"file://{request.pathname2url(projects_root_path)}"
+        )
 
         # determine the package version of the project
 
@@ -103,9 +103,9 @@ class Builder(metaclass=ABCMeta):
 
         package_version = str(get_package_version(package_path=src_root_path))
 
-        os.environ[
-            FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())
-        ] = package_version
+        os.environ[FACET_BUILD_PKG_VERSION_ENV.format(project=project.upper())] = (
+            package_version
+        )
 
         self.package_version = package_version
         self.pyproject_toml = None
@@ -451,7 +451,7 @@ class CondaBuilder(Builder):
 
     def build(self, exposed_package_dependencies: Mapping[str, str]) -> None:
         """
-        Build a facet project using conda-build.
+        Build a facet project using rattler-build.
 
         :param exposed_package_dependencies: package/version mapping of the
             dependencies that have been exposed as environment variables
@@ -465,7 +465,7 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"conda mambabuild -c conda-forge -c bcg_gamma {recipe_path}"
+        build_cmd = f"rattler-build build -c conda-forge -c bcg_gamma --output-dir {build_path} {recipe_path}"
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
