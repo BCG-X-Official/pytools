@@ -342,11 +342,17 @@ def update_forward_references(
                 _obj = _obj.__wrapped__  # type: ignore
             except AttributeError:
                 break
-        annotations = get_type_hints(
-            _obj, globalns=getattr(_obj, "__globals__", globals_), localns=local_ns
-        )
-        if annotations:
-            _obj.__annotations__ = annotations
+        try:
+            annotations = get_type_hints(
+                _obj, globalns=getattr(_obj, "__globals__", globals_), localns=local_ns
+            )
+        except NameError:
+            # there was a forward reference in the annotations that could not be
+            # resolved; we will not update the annotations
+            raise
+        else:
+            if annotations:
+                _obj.__annotations__ = annotations
 
     _update(obj)
 
