@@ -255,7 +255,7 @@ stages:
               # create and activate a build environment, then install the tools we need
               micromamba create -n build
               micromamba activate build
-              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 packaging~=25
+              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 'packaging>=25'
             displayName: 'Install conda-build, flit, toml'
             condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
@@ -354,7 +354,7 @@ stages:
               # create and activate a build environment, then install the tools we need
               micromamba create -n build
               micromamba activate build
-              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 packaging~=25
+              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 'packaging>=25'
             displayName: 'Install conda-build, flit, toml'
             condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
@@ -459,7 +459,7 @@ stages:
               condition: ne(variables.branchName, 'develop')
               script: |
                 set -eux
-                python -m pip install toml~=0.10.2 packaging~=20.9
+                python -m pip install toml~=0.10.2 'packaging>=25'
                 cd $(System.DefaultWorkingDirectory)/pytools
                 python <<EOF
                 from os import environ
@@ -522,7 +522,7 @@ stages:
               script: |
                 set -eux
                 echo "Getting version"
-                pip install packaging~=20.9
+                pip install 'packaging>=25'
                 package_path=$(System.DefaultWorkingDirectory)/$(project_root)/src/$(project_name)
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/sphinx/base
                 version=$(python -c "import make_util; print(make_util.get_package_version(package_path='$package_path'))")
