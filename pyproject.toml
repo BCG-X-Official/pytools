@@ -88,7 +88,7 @@ typing_inspect = "~=0.7"
 typing_extensions = "~=4.3"
 
 [tool.black]
-required-version = '24.4.2'
+required-version = '25.1.0'
 line-length = 88
 target_version = ['py311']
 include = '\.pyi?$'

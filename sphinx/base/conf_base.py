@@ -61,7 +61,6 @@ def set_config(
 
 
 def _update_intersphinx_mapping(mapping: dict[str, tuple[str, str | None]]) -> None:
-    global intersphinx_mapping
     intersphinx_mapping.update(mapping)
 
 
