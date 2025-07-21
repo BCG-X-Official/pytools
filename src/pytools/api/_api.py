@@ -344,7 +344,9 @@ def validate_type(
         return value
 
     if optional and value is None:
-        return None
+        # We ignore the mypy error here because we know that generic type T
+        # includes None when the value is None.
+        return None  # type: ignore[return-value]
 
     if not isinstance(value, expected_type):
         _raise_type_mismatch(

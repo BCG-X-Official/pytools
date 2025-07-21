@@ -41,8 +41,8 @@ classifiers = [
 
 [tool.flit.metadata.requires-extra]
 testing = [
-    "pytest ~= 7.1",
-    "pytest-cov ~= 2.12",
+    "pytest ~= 8.2",
+    "pytest-cov ~= 6.2",
 ]
 docs = [
     "sphinx ~= 4.5",
@@ -71,7 +71,7 @@ joblib = "~=1.0.1"
 matplotlib = "~=3.6.3"
 numpy = ">=1.23.5,<1.24a"  # cannot use ~= due to conda bug
 pandas = "~=1.5.3"
-python = ">=3.10.14,<3.11a"    # cannot use ~= due to conda bug
+python = ">=3.10.18,<3.11a"    # cannot use ~= due to conda bug
 scipy = "~=1.9.3"
 typing_inspect = "~=0.7.1"
 typing_extensions = "~=4.0.0"
@@ -88,7 +88,7 @@ typing_inspect = "~=0.7"
 typing_extensions = "~=4.3"
 
 [tool.black]
-required-version = '24.4.2'
+required-version = '25.1.0'
 line-length = 88
 target_version = ['py311']
 include = '\.pyi?$'

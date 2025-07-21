@@ -466,7 +466,7 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"conda mambabuild -c conda-forge {recipe_path}"
+        build_cmd = f"rattler-build build --recipe {recipe_path}"
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
