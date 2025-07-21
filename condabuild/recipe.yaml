@@ -39,7 +39,7 @@ tests:
         - pytools.viz
   - requirements:
       run:
-        - pytest ~= 8.1
+        - pytest ~= 8.2
     script:
       - conda list
       - "python -c 'import pytools; import os; assert pytools.__version__ == os.environ[\"PKG_VERSION\"]'"

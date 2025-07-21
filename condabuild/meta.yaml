@@ -39,7 +39,7 @@ test:
     - pytools.sphinx
     - pytools.viz
   requires:
-    - pytest ~= 8.1
+    - pytest ~= 8.2
   commands:
     - conda list
     - python -c 'import pytools; import os; assert pytools.__version__ == os.environ["PKG_VERSION"]'

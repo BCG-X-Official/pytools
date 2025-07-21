@@ -41,8 +41,8 @@ classifiers = [
 
 [tool.flit.metadata.requires-extra]
 testing = [
-    "pytest ~= 8.1",
-    "pytest-cov ~= 4.1",
+    "pytest ~= 8.2",
+    "pytest-cov ~= 6.2",
 ]
 docs = [
     "sphinx ~= 4.5",
