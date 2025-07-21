@@ -1,3 +1,8 @@
+# This file is deprecated and no longer used: we have transitioned to using rattler for
+# building conda packages, and the new build recipe is in recipe.yaml.
+#
+# Keeping this file for reference and historical context.
+
 package:
   name: gamma-pytools
   version: {{ environ.get('FACET_BUILD_PYTOOLS_VERSION') }}
@@ -34,12 +39,10 @@ test:
     - pytools.sphinx
     - pytools.viz
   requires:
-    - pytest ~= 7.1
+    - pytest ~= 8.1
   commands:
     - conda list
-    - python -c 'import pytools;
-                 import os;
-                 assert pytools.__version__ == os.environ["PKG_VERSION"]'
+    - python -c 'import pytools; import os; assert pytools.__version__ == os.environ["PKG_VERSION"]'
     - cd "${FACET_PATH}/pytools"
     - pytest -vs test
 
