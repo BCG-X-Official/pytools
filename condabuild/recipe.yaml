@@ -5,7 +5,7 @@ package:
   version: ${{ env.get('FACET_BUILD_PYTOOLS_VERSION') }}
 
 source:
-  git: ../
+  path: ..
 
 build:
   noarch: python
@@ -13,7 +13,7 @@ build:
 
 requirements:
   host:
-    - pip    >=21
+    - pip    >=25
     - python ${{ env.get('FACET_V_PYTHON') }}
     - numpy  ${{ env.get('FACET_V_NUMPY') }}
     - flit   =3
@@ -42,8 +42,8 @@ tests:
         - pytest ~= 8.2
     script:
       - conda list
-      - "python -c 'import pytools; import os; assert pytools.__version__ == os.environ[\"PKG_VERSION\"]'"
-      - "cd \"${FACET_PATH}/pytools\""
+      - python -c 'import pytools; import os; assert pytools.__version__ == os.environ["PKG_VERSION"]'
+      - cd "${FACET_PATH}/pytools"
       - pytest -vs test
 
 about:
