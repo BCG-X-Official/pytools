@@ -476,7 +476,13 @@ class CondaBuilder(Builder):
         ]
         # Construct the build command, including the channels
         channel_args = f"-c {' -c '.join(channels)}"
-        build_cmd = f"rattler-build build {channel_args} --recipe {recipe_path}"
+
+        # Add output directory to rattler-build command
+        build_cmd = (
+            f"rattler-build build {channel_args} "
+            f"--output-dir {build_path} "
+            f"--recipe {recipe_path}"
+        )
 
         # Run the build command
         log(
