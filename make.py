@@ -3,6 +3,7 @@
 Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
+
 from __future__ import annotations
 
 import os
@@ -466,7 +467,18 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"rattler-build build -c bcgx -c conda-forge --recipe {recipe_path}"
+
+        # We load packages from the following channels:
+        channels = [
+            "bcg_gamma",
+            "bcgx",
+            "conda-forge",
+        ]
+        # Construct the build command, including the channels
+        channel_args = f"-c {' -c '.join(channels)}"
+        build_cmd = f"rattler-build build {channel_args} --recipe {recipe_path}"
+
+        # Run the build command
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
@@ -659,7 +671,7 @@ def print_usage() -> None:
 Build a distribution package for given project.
 
 Available arguments:
-    project:    {' | '.join(get_known_projects())}
+    project:    {" | ".join(get_known_projects())}
 
     build-system: {B_CONDA} | {B_TOX}
 
