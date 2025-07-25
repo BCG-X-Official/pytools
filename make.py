@@ -544,7 +544,7 @@ class ToxBuilder(Builder):
 
             # Set FACET_PYTHON_EXECUTABLE based on FACET_V_PYTHON
             facet_v_python = os.environ.get("FACET_V_PYTHON", "")
-            match = re.search(r"\d\.(\d+)", facet_v_python)
+            match = re.search(r"(\d)\.(\d+)", facet_v_python)
             if match:
                 python_exec = f"python{match.group(1)}.{match.group(2)}"
             else:
