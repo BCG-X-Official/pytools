@@ -523,8 +523,8 @@ class ToxBuilder(Builder):
         """
         Build a facet project using tox.
 
-        :param exposed_package_dependencies: package/version mapping of the
-            dependencies that have been exposed as environment variables
+        :param exposed_package_dependencies: package/version mapping of the dependencies
+            that have been exposed as environment variables
         """
         if self.dependency_type == DEP_DEFAULT:
             tox_env = "py3"
@@ -541,6 +541,15 @@ class ToxBuilder(Builder):
             # create a copy of tox.ini, removing all lines that reference
             # dependencies that have not been exposed as environment variables
             path_tox_ini = self._patch_tox_ini(exposed_package_dependencies.keys())
+
+            # Set FACET_PYTHON_EXECUTABLE based on FACET_V_PYTHON
+            facet_v_python = os.environ.get("FACET_V_PYTHON", "")
+            match = re.search(r"\d\.(\d+)", facet_v_python)
+            if match:
+                python_exec = f"python{match.group(1)}.{match.group(2)}"
+            else:
+                python_exec = "python3"
+            export_environment_variable("FACET_PYTHON_EXECUTABLE", python_exec)
 
             # run tox
             build_cmd = f"tox -c '{path_tox_ini}' -e {tox_env} -v"
