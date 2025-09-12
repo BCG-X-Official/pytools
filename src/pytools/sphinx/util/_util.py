@@ -624,12 +624,12 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 #
 
 
-def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, None]:
+def _get_bases(subclass: type, include_subclass: bool) -> Generator[type]:
     # get the names of the immediate base classes of arg _subclass
 
     visited_classes: set[type] = set()
 
-    def _inner(_subclass: type, _include_subclass: bool) -> Generator[type, None, None]:
+    def _inner(_subclass: type, _include_subclass: bool) -> Generator[type]:
         # ensure we have the non-generic origin class
         _subclass = typing_inspect.get_origin(_subclass) or _subclass
 
