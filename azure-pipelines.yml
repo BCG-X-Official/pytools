@@ -1,8 +1,10 @@
 trigger:
+  # run the pipeline on pushes to the following branches
   - 3.0.x
   - release/*
 
 pr:
+  # run the pipeline on pull requests to the following branches
   - 3.0.x
   - release/*
 
@@ -12,8 +14,8 @@ pool:
 # set the build name
 name: $[ variables['branchName'] ]
 
-# run tests and full conda/tox build matrix every night at 2am
 schedules:
+  # run the pipeline every weekday night at 2am on the latest main branch
   - cron: "0 2 * * 1-5"
     displayName: Nightly full build
     branches:
@@ -29,13 +31,40 @@ resources:
       ref: 3.0.x
 
 variables:
-  ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
-    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
-    branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  source_is_release_branch: $[ startsWith(variables['branchName'], 'release/') ]
-  source_is_develop_branch: $[ startsWith(variables['branchName'], 'dev/') ]
+  # Short branch name for convenience (works for PRs & non-PRs)
+  branchName: $[ coalesce(
+      replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', ''),
+      replace(variables['Build.SourceBranch'], 'refs/heads/', '')
+    ) ]
+
+  # Detect release from either full ref (non-PR) or PR source (short or full)
+  source_is_release_branch: $[ or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'),
+      and(
+        startsWith(variables['Build.SourceBranch'], 'refs/pull/'),
+        or(
+          startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/release/'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'release/')
+        )
+      )
+    ) ]
+
+  # Detect dev from either full ref (non-PR) or PR source (short or full)
+  source_is_develop_branch: $[ or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/dev/'),
+      and(
+        startsWith(variables['Build.SourceBranch'], 'refs/pull/'),
+        or(
+          startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/dev/'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'dev/')
+        )
+      )
+    ) ]
+
+  # Scheduled?
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
+
+  # Static variables
   project_name: pytools
   project_root: $(project_name)
   package_name: gamma-pytools
@@ -51,8 +80,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
               python -m pip install isort~=6.0
               python -m isort --check --diff .
@@ -62,8 +91,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
               python -m pip install black~=25.1.0
               python -m black --check .
@@ -73,8 +102,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
               python -m pip install flake8~=7.3 flake8-comprehensions~=3.16
               python -m flake8 --config tox.ini -v .
@@ -549,11 +578,23 @@ stages:
               set -eux
               cd $(System.DefaultWorkingDirectory)
               eval "$(conda shell.bash hook)"
-              conda install -y anaconda-client
-              anaconda login --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}"
-              anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-              anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-              anaconda logout
+              conda install -y -c conda-forge --override-channels anaconda-client
+
+              anaconda login --at anaconda.org --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}" --hostname "$(hostname)-${BUILD_BUILDID:-$$}"
+              
+              # Check for .conda files first (rattler-build), then .tar.bz2 (conda-build)
+              if ls $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda 1> /dev/null 2>&1; then
+                anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
+                anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
+              elif ls $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2 1> /dev/null 2>&1; then
+                anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
+                anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
+              else
+                echo "No conda packages found!"
+                exit 1
+              fi
+              
+              anaconda logout --at anaconda.org
               # set +x to prevent Azure from randomly appending a \' of the ## statement
               set +x
               echo "##vso[task.setvariable variable=conda_published]True"
@@ -574,7 +615,7 @@ stages:
               set +x
               echo "##vso[task.setvariable variable=pypi_published]True"
             displayName: 'Publish to PyPi'
-            condition: eq(variables['source_is_release_branch'], 'True')
+            condition: and(eq(variables['source_is_release_branch'], 'True'), eq(variables['conda_published'], 'True'))
             env:
               FLIT_PASSWORD: $(pypi_pytools_uploads)
               FLIT_USERNAME: __token__
@@ -613,8 +654,7 @@ stages:
               isPrerelease: $(is_prerelease)
               assets: |
                 $(System.ArtifactsDirectory)/tox_default/tox/$(package_name)-*.tar.gz
-                $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-
+                $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
   # render docs and publish to GitHub Pages
   - stage:
     displayName: 'Docs'
@@ -638,8 +678,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
 
           - task: InstallSSHKey@0
             inputs:
