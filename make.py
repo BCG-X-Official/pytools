@@ -680,8 +680,8 @@ def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    print(
-        f"""Facet Build script
+    print(f"""\
+Facet Build script
 ==================
 Build a distribution package for given project.
 
@@ -700,8 +700,7 @@ Example usage:
     ./make.py sklearndf conda default
     ./make.py sklearndf tox max
 
-"""
-    )
+""")
 
 
 def export_environment_variable(name: str, value: str) -> None:

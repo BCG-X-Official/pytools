@@ -11,11 +11,10 @@ repos:
       - id: isort
 
   - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 25.1.0
+    rev: 26.1.0
     hooks:
       - id: black
         language: python
-        language_version: python310
 
   - repo: https://github.com/pycqa/flake8
     rev: 7.3.0
@@ -24,7 +23,6 @@ repos:
         name: flake8
         entry: flake8 --config tox.ini
         language: python
-        language_version: python310
         additional_dependencies:
           - flake8-comprehensions ~= 3.16
         types: [ python ]
@@ -47,7 +45,6 @@ repos:
         args: [--config-file, pyproject.toml]
         files: \.pyi?$
         language: python
-        language_version: python310
         pass_filenames: false
         additional_dependencies:
           - numpy~=2.2
