@@ -6,9 +6,14 @@ import logging
 import re
 from collections.abc import Callable, Collection, Iterable
 from types import FunctionType
-from typing import Any, TypeVar, get_type_hints
+from typing import (
+    Any,
+    TypeVar,
+    get_args,
+    get_type_hints,
+)
 
-from typing_inspect import get_args, is_forward_ref
+from typing_inspect import is_forward_ref
 
 log = logging.getLogger(__name__)
 
