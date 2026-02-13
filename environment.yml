@@ -3,25 +3,25 @@ channels:
   - conda-forge
 dependencies:
   # run
-  - joblib            ~= 1.2
-  - matplotlib        ~= 3.6
-  - numpy             ~= 2.0
-  - pandas            ~= 2.0
-  - python            ~= 3.10.18
-  - scipy             ~= 1.10
-  - typing_extensions ~= 4.3
+  - joblib            ~= 1.5
+  - matplotlib        ~= 3.10
+  - numpy             ~= 2.4
+  - pandas            ~= 2.3
+  - python            ~= 3.14
+  - scipy             ~= 1.17
+  - typing_extensions ~= 4.15
   - typing_inspect    ~= 0.9
   # test
   - pytest     ~= 8.4
-  - pytest-cov ~= 6.2
+  - pytest-cov ~= 6.3
   # sphinx
-  - nbsphinx                 ~= 0.8.9
-  - sphinx                   ~= 4.5.0
-  - sphinx-autodoc-typehints ~= 1.19.2
-  - pydata-sphinx-theme      ~= 0.8.1
+  - nbsphinx                 ~= 0.8
+  - sphinx                   ~= 9.1
+  - sphinx-autodoc-typehints ~= 1.19
+  - pydata-sphinx-theme      ~= 0.8
   # notebooks
-  - ipywidgets ~= 8.0
-  - jupyterlab ~= 3.5
-  - openpyxl   ~= 3.0
-  - seaborn    ~= 0.12
-  - tableone   ~= 0.7
+  - ipywidgets ~= 8.1
+  - jupyterlab ~= 4.5
+  - openpyxl   ~= 3.1
+  - seaborn    ~= 0.13
+  - tableone   ~= 0.9
