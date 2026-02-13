@@ -173,7 +173,14 @@ class AllTracker:
                         f"exporting a global constant is not permitted: {obj!r}"
                     )
 
-            if forbid_imported_definitions and obj_module and obj_module != module:
+            if (
+                forbid_imported_definitions
+                and obj_module
+                and obj_module != module
+                # Special case: special types such as `Union` can be exported as part
+                # of type aliases, so we allow them to be imported from other modules
+                and obj_module != "typing"
+            ):
                 raise AssertionError(
                     f"{_qualname(obj)} is exported by module {module} "
                     f"but defined in module {obj_module}; "
