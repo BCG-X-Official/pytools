@@ -228,9 +228,7 @@ class AllTracker:
         )
         # get the type hints for the class and return the evaluated type alias
         # from the dummy field
-        alias_resolved = get_type_hints(cls, globalns=self._globals)[dummy_field]
-        alias_resolved.__module__ = self._module
-        return alias_resolved
+        return get_type_hints(cls, globalns=self._globals)[dummy_field]
 
     def __getitem__(self, name: str) -> Any:
         # get a tracked item by name
