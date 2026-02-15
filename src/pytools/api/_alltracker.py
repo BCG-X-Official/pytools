@@ -6,9 +6,14 @@ import logging
 import re
 from collections.abc import Callable, Collection, Iterable
 from types import FunctionType
-from typing import Any, TypeVar, get_type_hints
+from typing import (
+    Any,
+    TypeVar,
+    get_args,
+    get_type_hints,
+)
 
-from typing_inspect import get_args, is_forward_ref
+from typing_inspect import is_forward_ref
 
 log = logging.getLogger(__name__)
 
@@ -173,7 +178,14 @@ class AllTracker:
                         f"exporting a global constant is not permitted: {obj!r}"
                     )
 
-            if forbid_imported_definitions and obj_module and obj_module != module:
+            if (
+                forbid_imported_definitions
+                and obj_module
+                and obj_module != module
+                # Special case: special types such as `Union` can be exported as part
+                # of type aliases, so we allow them to be imported from other modules
+                and obj_module != "typing"
+            ):
                 raise AssertionError(
                     f"{_qualname(obj)} is exported by module {module} "
                     f"but defined in module {obj_module}; "
@@ -228,9 +240,7 @@ class AllTracker:
         )
         # get the type hints for the class and return the evaluated type alias
         # from the dummy field
-        alias_resolved = get_type_hints(cls, globalns=self._globals)[dummy_field]
-        alias_resolved.__module__ = self._module
-        return alias_resolved
+        return get_type_hints(cls, globalns=self._globals)[dummy_field]
 
     def __getitem__(self, name: str) -> Any:
         # get a tracked item by name

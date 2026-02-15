@@ -295,7 +295,7 @@ def get_generic_instance(subclass: type, base: type) -> list[type]:
                     bindings=base_bindings,
                 )
 
-    if ti.get_origin(base) is not None and get_args(base):
+    if typing.get_origin(base) is not None and get_args(base):
         raise TypeError(f"arg base must not be a generic instance, but got {base}")
 
     if not issubclass(get_origin(subclass) or subclass, base):
@@ -346,7 +346,9 @@ def get_generic_bases(*, generic_instance: type) -> tuple[type, ...]:
         )
 
         return (
-            special_generic_base[ti.get_args(generic_instance)],  # type: ignore[index]
+            special_generic_base[  # type: ignore[index]
+                typing.get_args(generic_instance)
+            ],
         )
 
     # The origin is not a generic alias
