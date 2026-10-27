@@ -9,6 +9,7 @@ import importlib
 import itertools
 import logging
 import re
+import sys
 import typing
 from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Mapping
@@ -243,10 +244,19 @@ class AddInheritance(AutodocProcessDocstring):
             return str(cls)
 
         if isinstance(cls, ForwardRef):
-            if cls.__forward_evaluated__:
+            forward_arg = cls.__forward_arg__
+            if sys.version_info >= (3, 14):
+                # ForwardRef no longer caches its value; evaluate it on demand, and
+                # get the unresolved reference back if it cannot be evaluated
+                import annotationlib
+
+                cls = cls.evaluate(format=annotationlib.Format.FORWARDREF)
+                if isinstance(cls, ForwardRef):
+                    return _class_tag(forward_arg, is_local=True)
+            elif cls.__forward_evaluated__:
                 cls = cls.__forward_value__
             else:
-                return _class_tag(cls.__forward_arg__, is_local=True)
+                return _class_tag(forward_arg, is_local=True)
 
         if not hasattr(cls, "__module__"):
             return _class_tag(str(cls))
