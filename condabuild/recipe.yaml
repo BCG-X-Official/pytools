@@ -41,10 +41,13 @@ tests:
       run:
         - pytest ~= 8.2
     script:
-      - conda list
-      - python -c 'import pytools; import os; assert pytools.__version__ == os.environ["PKG_VERSION"]'
-      - cd "${FACET_PATH}/pytools"
-      - pytest -vs test
+      env:
+        # the test environment does not inherit the environment of the build
+        FACET_PATH: ${{ env.get('FACET_PATH') }}
+      content:
+        - python -c 'import pytools; import os; assert pytools.__version__ == os.environ["PKG_VERSION"]'
+        - cd "${FACET_PATH}/pytools"
+        - pytest -vs test
 
 about:
   license: OSL-2.0
