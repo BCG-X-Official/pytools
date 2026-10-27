@@ -58,7 +58,7 @@ docs = [
     "docutils ~= 0.17",
     "xlrd ~= 1.2",
     "m2r ~= 0.2",
-    "mypy ~= 1.10",
+    "mypy ~= 2.4",
 ]
 
 [tool.flit.metadata.urls]
@@ -92,7 +92,7 @@ typing_inspect = "~=0.7"
 typing_extensions = "~=4.3"
 
 [tool.black]
-required-version = '26.1.0'
+required-version = '26.10.1'
 line-length = 88
 target_version = ['py311']
 include = '\.pyi?$'

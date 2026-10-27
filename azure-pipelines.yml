@@ -83,7 +83,7 @@ stages:
               versionSpec: '3.12'
             displayName: 'use Python 3.12'
           - script: |
-              python -m pip install isort~=7.0
+              python -m pip install isort~=10.0.0b1
               python -m isort --check --diff .
             displayName: 'Run isort'
       - job:
@@ -94,7 +94,7 @@ stages:
               versionSpec: '3.12'
             displayName: 'use Python 3.12'
           - script: |
-              python -m pip install black~=26.1.0
+              python -m pip install black~=26.10.1
               python -m black --check .
             displayName: 'Run black'
       - job:
@@ -105,7 +105,7 @@ stages:
               versionSpec: '3.12'
             displayName: 'use Python 3.12'
           - script: |
-              python -m pip install flake8~=7.3 flake8-comprehensions~=3.16
+              python -m pip install flake8~=7.4 flake8-comprehensions~=3.16
               python -m flake8 --config tox.ini -v .
             displayName: 'Run flake8'
       - job:
@@ -122,7 +122,7 @@ stages:
                 packaging
                 pytest
               )
-              python -m pip install mypy "${dependencies[@]}"
+              python -m pip install "mypy~=2.4" "${dependencies[@]}"
               python -m mypy src --config-file pyproject.toml
             displayName: 'Run mypy'
 
