@@ -40,7 +40,7 @@ Build (wrapper around conda-build / tox that exports the `pyproject.toml` depend
 
 Docs: `sphinx/make.py` (delegates to `sphinx/base/make_base.py`).
 
-`sphinx/base/` (`conf_base.py`, `make_base.py`, `_static`, `_templates`) is the shared docs build used by pytools, sklearndf and facet. pytools is the only source: `../sklearndf` and `../facet` download these files from GitHub at build time (their `sphinx/base/` is gitignored) from the pytools branch named by `BRANCH` in their `sphinx/make.py`, currently `2.1.x`, so a change here reaches them only once that branch is updated or points to `3.0.x`. Keep `conf_base.py` valid for all three, e.g. facet has a `sphinx/source/_static` folder and the others do not. The docs build fails on Sphinx configuration errors, such as `intersphinx_mapping` entries that share a target URI.
+`sphinx/base/` (`conf_base.py`, `make_base.py`, `_static`, `_templates`) is the shared docs build used by pytools, sklearndf and facet. pytools is the only source: `../sklearndf` and `../facet` download these files from GitHub at build time (their `sphinx/base/` is gitignored) from the pytools branch named by `BRANCH` in their `sphinx/make.py`, currently `3.0.x`, so a change merged there reaches them automatically at their next docs build. Keep `conf_base.py` valid for all three, e.g. facet has a `sphinx/source/_static` folder and the others do not. The docs build fails on Sphinx configuration errors, such as `intersphinx_mapping` entries that share a target URI.
 
 ## Architecture
 

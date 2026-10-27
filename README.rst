@@ -107,13 +107,13 @@ or have a look at
 .. |pypi| image:: https://badge.fury.io/py/gamma-pytools.svg
     :target: https://pypi.org/project/gamma-pytools/
 
-.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-X-Official.pytools?branchName=develop
+.. |azure_build| image:: https://dev.azure.com/gamma-facet/facet/_apis/build/status/BCG-X-Official.pytools?branchName=3.0.x
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/2.1.x
+.. |azure_code_cov| image:: https://img.shields.io/azure-devops/coverage/gamma-facet/facet/9/3.0.x
    :target: https://dev.azure.com/gamma-facet/facet/_build?definitionId=9&_a=summary
 
-.. |python_versions| image:: https://img.shields.io/badge/python-3.10|3.11|3.12-blue.svg
+.. |python_versions| image:: https://img.shields.io/badge/python-3.10|3.11|3.12|3.13|3.14-blue.svg
     :target: https://www.python.org/downloads/release/python-380/
 
 .. |code_style| image:: https://img.shields.io/badge/code%20style-black-000000.svg
