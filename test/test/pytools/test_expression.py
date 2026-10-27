@@ -48,9 +48,8 @@ def test_expression_formatting() -> None:
     repr_1 = PythonExpressionFormatter(single_line=True).to_text(expr_1)
     assert len(form_1) == len(repr_1), f"length of {repr_1}"
 
-    assert (
-        str(expr_1)
-        == """(
+    assert str(expr_1) == """\
+(
     f((1 | 2) >> 'x' % x, abc=-5)
     * (
         f((1 | 2) >> 'x' % x, abc=-5)
@@ -59,7 +58,6 @@ def test_expression_formatting() -> None:
         - f((1 | 2) >> 'x' % x, abc=-5) * f((1 | 2) >> 'x' % x, abc=-5)
     )
 )"""
-    )
 
     # expression 2, generated with from_value
 
@@ -69,9 +67,8 @@ def test_expression_formatting() -> None:
     # expression 3
 
     expr_3 = Id.g(param=(e, e + e, ~(e * e + e)))
-    assert (
-        str(expr_3)
-        == """g(
+    assert str(expr_3) == """\
+g(
     param=(
         f((1 | 2) >> 'x' % x, abc=-5),
         f((1 | 2) >> 'x' % x, abc=-5) + f((1 | 2) >> 'x' % x, abc=-5),
@@ -81,7 +78,6 @@ def test_expression_formatting() -> None:
         )
     )
 )"""
-    )
 
     expr_4 = Lambda(body=e)
     assert repr(expr_4) == "lambda : f((1 | 2) >> 'x' % x, abc=-5)"

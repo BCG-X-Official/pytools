@@ -66,8 +66,7 @@ def test_dendrogram_drawer_text(linkage_matrix: npt.NDArray[np.float64]) -> None
         log.debug(f"\n{report_str}")
 
         print(report_str)
-    report_str_expected = (
-        r"""
+    report_str_expected = (r"""
 ===================================== Test =====================================
 
 G 19% \_________________
@@ -79,8 +78,7 @@ E 14% ------------------/                 \------------------------------------/
 A  3% ------------------/                 |
 D 11% ------------------------------------/
 
-"""
-    )[1:]
+""")[1:]
     assert report_str == report_str_expected
 
     linkage_tree = LinkageTree(
@@ -100,8 +98,7 @@ D 11% ------------------------------------/
         log.debug(f"\n{report_str}")
 
         print(report_str)
-    report_str_expected = (
-        r"""
+    report_str_expected = (r"""
 ===================================== Test =====================================
 
 G 19% \_____________
@@ -113,6 +110,5 @@ E 14% --------------/              \-----------------------------/
 A  3% --------------/              |
 D 11% -----------------------------/
 
-"""
-    )[1:]
+""")[1:]
     assert report_str == report_str_expected

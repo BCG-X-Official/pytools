@@ -61,7 +61,6 @@ def set_config(
 
 
 def _update_intersphinx_mapping(mapping: dict[str, tuple[str, str | None]]) -> None:
-    global intersphinx_mapping
     intersphinx_mapping.update(mapping)
 
 
@@ -116,10 +115,8 @@ intersphinx_mapping: dict[str, tuple[str, str | None]] = {
     "joblib": ("https://joblib.readthedocs.io/en/latest", None),
     "matplotlib": ("https://matplotlib.org/stable", None),
     "mypy": ("https://mypy.readthedocs.io/en/latest/", None),
-    "np": ("https://numpy.org/doc/stable", None),
     "numpy": ("https://numpy.org/doc/stable", None),
     "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
-    "pd": ("https://pandas.pydata.org/pandas-docs/stable", None),
     "python": ("https://docs.python.org/3.7", None),
     "scipy": ("https://docs.scipy.org/doc/scipy", None),
     "sphinx": ("https://www.sphinx-doc.org/en/master", None),
@@ -177,7 +174,10 @@ html_context = {"default_mode": "light"}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# only reference the project's own static folder if it exists
+html_static_path = [
+    p for p in ["_static"] if os.path.isdir(os.path.join(_dir_sphinx, "source", p))
+]
 html_logo = os.path.join("_static", "gamma_logo.jpg")
 
 # Class documentation to include docstrings both global to the class, and from __init__

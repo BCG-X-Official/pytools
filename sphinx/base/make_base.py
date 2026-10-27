@@ -2,6 +2,7 @@
 """
 Sphinx documentation build script
 """
+
 from __future__ import annotations
 
 import json

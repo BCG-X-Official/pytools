@@ -3,6 +3,7 @@
 Facet build script wrapping conda-build, and exposing matrix
 dependency definition of pyproject.toml as environment variables
 """
+
 from __future__ import annotations
 
 import os
@@ -466,7 +467,24 @@ class CondaBuilder(Builder):
         )
 
         os.makedirs(build_path, exist_ok=True)
-        build_cmd = f"conda mambabuild -c conda-forge {recipe_path}"
+
+        # We load packages from the following channels:
+        channels = [
+            "bcg_gamma",
+            "bcgx",
+            "conda-forge",
+        ]
+        # Construct the build command, including the channels
+        channel_args = f"-c {' -c '.join(channels)}"
+
+        # Add output directory to rattler-build command
+        build_cmd = (
+            f"rattler-build build {channel_args} "
+            f"--output-dir {build_path} "
+            f"--recipe {recipe_path}"
+        )
+
+        # Run the build command
         log(
             f"Building: {self.project}\n"
             f"Build path: {build_path}\n"
@@ -505,8 +523,8 @@ class ToxBuilder(Builder):
         """
         Build a facet project using tox.
 
-        :param exposed_package_dependencies: package/version mapping of the
-            dependencies that have been exposed as environment variables
+        :param exposed_package_dependencies: package/version mapping of the dependencies
+            that have been exposed as environment variables
         """
         if self.dependency_type == DEP_DEFAULT:
             tox_env = "py3"
@@ -523,6 +541,15 @@ class ToxBuilder(Builder):
             # create a copy of tox.ini, removing all lines that reference
             # dependencies that have not been exposed as environment variables
             path_tox_ini = self._patch_tox_ini(exposed_package_dependencies.keys())
+
+            # Set FACET_PYTHON_EXECUTABLE based on FACET_V_PYTHON
+            facet_v_python = os.environ.get("FACET_V_PYTHON", "")
+            match = re.search(r"(\d)\.(\d+)", facet_v_python)
+            if match:
+                python_exec = f"python{match.group(1)}.{match.group(2)}"
+            else:
+                python_exec = "python3"
+            export_environment_variable("FACET_PYTHON_EXECUTABLE", python_exec)
 
             # run tox
             build_cmd = f"tox -c '{path_tox_ini}' -e {tox_env} -v"
@@ -653,13 +680,13 @@ def print_usage() -> None:
     """
     Print a help string to explain the usage of this script.
     """
-    print(
-        f"""Facet Build script
+    print(f"""\
+Facet Build script
 ==================
 Build a distribution package for given project.
 
 Available arguments:
-    project:    {' | '.join(get_known_projects())}
+    project:    {" | ".join(get_known_projects())}
 
     build-system: {B_CONDA} | {B_TOX}
 
@@ -673,8 +700,7 @@ Example usage:
     ./make.py sklearndf conda default
     ./make.py sklearndf tox max
 
-"""
-    )
+""")
 
 
 def export_environment_variable(name: str, value: str) -> None:

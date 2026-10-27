@@ -9,6 +9,7 @@ import importlib
 import itertools
 import logging
 import re
+import sys
 import typing
 from abc import ABCMeta, abstractmethod
 from collections.abc import Callable, Generator, Iterable, Mapping
@@ -243,10 +244,19 @@ class AddInheritance(AutodocProcessDocstring):
             return str(cls)
 
         if isinstance(cls, ForwardRef):
-            if cls.__forward_evaluated__:
+            forward_arg = cls.__forward_arg__
+            if sys.version_info >= (3, 14):
+                # ForwardRef no longer caches its value; evaluate it on demand, and
+                # get the unresolved reference back if it cannot be evaluated
+                import annotationlib
+
+                cls = cls.evaluate(format=annotationlib.Format.FORWARDREF)
+                if isinstance(cls, ForwardRef):
+                    return _class_tag(forward_arg, is_local=True)
+            elif cls.__forward_evaluated__:
                 cls = cls.__forward_value__
             else:
-                return _class_tag(cls.__forward_arg__, is_local=True)
+                return _class_tag(forward_arg, is_local=True)
 
         if not hasattr(cls, "__module__"):
             return _class_tag(str(cls))
@@ -256,8 +266,7 @@ class AddInheritance(AutodocProcessDocstring):
 
         else:
             generic_args = [
-                self._class_name_with_generics(arg)
-                for arg in typing_inspect.get_args(cls, evaluate=True)
+                self._class_name_with_generics(arg) for arg in typing.get_args(cls)
             ]
 
             generic_arg_str = f" [{', '.join(generic_args)}]" if generic_args else ""
@@ -284,12 +293,9 @@ class AddInheritance(AutodocProcessDocstring):
     def _get_generics(self, child_class: type) -> list[str]:
         return list(
             itertools.chain.from_iterable(
-                (
-                    self._typevar_name(arg)
-                    for arg in typing_inspect.get_args(base, evaluate=True)
-                )
+                (self._typevar_name(arg) for arg in typing.get_args(base))
                 for base in _get_generic_bases(child_class)
-                if typing_inspect.get_origin(base) is Generic
+                if typing.get_origin(base) is Generic
             )
         )
 
@@ -624,14 +630,14 @@ class Replace3rdPartyDoc(AutodocProcessDocstring, metaclass=SingletonABCMeta):
 #
 
 
-def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, None]:
+def _get_bases(subclass: type, include_subclass: bool) -> Generator[type]:
     # get the names of the immediate base classes of arg _subclass
 
     visited_classes: set[type] = set()
 
-    def _inner(_subclass: type, _include_subclass: bool) -> Generator[type, None, None]:
+    def _inner(_subclass: type, _include_subclass: bool) -> Generator[type]:
         # ensure we have the non-generic origin class
-        _subclass = typing_inspect.get_origin(_subclass) or _subclass
+        _subclass = typing.get_origin(_subclass) or _subclass
 
         if _subclass in visited_classes:
             return
@@ -652,7 +658,7 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
         # hidden classes
         for base in base_classes:
             # exclude object and Generic types
-            if base is object or typing_inspect.get_origin(base) is Generic:
+            if base is object or typing.get_origin(base) is Generic:
                 continue
 
             # exclude protected classes
@@ -668,7 +674,7 @@ def _get_bases(subclass: type, include_subclass: bool) -> Generator[type, None, 
 
 def _get_minimal_bases(class_: type) -> list[type]:
     bases_with_origin = [
-        (base, typing_inspect.get_origin(base) or base)
+        (base, typing.get_origin(base) or base)
         for base in set(_get_bases(class_, include_subclass=False))
     ]
     return [
@@ -696,7 +702,7 @@ def _class_attr(cls: Any, attr: list[str]) -> Any:
         # if the attribute is not defined, this class is likely to have generic
         # arguments, so we re-try recursively with the origin (unless the origin
         # is the class itself to avoid infinite recursion)
-        cls_origin = typing_inspect.get_origin(_cls)
+        cls_origin = typing.get_origin(_cls)
         if cls_origin is not None and cls_origin != _cls:
             return _get_attr(cls_origin)
         else:
@@ -754,7 +760,7 @@ class _TypeVarBindings:
         # if arg cls has generic type parameters, it will have a corresponding
         cls_origin: type[Any] | None = None
         if typing_inspect.is_generic_type(cls):
-            cls_origin = typing_inspect.get_origin(cls)
+            cls_origin = typing.get_origin(cls)
 
         class_bindings: dict[TypeVar, type[Any] | TypeVar]
         if cls_origin:
@@ -762,7 +768,7 @@ class _TypeVarBindings:
                 param: subclass_bindings.get(arg, arg) if subclass_bindings else arg
                 for param, arg in zip(
                     typing_inspect.get_parameters(cls_origin),
-                    typing_inspect.get_args(cls),
+                    typing.get_args(cls),
                 )
             }
             cls = cls_origin
@@ -871,9 +877,9 @@ class ResolveTypeVariables(AutodocBeforeProcessSignature, metaclass=SingletonABC
                     _, arg_0_type = signature_original_items[0]
                     if (
                         typing_inspect.is_generic_type(arg_0_type)
-                        and typing_inspect.get_origin(arg_0_type) is type
+                        and typing.get_origin(arg_0_type) is type
                     ):
-                        arg_0_type_args = typing_inspect.get_args(arg_0_type)
+                        arg_0_type_args = typing.get_args(arg_0_type)
                         if len(arg_0_type_args) == 1 and typing_inspect.is_typevar(
                             arg_0_type_args[0]
                         ):
@@ -1178,7 +1184,6 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
-@inheritdoc(match="""[see superclass]""")
 class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
     """
     A Sphinx autodoc process signature that updates forward references in the
@@ -1202,8 +1207,6 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         signature: str | None,
         return_annotation: str | None,
     ) -> None:
-        """[see superclass]"""
-
         if what == "class":
             try:
                 update_forward_references(cast(type, obj))
@@ -1234,7 +1237,7 @@ def _substitute_generic_type_arguments(
 ) -> type[Any] | TypeVar:
     # dynamically resolve type variables inside nested type expressions
     type_args: tuple[list[type[Any] | TypeVar] | type[Any] | TypeVar, ...] = (
-        typing_inspect.get_args(type_expression)
+        typing.get_args(type_expression)
     )
 
     if type_args:
@@ -1263,8 +1266,10 @@ def _copy_generic_type_with_arguments(
     # create a copy of the given type expression, replacing its type arguments with
     # the given new arguments
 
-    origin = typing_inspect.get_origin(type_expression)
-    assert origin is not None
+    origin = typing.get_origin(type_expression)
+    assert (
+        origin is not None
+    ), f"expected a generic type expression, got {type_expression!r}"
 
     try:
         copy_with: Callable[

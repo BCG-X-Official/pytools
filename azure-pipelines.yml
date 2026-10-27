@@ -1,8 +1,10 @@
 trigger:
+  # run the pipeline on pushes to the following branches
   - 3.0.x
   - release/*
 
 pr:
+  # run the pipeline on pull requests to the following branches
   - 3.0.x
   - release/*
 
@@ -12,13 +14,13 @@ pool:
 # set the build name
 name: $[ variables['branchName'] ]
 
-# run tests and full conda/tox build matrix every night at 2am
 schedules:
+  # run the pipeline every weekday night at 2am on the latest main branch
   - cron: "0 2 * * 1-5"
     displayName: Nightly full build
     branches:
       include:
-        - 2.1.x
+        - 3.0.x
 
 resources:
   repositories:
@@ -29,13 +31,40 @@ resources:
       ref: 3.0.x
 
 variables:
-  ${{ if not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')) }}:
-    branchName: $[ replace(variables['Build.SourceBranch'], 'refs/heads/', '') ]
-  ${{ if startsWith(variables['Build.SourceBranch'], 'refs/pull/') }}:
-    branchName: $[ replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', '') ]
-  source_is_release_branch: $[ startsWith(variables['branchName'], 'release/') ]
-  source_is_develop_branch: $[ startsWith(variables['branchName'], 'dev/') ]
+  # Short branch name for convenience (works for PRs & non-PRs)
+  branchName: $[ coalesce(
+      replace(variables['System.PullRequest.SourceBranch'], 'refs/heads/', ''),
+      replace(variables['Build.SourceBranch'], 'refs/heads/', '')
+    ) ]
+
+  # Detect release from either full ref (non-PR) or PR source (short or full)
+  source_is_release_branch: $[ or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'),
+      and(
+        startsWith(variables['Build.SourceBranch'], 'refs/pull/'),
+        or(
+          startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/release/'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'release/')
+        )
+      )
+    ) ]
+
+  # Detect dev from either full ref (non-PR) or PR source (short or full)
+  source_is_develop_branch: $[ or(
+      startsWith(variables['Build.SourceBranch'], 'refs/heads/dev/'),
+      and(
+        startsWith(variables['Build.SourceBranch'], 'refs/pull/'),
+        or(
+          startsWith(variables['System.PullRequest.SourceBranch'], 'refs/heads/dev/'),
+          startsWith(variables['System.PullRequest.SourceBranch'], 'dev/')
+        )
+      )
+    ) ]
+
+  # Scheduled?
   is_scheduled: $[ eq(variables['Build.Reason'], 'Schedule') ]
+
+  # Static variables
   project_name: pytools
   project_root: $(project_name)
   package_name: gamma-pytools
@@ -51,10 +80,10 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
-              python -m pip install isort~=5.12
+              python -m pip install isort~=10.0.0b1
               python -m isort --check --diff .
             displayName: 'Run isort'
       - job:
@@ -62,10 +91,10 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
-              python -m pip install black~=24.4.2
+              python -m pip install black~=26.10.1
               python -m black --check .
             displayName: 'Run black'
       - job:
@@ -73,10 +102,10 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
           - script: |
-              python -m pip install flake8~=7.0 flake8-comprehensions~=3.10
+              python -m pip install flake8~=7.4 flake8-comprehensions~=3.16
               python -m flake8 --config tox.ini -v .
             displayName: 'Run flake8'
       - job:
@@ -89,11 +118,11 @@ stages:
           - script: |
               # package dependencies for mypy
               dependencies=(
-                numpy~=2.0
+                numpy~=2.2
                 packaging
                 pytest
               )
-              python -m pip install mypy "${dependencies[@]}"
+              python -m pip install "mypy~=2.4" "${dependencies[@]}"
               python -m mypy src --config-file pyproject.toml
             displayName: 'Run mypy'
 
@@ -104,7 +133,7 @@ stages:
     jobs:
 
       - job: checkout_and_diff
-        displayName: 'detect changes'
+        displayName: 'detect config changes'
         steps:
           - checkout: self
             fetchDepth: 2
@@ -192,9 +221,7 @@ stages:
 
           - task: PublishCodeCoverageResults@2
             inputs:
-              codeCoverageTool: Cobertura
               summaryFileLocation: '$(System.DefaultWorkingDirectory)/coverage.xml'
-              reportDirectory: '$(System.DefaultWorkingDirectory)/htmlcov'
 
   # conda env & tox build test
   # testing matrix of python & sklearn versions
@@ -225,7 +252,7 @@ stages:
             # This comprises only one minimum dependencies test for tox,
             # which is usually faster than conda.
             maximum_dependencies_conda:
-              FACET_V_PYTHON_BUILD: '=3.12'
+              FACET_V_PYTHON_BUILD: '=3.14'
               BUILD_SYSTEM: 'conda'
               PKG_DEPENDENCIES: 'max'
             minimum_dependencies_tox:
@@ -233,7 +260,7 @@ stages:
               BUILD_SYSTEM: 'tox'
               PKG_DEPENDENCIES: 'min'
             maximum_dependencies_tox:
-              FACET_V_PYTHON_BUILD: '=3.12'
+              FACET_V_PYTHON_BUILD: '=3.14'
               BUILD_SYSTEM: 'tox'
               PKG_DEPENDENCIES: 'max'
 
@@ -257,7 +284,7 @@ stages:
               # create and activate a build environment, then install the tools we need
               micromamba create -n build
               micromamba activate build
-              micromamba install -y -c conda-forge boa~=0.14 toml~=0.10 flit~=3.6 packaging~=20.9
+              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 'packaging>=25'
             displayName: 'Install conda-build, flit, toml'
             condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
@@ -311,7 +338,7 @@ stages:
         strategy:
           matrix:
             default_dependencies_conda:
-              FACET_V_PYTHON_BUILD: '=3.10'
+              FACET_V_PYTHON_BUILD: '=3.13'
               BUILD_SYSTEM: 'conda'
               PKG_DEPENDENCIES: 'default'
             minimum_dependencies_conda:
@@ -319,11 +346,11 @@ stages:
               BUILD_SYSTEM: 'conda'
               PKG_DEPENDENCIES: 'min'
             maximum_dependencies_conda:
-              FACET_V_PYTHON_BUILD: '=3.12'
+              FACET_V_PYTHON_BUILD: '=3.14'
               BUILD_SYSTEM: 'conda'
               PKG_DEPENDENCIES: 'max'
             default_dependencies_tox:
-              FACET_V_PYTHON_BUILD: '=3.10'
+              FACET_V_PYTHON_BUILD: '=3.13'
               BUILD_SYSTEM: 'tox'
               PKG_DEPENDENCIES: 'default'
             minimum_dependencies_tox:
@@ -331,7 +358,7 @@ stages:
               BUILD_SYSTEM: 'tox'
               PKG_DEPENDENCIES: 'min'
             maximum_dependencies_tox:
-              FACET_V_PYTHON_BUILD: '=3.12'
+              FACET_V_PYTHON_BUILD: '=3.14'
               BUILD_SYSTEM: 'tox'
               PKG_DEPENDENCIES: 'max'
 
@@ -356,15 +383,15 @@ stages:
               # create and activate a build environment, then install the tools we need
               micromamba create -n build
               micromamba activate build
-              micromamba install -y -c conda-forge boa~=0.14 toml~=0.10 flit~=3.6 packaging~=20.9
+              micromamba install -y -c conda-forge rattler-build~=0.44 toml~=0.10 flit~=3.6 'packaging>=25'
             displayName: 'Install conda-build, flit, toml'
             condition: eq(variables['BUILD_SYSTEM'], 'conda')
 
           - script: |
-              python -m pip install "toml==0.10.*"
-              python -m pip install "flit==3.0.*"
+              python -m pip install "toml~=0.10"
+              python -m pip install "flit~=3.7"
               flit --version
-              python -m pip install "tox==3.20.*"
+              python -m pip install "tox~=3.25"
               tox --version
             displayName: 'Install tox, flit & toml'
             condition: eq(variables['BUILD_SYSTEM'], 'tox')
@@ -461,7 +488,7 @@ stages:
               condition: ne(variables.branchName, 'develop')
               script: |
                 set -eux
-                python -m pip install toml~=0.10.2 packaging~=20.9
+                python -m pip install toml~=0.10.2 'packaging>=25'
                 cd $(System.DefaultWorkingDirectory)/pytools
                 python <<EOF
                 from os import environ
@@ -524,7 +551,7 @@ stages:
               script: |
                 set -eux
                 echo "Getting version"
-                pip install packaging~=20.9
+                pip install 'packaging>=25'
                 package_path=$(System.DefaultWorkingDirectory)/$(project_root)/src/$(project_name)
                 export PYTHONPATH=$(System.DefaultWorkingDirectory)/pytools/sphinx/base
                 version=$(python -c "import make_util; print(make_util.get_package_version(package_path='$package_path'))")
@@ -551,11 +578,23 @@ stages:
               set -eux
               cd $(System.DefaultWorkingDirectory)
               eval "$(conda shell.bash hook)"
-              conda install -y anaconda-client
-              anaconda login --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}"
-              anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-              anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-              anaconda logout
+              conda install -y -c conda-forge --override-channels anaconda-client
+
+              anaconda login --at anaconda.org --username "${CONDA_USERNAME}" --password "${CONDA_PASSWORD}" --hostname "$(hostname)-${BUILD_BUILDID:-$$}"
+              
+              # Check for .conda files first (rattler-build), then .tar.bz2 (conda-build)
+              if ls $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda 1> /dev/null 2>&1; then
+                anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
+                anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
+              elif ls $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2 1> /dev/null 2>&1; then
+                anaconda upload --user bcgx --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
+                anaconda upload --user BCG_Gamma --force $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
+              else
+                echo "No conda packages found!"
+                exit 1
+              fi
+              
+              anaconda logout --at anaconda.org
               # set +x to prevent Azure from randomly appending a \' of the ## statement
               set +x
               echo "##vso[task.setvariable variable=conda_published]True"
@@ -576,7 +615,7 @@ stages:
               set +x
               echo "##vso[task.setvariable variable=pypi_published]True"
             displayName: 'Publish to PyPi'
-            condition: eq(variables['source_is_release_branch'], 'True')
+            condition: and(eq(variables['source_is_release_branch'], 'True'), eq(variables['conda_published'], 'True'))
             env:
               FLIT_PASSWORD: $(pypi_pytools_uploads)
               FLIT_USERNAME: __token__
@@ -615,8 +654,7 @@ stages:
               isPrerelease: $(is_prerelease)
               assets: |
                 $(System.ArtifactsDirectory)/tox_default/tox/$(package_name)-*.tar.gz
-                $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.tar.bz2
-
+                $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda
   # render docs and publish to GitHub Pages
   - stage:
     displayName: 'Docs'
@@ -640,8 +678,8 @@ stages:
         steps:
           - task: UsePythonVersion@0
             inputs:
-              versionSpec: '3.10'
-            displayName: 'use Python 3.10'
+              versionSpec: '3.12'
+            displayName: 'use Python 3.12'
 
           - task: InstallSSHKey@0
             inputs:

@@ -105,7 +105,7 @@ _COLORMAP_FACET = LinearSegmentedColormap.from_list(
 def _get_property_name(
     # we use a union type here: depending on the type checker, properties
     # will be considered a callable (mypy), or of type property (PyCharm)
-    p: Callable[[ColorScheme], RgbColor] | property
+    p: Callable[[ColorScheme], RgbColor] | property,
 ) -> str:
     # helper function used while setting class attributes of class ColorScheme (below)
     return cast(FunctionType, cast(property, p).fget).__name__

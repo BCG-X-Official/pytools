@@ -3,11 +3,9 @@ Tests for utility functions related to generic types.
 """
 
 import typing
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterable, AsyncIterator, Iterable, Iterator, Mapping
 from collections.abc import AsyncIterable as AsyncIterable_typing
-from collections.abc import AsyncIterator
 from collections.abc import AsyncIterator as AsyncIterator_typing
-from collections.abc import Iterable, Iterator, Mapping
 from typing import Any, Generic, TypeVar
 
 import pytest
