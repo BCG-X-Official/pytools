@@ -11,6 +11,19 @@ Release Notes
 *pytools* 3.0 adds support for language features introduced up to and including
 Python 3.10, and drops support for Python versions.
 
+*pytools* 3.0.3
+~~~~~~~~~~~~~~~
+
+- BUILD: add support for Python 3.14
+- BUILD: the minimum required version of :mod:`typing_extensions` is now 4.1
+- FIX: :class:`.AllTracker` now evaluates type aliases that are defined as strings,
+  e.g., ``Alias: TypeAlias = "A | B[C]"``, so they can be combined with other types
+  in annotations, and allows exporting unions created using the ``|`` operator
+- FIX: :class:`.AllTracker` now allows exporting special types from the ``typing``
+  module in type aliases
+- FIX: the Sphinx utilities no longer fail on forward references in Python 3.14
+
+
 *pytools* 3.0.2
 ~~~~~~~~~~~~~~~
 
