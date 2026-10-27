@@ -26,7 +26,7 @@ Lint / format / type check (all run via pre-commit; hook versions are pinned in 
 
 ```sh
 pre-commit run --all-files
-black src test            # black is pinned to 26.1.0 in pyproject.toml; line length 88
+black src test            # black is pinned via required-version in pyproject.toml; line length 88
 isort src test            # profile=black, config in tox.ini
 flake8 --config tox.ini src test
 mypy --config-file pyproject.toml src/ test/ sphinx/   # strict mode
@@ -39,6 +39,8 @@ Build (wrapper around conda-build / tox that exports the `pyproject.toml` depend
 ```
 
 Docs: `sphinx/make.py` (delegates to `sphinx/base/make_base.py`).
+
+`sphinx/base/` (`conf_base.py`, `make_base.py`, `_static`, `_templates`) is the shared docs build used by pytools, sklearndf and facet. Each repo carries its own copy, and pytools is the source: apply changes here first, then sync them into `../sklearndf` and `../facet`, whose copies are currently older. Keep `conf_base.py` valid for all three, e.g. facet has a `sphinx/source/_static` folder and the others do not. The docs build fails on Sphinx configuration errors, such as `intersphinx_mapping` entries that share a target URI.
 
 ## Architecture
 
@@ -62,6 +64,22 @@ The package's `__init__.py` then does `from ._x import *`. `pytools.api.AllTrack
 ### Dependencies and build
 
 Runtime dependency ranges are in `pyproject.toml` (`[tool.flit.metadata]`); `[build.matrix.min|max]` define the oldest/newest supported dependency sets used by `make.py` for CI matrix builds. Build backend is flit. `typing_inspect` is being phased out in favour of the `typing` stdlib (`get_origin`, `get_args`) as part of Python 3.14 support.
+
+### CI and releasing
+
+`azure-pipelines.yml` runs on pushes to `3.0.x` and `release/*`, on PRs targeting either, and nightly on `3.0.x`; a push to a `dev/*` branch alone does not trigger it. The full build matrix (min/default/max dependencies on Python 3.10/3.13/3.14, conda and tox) runs for PRs from `dev/*` or `release/*` branches and for the nightly build, so config problems can first show up on a `dev/*` PR. Other PRs run only a three-job essential subset, and only if build config files (`pyproject.toml`, `tox.ini`, `make.py`, ...) changed. The build tool versions installed by the tox jobs (`tox`, `flit`) must work on the newest Python in the matrix.
+
+Publishing (anaconda.org, PyPI, GitHub release, docs to github-pages) happens only for builds of a `release/*` branch, i.e. after the `dev/<version>` PR is merged, never during the PR build itself. The only branch prefixes the pipeline recognises are `dev/` and `release/`; the `develop` branch is legacy.
+
+Release process (full description in `sphinx/source/contribution_guide.rst`; releases 3.0.0 to 3.0.2 followed it):
+
+1. Bump `__version__` in `src/pytools/__init__.py` and add the release notes to `RELEASE_NOTES.rst` on the baseline branch (`3.0.x`).
+2. Create `dev/<version>` from the baseline branch, and `release/<version>` from the **tag of the previous release** (e.g. `release/3.0.3` from tag `3.0.2`). The pipeline checks that the package version matches the `dev/` or `release/` branch suffix; a pipeline run on the freshly created `release/<version>` fails this check until the dev PR is merged.
+3. Open a PR `dev/<version>` -> `release/<version>` (not into the baseline branch) and wait for the full pipeline. Optionally test-upload the pip package to TestPyPI first, since PyPI versions are immutable.
+4. Merge the PR with a **merge commit**, never a squash. This triggers the release stage: tag, GitHub release with artifacts, and upload to anaconda.org (`bcgx`) and PyPI. This is irreversible; always confirm before merging.
+5. Merge `release/<version>` back into the baseline branch, then bump the version there towards the next release.
+
+`3.0.x` is a protected branch: merging requires an approval (or admin override).
 
 ## Conventions
 
