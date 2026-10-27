@@ -70,10 +70,6 @@ class AllTracker:
       module
 
     These validation checks can be overridden if required in special cases.
-
-    Type aliases that are defined as strings, e.g., ``Alias: TypeAlias = "A | B[C]"``,
-    are evaluated when calling :meth:`.validate`, so that they can be combined with
-    other types in annotations, e.g., ``Alias | Sequence[Alias]``.
     """
 
     #: if ``True``, automatically replace all forward
