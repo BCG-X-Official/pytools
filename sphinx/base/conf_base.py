@@ -174,7 +174,10 @@ html_context = {"default_mode": "light"}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# only reference the project's own static folder if it exists
+html_static_path = [
+    p for p in ["_static"] if os.path.isdir(os.path.join(_dir_sphinx, "source", p))
+]
 html_logo = os.path.join("_static", "gamma_logo.jpg")
 
 # Class documentation to include docstrings both global to the class, and from __init__
