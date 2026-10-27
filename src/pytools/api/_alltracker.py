@@ -4,10 +4,12 @@ Core implementation of :mod:`pytools.api`.
 
 import logging
 import re
+import sys
 from collections.abc import Callable, Collection, Iterable
 from types import FunctionType
 from typing import (
     Any,
+    TypeAlias,
     TypeVar,
     get_args,
     get_type_hints,
@@ -68,6 +70,10 @@ class AllTracker:
       module
 
     These validation checks can be overridden if required in special cases.
+
+    Type aliases that are defined as strings, e.g., ``Alias: TypeAlias = "A | B[C]"``,
+    are evaluated when calling :meth:`.validate`, so that they can be combined with
+    other types in annotations, e.g., ``Alias | Sequence[Alias]``.
     """
 
     #: if ``True``, automatically replace all forward
@@ -155,6 +161,11 @@ class AllTracker:
         allow_global_constants = self.allow_global_constants
         forbid_imported_definitions = not self.allow_imported_definitions
 
+        if self.update_forward_references:
+            # string type aliases must be evaluated before we resolve any annotations
+            # that refer to them
+            self._resolve_string_aliases()
+
         for name in all_expected:
             obj = globals_[name]
 
@@ -183,8 +194,10 @@ class AllTracker:
                 and obj_module
                 and obj_module != module
                 # Special case: special types such as `Union` can be exported as part
-                # of type aliases, so we allow them to be imported from other modules
-                and obj_module != "typing"
+                # of type aliases, so we allow them to be imported from other modules;
+                # unions created using the `|` operator are defined in `types` up to
+                # Python 3.13
+                and obj_module not in ("typing", "types")
             ):
                 raise AssertionError(
                     f"{_qualname(obj)} is exported by module {module} "
@@ -241,6 +254,45 @@ class AllTracker:
         # get the type hints for the class and return the evaluated type alias
         # from the dummy field
         return get_type_hints(cls, globalns=self._globals)[dummy_field]
+
+    def _resolve_string_aliases(self) -> None:
+        # Evaluate type aliases that are defined as plain strings, e.g.,
+        #   Alias: TypeAlias = "A | B[C]"
+        # Left as strings, these cannot be combined with other types in annotations,
+        # e.g., `Alias | Sequence[Alias]` would raise a TypeError.
+        # The aliases may be private, or defined before this tracker was created, so
+        # we inspect all annotated globals, not only the tracked ones.
+        globals_ = self._globals
+        for name, annotation in self._get_module_annotations().items():
+            if self._is_type_alias_annotation(annotation):
+                value = globals_.get(name)
+                if isinstance(value, str):
+                    globals_[name] = self._evaluate_type_alias(alias=value)
+
+    def _get_module_annotations(self) -> dict[str, Any]:
+        # get the annotations of the global variables in this tracker's module
+        annotations: dict[str, Any] | None = self._globals.get("__annotations__")
+
+        if annotations is None and sys.version_info >= (3, 14):
+            # annotations are evaluated lazily and have not been accessed yet
+            import annotationlib
+
+            module = sys.modules.get(self._module)
+            if module is not None:
+                annotations = annotationlib.get_annotations(
+                    module, format=annotationlib.Format.FORWARDREF
+                )
+
+        return annotations or {}
+
+    @staticmethod
+    def _is_type_alias_annotation(annotation: Any) -> bool:
+        # check if the annotation of a global variable is `TypeAlias`; the annotation
+        # is a string if the module uses `from __future__ import annotations`
+        return annotation is TypeAlias or (
+            isinstance(annotation, str)
+            and annotation.rsplit(".", 1)[-1].strip() == "TypeAlias"
+        )
 
     def __getitem__(self, name: str) -> Any:
         # get a tracked item by name
