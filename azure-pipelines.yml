@@ -582,7 +582,20 @@ stages:
 
               # authenticate with the API token in ANACONDA_API_TOKEN; username/password
               # login is deprecated, and falls back to an interactive prompt if it fails
-              anaconda whoami
+              # check the token before uploading: whoami reports an invalid token as
+              # "Anonymous User" without failing, and needs --at to not ask for the site
+              # (not traced, to keep the account details out of the log)
+              set +x
+              whoami_out=$(anaconda --at anaconda.org whoami 2>&1) || {
+                echo "anaconda whoami failed"
+                exit 1
+              }
+              if echo "${whoami_out}" | grep -q "Anonymous User"; then
+                echo "anaconda.org rejected the API token"
+                exit 1
+              fi
+              echo "authenticated with anaconda.org"
+              set -x
 
               # Check for .conda files first (rattler-build), then .tar.bz2 (conda-build)
               if ls $(System.ArtifactsDirectory)/conda_default/conda/noarch/$(package_name)-*.conda 1> /dev/null 2>&1; then
