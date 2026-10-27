@@ -213,6 +213,9 @@ def arun(coroutine: Coroutine[Any, Any, T]) -> T:
     :raises ExceptionGroup: if the coroutine raises multiple exceptions
     """
 
+    # for logging only; not all coroutine-like objects define __qualname__
+    coroutine_name = getattr(coroutine, "__qualname__", repr(coroutine))
+
     # Define a function that runs the event loop and executes the awaitable
     # This internal function is where the action happens, so we also add type hints here
     def _run_event_loop(loop: asyncio.AbstractEventLoop, awaitable: Awaitable[T]) -> T:
@@ -226,7 +229,7 @@ def arun(coroutine: Coroutine[Any, Any, T]) -> T:
         # There is no running loop. Run the coroutine in the current thread.
         log.debug(
             "arun: creating a new event loop in the current thread to run "
-            f"coroutine {coroutine.__qualname__}()"
+            f"coroutine {coroutine_name}()"
         )
         try:
             return asyncio.run(coroutine)
@@ -240,7 +243,7 @@ def arun(coroutine: Coroutine[Any, Any, T]) -> T:
         # Create a new event loop to run the coroutine in a new thread
         log.debug(
             "arun: creating a new event loop in a new thread to run coroutine "
-            f"{coroutine.__qualname__}()"
+            f"{coroutine_name}()"
         )
         new_loop = asyncio.new_event_loop()
 

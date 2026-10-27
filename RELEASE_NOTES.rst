@@ -11,6 +11,23 @@ Release Notes
 *pytools* 3.0 adds support for language features introduced up to and including
 Python 3.10, and drops support for Python versions.
 
+*pytools* 3.0.3
+~~~~~~~~~~~~~~~
+
+- BUILD: add support for Python 3.14; Python 3.11 to 3.13 are now also listed in the
+  package classifiers
+- BUILD: the minimum required version of :mod:`typing_extensions` is now 4.1
+- BUILD: conda packages are now built using ``rattler-build``
+- FIX: :class:`.AllTracker` now evaluates type aliases that are defined as strings,
+  e.g., ``Alias: TypeAlias = "A | B[C]"``, so they can be combined with other types
+  in annotations, and allows exporting unions created using the ``|`` operator
+- FIX: :class:`.AllTracker` now allows exporting special types from the ``typing``
+  module in type aliases
+- API: :class:`.AllTracker` no longer overwrites the ``__module__`` attribute of the
+  type aliases it evaluates
+- FIX: the Sphinx utilities no longer fail on forward references in Python 3.14
+
+
 *pytools* 3.0.2
 ~~~~~~~~~~~~~~~
 
