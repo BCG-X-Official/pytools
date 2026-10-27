@@ -40,6 +40,7 @@ pytools.viz.util.FittedText
       ~FittedText.get_font
       ~FittedText.get_font_properties
       ~FittedText.get_fontfamily
+      ~FittedText.get_fontfeatures
       ~FittedText.get_fontname
       ~FittedText.get_fontproperties
       ~FittedText.get_fontsize
@@ -52,6 +53,8 @@ pytools.viz.util.FittedText
       ~FittedText.get_horizontalalignment
       ~FittedText.get_in_layout
       ~FittedText.get_label
+      ~FittedText.get_language
+      ~FittedText.get_linespacing
       ~FittedText.get_math_fontfamily
       ~FittedText.get_mouseover
       ~FittedText.get_name
@@ -109,6 +112,7 @@ pytools.viz.util.FittedText
       ~FittedText.set_font
       ~FittedText.set_font_properties
       ~FittedText.set_fontfamily
+      ~FittedText.set_fontfeatures
       ~FittedText.set_fontname
       ~FittedText.set_fontproperties
       ~FittedText.set_fontsize
@@ -122,6 +126,7 @@ pytools.viz.util.FittedText
       ~FittedText.set_horizontalalignment
       ~FittedText.set_in_layout
       ~FittedText.set_label
+      ~FittedText.set_language
       ~FittedText.set_linespacing
       ~FittedText.set_ma
       ~FittedText.set_math_fontfamily
@@ -168,6 +173,7 @@ pytools.viz.util.FittedText
    .. autosummary::
    
       ~FittedText.axes
+      ~FittedText.figure
       ~FittedText.mouseover
       ~FittedText.stale
       ~FittedText.sticky_edges

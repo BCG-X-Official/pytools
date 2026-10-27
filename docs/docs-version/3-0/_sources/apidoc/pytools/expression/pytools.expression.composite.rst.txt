@@ -53,5 +53,5 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.expression.composite.base
+   base
 

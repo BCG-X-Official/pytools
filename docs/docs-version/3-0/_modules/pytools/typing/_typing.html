@@ -1,176 +1,353 @@
-
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" data-content_root="../../../" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>pytools.typing._typing &#8212; pytools  documentation</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css" />
-    
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/gamma.css?v=5c8aca28" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-    <script src="../../../_static/jquery.js"></script>
-    <script src="../../../_static/underscore.js"></script>
-    <script src="../../../_static/doctools.js"></script>
-    <script src="../../../_static/js/gamma.js"></script>
-    <script src="../../../_static/js/versions.js"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../../_static/js/gamma.js?v=6cc5c158"></script>
+    <script src="../../../_static/js/versions.js?v=bb9272fc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pytools/typing/_typing';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="3.0.3" />
+  
     
-
-    <!-- Google Analytics -->
-    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
-
-  <div id="navbar-start">
-    
-    
-
-<a class="navbar-brand" href="../../../index.html">
-  <img src="../../../_static/gamma_pytools_logo.png" class="logo" alt="logo">
-</a>
-
-
-    
-  </div>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
 
   
-  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
-    <div id="navbar-center" class="mr-auto">
-      
-      <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../_generated/getting_started.html">
-  Getting started
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../apidoc/pytools.html">
-  API reference
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../contribution_guide.html">
-  Development Guidelines
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../faqs.html">
-  FAQ
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="../../../_generated/release_notes.html">
-  Release Notes
- </a>
-</li>
-
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
     
-</ul>
-      </div>
-      
-    </div>
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
-    <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
-      </ul>
-      </div>
-      
-    </div>
-  </div>
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-    </nav>
-    
 
-    <div class="container-xl">
-      <div class="row">
-          
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="../../../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="../../../_static/gamma_pytools_logo.png" class="logo__image only-light" alt="pytools  documentation - Home"/>
+    <img src="../../../_static/gamma_pytools_logo.png" class="logo__image only-dark pst-js-only" alt="pytools  documentation - Home"/>
+  
+  
+</a></div>
     
   </div>
-</nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../_generated/getting_started.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apidoc/pytools.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contribution_guide.html">
+    Development Guidelines
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../faqs.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../_generated/release_notes.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
           
 
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-          </div>
-          
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
 
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
           
           
-            
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../_generated/getting_started.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apidoc/pytools.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contribution_guide.html">
+    Development Guidelines
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../faqs.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../_generated/release_notes.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
           
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+        
+      </div>
+    
+    
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
               
-              <div>
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">pytools.typing._typing</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
                 
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for pytools.typing._typing</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Implementation of unions.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
-<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">typing</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AsyncGenerator</span><span class="p">,</span>
     <span class="n">AsyncIterable</span><span class="p">,</span>
     <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">Awaitable</span><span class="p">,</span>
-    <span class="n">ByteString</span><span class="p">,</span>
     <span class="n">Collection</span><span class="p">,</span>
     <span class="n">Container</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
@@ -183,8 +360,8 @@
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">ValuesView</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">GenericAlias</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">UnionType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenericAlias</span><span class="p">,</span> <span class="n">NoneType</span><span class="p">,</span> <span class="n">UnionType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AbstractSet</span><span class="p">,</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Generic</span><span class="p">,</span>
@@ -195,34 +372,34 @@
     <span class="n">get_origin</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">typing_inspect</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Never</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typing_inspect</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Never</span>
 
-<span class="kn">from</span> <span class="nn">pytools.api</span> <span class="kn">import</span> <span class="n">subsdoc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pytools.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">subsdoc</span>
 
 <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
 
-    <span class="k">class</span> <span class="nc">SpecialForm</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">SpecialForm</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Placeholder for the SpecialForm class, which is required up to Python 3.10.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">pass</span>
 
 <span class="k">else</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">_SpecialForm</span> <span class="k">as</span> <span class="n">SpecialForm</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">_SpecialForm</span> <span class="k">as</span> <span class="n">SpecialForm</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;get_common_generic_base&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_common_generic_subclass&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_generic_bases&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_generic_instance&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_type_arguments&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;isinstance_generic&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;issubclass_generic&quot;</span><span class="p">,</span>
+    <span class="s2">"get_common_generic_base"</span><span class="p">,</span>
+    <span class="s2">"get_common_generic_subclass"</span><span class="p">,</span>
+    <span class="s2">"get_generic_bases"</span><span class="p">,</span>
+    <span class="s2">"get_generic_instance"</span><span class="p">,</span>
+    <span class="s2">"get_type_arguments"</span><span class="p">,</span>
+    <span class="s2">"isinstance_generic"</span><span class="p">,</span>
+    <span class="s2">"issubclass_generic"</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -240,7 +417,7 @@
 <span class="c1"># _ret for covariant type variables used in return positions</span>
 <span class="c1"># _arg for contravariant type variables used in argument positions</span>
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
 
 
 <span class="c1">#</span>
@@ -259,10 +436,9 @@
     <span class="n">AsyncIterable</span><span class="p">,</span>
     <span class="n">AsyncIterator</span><span class="p">,</span>
     <span class="n">Awaitable</span><span class="p">,</span>
-    <span class="n">ByteString</span><span class="p">,</span>
     <span class="n">Collection</span><span class="p">,</span>
     <span class="n">Container</span><span class="p">,</span>
-    <span class="nb">getattr</span><span class="p">(</span><span class="n">typing</span><span class="p">,</span> <span class="s2">&quot;FrozenSet&quot;</span><span class="p">),</span>
+    <span class="nb">getattr</span><span class="p">(</span><span class="n">typing</span><span class="p">,</span> <span class="s2">"FrozenSet"</span><span class="p">),</span>
     <span class="n">Generator</span><span class="p">,</span>
     <span class="n">ItemsView</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
@@ -279,13 +455,15 @@
 <span class="c1">#</span>
 
 
-<div class="viewcode-block" id="get_common_generic_base"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_common_generic_base.html#pytools.typing.get_common_generic_base">[docs]</a><span class="k">def</span> <span class="nf">get_common_generic_base</span><span class="p">(</span><span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_common_generic_base">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_common_generic_base.html#pytools.typing.get_common_generic_base">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_common_generic_base</span><span class="p">(</span><span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the most specific common type of the given objects.</span>
 
 <span class="sd">    :param classes: the objects to get the common type of</span>
 <span class="sd">    :return: the most specific common type</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># Get the unique classes</span>
     <span class="n">classes_unique</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
 
@@ -313,16 +491,19 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">common_type_generic</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Cannot find a common generic base class; the common base origin class &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">common_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> has multiple generic instances: &quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">common_type_generic</span><span class="p">))</span>
+            <span class="sa">f</span><span class="s2">"Cannot find a common generic base class; the common base origin class "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">common_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> has multiple generic instances: "</span>
+            <span class="o">+</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">common_type_generic</span><span class="p">))</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">common_type_generic</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_common_generic_subclass"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_common_generic_subclass.html#pytools.typing.get_common_generic_subclass">[docs]</a><span class="k">def</span> <span class="nf">get_common_generic_subclass</span><span class="p">(</span><span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_common_generic_subclass">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_common_generic_subclass.html#pytools.typing.get_common_generic_subclass">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_common_generic_subclass</span><span class="p">(</span><span class="n">classes</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the most general common subclass of the given classes.</span>
 
 <span class="sd">    Selects the class from the given classes that is a subclass of all other classes.</span>
@@ -330,7 +511,7 @@
 <span class="sd">    :param classes: the classes to get the common subclass of</span>
 <span class="sd">    :return: the most general common subclass</span>
 <span class="sd">    :raises TypeError: if the classes have no common subclass</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1"># iterate over the classes, excluding duplicates</span>
     <span class="n">iter_classes</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
 
@@ -339,7 +520,7 @@
         <span class="n">common_class</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">iter_classes</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;get_common_generic_subclass() requires at least one class, but got none&quot;</span>
+            <span class="s2">"get_common_generic_subclass() requires at least one class, but got none"</span>
         <span class="p">)</span>
 
     <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">iter_classes</span><span class="p">:</span>
@@ -347,15 +528,18 @@
             <span class="n">common_class</span> <span class="o">=</span> <span class="bp">cls</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="n">issubclass_generic</span><span class="p">(</span><span class="n">common_class</span><span class="p">,</span> <span class="bp">cls</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Classes </span><span class="si">{</span><span class="n">common_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> have no common &quot;</span>
-                <span class="s2">&quot;subclass&quot;</span>
+                <span class="sa">f</span><span class="s2">"Classes </span><span class="si">{</span><span class="n">common_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> have no common "</span>
+                <span class="s2">"subclass"</span>
             <span class="p">)</span>
     <span class="k">return</span> <span class="n">common_class</span></div>
 
 
-<div class="viewcode-block" id="get_generic_instance"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_generic_instance.html#pytools.typing.get_generic_instance">[docs]</a><span class="k">def</span> <span class="nf">get_generic_instance</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
+
+<div class="viewcode-block" id="get_generic_instance">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_generic_instance.html#pytools.typing.get_generic_instance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_generic_instance</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
     <span class="c1"># noinspection GrazieInspection</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Given a subclass and a generic base class, get the generic instances of the</span>
 <span class="sd">    base class, substituting all type arguments along the class hierarchy.</span>
 
@@ -386,11 +570,11 @@
 <span class="sd">    :return: the generic instances of the base class</span>
 <span class="sd">    :raises TypeError: if arg base is not a generic class, or if arg subclass is not a</span>
 <span class="sd">        subclass of arg base</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="nf">_walk_bases</span><span class="p">(</span><span class="n">subclass_</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bindings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_walk_bases</span><span class="p">(</span><span class="n">subclass_</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">bindings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="nb">type</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">type</span><span class="p">]:</span>
 
-        <span class="k">def</span> <span class="nf">_apply_bindings</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">TypeVar</span> <span class="o">|</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_apply_bindings</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">TypeVar</span> <span class="o">|</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">):</span>
                 <span class="c1"># We have a type variable, apply bindings</span>
                 <span class="n">bound_type</span> <span class="o">=</span> <span class="n">bindings</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -452,12 +636,12 @@
                     <span class="n">bindings</span><span class="o">=</span><span class="n">base_bindings</span><span class="p">,</span>
                 <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">get_args</span><span class="p">(</span><span class="n">base</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arg base must not be a generic instance, but got </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">typing</span><span class="o">.</span><span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">get_args</span><span class="p">(</span><span class="n">base</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"arg base must not be a generic instance, but got </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">get_origin</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">subclass</span><span class="p">,</span> <span class="n">base</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="n">subclass</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not a subclass of </span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Class </span><span class="si">{</span><span class="n">subclass</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is not a subclass of </span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="n">base</span> <span class="o">=</span> <span class="n">_replace_deprecated_type</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
@@ -468,8 +652,11 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_generic_bases"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_generic_bases.html#pytools.typing.get_generic_bases">[docs]</a><span class="k">def</span> <span class="nf">get_generic_bases</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">generic_instance</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="get_generic_bases">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_generic_bases.html#pytools.typing.get_generic_bases">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_generic_bases</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">generic_instance</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Extended version of typing_inspect.get_generic_bases that covers some special cases</span>
 <span class="sd">    for generic instances of generic aliases.</span>
 
@@ -484,7 +671,7 @@
 <span class="sd">        this is not a non-generic type, as in the original function in</span>
 <span class="sd">        :mod:`typing_inspect`)</span>
 <span class="sd">    :return: the generic bases of the generic instance</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">generic_instance</span> <span class="o">=</span> <span class="n">_replace_deprecated_type</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)</span>
     <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)</span> <span class="ow">or</span> <span class="n">generic_instance</span>
@@ -498,40 +685,48 @@
     <span class="k">if</span> <span class="n">special_generic_base</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Inherit generic arguments from the generic base for an identified special case</span>
         <span class="k">assert</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__bases__</span> <span class="o">==</span> <span class="p">(</span><span class="n">special_generic_base</span><span class="p">,),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The base classes </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__bases__</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">origin</span><span class="si">!r}</span><span class="s2"> should be &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">special_generic_base</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"The base classes </span><span class="si">{</span><span class="n">origin</span><span class="o">.</span><span class="vm">__bases__</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="n">origin</span><span class="si">!r}</span><span class="s2"> should be "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">special_generic_base</span><span class="si">!r}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">special_generic_base</span><span class="p">[</span><span class="n">ti</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)],</span>  <span class="c1"># type: ignore[index]</span>
+            <span class="n">special_generic_base</span><span class="p">[</span>  <span class="c1"># type: ignore[index]</span>
+                <span class="n">typing</span><span class="o">.</span><span class="n">get_args</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)</span>
+            <span class="p">],</span>
         <span class="p">)</span>
 
     <span class="c1"># The origin is not a generic alias</span>
     <span class="k">return</span> <span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="get_type_arguments"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_type_arguments.html#pytools.typing.get_type_arguments">[docs]</a><span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;Given a subclass&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;Given an object&quot;</span><span class="p">)</span>
-<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;generic instances&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;type arguments&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="get_type_arguments">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.get_type_arguments.html#pytools.typing.get_type_arguments">[docs]</a>
+<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"Given a subclass"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">"Given an object"</span><span class="p">)</span>
+<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="s2">"generic instances"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">"type arguments"</span><span class="p">)</span>
 <span class="nd">@subsdoc</span><span class="p">(</span>
-    <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;single generic instance&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;single tuple of type arguments&quot;</span>
+    <span class="n">pattern</span><span class="o">=</span><span class="s2">"single generic instance"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">"single tuple of type arguments"</span>
 <span class="p">)</span>
-<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;\[float\]&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;(3.0)&quot;</span><span class="p">)</span>
-<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;MySubclass, MyClass&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;MySubclass(), MyClass&quot;</span><span class="p">)</span>
-<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;:param subclass: the subclass&quot;</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">&quot;:param obj: the object&quot;</span><span class="p">)</span>
+<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">"\[float\]"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">"(3.0)"</span><span class="p">)</span>
+<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">"MySubclass, MyClass"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">"MySubclass(), MyClass"</span><span class="p">)</span>
+<span class="nd">@subsdoc</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">":param subclass: the subclass"</span><span class="p">,</span> <span class="n">replacement</span><span class="o">=</span><span class="s2">":param obj: the object"</span><span class="p">)</span>
 <span class="nd">@subsdoc</span><span class="p">(</span>
-    <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;:return: the generic instances of the base class&quot;</span><span class="p">,</span>
+    <span class="n">pattern</span><span class="o">=</span><span class="sa">r</span><span class="s2">":return: the generic instances of the base class"</span><span class="p">,</span>
     <span class="n">replacement</span><span class="o">=</span><span class="p">(</span>
-        <span class="s2">&quot;:return: the type arguments of the base class, each as a tuple of types&quot;</span>
+        <span class="s2">":return: the type arguments of the base class, each as a tuple of types"</span>
     <span class="p">),</span>
     <span class="n">using</span><span class="o">=</span><span class="n">get_generic_instance</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_type_arguments</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;[see above]&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_type_arguments</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""[see above]"""</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">get_args</span><span class="p">,</span> <span class="n">get_generic_instance</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">get_generic_type</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">base</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="issubclass_generic"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic">[docs]</a><span class="k">def</span> <span class="nf">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="issubclass_generic">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.issubclass_generic.html#pytools.typing.issubclass_generic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check if a class is a subclass of a generic instance, i.e., it is a subclass of the</span>
 <span class="sd">    generic class, and has compatible type arguments.</span>
 
@@ -539,7 +734,7 @@
 <span class="sd">    :param base: the (potentially generic) base class to check against</span>
 <span class="sd">    :return: ``True`` if the class is a subclass of the generic instance, ``False``</span>
 <span class="sd">        otherwise</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1"># As a special case, type `Any` is a superclass of anything</span>
     <span class="k">if</span> <span class="n">base</span> <span class="ow">is</span> <span class="n">Any</span><span class="p">:</span>
@@ -570,9 +765,9 @@
             <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">issubclass_generic</span><span class="p">(</span><span class="n">subclass</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">base</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 2 must be a type, type-like, or tuple of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;types or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="sa">f</span><span class="s2">"isinstance_generic() arg 2 must be a type, type-like, or tuple of "</span>
+                <span class="sa">f</span><span class="s2">"types or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">"</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
     <span class="c1"># Typehints can contain `None` as a shorthand for `NoneType`; replace it with the</span>
     <span class="c1"># actual type</span>
@@ -590,8 +785,8 @@
     <span class="n">base_origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="ow">or</span> <span class="n">base</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_origin</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 2 must be a type, type-like, or tuple of types &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"isinstance_generic() arg 2 must be a type, type-like, or tuple of types "</span>
+            <span class="sa">f</span><span class="s2">"or type-likes, but got </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="c1"># If the non-generic origin of the subclass is not a subclass of the non-generic</span>
@@ -599,8 +794,8 @@
     <span class="n">subclass_origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span> <span class="ow">or</span> <span class="n">subclass</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subclass_origin</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;isinstance_generic() arg 1 must be a type or type-like, but got &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">subclass</span><span class="si">!r}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"isinstance_generic() arg 1 must be a type or type-like, but got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">subclass</span><span class="si">!r}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">subclass_origin</span><span class="p">,</span> <span class="n">base_origin</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
@@ -608,7 +803,7 @@
     <span class="c1"># If the base class is not a generic class, there are no type arguments to check</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">ti</span><span class="o">.</span><span class="n">is_generic_type</span><span class="p">(</span><span class="n">base</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">GenericAlias</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported type construct: </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unsupported type construct: </span><span class="si">{</span><span class="n">base</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="n">subclass</span> <span class="o">=</span> <span class="n">_infer_generic_types</span><span class="p">(</span><span class="n">subclass</span><span class="p">)</span>
@@ -624,10 +819,10 @@
         <span class="c1"># For each parameter and argument, check compatibility depending on the</span>
         <span class="c1"># variance of the parameter</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_params</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">base_args</span><span class="p">),</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Expected the number of type arguments of </span><span class="si">{</span><span class="n">base_generic</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> to &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;match the number of type parameters of </span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and the number of &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;type arguments of </span><span class="si">{</span><span class="n">base_origin</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> itself, but got &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">base_params</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">base_args</span><span class="si">}</span><span class="s2">, respectively&quot;</span>
+            <span class="sa">f</span><span class="s2">"Expected the number of type arguments of </span><span class="si">{</span><span class="n">base_generic</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> to "</span>
+            <span class="sa">f</span><span class="s2">"match the number of type parameters of </span><span class="si">{</span><span class="n">base</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> and the number of "</span>
+            <span class="sa">f</span><span class="s2">"type arguments of </span><span class="si">{</span><span class="n">base_origin</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> itself, but got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">base_params</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">base_args</span><span class="si">}</span><span class="s2">, respectively"</span>
         <span class="p">)</span>
         <span class="n">arg</span><span class="p">:</span> <span class="nb">type</span>
         <span class="n">base_param</span><span class="p">:</span> <span class="n">TypeVar</span> <span class="o">|</span> <span class="n">EllipsisType</span>
@@ -635,7 +830,7 @@
         <span class="k">for</span> <span class="n">arg</span><span class="p">,</span> <span class="n">base_param</span><span class="p">,</span> <span class="n">base_arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">base_params</span><span class="p">,</span> <span class="n">base_args</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_param</span><span class="p">,</span> <span class="n">EllipsisType</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unexpected Ellipsis type parameter in base class: </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Unexpected Ellipsis type parameter in base class: </span><span class="si">{</span><span class="n">base</span><span class="si">}</span><span class="s2">"</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">base_param</span><span class="o">.</span><span class="n">__covariant__</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">issubclass_generic</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">base_arg</span><span class="p">):</span>
@@ -648,8 +843,11 @@
     <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="isinstance_generic"><a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.isinstance_generic.html#pytools.typing.isinstance_generic">[docs]</a><span class="k">def</span> <span class="nf">isinstance_generic</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="isinstance_generic">
+<a class="viewcode-back" href="../../../apidoc/pytools/typing/pytools.typing.isinstance_generic.html#pytools.typing.isinstance_generic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isinstance_generic</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Check if an object is an instance of a generic instance, i.e., it is a subclass of</span>
 <span class="sd">    the generic class, and has compatible type arguments.</span>
 
@@ -657,8 +855,9 @@
 <span class="sd">    :param base: the generic class to check against</span>
 <span class="sd">    :return: ``True`` if the object is an instance of the generic instance, ``False``</span>
 <span class="sd">        otherwise</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">issubclass_generic</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">get_generic_type</span><span class="p">(</span><span class="n">obj</span><span class="p">),</span> <span class="n">base</span><span class="p">)</span></div>
+
 
 
 <span class="c1">#</span>
@@ -666,7 +865,7 @@
 <span class="c1">#</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_type_var</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">TypeVar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_type_var</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">TypeVar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
     <span class="c1"># Derive the most specific type argument from a type variable based on its</span>
     <span class="c1"># constraints or bounds</span>
 
@@ -679,8 +878,8 @@
     <span class="n">constraints</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">get_constraints</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Type variable </span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="s2"> has multiple constraints &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">constraints</span><span class="si">}</span><span class="s2">; cannot determine unique type argument&quot;</span>
+            <span class="sa">f</span><span class="s2">"Type variable </span><span class="si">{</span><span class="n">tp</span><span class="si">}</span><span class="s2"> has multiple constraints "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">constraints</span><span class="si">}</span><span class="s2">; cannot determine unique type argument"</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">constraints</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">constraints</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -689,12 +888,12 @@
     <span class="k">return</span> <span class="n">Any</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_generic_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_generic_types</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Ensure that a class has no unbound type variables.</span>
 
 <span class="sd">    :param cls: the class to check</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">unbound_parameters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TypeVar</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">unbound_parameters</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
@@ -705,23 +904,23 @@
         <span class="k">return</span> <span class="bp">cls</span>
 
 
-<span class="k">def</span> <span class="nf">_get_origin_parameters</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_origin_parameters</span><span class="p">(</span>
     <span class="n">generic_instance</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TypeVar</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Get the type parameters of a generic instance, handling special cases for generic</span>
 <span class="sd">    aliases.</span>
 
 <span class="sd">    :param generic_instance: the class to get the type parameters of</span>
 <span class="sd">    :return: the type parameters of the class</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
     <span class="c1"># We do not support union types</span>
     <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">generic_instance</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">}:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Union types are not supported: </span><span class="si">{</span><span class="n">generic_instance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Union types are not supported: </span><span class="si">{</span><span class="n">generic_instance</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">parameters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">TypeVar</span> <span class="o">|</span> <span class="n">EllipsisType</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">ti</span><span class="o">.</span><span class="n">get_parameters</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
 
@@ -742,7 +941,7 @@
         <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Generic alias </span><span class="si">{</span><span class="n">generic_instance</span><span class="si">}</span><span class="s2"> has unsupported arguments: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Generic alias </span><span class="si">{</span><span class="n">generic_instance</span><span class="si">}</span><span class="s2"> has unsupported arguments: </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="c1"># Derive type variables from the arguments</span>
@@ -751,38 +950,38 @@
     <span class="c1"># and tuples, unless they contain an Ellipsis</span>
     <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="n">_IMMUTABLE_GENERIC_ALIASES</span> <span class="ow">or</span> <span class="n">origin</span> <span class="ow">is</span> <span class="nb">tuple</span> <span class="ow">and</span> <span class="bp">Ellipsis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
         <span class="c1"># noinspection PyTypeHints</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">TypeVar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;T</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">TypeVar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"T</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">Mapping</span><span class="p">:</span>
         <span class="c1"># Mapping is only covariant in the value type</span>
         <span class="c1"># noinspection PyTypeHints</span>
-        <span class="k">return</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;KT&quot;</span><span class="p">),</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;VT&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"KT"</span><span class="p">),</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"VT"</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># noinspection PyTypeHints</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="bp">Ellipsis</span> <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="bp">Ellipsis</span> <span class="k">else</span> <span class="n">TypeVar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;T</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">Ellipsis</span> <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="bp">Ellipsis</span> <span class="k">else</span> <span class="n">TypeVar</span><span class="p">(</span><span class="sa">f</span><span class="s2">"T</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_replace_deprecated_type</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_deprecated_type</span><span class="p">(</span><span class="n">tp</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Replace deprecated types in :mod:`typing` with their canonical replacements in</span>
 <span class="sd">    :mod:`collections.abc`.</span>
 
 <span class="sd">    :param tp: the type to check and possibly replace</span>
 <span class="sd">    :return: the original type, or the replacement type if the original type is</span>
 <span class="sd">        deprecated</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">origin</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">tp</span><span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="c1"># Check if the same type is defined in collections.abc</span>
         <span class="n">origin</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-        <span class="ow">and</span> <span class="n">tp</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;typing&quot;</span>
-        <span class="ow">and</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">&quot;collections.abc&quot;</span>
+        <span class="ow">and</span> <span class="n">tp</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">"typing"</span>
+        <span class="ow">and</span> <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span> <span class="o">==</span> <span class="s2">"collections.abc"</span>
     <span class="p">):</span>
         <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-            <span class="s2">&quot;Type typing.</span><span class="si">%s</span><span class="s2"> is deprecated; please use </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> instead&quot;</span><span class="p">,</span>
+            <span class="s2">"Type typing.</span><span class="si">%s</span><span class="s2"> is deprecated; please use </span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2"> instead"</span><span class="p">,</span>
             <span class="n">tp</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>  <span class="c1"># type: ignore[attr-defined]</span>
             <span class="n">origin</span><span class="o">.</span><span class="vm">__module__</span><span class="p">,</span>
             <span class="n">origin</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
@@ -796,37 +995,74 @@
     <span class="k">return</span> <span class="n">tp</span>
 </pre></div>
 
-              </div>
+                </article>
               
               
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
 </div>
+                </footer>
               
-          </main>
-          
-
-      </div>
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
     
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2022, Boston Consulting Group (BCG).<br>
-</p>
+      © Copyright 2022, Boston Consulting Group (BCG).
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+  </p>
+</div>
+      
     </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
     </div>
-    
-  </div>
-</footer>
+  
+</div>
+
+  </footer>
   </body>
 </html>

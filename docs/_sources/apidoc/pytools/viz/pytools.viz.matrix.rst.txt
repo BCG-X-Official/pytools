@@ -47,5 +47,5 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.viz.matrix.base
+   base
 

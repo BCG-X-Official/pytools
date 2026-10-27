@@ -45,5 +45,5 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.viz.distribution.base
+   base
 

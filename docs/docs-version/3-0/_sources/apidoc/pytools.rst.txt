@@ -35,17 +35,17 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.api
-   pytools.asyncio
-   pytools.data
-   pytools.expression
-   pytools.fit
-   pytools.http
-   pytools.meta
-   pytools.parallelization
-   pytools.repr
-   pytools.sphinx
-   pytools.text
-   pytools.typing
-   pytools.viz
+   api
+   asyncio
+   data
+   expression
+   fit
+   http
+   meta
+   parallelization
+   repr
+   sphinx
+   text
+   typing
+   viz
 

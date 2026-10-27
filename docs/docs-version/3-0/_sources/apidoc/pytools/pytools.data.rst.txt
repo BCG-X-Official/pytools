@@ -55,6 +55,6 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.data.linkage
-   pytools.data.taxonomy
+   linkage
+   taxonomy
 

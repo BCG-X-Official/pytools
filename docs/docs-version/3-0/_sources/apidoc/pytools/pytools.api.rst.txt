@@ -72,5 +72,5 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.api.doc
+   doc
 

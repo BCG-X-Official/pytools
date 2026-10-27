@@ -50,5 +50,5 @@ Submodules
    :template: custom-module-template.rst
    :recursive:
 
-   pytools.sphinx.util
+   util
 

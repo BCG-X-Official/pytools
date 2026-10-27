@@ -1,270 +1,362 @@
-
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" data-content_root="./" data-theme="light">
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Development Guidelines &#8212; pytools  documentation</title>
-    
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
-<link href="_static/styles/pydata-sphinx-theme.css?digest=1999514e3f237ded88cf" rel="stylesheet">
+  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/css/gamma.css" />
-    
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/css/gamma.css?v=5c8aca28" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf">
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <script src="_static/js/gamma.js"></script>
-    <script src="_static/js/versions.js"></script>
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/gamma.js?v=6cc5c158"></script>
+    <script src="_static/js/versions.js?v=bb9272fc"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contribution_guide';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="FAQ" href="faqs.html" />
     <link rel="prev" title="pytools.viz.util.PercentageFormatter" href="apidoc/pytools/viz/util/pytools.viz.util.PercentageFormatter.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="3.0.3" />
+  
     
-
-    <!-- Google Analytics -->
-    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="60">
-    
-    <div class="container-fluid" id="banner"></div>
-
-    
-    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
-
-  <div id="navbar-start">
-    
-    
-
-<a class="navbar-brand" href="index.html">
-  <img src="_static/gamma_pytools_logo.png" class="logo" alt="logo">
-</a>
-
-
-    
-  </div>
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <body data-default-mode="light">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
 
   
-  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
-    <div id="navbar-center" class="mr-auto">
-      
-      <div class="navbar-center-item">
-        <ul id="navbar-main-elements" class="navbar-nav">
-    <li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="_generated/getting_started.html">
-  Getting started
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="apidoc/pytools.html">
-  API reference
- </a>
-</li>
-
-<li class="toctree-l1 current active nav-item">
- <a class="current reference internal nav-link" href="#">
-  Development Guidelines
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="faqs.html">
-  FAQ
- </a>
-</li>
-
-<li class="toctree-l1 nav-item">
- <a class="reference internal nav-link" href="_generated/release_notes.html">
-  Release Notes
- </a>
-</li>
-
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
     
-</ul>
-      </div>
-      
-    </div>
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
 
-    <div id="navbar-end">
-      
-      <div class="navbar-end-item">
-        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
-      </ul>
-      </div>
-      
-    </div>
-  </div>
-</div>
-    </nav>
-    
-
-    <div class="container-xl">
-      <div class="row">
-          
-            
-            <!-- Only show if we have sidebars configured, else just a small margin  -->
-            <div class="col-12 col-md-3 bd-sidebar">
-              <div class="sidebar-start-items"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-  <div class="bd-toc-item active">
-    
-  </div>
-</nav>
-              </div>
-              <div class="sidebar-end-items">
-              </div>
-            </div>
-            
-          
-
-          
-          <div class="d-none d-xl-block col-xl-2 bd-toc">
-            
-              
-              <div class="toc-item">
-                
-<div class="tocsection onthispage mt-5 pt-1 pb-3">
-    <i class="fas fa-list"></i> On this page
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
 
-<nav id="bd-toc-nav">
-    <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#setup">
-   Setup
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#python-environment">
-     Python environment
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#pre-commit-hooks">
-     Pre-commit hooks
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#pytest">
-     Pytest
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#git-guidelines">
-   Git Guidelines
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#documentation">
-   Documentation
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#docstrings">
-     Docstrings
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#sphinx-build">
-     Sphinx Build
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#readme">
-     README
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#package-builds">
-   Package builds
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#versioning">
-     Versioning
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#pypi">
-     PyPI
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#conda">
-     Conda
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#azure-devops-ci-cd">
-   Azure DevOps CI/CD
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#release-process">
-     Release process
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
 
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+    
+    <img src="_static/gamma_pytools_logo.png" class="logo__image only-light" alt="pytools  documentation - Home"/>
+    <img src="_static/gamma_pytools_logo.png" class="logo__image only-dark pst-js-only" alt="pytools  documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_generated/getting_started.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="apidoc/pytools.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Development Guidelines
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="faqs.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_generated/release_notes.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_generated/getting_started.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="apidoc/pytools.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Development Guidelines
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="faqs.html">
+    FAQ
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="_generated/release_notes.html">
+    Release Notes
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Development Guidelines</span></li>
+  </ul>
 </nav>
-              </div>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
               
-              <div class="toc-item">
+              
+              
                 
-              </div>
-              
-            
-          </div>
-          
-
-          
-          
-            
-          
-          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
-              
-              <div>
-                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="development-guidelines">
-<span id="contribution-guide"></span><h1>Development Guidelines<a class="headerlink" href="#development-guidelines" title="Permalink to this headline">#</a></h1>
+<span id="contribution-guide"></span><h1>Development Guidelines<a class="headerlink" href="#development-guidelines" title="Link to this heading">#</a></h1>
 <section id="setup">
-<h2>Setup<a class="headerlink" href="#setup" title="Permalink to this headline">#</a></h2>
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
 <section id="python-environment">
-<h3>Python environment<a class="headerlink" href="#python-environment" title="Permalink to this headline">#</a></h3>
+<h3>Python environment<a class="headerlink" href="#python-environment" title="Link to this heading">#</a></h3>
 <p>There is an <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> provided in the repository root, which installs all
 required development dependencies in the <code class="docutils literal notranslate"><span class="pre">pytools-develop</span></code> environment.</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
@@ -273,7 +365,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>pytools-develop
 </div>
 </section>
 <section id="pre-commit-hooks">
-<h3>Pre-commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Permalink to this headline">#</a></h3>
+<h3>Pre-commit hooks<a class="headerlink" href="#pre-commit-hooks" title="Link to this heading">#</a></h3>
 <p>This project uses a number of pre-commit hooks such as black and flake8 to enforce
 uniform coding standards in all commits. Before committing code, please run</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install
@@ -283,7 +375,7 @@ uniform coding standards in all commits. Before committing code, please run</p>
 line.</p>
 </section>
 <section id="pytest">
-<h3>Pytest<a class="headerlink" href="#pytest" title="Permalink to this headline">#</a></h3>
+<h3>Pytest<a class="headerlink" href="#pytest" title="Link to this heading">#</a></h3>
 <p>Run <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span></code> from the pytools root folder or use the PyCharm test runner. To
 measure coverage, use <code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">--cov=src/pytools</span> <span class="pre">tests/</span></code>. Note that the code coverage
 reports are also generated in the Azure Pipelines (see CI/CD section).</p>
@@ -292,7 +384,7 @@ running <code class="docutils literal notranslate"><span class="pre">export</spa
 </section>
 </section>
 <section id="git-guidelines">
-<h2>Git Guidelines<a class="headerlink" href="#git-guidelines" title="Permalink to this headline">#</a></h2>
+<h2>Git Guidelines<a class="headerlink" href="#git-guidelines" title="Link to this heading">#</a></h2>
 <p>For commits to GitHub, phrase commit comments as the completion of the sentence <em>This
 commit will …</em>, e.g.</p>
 <div class="highlight-RST notranslate"><div class="highlight"><pre><span></span>add method foo to class Bar
@@ -304,11 +396,11 @@ commit will …</em>, e.g.</p>
 </div>
 </section>
 <section id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">#</a></h2>
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">#</a></h2>
 <p>This section provides a general guide to the documentation of <em>pytools</em>, including
 docstrings, Sphinx, the README and tutorial notebooks.</p>
 <section id="docstrings">
-<h3>Docstrings<a class="headerlink" href="#docstrings" title="Permalink to this headline">#</a></h3>
+<h3>Docstrings<a class="headerlink" href="#docstrings" title="Link to this heading">#</a></h3>
 <p>The API documentation is generated from docstrings in the source code. Before writing
 your own, take some time to study the existing code documentation and emulate the same
 style. Describe not only what the code does, but also why, including the rationale for
@@ -330,13 +422,13 @@ character):</p>
 that describes what the method does.</p></li>
 <li><p>Docstrings must use <em>reStructuredText</em> syntax, the default syntax for Sphinx.</p></li>
 <li><p>Write docstrings for functions and methods in the imperative style, e.g.,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;Fit the model.&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">():</span>
+<span class="sd">"""Fit the model."""</span>
 </pre></div>
 </div>
 <p>but not</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit</span><span class="p">():</span>
-<span class="sd">&quot;&quot;&quot;This is a function that fits the model.&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">():</span>
+<span class="sd">"""This is a function that fits the model."""</span>
 </pre></div>
 </div>
 <p>which is too wordy and not imperative.</p>
@@ -345,8 +437,8 @@ that describes what the method does.</p></li>
 descriptive phrase (as you would expect in a dictionary entry). Be concise and avoid
 unnecessary or redundant phrases.
 For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Inspector</span><span class="p">:</span>
-    <span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Inspector</span><span class="p">:</span>
+    <span class="s2">"""</span>
 <span class="s2">    Explains the inner workings of a predictive model using the SHAP approach.</span>
 
 <span class="s2">    The inspector offers the following analyses:</span>
@@ -356,8 +448,8 @@ For example:</p>
 </pre></div>
 </div>
 <p>but not</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Inspector</span><span class="p">:</span>
-    <span class="s2">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Inspector</span><span class="p">:</span>
+    <span class="s2">"""</span>
 <span class="s2">    This is a class that provides the functionality to inspect models</span>
 <span class="s2">    ...</span>
 </pre></div>
@@ -367,79 +459,79 @@ any information.</p>
 </li>
 <li><p>Properties should be documented as if they were attributes, not as methods, e.g.,</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The child nodes of the tree.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The child nodes of the tree."""</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
 <p>but not</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@property</span>
-<span class="k">def</span> <span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;:return: the foo object&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">foo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">""":return: the foo object"""</span>
     <span class="k">pass</span>
 </pre></div>
 </div>
 </li>
 <li><p>Start full sentences and phrases with a capitalised word and end each sentence with
 punctuation, e.g.,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Fit the model.&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""Fit the model."""</span>
 </pre></div>
 </div>
 <p>but not</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;fit the model&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">"""fit the model"""</span>
 </pre></div>
 </div>
 </li>
 <li><p>For multi-line docstrings, insert a line break after the leading triple quote and before
 the trailing triple quote, e.g.,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Fit the model.</span>
 
-<span class="sd">    Use the underlying estimator&#39;s ``fit`` method</span>
+<span class="sd">    Use the underlying estimator's ``fit`` method</span>
 <span class="sd">    to fit the model using the given training sample.</span>
 
 <span class="sd">    :param sample: training sample</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 </pre></div>
 </div>
 <p>but not</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit the model.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">"""Fit the model.</span>
 
-<span class="sd">    Use the underlying estimator&#39;s ``fit`` method</span>
+<span class="sd">    Use the underlying estimator's ``fit`` method</span>
 <span class="sd">    to fit the model using the given training sample.</span>
 
-<span class="sd">    :param sample: training sample&quot;&quot;&quot;</span>
+<span class="sd">    :param sample: training sample"""</span>
 </pre></div>
 </div>
 </li>
 <li><p>For method arguments, return value, and class parameters, one must hint the type using
 the typing module. Do not specify the parameter types in the docstrings, e.g.,</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Do something.</span>
 
 <span class="sd">  :param x: input value</span>
 <span class="sd">  :return: output value</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
 </pre></div>
 </div>
 <p>but not</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">  </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">  </span><span class="sd">"""</span>
 <span class="sd">  Do something.</span>
 
 <span class="sd">  :param int x: input value</span>
 <span class="sd">  :return float: output value</span>
-<span class="sd">  &quot;&quot;&quot;</span>
+<span class="sd">  """</span>
 </pre></div>
 </div>
 </li>
 </ul>
 </section>
 <section id="sphinx-build">
-<h3>Sphinx Build<a class="headerlink" href="#sphinx-build" title="Permalink to this headline">#</a></h3>
+<h3>Sphinx Build<a class="headerlink" href="#sphinx-build" title="Link to this heading">#</a></h3>
 <p>Documentation for <em>pytools</em> is built using <a class="reference external" href="https://www.sphinx-doc.org/en/master/">sphinx</a>.
 Before building the documentation ensure the <code class="docutils literal notranslate"><span class="pre">pytools-develop</span></code> environment is active as
 the documentation build has a number of key dependencies specified in the
@@ -490,7 +582,7 @@ references the other <code class="docutils literal notranslate"><span class="pre
 and answers to frequently asked questions including small code snippets</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">api_landing.rst</span></code>: for placing any API landing page preamble for documentation
 as needed. This information will appear on the API landing page in the
-documentation build after the short description in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code>. This file
+documentation build after the short description in <code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code>. This file
 is included in the documentation build via the <code class="docutils literal notranslate"><span class="pre">custom-module-template.rst</span></code></p></li>
 </ul>
 </li>
@@ -498,7 +590,7 @@ is included in the documentation build via the <code class="docutils literal not
 case, logos and icons</p></li>
 </ul>
 <p>The two key scripts are <code class="docutils literal notranslate"><span class="pre">make.py</span></code> and <code class="docutils literal notranslate"><span class="pre">conf.py</span></code>. The base configuration for the
-these scripts can be found in <a class="reference external" href="https://github.com/BCG-X-Official/pytools/tree/develop/sphinx/base">pytools/sphinx</a>.
+these scripts can be found in <a class="reference external" href="https://github.com/BCG-X-Official/pytools/tree/3.0.x/sphinx/base">pytools/sphinx</a>.
 The reason for this is to minimise code given the standardization of the documentation
 build across multiple packages</p>
 <p><strong>make.py</strong>: All base configuration comes from <code class="docutils literal notranslate"><span class="pre">pytools/sphinx/base/make_base.py</span></code> and
@@ -528,7 +620,7 @@ required (e.g., <a class="reference external" href="https://miktex.org/">MiKTeX<
 </ul>
 </section>
 <section id="readme">
-<h3>README<a class="headerlink" href="#readme" title="Permalink to this headline">#</a></h3>
+<h3>README<a class="headerlink" href="#readme" title="Link to this heading">#</a></h3>
 <p>The README file for the repo is .rst format instead of the perhaps more traditional
 markdown format. The reason for this is the <code class="docutils literal notranslate"><span class="pre">README.rst</span></code> is included as the quick start
 guide in the documentation build. This helped minimize code duplication. However,
@@ -540,32 +632,33 @@ during the build and can be found in <code class="docutils literal notranslate">
 </section>
 </section>
 <section id="package-builds">
-<h2>Package builds<a class="headerlink" href="#package-builds" title="Permalink to this headline">#</a></h2>
+<h2>Package builds<a class="headerlink" href="#package-builds" title="Link to this heading">#</a></h2>
 <p>The build process for the PyPI and conda distributions uses the following key
 files:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">make.py</span></code>: generic Python script for package builds. Most configuration is imported
-from pytools <a class="reference external" href="https://github.com/BCG-X-Official/pytools/blob/develop/make.py">make.py</a>
+from pytools <a class="reference external" href="https://github.com/BCG-X-Official/pytools/blob/3.0.x/make.py">make.py</a>
 which is a build script that wraps the package build, as well as exposing the matrix
 dependency definitions specified in the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> as environment variables</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>: metadata for PyPI, build settings and package dependencies</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tox.ini</span></code>: contains configurations for tox, testenv, flake8, isort, coverage report,
 and pytest</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">condabuild/meta.yml</span></code>: metadata for conda, build settings and package dependencies</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">condabuild/recipe.yaml</span></code>: metadata for conda, build settings and package dependencies
+(conda packages are built using <a class="reference external" href="https://rattler.build/">rattler-build</a>)</p></li>
 </ul>
 <section id="versioning">
-<h3>Versioning<a class="headerlink" href="#versioning" title="Permalink to this headline">#</a></h3>
+<h3>Versioning<a class="headerlink" href="#versioning" title="Link to this heading">#</a></h3>
 <p><em>pytools</em> version numbering follows the <a class="reference external" href="https://semver.org/">semantic versioning</a>
 approach, with the pattern <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code>.
-The version can be bumped in the <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> by updating the
+The version can be bumped in the <code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code> by updating the
 <code class="docutils literal notranslate"><span class="pre">__version__</span></code> string accordingly.</p>
 </section>
 <section id="pypi">
-<h3>PyPI<a class="headerlink" href="#pypi" title="Permalink to this headline">#</a></h3>
+<h3>PyPI<a class="headerlink" href="#pypi" title="Link to this heading">#</a></h3>
 <p>PyPI project metadata, build settings and package dependencies
 are obtained from <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. To build and then publish the package to PyPI,
 use the following commands:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>make.py<span class="w"> </span>gamma-pytools<span class="w"> </span>tox<span class="w"> </span>default
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>make.py<span class="w"> </span>pytools<span class="w"> </span>tox<span class="w"> </span>default
 flit<span class="w"> </span>publish
 </pre></div>
 </div>
@@ -582,7 +675,7 @@ with specifications as demonstrated <a class="reference external" href="https://
 </li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> does not provide specification for a short description
 (displayed in the top gray band on the PyPI page for the package). This description
-comes from the <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> script.</p></li>
+comes from the <code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code> script.</p></li>
 <li><p><a class="reference external" href="https://flit.readthedocs.io/en/latest/">flit</a> which is used here to publish to
 PyPI, also has the flexibility to support package building (wheel/sdist) via
 <code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">build</span></code> and installing the package by copy or symlink via <code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">install</span></code>.</p></li>
@@ -590,12 +683,12 @@ PyPI, also has the flexibility to support package building (wheel/sdist) via
 </ul>
 </section>
 <section id="conda">
-<h3>Conda<a class="headerlink" href="#conda" title="Permalink to this headline">#</a></h3>
+<h3>Conda<a class="headerlink" href="#conda" title="Link to this heading">#</a></h3>
 <p>conda build metadata, build settings and package dependencies
-are obtained from <code class="docutils literal notranslate"><span class="pre">meta.yml</span></code>. To build and then publish the package to conda,
+are obtained from <code class="docutils literal notranslate"><span class="pre">condabuild/recipe.yaml</span></code>. To build and then publish the package to conda,
 use the following commands:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>make.py<span class="w"> </span>gamma-pytools<span class="w"> </span>conda<span class="w"> </span>default
-anaconda<span class="w"> </span>upload<span class="w"> </span>--user<span class="w"> </span>BCG_Gamma<span class="w"> </span>dist/conda/noarch/&lt;*package.tar.gz*&gt;
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>make.py<span class="w"> </span>pytools<span class="w"> </span>conda<span class="w"> </span>default
+anaconda<span class="w"> </span>upload<span class="w"> </span>--user<span class="w"> </span>bcgx<span class="w"> </span>dist/conda/noarch/&lt;*package.conda*&gt;
 </pre></div>
 </div>
 <p>Please note the following:</p>
@@ -611,110 +704,214 @@ anaconda<span class="w"> </span>upload<span class="w"> </span>--user<span class=
 </section>
 </section>
 <section id="azure-devops-ci-cd">
-<h2>Azure DevOps CI/CD<a class="headerlink" href="#azure-devops-ci-cd" title="Permalink to this headline">#</a></h2>
+<h2>Azure DevOps CI/CD<a class="headerlink" href="#azure-devops-ci-cd" title="Link to this heading">#</a></h2>
 <p>This project uses <a class="reference external" href="https://dev.azure.com/">Azure DevOps</a> for CI/CD pipelines.
-The pipelines are defined in the <code class="docutils literal notranslate"><span class="pre">azure-pipelines.yml</span></code> file and are divided into
-the following stages:</p>
+The pipelines are defined in the <code class="docutils literal notranslate"><span class="pre">azure-pipelines.yml</span></code> file. They run on pushes to
+the baseline branch (e.g., <code class="docutils literal notranslate"><span class="pre">3.0.x</span></code>) and to <code class="docutils literal notranslate"><span class="pre">release/*</span></code> branches, on pull requests
+targeting either, and nightly on the baseline branch. Pushing to a <code class="docutils literal notranslate"><span class="pre">dev/*</span></code> branch
+does not start a pipeline by itself; the pipeline runs once a pull request is opened.
+The pipeline is divided into the following stages:</p>
 <ul class="simple">
 <li><p><strong>code_quality_checks</strong>: perform code quality checks for isort, black and flake8.</p></li>
 <li><p><strong>detect_build_config_changes</strong>: detect whether the build configuration as specified
 in the <code class="docutils literal notranslate"><span class="pre">pyproject.yml</span></code> has been modified. If it has, then a build test is run.</p></li>
 <li><p><strong>Unit tests</strong>: runs all unit tests and then publishes test results and coverage.</p></li>
-<li><p><strong>conda_tox_build</strong>: build the PyPI and conda distribution artifacts.</p></li>
-<li><p><strong>Release</strong>: see release process below for more detail.</p></li>
+<li><p><strong>conda_tox_build</strong>: build the PyPI and conda distribution artifacts. Pull requests
+from <code class="docutils literal notranslate"><span class="pre">dev/*</span></code> or <code class="docutils literal notranslate"><span class="pre">release/*</span></code> branches, and the nightly build, run the full matrix
+of minimum, default and maximum dependencies for both conda and tox; other pull
+requests only run a small subset, and only if the build configuration changed.</p></li>
+<li><p><strong>check_release</strong>: for <code class="docutils literal notranslate"><span class="pre">dev/*</span></code> and <code class="docutils literal notranslate"><span class="pre">release/*</span></code> branches, check that the package
+version matches the version in the branch name.</p></li>
+<li><p><strong>Release</strong>: publish the release, see release process below for more detail.</p></li>
 <li><p><strong>Docs</strong>: build and publish documentation to GitHub Pages.</p></li>
 </ul>
 <section id="release-process">
-<h3>Release process<a class="headerlink" href="#release-process" title="Permalink to this headline">#</a></h3>
+<h3>Release process<a class="headerlink" href="#release-process" title="Link to this heading">#</a></h3>
 <p>Before initiating the release process, please ensure the version number
-in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> is correct and the format conforms to semantic
-versioning. If the version needs to be corrected/bumped then open a PR for the
-change and merge into develop before going any further.</p>
+in <code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code> is correct and the format conforms to semantic
+versioning, and that <code class="docutils literal notranslate"><span class="pre">RELEASE_NOTES.rst</span></code> is complete. If the version needs to be
+corrected/bumped then open a PR for the change and merge it into the baseline branch
+(e.g., <code class="docutils literal notranslate"><span class="pre">3.0.x</span></code>) before going any further.</p>
 <p>The release process has the following key steps:</p>
-<ul class="simple">
+<ul>
 <li><p>Create a new release branch from the tag of the latest release named
 <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> is the version number of the new release</p></li>
-<li><p>Create a new branch from the baseline branch (e.g., <code class="docutils literal notranslate"><span class="pre">2.0.x</span></code>) named
+<li><p>Create a new branch from the baseline branch (e.g., <code class="docutils literal notranslate"><span class="pre">3.0.x</span></code>) named
 <code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code> is the version number of the new release</p></li>
 <li><p>Opening a PR to merge <code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> onto <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code>.
-This will automatically run all conda/pip build tests via
-Azure Pipelines prior to allowing to merge the PR.
-This will trigger automatic upload of artifacts (conda and pip
-packages) from Azure DevOps. At this stage, it is recommended that the pip package
-build is checked using <a class="reference external" href="https://test.pypi.org/">PyPI test</a> to ensure all
-metadata presents correctly. This is important as package versions in
+This will automatically run all conda/pip build tests via Azure Pipelines, and
+check that the package version matches <code class="docutils literal notranslate"><span class="pre">&lt;version&gt;</span></code>, prior to allowing to merge the
+PR. The PR build does not publish anything; the build artifacts (conda and pip
+packages) are only attached to the pipeline run. At this stage, it is recommended
+that the pip package build is checked using <a class="reference external" href="https://test.pypi.org/">PyPI test</a>
+to ensure all metadata presents correctly. This is important as package versions in
 PyPI proper are immutable.</p></li>
 <li><p>If everything passes and looks okay, merge the PR using a <em>merge commit</em>
 (not squashing).
-This will trigger the release pipeline which will:</p>
-<ul>
-<li><p>Tag the release commit with version number as specified in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code></p></li>
+This will trigger the release pipeline on the <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> branch which will:</p>
+<ul class="simple">
+<li><p>Upload the conda and pip packages to anaconda.org and PyPI, using
+<code class="docutils literal notranslate"><span class="pre">anaconda</span> <span class="pre">upload</span></code> and <code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">publish</span></code>, respectively</p></li>
+<li><p>Tag the release commit with version number as specified in
+<code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code></p></li>
 <li><p>Create a release on GitHub for the new version, please check the <a class="reference external" href="https://docs.github.com/en/free-pro-team&#64;latest/github/administering-a-repository/releasing-projects-on-github">documentation</a>
 for details</p></li>
 <li><p>Pre-fill the GitHub release title and description, including the changelog based on
 commits since the last release. Please note this can be manually edited to be more
 succinct afterwards</p></li>
 <li><p>Attach build artifacts (conda and pip packages) to GitHub release</p></li>
-<li><p>Upload build artifacts to conda/PyPI using <code class="docutils literal notranslate"><span class="pre">anaconda</span> <span class="pre">upload</span></code> and
-<code class="docutils literal notranslate"><span class="pre">flit</span> <span class="pre">publish</span></code>, respectively</p></li>
+<li><p>Publish the documentation to GitHub Pages</p></li>
 </ul>
+<p>Note that creating the <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> branch from the previous release tag
+also starts a pipeline run, which stops at the version check because the version
+in the code still is the previous one.</p>
 </li>
 <li><p>Remove any test versions for pip from PyPI test</p></li>
 <li><p>Merge <code class="docutils literal notranslate"><span class="pre">release/&lt;version&gt;</span></code> back onto the baseline branch from which
 <code class="docutils literal notranslate"><span class="pre">dev/&lt;version&gt;</span></code> was branched</p></li>
-<li><p>Bump up version in <code class="docutils literal notranslate"><span class="pre">src/__init__.py</span></code> on the baseline branch to start work towards
-the next release</p></li>
+<li><p>Bump up version in <code class="docutils literal notranslate"><span class="pre">src/pytools/__init__.py</span></code> on the baseline branch to start work
+towards the next release</p></li>
 </ul>
 </section>
 </section>
 </section>
 
 
-              </div>
+                </article>
               
               
-              <!-- Previous / next buttons -->
-<div class='prev-next-area'>
-    <a class='left-prev' id="prev-link" href="apidoc/pytools/viz/util/pytools.viz.util.PercentageFormatter.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">pytools.viz.util.PercentageFormatter</p>
-        </div>
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="apidoc/pytools/viz/util/pytools.viz.util.PercentageFormatter.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">pytools.viz.util.PercentageFormatter</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="faqs.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="faqs.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">FAQ</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
+                </footer>
               
-          </main>
-          
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-      </div>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#python-environment">Python environment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-commit-hooks">Pre-commit hooks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pytest">Pytest</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#git-guidelines">Git Guidelines</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#documentation">Documentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#docstrings">Docstrings</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sphinx-build">Sphinx Build</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#readme">README</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#package-builds">Package builds</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#versioning">Versioning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pypi">PyPI</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conda">Conda</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#azure-devops-ci-cd">Azure DevOps CI/CD</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#release-process">Release process</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/contribution_guide.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
     </div>
+  </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/pydata-sphinx-theme.js?digest=1999514e3f237ded88cf"></script>
-<footer class="footer mt-5 mt-md-0">
-  <div class="container">
+  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
     
-    <div class="footer-item">
-      <p class="copyright">
-    &copy; Copyright 2022, Boston Consulting Group (BCG).<br>
-</p>
+      © Copyright 2022, Boston Consulting Group (BCG).
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+  </p>
+</div>
+      
     </div>
-    
-    <div class="footer-item">
-      <p class="sphinx-version">
-Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br>
-</p>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
     </div>
-    
-  </div>
-</footer>
+  
+</div>
+
+  </footer>
   </body>
 </html>
