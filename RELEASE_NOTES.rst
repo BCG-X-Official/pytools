@@ -26,6 +26,8 @@ Python 3.10, and drops support for Python versions.
 - API: :class:`.AllTracker` no longer overwrites the ``__module__`` attribute of the
   type aliases it evaluates
 - FIX: the Sphinx utilities no longer fail on forward references in Python 3.14
+- FIX: :func:`.arun` no longer fails when logging coroutine-like objects that do not
+  define ``__qualname__``
 
 
 *pytools* 3.0.2

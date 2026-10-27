@@ -1184,7 +1184,6 @@ class RenamePrivateArguments(AutodocBeforeProcessSignature, metaclass=SingletonA
             pass
 
 
-@inheritdoc(match="""[see superclass]""")
 class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMeta):
     """
     A Sphinx autodoc process signature that updates forward references in the
@@ -1208,8 +1207,6 @@ class UpdateForwardReferences(AutodocProcessSignature, metaclass=SingletonABCMet
         signature: str | None,
         return_annotation: str | None,
     ) -> None:
-        """[see superclass]"""
-
         if what == "class":
             try:
                 update_forward_references(cast(type, obj))
