@@ -290,7 +290,7 @@ stages:
 
           - script: |
               python -m pip install "toml~=0.10"
-              python -m pip install "flit~=3.7"
+              python -m pip install "flit~=3.7" "flit_core>=2,<4"
               flit --version
               python -m pip install "tox~=3.25"
               tox --version
@@ -389,7 +389,7 @@ stages:
 
           - script: |
               python -m pip install "toml~=0.10"
-              python -m pip install "flit~=3.7"
+              python -m pip install "flit~=3.7" "flit_core>=2,<4"
               flit --version
               python -m pip install "tox~=3.25"
               tox --version
@@ -623,7 +623,9 @@ stages:
           - script: |
               set -eux
               cd $(System.DefaultWorkingDirectory)/$(project_root)
-              pip install flit
+              # flit_core 4 does not support the [tool.flit.metadata] table in
+              # pyproject.toml; use the same flit_core versions as in [build-system]
+              pip install "flit~=3.7" "flit_core>=2,<4"
               flit install -s
               flit publish
               # set +x to prevent Azure from randomly appending a \' of the ## statement
