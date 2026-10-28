@@ -32,7 +32,7 @@ flake8 --config tox.ini src test
 mypy --config-file pyproject.toml src/ test/ sphinx/   # strict mode
 ```
 
-Build (wrapper around conda-build / tox that exports the `pyproject.toml` dependency matrices as `FACET_V_*` env vars):
+Build (wrapper around rattler-build / tox that exports the `pyproject.toml` dependency matrices as `FACET_V_*` env vars):
 
 ```sh
 ./make.py pytools conda default      # build-system: conda|tox; dependencies: default|min|max
@@ -64,6 +64,8 @@ The package's `__init__.py` then does `from ._x import *`. `pytools.api.AllTrack
 ### Dependencies and build
 
 Runtime dependency ranges are in `pyproject.toml` (`[tool.flit.metadata]`); `[build.matrix.min|max]` define the oldest/newest supported dependency sets used by `make.py` for CI matrix builds. Build backend is flit. `typing_inspect` is being phased out in favour of the `typing` stdlib (`get_origin`, `get_args`) as part of Python 3.14 support.
+
+**Dependency versions and `FACET_V_*` variables.** `make.py` is shared by pytools, sklearndf and facet (the others delegate to this file through a sibling `../pytools` checkout). It reads the run dependencies from `requires` (the `default` build) and from `[build.matrix.min]` / `[build.matrix.max]`, and exports each package as environment variable `FACET_V_<PACKAGE>`: the package name is upper-cased and every non-word character becomes `_` (`typing_inspect` -> `FACET_V_TYPING_INSPECT`, `matplotlib` -> `FACET_V_MATPLOTLIB`; `python` comes from `requires-python`). `condabuild/recipe.yaml` (rattler-build; `condabuild/meta.yaml` is deprecated) and `tox.ini` take every runtime dependency version from these variables (`${{ env.get('FACET_V_...') }}` in the recipe) and never hard-code one; only build tools (flit, pip) and test tools (pytest) are literals, and optional packages are guarded with `env.exists(...)`. Rules enforced by `make.py`: `requires` lists each package once as `name specifier` with no environment markers (an entry such as `pkg >=1; python_version >= '3.14'` fails every build with "invalid version spec"), must not contain `python`, and every `requires` entry needs a value in both the min and the max matrix. To add or change a runtime dependency, update `requires`, both matrices, `environment.yml` and the `run` section of `condabuild/recipe.yaml` together; a dependency missing from the recipe is silently missing from the conda package.
 
 ### CI and releasing
 
