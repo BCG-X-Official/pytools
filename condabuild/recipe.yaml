@@ -24,6 +24,7 @@ requirements:
     - pandas          ${{ env.get('FACET_V_PANDAS') }}
     - python          ${{ env.get('FACET_V_PYTHON') }}
     - scipy           ${{ env.get('FACET_V_SCIPY') }}
+    - typing_extensions ${{ env.get('FACET_V_TYPING_EXTENSIONS') }}
     - typing_inspect  ${{ env.get('FACET_V_TYPING_INSPECT') }}
 
 tests:

@@ -11,6 +11,11 @@ Release Notes
 *pytools* 3.0 adds support for language features introduced up to and including
 Python 3.10, and drops support for Python versions.
 
+*pytools* 3.0.4
+~~~~~~~~~~~~~~~
+
+- BUILD: the conda package now declares its dependency on :mod:`typing_extensions`
+
 *pytools* 3.0.3
 ~~~~~~~~~~~~~~~
 
