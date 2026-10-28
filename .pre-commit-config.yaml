@@ -1,3 +1,8 @@
+# scikit-learn (a dependency of the mypy hooks of Facet projects) has no wheels for the
+# newest Python; use the same version in all Facet projects
+default_language_version:
+  python: python3.14
+
 repos:
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.22.0
